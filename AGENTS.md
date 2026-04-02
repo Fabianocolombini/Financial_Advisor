@@ -6,5 +6,6 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## Financial Advisor
 
+- **Guia canónico do projeto** (QI, roadmap, crons, APIs, convenções): **[CLAUDE.md](CLAUDE.md)**.
 - Projeto em `app/(dashboard)/` com layout compartilhado (`AppShell`).
 - Ao adicionar features financeiras, priorizar clareza para o usuário leigo e disclaimers de que não é assessoria investimento regulada, se aplicável.
