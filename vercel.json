@@ -1,0 +1,9 @@
+{
+  "buildCommand": "npm run build:vercel",
+  "crons": [
+    {
+      "path": "/api/cron/ingest-market",
+      "schedule": "0 11 * * *"
+    }
+  ]
+}

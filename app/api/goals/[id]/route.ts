@@ -1,5 +1,6 @@
 import { requireSession } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
+import { writeRateLimitOr429 } from "@/lib/rate-limit";
 import { updateGoalSchema } from "@/lib/schemas/api";
 import { serializeGoal } from "@/lib/serialize";
 import { Prisma } from "@prisma/client";
@@ -27,6 +28,9 @@ export async function GET(_request: Request, { params }: Params) {
 }
 
 export async function PATCH(request: Request, { params }: Params) {
+  const rl = writeRateLimitOr429(request);
+  if (rl) return rl;
+
   const session = await requireSession();
   if (!session.ok) return session.response;
 
@@ -51,11 +55,16 @@ export async function PATCH(request: Request, { params }: Params) {
     );
   }
 
+  const raw = body as Record<string, unknown>;
   const { title, targetAmount, deadline } = parsed.data;
   const data: Prisma.GoalUpdateInput = {};
   if (title !== undefined) data.title = title;
   if (targetAmount !== undefined) data.targetAmount = new Prisma.Decimal(targetAmount);
-  if (deadline !== undefined) data.deadline = deadline ?? null;
+  if (Object.prototype.hasOwnProperty.call(raw, "deadline") && raw.deadline === null) {
+    data.deadline = null;
+  } else if (deadline !== undefined) {
+    data.deadline = deadline ?? null;
+  }
 
   if (Object.keys(data).length === 0) {
     return NextResponse.json({ error: "Nenhum campo para atualizar" }, { status: 400 });
@@ -69,7 +78,10 @@ export async function PATCH(request: Request, { params }: Params) {
   return NextResponse.json({ data: serializeGoal(goal) });
 }
 
-export async function DELETE(_request: Request, { params }: Params) {
+export async function DELETE(request: Request, { params }: Params) {
+  const rl = writeRateLimitOr429(request);
+  if (rl) return rl;
+
   const session = await requireSession();
   if (!session.ok) return session.response;
 

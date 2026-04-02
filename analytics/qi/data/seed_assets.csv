@@ -1,0 +1,38 @@
+symbol,name,asset_type,gics_sector
+SPY,SPDR S&P 500 ETF Trust,ETF,
+QQQ,Invesco QQQ Trust,ETF,
+IWM,iShares Russell 2000 ETF,ETF,
+XLK,Technology Select Sector SPDR Fund,ETF,Technology
+XLF,Financial Select Sector SPDR Fund,ETF,Financials
+XLE,Energy Select Sector SPDR Fund,ETF,Energy
+XLV,Health Care Select Sector SPDR Fund,ETF,Health Care
+XLI,Industrial Select Sector SPDR Fund,ETF,Industrials
+XLP,Consumer Staples Select Sector SPDR Fund,ETF,Consumer Staples
+XLY,Consumer Discretionary Select Sector SPDR Fund,ETF,Consumer Discretionary
+XLB,Materials Select Sector SPDR Fund,ETF,Materials
+XLRE,Real Estate Select Sector SPDR Fund,ETF,Real Estate
+XLU,Utilities Select Sector SPDR Fund,ETF,Utilities
+XLC,Communication Services Select Sector SPDR Fund,ETF,Communication Services
+AAPL,Apple Inc.,EQUITY,Technology
+MSFT,Microsoft Corporation,EQUITY,Technology
+NVDA,NVIDIA Corporation,EQUITY,Technology
+JPM,JPMorgan Chase & Co.,EQUITY,Financials
+BAC,Bank of America Corporation,EQUITY,Financials
+XOM,Exxon Mobil Corporation,EQUITY,Energy
+CVX,Chevron Corporation,EQUITY,Energy
+UNH,UnitedHealth Group Incorporated,EQUITY,Health Care
+JNJ,Johnson & Johnson,EQUITY,Health Care
+CAT,Caterpillar Inc.,EQUITY,Industrials
+HON,Honeywell International Inc.,EQUITY,Industrials
+PG,The Procter & Gamble Company,EQUITY,Consumer Staples
+KO,The Coca-Cola Company,EQUITY,Consumer Staples
+AMZN,Amazon.com Inc.,EQUITY,Consumer Discretionary
+TSLA,Tesla Inc.,EQUITY,Consumer Discretionary
+LIN,Linde plc,EQUITY,Materials
+SHW,The Sherwin-Williams Company,EQUITY,Materials
+AMT,American Tower Corporation,EQUITY,Real Estate
+PLD,Prologis Inc.,EQUITY,Real Estate
+NEE,NextEra Energy Inc.,EQUITY,Utilities
+DUK,Duke Energy Corporation,EQUITY,Utilities
+META,Meta Platforms Inc.,EQUITY,Communication Services
+GOOGL,Alphabet Inc. Class A,EQUITY,Communication Services

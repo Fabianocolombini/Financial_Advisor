@@ -1,13 +1,13 @@
-import { auth } from "@/auth";
 import { SummaryCard } from "@/components/dashboard/SummaryCard";
 import { getDashboardStats } from "@/lib/dashboard";
 import { formatBRL } from "@/lib/format";
+import { getServerUserId } from "@/lib/server-user";
 
 export default async function HomePage() {
-  const session = await auth();
-  if (!session?.user?.id) return null;
+  const userId = await getServerUserId();
+  if (!userId) return null;
 
-  const stats = await getDashboardStats(session.user.id);
+  const stats = await getDashboardStats(userId);
   const net = stats.netWorth.toNumber();
 
   return (

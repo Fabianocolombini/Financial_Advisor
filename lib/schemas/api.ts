@@ -48,3 +48,43 @@ export const budgetEntriesQuerySchema = z.object({
   year: z.coerce.number().int().min(2000).max(2100),
   month: z.coerce.number().int().min(1).max(12),
 });
+
+const optionalCategoryId = z
+  .union([z.string().min(1), z.literal(""), z.null()])
+  .optional()
+  .transform((v) => (v === "" || v == null ? undefined : v));
+
+export const createTransactionSchema = z.object({
+  categoryId: optionalCategoryId,
+  amount: z.coerce.number().positive(),
+  occurredAt: z.string().min(1),
+  note: z
+    .union([z.string().max(500), z.literal(""), z.null()])
+    .optional()
+    .transform((v) => (v === "" || v == null ? undefined : v)),
+});
+
+const patchCategoryId = z
+  .union([z.string().min(1), z.literal(""), z.null()])
+  .optional()
+  .transform((v) => {
+    if (v === undefined) return undefined;
+    if (v === "" || v === null) return null;
+    return v;
+  });
+
+const patchNote = z
+  .union([z.string().max(500), z.literal(""), z.null()])
+  .optional()
+  .transform((v) => {
+    if (v === undefined) return undefined;
+    if (v === "" || v === null) return null;
+    return v;
+  });
+
+export const updateTransactionSchema = z.object({
+  categoryId: patchCategoryId,
+  amount: z.coerce.number().positive().optional(),
+  occurredAt: z.string().min(1).optional(),
+  note: patchNote,
+});

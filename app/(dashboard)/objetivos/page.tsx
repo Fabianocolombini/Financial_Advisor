@@ -1,15 +1,15 @@
-import { auth } from "@/auth";
 import { AddGoalForm } from "@/components/forms/AddGoalForm";
 import { DeleteApiButton } from "@/components/forms/DeleteApiButton";
-import { formatBRL } from "@/lib/format";
+import { EditGoalRow } from "@/components/forms/EditGoalRow";
 import { prisma } from "@/lib/prisma";
+import { getServerUserId } from "@/lib/server-user";
 
 export default async function ObjetivosPage() {
-  const session = await auth();
-  if (!session?.user?.id) return null;
+  const userId = await getServerUserId();
+  if (!userId) return null;
 
   const goals = await prisma.goal.findMany({
-    where: { userId: session.user.id },
+    where: { userId },
     orderBy: { deadline: "asc" },
   });
 
@@ -35,20 +35,21 @@ export default async function ObjetivosPage() {
           goals.map((g) => (
             <li
               key={g.id}
-              className="flex flex-wrap items-center justify-between gap-2 p-4"
+              className="flex flex-wrap items-stretch justify-between gap-2"
             >
-              <div>
-                <p className="font-medium text-zinc-900 dark:text-zinc-50">
-                  {g.title}
-                </p>
-                <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                  Alvo: {formatBRL(g.targetAmount.toNumber())}
-                  {g.deadline
-                    ? ` · até ${g.deadline.toLocaleDateString("pt-BR")}`
-                    : ""}
-                </p>
+              <div className="min-w-0 flex-1">
+                <EditGoalRow
+                  goal={{
+                    id: g.id,
+                    title: g.title,
+                    targetAmount: g.targetAmount.toNumber(),
+                    deadline: g.deadline,
+                  }}
+                />
               </div>
-              <DeleteApiButton url={`/api/goals/${g.id}`} />
+              <div className="flex shrink-0 items-start p-4">
+                <DeleteApiButton url={`/api/goals/${g.id}`} />
+              </div>
             </li>
           ))
         )}

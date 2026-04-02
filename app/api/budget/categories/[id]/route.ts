@@ -1,5 +1,6 @@
 import { requireSession } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
+import { writeRateLimitOr429 } from "@/lib/rate-limit";
 import { updateBudgetCategorySchema } from "@/lib/schemas/api";
 import { serializeBudgetCategory } from "@/lib/serialize";
 import { NextResponse } from "next/server";
@@ -13,6 +14,9 @@ async function getOwned(userId: string, id: string) {
 }
 
 export async function PATCH(request: Request, { params }: Params) {
+  const rl = writeRateLimitOr429(request);
+  if (rl) return rl;
+
   const session = await requireSession();
   if (!session.ok) return session.response;
 
@@ -45,7 +49,10 @@ export async function PATCH(request: Request, { params }: Params) {
   return NextResponse.json({ data: serializeBudgetCategory(category) });
 }
 
-export async function DELETE(_request: Request, { params }: Params) {
+export async function DELETE(request: Request, { params }: Params) {
+  const rl = writeRateLimitOr429(request);
+  if (rl) return rl;
+
   const session = await requireSession();
   if (!session.ok) return session.response;
 

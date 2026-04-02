@@ -1,4 +1,10 @@
-import type { Goal, BalanceItem, BudgetCategory, BudgetEntry } from "@prisma/client";
+import type {
+  Goal,
+  BalanceItem,
+  BudgetCategory,
+  BudgetEntry,
+  Transaction,
+} from "@prisma/client";
 
 export function serializeGoal(g: Goal) {
   return {
@@ -33,5 +39,15 @@ export function serializeBudgetEntry(e: BudgetEntry) {
     plannedAmount: e.plannedAmount.toString(),
     createdAt: e.createdAt.toISOString(),
     updatedAt: e.updatedAt.toISOString(),
+  };
+}
+
+export function serializeTransaction(t: Transaction) {
+  return {
+    ...t,
+    amount: t.amount.toString(),
+    occurredAt: t.occurredAt.toISOString(),
+    createdAt: t.createdAt.toISOString(),
+    updatedAt: t.updatedAt.toISOString(),
   };
 }

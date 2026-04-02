@@ -17,9 +17,11 @@ type UserBar = {
 export function AppShell({
   children,
   user,
+  showSignOut = false,
 }: {
   children: ReactNode;
   user: UserBar;
+  showSignOut?: boolean;
 }) {
   const label = user.name ?? user.email ?? "Conta";
 
@@ -40,7 +42,7 @@ export function AppShell({
             >
               {label}
             </span>
-            <SignOutButton />
+            {showSignOut ? <SignOutButton /> : null}
           </div>
           <nav className="flex flex-wrap items-center justify-end gap-1 text-sm sm:gap-3">
             {nav.map((item) => (

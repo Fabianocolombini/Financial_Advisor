@@ -48,6 +48,7 @@ model User {
   balanceItems     BalanceItem[]
   budgetCategories BudgetCategory[]
   budgetEntries    BudgetEntry[]
+  transactions     Transaction[]
 }
 
 model VerificationToken {
@@ -92,15 +93,32 @@ model BalanceItem {
 }
 
 model BudgetCategory {
-  id        String        @id @default(cuid())
-  userId    String
-  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name      String
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-  entries   BudgetEntry[]
+  id           String        @id @default(cuid())
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  entries      BudgetEntry[]
+  transactions Transaction[]
 
   @@index([userId])
+}
+
+model Transaction {
+  id         String          @id @default(cuid())
+  userId     String
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId String?
+  category   BudgetCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  amount     Decimal         @db.Decimal(19, 4)
+  occurredAt DateTime
+  note       String?
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  @@index([userId])
+  @@index([userId, occurredAt])
 }
 
 model BudgetEntry {
@@ -117,4 +135,442 @@ model BudgetEntry {
 
   @@unique([userId, categoryId, year, month])
   @@index([userId])
+}
+
+// Dados de mercado (FRED + Yahoo Chart API); sem PII.
+
+enum MarketDataProvider {
+  YFINANCE
+  FRED
+}
+
+model MarketSeries {
+  id            String              @id @default(cuid())
+  provider      MarketDataProvider
+  externalId    String
+  displayName   String?
+  frequency     String?
+  lastFetchedAt DateTime?
+  metadata      Json?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  observations  MarketObservation[]
+
+  @@unique([provider, externalId])
+  @@index([provider])
+}
+
+model MarketObservation {
+  id         String       @id @default(cuid())
+  seriesId   String
+  series     MarketSeries @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  observedAt DateTime
+  value      Decimal      @db.Decimal(24, 8)
+  raw        Json?
+
+  createdAt DateTime @default(now())
+
+  @@unique([seriesId, observedAt])
+  @@index([seriesId, observedAt])
+}
+
+// --- Quantitative intelligence (Polygon / FRED / FMP / engines) ---
+// Legacy MarketSeries/MarketObservation above remain for existing TS ingest; new macro data uses QiMacroSeries.
+
+enum QiAssetType {
+  EQUITY
+  ETF
+  INDEX
+  OTHER
+}
+
+enum QiPriceSource {
+  POLYGON
+  YFINANCE
+  OTHER
+}
+
+enum QiMacroProvider {
+  FRED
+}
+
+enum QiFundamentalStatementType {
+  Q
+  A
+  TTM
+}
+
+enum QiIngestionJobStatus {
+  PENDING
+  RUNNING
+  SUCCESS
+  FAILED
+}
+
+enum QiIngestionSource {
+  POLYGON
+  FRED
+  FMP
+  CFTC
+  SEC_EDGAR
+  ALPHA_VANTAGE
+}
+
+enum QiIdentifierType {
+  POLYGON_TICKER
+  CUSIP
+  ISIN
+  FIGI
+}
+
+enum QiRegimeKind {
+  MACRO
+  RISK
+}
+
+model QiAsset {
+  id           String      @id @default(cuid())
+  symbol       String      @unique
+  assetType    QiAssetType @map("asset_type")
+  exchangeMic  String?     @map("exchange_mic")
+  currency     String      @default("USD")
+  name         String
+  gicsSector   String?     @map("gics_sector")
+  gicsIndustry String?     @map("gics_industry")
+  cik          String?
+  isActive     Boolean     @default(true) @map("is_active")
+  metricsCache Json?       @map("metrics_cache")
+  firstSeenAt  DateTime    @default(now()) @map("first_seen_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+
+  identifiers         QiAssetIdentifier[]
+  prices              QiMarketPriceDaily[]
+  fundamentals        QiFundamentalSnapshot[]
+  universeMembers     QiUniverseMember[]
+  assetScoreSnapshots QiAssetScoreSnapshot[]
+  cotContractMaps     QiCotContractMap[]
+  institutionalFlows  QiInstitutionalFlowSnapshot[]
+  portfolioHoldings   QiPortfolioHolding[]
+
+  @@index([gicsSector])
+  @@index([assetType])
+  @@map("qi_asset")
+}
+
+model QiAssetIdentifier {
+  id        String           @id @default(cuid())
+  assetId   String           @map("asset_id")
+  asset     QiAsset          @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  idType    QiIdentifierType @map("id_type")
+  value     String
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  @@unique([idType, value])
+  @@index([assetId])
+  @@map("qi_asset_identifier")
+}
+
+model QiMarketPriceDaily {
+  id            String        @id @default(cuid())
+  assetId       String        @map("asset_id")
+  asset         QiAsset       @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  tradeDate     DateTime      @map("trade_date") @db.Date
+  open          Decimal       @db.Decimal(19, 6)
+  high          Decimal       @db.Decimal(19, 6)
+  low           Decimal       @db.Decimal(19, 6)
+  close         Decimal       @db.Decimal(19, 6)
+  volume        BigInt
+  adjustedClose Decimal?      @map("adjusted_close") @db.Decimal(19, 6)
+  source        QiPriceSource
+  ingestedAt    DateTime      @default(now()) @map("ingested_at")
+
+  @@unique([assetId, tradeDate, source])
+  @@index([tradeDate])
+  @@map("qi_market_price_daily")
+}
+
+model QiFxRateDaily {
+  id         String        @id @default(cuid())
+  baseCcy    String        @map("base_ccy")
+  quoteCcy   String        @map("quote_ccy")
+  rateDate   DateTime      @map("rate_date") @db.Date
+  rate       Decimal       @db.Decimal(19, 8)
+  source     QiPriceSource
+  ingestedAt DateTime      @default(now()) @map("ingested_at")
+
+  @@unique([baseCcy, quoteCcy, rateDate, source])
+  @@index([rateDate])
+  @@map("qi_fx_rate_daily")
+}
+
+model QiMacroSeries {
+  id                  String               @id @default(cuid())
+  provider            QiMacroProvider
+  externalId          String               @map("external_id")
+  title               String?
+  frequency           String?
+  units               String?
+  seasonalAdjustment  String?              @map("seasonal_adjustment")
+  lastSuccessfulRunAt DateTime?            @map("last_successful_run_at")
+  metadata            Json?
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+  points              QiMacroSeriesPoint[]
+
+  @@unique([provider, externalId])
+  @@index([provider])
+  @@map("qi_macro_series")
+}
+
+model QiMacroSeriesPoint {
+  id         String        @id @default(cuid())
+  seriesId   String        @map("series_id")
+  series     QiMacroSeries @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  observedOn DateTime      @map("observed_on") @db.Date
+  value      Decimal       @db.Decimal(24, 8)
+  raw        Json?
+  createdAt  DateTime      @default(now()) @map("created_at")
+
+  @@unique([seriesId, observedOn])
+  @@index([seriesId, observedOn])
+  @@map("qi_macro_series_point")
+}
+
+model QiFundamentalSnapshot {
+  id            String                     @id @default(cuid())
+  assetId       String                     @map("asset_id")
+  asset         QiAsset                    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  periodEnd     DateTime                   @map("period_end") @db.Date
+  statementType QiFundamentalStatementType @map("statement_type")
+  marketCap     Decimal?                   @map("market_cap") @db.Decimal(22, 2)
+  peRatio       Decimal?                   @map("pe_ratio") @db.Decimal(19, 6)
+  pbRatio       Decimal?                   @map("pb_ratio") @db.Decimal(19, 6)
+  evToEbitda    Decimal?                   @map("ev_to_ebitda") @db.Decimal(19, 6)
+  debtToEquity  Decimal?                   @map("debt_to_equity") @db.Decimal(19, 6)
+  roe           Decimal?                   @db.Decimal(19, 6)
+  revenueTtm    Decimal?                   @map("revenue_ttm") @db.Decimal(22, 2)
+  epsTtm        Decimal?                   @map("eps_ttm") @db.Decimal(19, 6)
+  payload       Json?
+  source        String                     @default("fmp")
+  fetchedAt     DateTime                   @default(now()) @map("fetched_at")
+
+  @@unique([assetId, periodEnd, statementType, source])
+  @@index([assetId, periodEnd])
+  @@map("qi_fundamental_snapshot")
+}
+
+model QiIngestionJob {
+  id           String               @id @default(cuid())
+  source       QiIngestionSource
+  jobName      String               @map("job_name")
+  status       QiIngestionJobStatus @default(PENDING)
+  startedAt    DateTime?            @map("started_at")
+  finishedAt   DateTime?            @map("finished_at")
+  cursor       Json?
+  rowsUpserted Int?                 @map("rows_upserted")
+  rowsFailed   Int?                 @map("rows_failed")
+  errorMessage String?              @map("error_message") @db.Text
+  createdAt    DateTime             @default(now()) @map("created_at")
+
+  @@index([source, jobName, createdAt])
+  @@map("qi_ingestion_job")
+}
+
+model QiUniverseRun {
+  id                 String             @id @default(cuid())
+  runAt              DateTime           @default(now()) @map("run_at")
+  modelVersion       String             @map("model_version")
+  gicsSector         String             @map("gics_sector")
+  coverageTarget     Decimal            @map("coverage_target") @db.Decimal(5, 4)
+  totalRelevanceMass Decimal?           @map("total_relevance_mass") @db.Decimal(24, 8)
+  metadata           Json?
+  isAccepted         Boolean            @default(false) @map("is_accepted")
+  members            QiUniverseMember[]
+  acceptedAsConfig   QiUniverseConfig[] @relation("AcceptedUniverseRun")
+
+  @@index([gicsSector, runAt])
+  @@index([isAccepted, gicsSector])
+  @@map("qi_universe_run")
+}
+
+model QiUniverseMember {
+  id                 String        @id @default(cuid())
+  universeRunId      String        @map("universe_run_id")
+  universeRun        QiUniverseRun @relation(fields: [universeRunId], references: [id], onDelete: Cascade)
+  assetId            String        @map("asset_id")
+  asset              QiAsset       @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  memberRank         Int           @map("member_rank")
+  relevanceScore     Decimal       @map("relevance_score") @db.Decimal(24, 8)
+  relevanceMass      Decimal       @map("relevance_mass") @db.Decimal(24, 8)
+  cumulativeCoverage Decimal       @map("cumulative_coverage") @db.Decimal(7, 6)
+  isEtf              Boolean       @map("is_etf")
+  inclusionReason    Json?         @map("inclusion_reason")
+
+  @@unique([universeRunId, assetId])
+  @@index([universeRunId, memberRank])
+  @@map("qi_universe_member")
+}
+
+model QiUniverseConfig {
+  gicsSector    String         @id @map("gics_sector")
+  acceptedRunId String?        @map("accepted_run_id")
+  acceptedRun   QiUniverseRun? @relation("AcceptedUniverseRun", fields: [acceptedRunId], references: [id], onDelete: SetNull)
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+
+  @@map("qi_universe_config")
+}
+
+model QiSectorScoreSnapshot {
+  id             String   @id @default(cuid())
+  sectorCode     String   @map("sector_code")
+  asOfDate       DateTime @map("as_of_date") @db.Date
+  modelVersion   String   @map("model_version")
+  compositeScore Decimal  @map("composite_score") @db.Decimal(19, 8)
+  rank           Int
+  regimeTag      String?  @map("regime_tag")
+  components     Json?
+  universeRunId  String?  @map("universe_run_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@unique([sectorCode, asOfDate, modelVersion])
+  @@index([asOfDate])
+  @@map("qi_sector_score_snapshot")
+}
+
+model QiAssetScoreSnapshot {
+  id             String   @id @default(cuid())
+  assetId        String   @map("asset_id")
+  asset          QiAsset  @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asOfDate       DateTime @map("as_of_date") @db.Date
+  modelVersion   String   @map("model_version")
+  compositeScore Decimal  @map("composite_score") @db.Decimal(19, 8)
+  rank           Int?
+  components     Json?
+  universeRunId  String?  @map("universe_run_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@unique([assetId, asOfDate, modelVersion])
+  @@index([asOfDate])
+  @@map("qi_asset_score_snapshot")
+}
+
+model QiRegimeSnapshot {
+  id             String       @id @default(cuid())
+  kind           QiRegimeKind
+  asOfDate       DateTime     @map("as_of_date") @db.Date
+  modelVersion   String       @map("model_version")
+  regimeLabel    String       @map("regime_label")
+  compositeScore Decimal?     @map("composite_score") @db.Decimal(19, 8)
+  components     Json?
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  @@unique([kind, asOfDate, modelVersion])
+  @@index([asOfDate])
+  @@map("qi_regime_snapshot")
+}
+
+model QiPortfolio {
+  id              String                @id @default(cuid())
+  userId          String?               @map("user_id")
+  name            String
+  baseCurrency    String                @default("USD") @map("base_currency")
+  createdAt       DateTime              @default(now()) @map("created_at")
+  updatedAt       DateTime              @updatedAt @map("updated_at")
+  holdings        QiPortfolioHolding[]
+  snapshots       QiPortfolioSnapshot[]
+  recommendations QiRecommendation[]
+
+  @@map("qi_portfolio")
+}
+
+model QiPortfolioHolding {
+  id          String      @id @default(cuid())
+  portfolioId String      @map("portfolio_id")
+  portfolio   QiPortfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  assetId     String      @map("asset_id")
+  asset       QiAsset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  quantity    Decimal?    @db.Decimal(22, 8)
+  weight      Decimal?    @db.Decimal(9, 6)
+  asOfDate    DateTime?   @map("as_of_date") @db.Date
+
+  @@index([portfolioId])
+  @@index([assetId])
+  @@map("qi_portfolio_holding")
+}
+
+model QiPortfolioSnapshot {
+  id               String      @id @default(cuid())
+  portfolioId      String      @map("portfolio_id")
+  portfolio        QiPortfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  snapshotDate     DateTime    @map("snapshot_date") @db.Date
+  totalValueUsd    Decimal?    @map("total_value_usd") @db.Decimal(22, 2)
+  weights          Json?
+  riskMetrics      Json?       @map("risk_metrics")
+  benchmarkWeights Json?       @map("benchmark_weights")
+  createdAt        DateTime    @default(now()) @map("created_at")
+
+  @@index([portfolioId, snapshotDate])
+  @@map("qi_portfolio_snapshot")
+}
+
+model QiRecommendation {
+  id            String       @id @default(cuid())
+  portfolioId   String?      @map("portfolio_id")
+  portfolio     QiPortfolio? @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
+  createdAt     DateTime     @default(now()) @map("created_at")
+  validFrom     DateTime     @map("valid_from") @db.Date
+  validUntil    DateTime?    @map("valid_until") @db.Date
+  engine        String
+  modelVersion  String       @map("model_version")
+  status        String       @default("draft")
+  payload       Json
+  universeRunId String?      @map("universe_run_id")
+
+  @@index([portfolioId, createdAt])
+  @@map("qi_recommendation")
+}
+
+model QiCotContractMap {
+  id          String   @id @default(cuid())
+  cftcCode    String   @map("cftc_code")
+  assetId     String?  @map("asset_id")
+  asset       QiAsset? @relation(fields: [assetId], references: [id], onDelete: SetNull)
+  gicsSector  String?  @map("gics_sector")
+  displayName String?  @map("display_name")
+
+  @@unique([cftcCode])
+  @@map("qi_cot_contract_map")
+}
+
+model QiCotSnapshot {
+  id            String   @id @default(cuid())
+  cotReportDate DateTime @map("cot_report_date") @db.Date
+  cftcCode      String   @map("cftc_code")
+  marketType    String   @map("market_type")
+  positions     Json
+  openInterest  Decimal? @map("open_interest") @db.Decimal(22, 2)
+  source        String   @default("cftc_socrata")
+  fetchedAt     DateTime @default(now()) @map("fetched_at")
+
+  @@unique([cotReportDate, cftcCode, marketType])
+  @@index([cotReportDate])
+  @@map("qi_cot_snapshot")
+}
+
+model QiInstitutionalFlowSnapshot {
+  id            String   @id @default(cuid())
+  filerCik      String   @map("filer_cik")
+  periodEnd     DateTime @map("period_end") @db.Date
+  assetId       String   @map("asset_id")
+  asset         QiAsset  @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  sharesHeld    Decimal? @map("shares_held") @db.Decimal(22, 4)
+  valueUsd      Decimal? @map("value_usd") @db.Decimal(22, 2)
+  deltaShares   Decimal? @map("delta_shares") @db.Decimal(22, 4)
+  deltaValueUsd Decimal? @map("delta_value_usd") @db.Decimal(22, 2)
+  source        String   @default("sec_edgar")
+  fetchedAt     DateTime @default(now()) @map("fetched_at")
+
+  @@index([assetId, periodEnd])
+  @@index([filerCik, periodEnd])
+  @@map("qi_institutional_flow_snapshot")
 }

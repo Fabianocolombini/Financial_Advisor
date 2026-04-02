@@ -1,16 +1,17 @@
-import { auth } from "@/auth";
 import { AddBalanceItemForm } from "@/components/forms/AddBalanceItemForm";
 import { DeleteApiButton } from "@/components/forms/DeleteApiButton";
+import { EditBalanceItemRow } from "@/components/forms/EditBalanceItemRow";
 import { formatBRL } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { getServerUserId } from "@/lib/server-user";
 import { Prisma } from "@prisma/client";
 
 export default async function PatrimonioPage() {
-  const session = await auth();
-  if (!session?.user?.id) return null;
+  const userId = await getServerUserId();
+  if (!userId) return null;
 
   const items = await prisma.balanceItem.findMany({
-    where: { userId: session.user.id },
+    where: { userId },
     orderBy: [{ kind: "asc" }, { label: "asc" }],
   });
 
@@ -47,18 +48,21 @@ export default async function PatrimonioPage() {
           items.map((item) => (
             <li
               key={item.id}
-              className="flex flex-wrap items-center justify-between gap-2 p-4"
+              className="flex flex-wrap items-stretch justify-between gap-2"
             >
-              <div>
-                <p className="font-medium text-zinc-900 dark:text-zinc-50">
-                  {item.label}
-                </p>
-                <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                  {item.kind === "ASSET" ? "Ativo" : "Passivo"} ·{" "}
-                  {formatBRL(item.amount.toNumber())}
-                </p>
+              <div className="min-w-0 flex-1">
+                <EditBalanceItemRow
+                  item={{
+                    id: item.id,
+                    label: item.label,
+                    kind: item.kind,
+                    amount: item.amount.toNumber(),
+                  }}
+                />
               </div>
-              <DeleteApiButton url={`/api/balance-items/${item.id}`} />
+              <div className="flex shrink-0 items-start p-4">
+                <DeleteApiButton url={`/api/balance-items/${item.id}`} />
+              </div>
             </li>
           ))
         )}

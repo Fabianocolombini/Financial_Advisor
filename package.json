@@ -10,7 +10,12 @@
     "start": "next start",
     "lint": "eslint",
     "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "qi:ingest": "sh -c 'cd analytics && PYTHONPATH=. python3 -m qi.jobs.run_ingest_daily'",
+    "qi:universe": "sh -c 'cd analytics && PYTHONPATH=. python3 -m qi.jobs.run_universe_weekly'",
+    "qi:analysis": "sh -c 'cd analytics && PYTHONPATH=. python3 -m qi.jobs.run_analysis'"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
@@ -28,7 +33,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.2",
-    "prisma": "^7.6.0",
+    "prisma": "^6.19.0",
+    "vitest": "^3.2.4",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
