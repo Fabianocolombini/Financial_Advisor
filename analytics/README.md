@@ -9,9 +9,11 @@ cd analytics
 python3 -m pip install -r requirements.txt
 ```
 
-Ensure root `.env.local` defines `DATABASE_URL` (same as Next.js). Optional:
+Ensure root `.env.local` defines `DATABASE_URL` (same as Next.js). **Preços QI v0.2:** apenas **Polygon** via `python3 -m qi.jobs.run_ingest_daily` (`QI_INGEST_PHASE=polygon` ou `all`). Não usar Yahoo/TS para `qi_market_price_daily` em produção.
 
-- `POLYGON_API_KEY` — daily OHLCV
+Optional:
+
+- `POLYGON_API_KEY` — daily OHLCV (fonte canónica de preços para engines Python)
 - `FRED_API_KEY` — macro series in `qi_macro_series_point`
 - `FMP_API_KEY` — fundamentals → `qi_fundamental_snapshot`
 - `QI_MODEL_VERSION` — tag engine outputs (default `v0.1.0`)
@@ -38,6 +40,8 @@ python3 -m qi.jobs.run_ingest_daily
 python3 -m qi.jobs.run_universe_weekly
 python3 -m qi.jobs.run_analysis
 ```
+
+Validação do pipeline Python (mapa de ficheiros, Postgres, engines, checklist TS vs Polygon): [docs/QI_PYTHON_VALIDATION.md](docs/QI_PYTHON_VALIDATION.md). Código-fonte copiado para leitura offline: [docs/QI_PYTHON_SOURCE_APPENDIX.md](docs/QI_PYTHON_SOURCE_APPENDIX.md).
 
 Documentação do ingest FRED (tabelas, env, SQL, **matriz de resultados possíveis** e checklist para decidir alargamento): [docs/FRED_INGEST.md](docs/FRED_INGEST.md). Relatório Markdown do que está na BD:
 

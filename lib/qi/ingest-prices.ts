@@ -1,3 +1,8 @@
+/**
+ * @deprecated Não usar em produção QI v0.2+: preços diários vêm de **Polygon** via
+ * `analytics/qi/jobs/run_ingest_daily` (`QI_INGEST_PHASE=polygon`). Mantido só para
+ * referência local / testes.
+ */
 import { Prisma } from "@prisma/client";
 import { randomUUID } from "crypto";
 

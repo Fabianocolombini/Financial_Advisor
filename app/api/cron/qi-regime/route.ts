@@ -1,3 +1,4 @@
+import { tsQiWritersBlockedResponse } from "@/lib/qi/ts-qi-writers-guard";
 import { runRegimeEngine } from "@/lib/qi/regime-engine";
 import { NextResponse } from "next/server";
 
@@ -14,6 +15,9 @@ export async function GET(request: Request) {
   if (!secret || auth !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
+
+  const blocked = tsQiWritersBlockedResponse();
+  if (blocked) return blocked;
 
   try {
     const result = await runRegimeEngine(new Date());

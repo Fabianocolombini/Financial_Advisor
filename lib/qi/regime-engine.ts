@@ -1,3 +1,10 @@
+/**
+ * Motor de regime em TypeScript — **espelho opcional** quando `QI_ALLOW_TS_QI_WRITERS=true`.
+ * Produção QI v0.2: classificação canónica vem de Python (`analytics/qi/engines/macro_regime.py`,
+ * `risk_regime.py`) com vocabulário EXPANSION | RECESSION | INFLATION | STRESS e labels de risco
+ * CRISIS | STRESS | WARNING | CALM. Este ficheiro usa regras/labels antigas (EASY, INFLATIONARY, …).
+ * APIs e `/mercado` leem Prisma; não dependem deste módulo se os crons TS estiverem desactivados.
+ */
 import { Prisma } from "@prisma/client";
 
 import { QI_MODEL_VERSION } from "@/lib/qi/constants";

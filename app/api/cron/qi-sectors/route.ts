@@ -1,3 +1,4 @@
+import { tsQiWritersBlockedResponse } from "@/lib/qi/ts-qi-writers-guard";
 import { runAssetSelection } from "@/lib/qi/asset-selection";
 import { runSectorRotation } from "@/lib/qi/sector-rotation";
 import { NextResponse } from "next/server";
@@ -15,6 +16,9 @@ export async function GET(request: Request) {
   if (!secret || auth !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
+
+  const blocked = tsQiWritersBlockedResponse();
+  if (blocked) return blocked;
 
   const asOf = new Date();
   try {

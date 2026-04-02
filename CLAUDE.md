@@ -178,7 +178,7 @@ export function classifyMacroRegime(macro: MacroSnapshot): MacroRegime {
 | `GET /api/cron/qi-macro` | QI `qi_macro_*` (TypeScript) |
 | `GET /api/cron/qi-pipeline` | Python `QI_RUN_PYTHON=true` |
 
-(Rotas `qi-prices`, `qi-regime`, … roadmap.)
+(Preços QI: Polygon via Python ingest; cron `qi-prices` Yahoo removido. Crons `qi-regime` / `qi-sectors` / `qi-recommend` TS desactivados por defeito — `QI_ALLOW_TS_QI_WRITERS`.)
 
 ---
 
