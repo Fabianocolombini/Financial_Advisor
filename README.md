@@ -18,6 +18,8 @@ npx prisma migrate dev
 npm run dev
 ```
 
+Ou `npm run rundev` (alias no `package.json`). **Não use `npm rundev`** (sem a palavra `run`) — o npm devolve *Unknown command*. Na raiz do projeto também podes usar `./rundev` (script shell).
+
 Abra [http://localhost:3000](http://localhost:3000). O painel exige login.
 
 ## Deploy (Vercel)
