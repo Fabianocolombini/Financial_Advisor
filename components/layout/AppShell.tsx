@@ -7,6 +7,7 @@ const nav = [
   { href: "/patrimonio", label: "Patrimônio" },
   { href: "/objetivos", label: "Objetivos" },
   { href: "/orcamento", label: "Orçamento" },
+  { href: "/mercado", label: "Mercado" },
 ] as const;
 
 type UserBar = {

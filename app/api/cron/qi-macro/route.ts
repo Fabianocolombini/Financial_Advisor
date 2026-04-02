@@ -1,3 +1,4 @@
+import { buildMacroDerivedSnapshot } from "@/lib/qi/macro-derived";
 import { ingestFredQi } from "@/lib/qi/ingest-fred";
 import { NextResponse } from "next/server";
 
@@ -28,6 +29,7 @@ export async function GET(request: Request) {
 
   try {
     const result = await ingestFredQi(fredKey);
+    const derived = await buildMacroDerivedSnapshot();
     const status =
       result.errors.length === result.seriesProcessed && result.seriesProcessed > 0
         ? 500
@@ -42,6 +44,7 @@ export async function GET(request: Request) {
         pointsInserted: result.pointsInserted,
         seriesProcessed: result.seriesProcessed,
         errors: result.errors,
+        derived,
       },
       { status },
     );
