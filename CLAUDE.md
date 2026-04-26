@@ -18,12 +18,33 @@ Arquivo de referência importado: **[docs/CLAUDE_ARCHIVE.md](docs/CLAUDE_ARCHIVE
 |------|----------------|
 | Ingestão legacy | [`lib/market/ingest.ts`](lib/market/ingest.ts) → `MarketSeries` / `MarketObservation` |
 | Ingestão QI FRED (TypeScript) | [`lib/qi/ingest-fred.ts`](lib/qi/ingest-fred.ts) + cron [`/api/cron/qi-macro`](app/api/cron/qi-macro/route.ts) → `QiMacroSeries` / `QiMacroSeriesPoint` |
-| Ingestão QI (Python) | [`analytics/qi/jobs/run_ingest_daily.py`](analytics/qi/jobs/run_ingest_daily.py); opcional via [`/api/cron/qi-pipeline`](app/api/cron/qi-pipeline/route.ts) com `QI_RUN_PYTHON=true` |
+| Ingestão QI (Python) | [`analytics/qi/jobs/run_ingest_daily.py`](analytics/qi/jobs/run_ingest_daily.py) — em produção `QI_INGEST_PHASE=polygon,fmp` (FRED só no TS); opcional via [`/api/cron/qi-pipeline`](app/api/cron/qi-pipeline/route.ts) com `QI_RUN_PYTHON=true`; scheduler dedicado [`analytics/qi/scheduler.py`](analytics/qi/scheduler.py) |
 | Manifesto macro (fonte única) | [`analytics/qi/data/macro_series.json`](analytics/qi/data/macro_series.json) — o ingest TS lê este ficheiro |
 | IDs FRED GS vs DGS | Tabelas de referência abaixo citam `GS10`/`GS2` (mensais); o manifest atual usa sobretudo **`DGS10`/`DGS2`** (Treasury constant maturity diária). Equivalentes para curva; não misturar séries no mesmo cálculo sem alinhamento de frequência |
 | Motores regime/scoring (Python) | Já existem em `analytics/qi/engines/`; variantes TS em `lib/qi/*` são roadmap |
 
-**Produção:** evitar correr ingest TS e Python no mesmo minuto para as mesmas séries (duplica chamadas FRED); `@@unique([seriesId, observedOn])` evita duplicar pontos.
+**Produção:** FRED é ingerido **apenas** pelo cron TS `qi-macro`; o Python usa `QI_INGEST_PHASE=polygon,fmp` para não duplicar FRED. `@@unique([seriesId, observedOn])` continua a evitar duplicar pontos se ambos correrem.
+
+---
+
+## Arquitetura de produção QI (desde consolidação pipeline)
+
+### Princípio fundamental
+
+**FRED** → exclusivamente pelo cron TS `qi-macro` na Vercel.  
+**Polygon + FMP + análise** → Python no host dedicado (Railway / Fly.io / VM), tipicamente via [`analytics/qi/scheduler.py`](analytics/qi/scheduler.py) + [`Dockerfile`](Dockerfile).  
+**Não** correr `run_ingest_daily` com `fred` em `QI_INGEST_PHASE` em produção se o cron TS já cobre macro.
+
+### Escritores QI em TypeScript
+
+Bloqueados por [`lib/qi/ts-qi-writers-guard.ts`](lib/qi/ts-qi-writers-guard.ts) por defeito.  
+Os endpoints `qi-regime`, `qi-sectors`, `qi-recommend` existem mas **não estão agendados** na Vercel ([`vercel.json`](vercel.json)).  
+Para testes locais: `QI_ALLOW_TS_QI_WRITERS=true`.
+
+### Fonte de verdade analítica
+
+Python (`analytics/qi/`, sobretudo `run_analysis.py`) → `QiRegimeSnapshot`, `QiSectorScoreSnapshot`, `QiRecommendation`.  
+TypeScript pode ler estas tabelas para a UI; escritores TS em QI permanecem opt-in.
 
 ---
 
@@ -124,6 +145,28 @@ Copie [`.env.example`](.env.example) para `.env.local`:
 
 ---
 
+## QI Pipeline - Pre-flight
+
+Antes de rodar qualquer ingestao, execute:
+
+```bash
+npm run qi:preflight
+```
+
+Todos os checks devem retornar `✓` antes de prosseguir.
+
+### Checks realizados
+1. `qi:check-env` - variaveis de ambiente obrigatorias
+2. `qi:check-db` - existencia e integridade das 4 tabelas QI
+3. `qi:check-migrations` - migrations Prisma pendentes
+
+### Se o banco for Neon (producao)
+- Preferir PostgreSQL local para ingestoes longas de desenvolvimento
+- Neon free tier pode causar `IdleInTransactionSessionTimeout` em jobs longos
+- `DATABASE_URL` deve apontar para Postgres local durante desenvolvimento
+
+---
+
 ## BANCO E PRISMA
 
 ```bash
@@ -177,8 +220,9 @@ export function classifyMacroRegime(macro: MacroSnapshot): MacroRegime {
 | `GET /api/cron/ingest-market` | Legacy FRED + Yahoo |
 | `GET /api/cron/qi-macro` | QI `qi_macro_*` (TypeScript) |
 | `GET /api/cron/qi-pipeline` | Python `QI_RUN_PYTHON=true` |
+| `GET /api/cron/qi-regime` / `qi-sectors` / `qi-recommend` | Manual ou TS com `QI_ALLOW_TS_QI_WRITERS`; **não** há cron Vercel (motor oficial = Python) |
 
-(Preços QI: Polygon via Python ingest; cron `qi-prices` Yahoo removido. Crons `qi-regime` / `qi-sectors` / `qi-recommend` TS desactivados por defeito — `QI_ALLOW_TS_QI_WRITERS`.)
+(Preços QI: Polygon via Python ingest; cron `qi-prices` Yahoo removido.)
 
 ---
 
@@ -204,4 +248,4 @@ npm run build:vercel
 
 Variáveis: `DATABASE_URL`, `AUTH_SECRET`, Google OAuth, `FRED_API_KEY`, `CRON_SECRET`.
 
-Crons em [`vercel.json`](vercel.json) (ajustar horários conforme necessidade).
+Crons em [`vercel.json`](vercel.json): apenas `ingest-market` e `qi-macro`. Jobs QI Python: ver `docs/ENVIRONMENT.md` e `npm run qi:scheduler`.
