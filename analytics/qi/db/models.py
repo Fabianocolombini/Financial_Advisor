@@ -36,6 +36,7 @@ QiIngestSource = ENUM(
     "CFTC",
     "SEC_EDGAR",
     "ALPHA_VANTAGE",
+    "YFINANCE",
     name="QiIngestionSource",
     create_type=False,
 )

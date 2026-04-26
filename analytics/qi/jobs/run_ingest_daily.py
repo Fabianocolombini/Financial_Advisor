@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import math
 import os
 import time
 import traceback
@@ -30,12 +31,47 @@ from qi.ingest.fred_client import (
 )
 from qi.ingest.job_logging import job_finish, job_start
 from qi.ingest.polygon_client import fetch_daily_aggs
+from qi.ingest.yfinance_client import ingest_prices_yfinance
 from qi.jobs.seed_assets import seed_assets_if_empty
 
 _BACKFILL = os.environ.get("QI_FRED_BACKFILL_START", "2019-01-01")
 _MAX_POLY = int(os.environ.get("QI_POLYGON_MAX_ASSETS", "40"))
-# all | fred | polygon | fmp — roda só a fase indicada
-_INGEST_PHASE = os.environ.get("QI_INGEST_PHASE", "all").strip().lower()
+# 0 = todos os ativos activos; caso contrário limita (útil para testes / quota FMP)
+_mf = os.environ.get("QI_FMP_MAX_ASSETS", "").strip()
+_FMP_MAX = int(_mf) if _mf.isdigit() else 0
+_FMP_DELAY = float(os.environ.get("QI_FMP_DELAY_SEC", "1.2"))
+_BATCH_SIZE = int(os.environ.get("QI_INGEST_BATCH_SIZE", "50"))
+_YF_BATCH_SIZE = int(os.environ.get("QI_BATCH_SIZE", "100"))
+# QI_YFINANCE_BACKFILL=true → puxa desde 2020-01-01; false → rolling 5 dias
+_YF_BACKFILL = os.environ.get("QI_YFINANCE_BACKFILL", "false").strip().lower() in ("1", "true", "yes")
+_YF_BACKFILL_START = dt.date.fromisoformat(os.environ.get("QI_YFINANCE_BACKFILL_START", "2020-01-01"))
+_YF_INCREMENTAL = os.environ.get("QI_YFINANCE_INCREMENTAL", "false").strip().lower() in (
+    "1",
+    "true",
+    "yes",
+)
+
+# Fases suportadas:
+#   "fred"      → apenas macro FRED
+#   "polygon"   → apenas preços Polygon (mantido; desativado em "all" dev)
+#   "yfinance"  → apenas preços yfinance (zero-custo)
+#   "fmp"       → apenas fundamentals FMP
+#   "all"       → fred + yfinance + fmp  (dev default — sem Polygon)
+#   "all_prod"  → fred + polygon + fmp   (produção com plano Polygon pago)
+_phases_raw = os.environ.get("QI_INGEST_PHASE", "all").strip()
+_pr = _phases_raw.lower()
+if not _pr or _pr == "all":
+    _INGEST_PHASES = frozenset({"fred", "yfinance", "fmp"})
+elif _pr == "all_prod":
+    _INGEST_PHASES = frozenset({"fred", "polygon", "fmp"})
+else:
+    _INGEST_PHASES = frozenset(
+        p.strip().lower() for p in _phases_raw.split(",") if p.strip()
+    )
+RUN_FRED = "fred" in _INGEST_PHASES
+RUN_POLYGON = "polygon" in _INGEST_PHASES
+RUN_YFINANCE = "yfinance" in _INGEST_PHASES
+RUN_FMP = "fmp" in _INGEST_PHASES
 # 0–100: só roda Polygon se cobertura FRED >= este % (padrão 100). Use 0 para ignorar.
 _MIN_FRED_PCT = float(os.environ.get("QI_MIN_FRED_PCT", "100"))
 # manifest = só macro_series.json | full = árvore de categorias FRED (dedupe)
@@ -95,18 +131,12 @@ def fred_series_coverage(session: Session) -> tuple[int, int, float]:
     return ok, total, pct
 
 
-def _phase(name: str) -> bool:
-    if _INGEST_PHASE in ("all", ""):
-        return True
-    return _INGEST_PHASE == name
-
-
 def _fred_ok_for_polygon(session: Session) -> tuple[bool, float]:
     ok, total, pct = fred_series_coverage(session)
-    if total == 0:
-        return False, pct
     if _MIN_FRED_PCT <= 0:
         return True, pct
+    if total == 0:
+        return False, pct
     return pct >= _MIN_FRED_PCT, pct
 
 
@@ -227,112 +257,297 @@ def ingest_fred(session: Session, api_key: str) -> int:
         if row:
             row.last_successful_run_at = now
             row.updated_at = now
+        session.flush()
     return total
 
 
-def ingest_polygon(session: Session, api_key: str) -> int:
+def ingest_yfinance(session: Session) -> int:
+    """Ingestão de preços diários via yfinance (zero-custo)."""
     today = dt.date.today()
-    start_default = dt.date.fromisoformat(_BACKFILL)
-    assets = session.scalars(select(QiAsset).where(QiAsset.is_active.is_(True)).limit(_MAX_POLY)).all()
-    total = 0
-    for a in assets:
-        last = session.scalar(
-            select(func.max(QiMarketPriceDaily.trade_date)).where(
-                QiMarketPriceDaily.asset_id == a.id,
-                QiMarketPriceDaily.source == "POLYGON",
-            )
+    if _YF_BACKFILL:
+        start = _YF_BACKFILL_START
+    else:
+        start = today - dt.timedelta(days=7)
+
+    with get_session() as s:
+        if _YF_INCREMENTAL:
+            rows = s.execute(
+                select(QiAsset.symbol)
+                .outerjoin(QiMarketPriceDaily, QiMarketPriceDaily.asset_id == QiAsset.id)
+                .where(QiAsset.is_active.is_(True))
+                .where(QiMarketPriceDaily.asset_id.is_(None))
+                .order_by(QiAsset.symbol.asc())
+            ).all()
+            tickers = [r[0] for r in rows]
+        else:
+            rows = s.scalars(
+                select(QiAsset)
+                .where(QiAsset.is_active.is_(True))
+                .order_by(QiAsset.symbol.asc())
+            ).all()
+            tickers = [a.symbol for a in rows]
+
+    if not tickers:
+        return 0
+
+    print(
+        f"yfinance: {len(tickers)} ativos | {start} → {today} | "
+        f"backfill={_YF_BACKFILL} | incremental={_YF_INCREMENTAL}"
+    )
+
+    with get_session() as s:
+        result = ingest_prices_yfinance(
+            session=s,
+            tickers=tickers,
+            start_date=start,
+            end_date=today,
+            batch_size=_YF_BATCH_SIZE,
         )
-        start = (last + dt.timedelta(days=1)) if last else start_default
-        if start > today:
-            continue
+
+    ok = result["tickers_ok"]
+    failed = result["tickers_failed"]
+    upserted = result["records_upserted"]
+    print(f"yfinance: tickers_ok={ok} tickers_failed={failed} records_upserted={upserted}")
+    if result["errors"]:
+        for e in result["errors"][:5]:
+            print(f"  [WARN] {e}")
+    return upserted
+
+
+def ingest_polygon(_session: Session, api_key: str) -> int:
+    """Delega para _ingest_polygon_batched que abre sessão por lote."""
+    return _ingest_polygon_batched(api_key)
+
+
+def _ingest_polygon_batched(api_key: str) -> int:
+    """
+    Ingest Polygon em lotes de QI_INGEST_BATCH_SIZE ativos.
+    Abre e fecha uma sessão nova por lote — evita crash Neon em runs longos.
+    """
+    with get_session() as s:
+        asset_rows = s.scalars(
+            select(QiAsset)
+            .where(QiAsset.is_active.is_(True))
+            .order_by(
+                QiAsset.gics_sector.is_(None).asc(),
+                QiAsset.symbol.asc(),
+            )
+            .limit(_MAX_POLY)
+        ).all()
+        asset_list = [(a.id, a.symbol) for a in asset_rows]
+
+    if not asset_list:
+        return 0
+
+    total = 0
+    n_batches = math.ceil(len(asset_list) / _BATCH_SIZE)
+    print(f"Polygon: {len(asset_list)} ativos em {n_batches} lotes de {_BATCH_SIZE}.")
+
+    for i in range(0, len(asset_list), _BATCH_SIZE):
+        batch = asset_list[i : i + _BATCH_SIZE]
+        batch_num = i // _BATCH_SIZE + 1
+        print(f"  Lote {batch_num}/{n_batches} ({len(batch)} ativos)...")
+
         try:
-            bars = fetch_daily_aggs(api_key, a.symbol, start, today)
-        except Exception:
+            with get_session() as s:
+                today = dt.date.today()
+                start_default = dt.date.fromisoformat(_BACKFILL)
+                n = 0
+                for asset_id, symbol in batch:
+                    last = s.scalar(
+                        select(func.max(QiMarketPriceDaily.trade_date)).where(
+                            QiMarketPriceDaily.asset_id == asset_id,
+                            QiMarketPriceDaily.source == "POLYGON",
+                        )
+                    )
+                    start = (last + dt.timedelta(days=1)) if last else start_default
+                    if start > today:
+                        continue
+                    try:
+                        bars = fetch_daily_aggs(api_key, symbol, start, today)
+                    except Exception as e:
+                        print(f"    skip {symbol}: {e}")
+                        continue
+                    for b in bars:
+                        ins = pg_insert(QiMarketPriceDaily).values(
+                            id=new_cuid_like(),
+                            asset_id=asset_id,
+                            trade_date=b.trade_date,
+                            open=Decimal(str(b.open)),
+                            high=Decimal(str(b.high)),
+                            low=Decimal(str(b.low)),
+                            close=Decimal(str(b.close)),
+                            volume=b.volume,
+                            adjusted_close=Decimal(str(b.adjusted_close))
+                            if b.adjusted_close
+                            else None,
+                            source="POLYGON",
+                        )
+                        stmt = ins.on_conflict_do_update(
+                            index_elements=["asset_id", "trade_date", "source"],
+                            set_={
+                                "open": ins.excluded.open,
+                                "high": ins.excluded.high,
+                                "low": ins.excluded.low,
+                                "close": ins.excluded.close,
+                                "volume": ins.excluded.volume,
+                                "adjusted_close": ins.excluded.adjusted_close,
+                                "ingested_at": dt.datetime.now(dt.timezone.utc),
+                            },
+                        )
+                        s.execute(stmt)
+                        n += 1
+                total += n
+                print(f"    Lote {batch_num}: +{n} barras (Σ {total})")
+        except Exception as e:
+            print(f"    Lote {batch_num} falhou: {e} — continuando...")
             continue
-        for b in bars:
-            ins = pg_insert(QiMarketPriceDaily).values(
-                id=new_cuid_like(),
-                asset_id=a.id,
-                trade_date=b.trade_date,
-                open=Decimal(str(b.open)),
-                high=Decimal(str(b.high)),
-                low=Decimal(str(b.low)),
-                close=Decimal(str(b.close)),
-                volume=b.volume,
-                adjusted_close=Decimal(str(b.adjusted_close)) if b.adjusted_close else None,
-                source="POLYGON",
-            )
-            stmt = ins.on_conflict_do_update(
-                index_elements=["asset_id", "trade_date", "source"],
-                set_={
-                    "open": ins.excluded.open,
-                    "high": ins.excluded.high,
-                    "low": ins.excluded.low,
-                    "close": ins.excluded.close,
-                    "volume": ins.excluded.volume,
-                    "adjusted_close": ins.excluded.adjusted_close,
-                    "ingested_at": dt.datetime.now(dt.timezone.utc),
-                },
-            )
-            session.execute(stmt)
-            total += 1
+
     return total
 
 
-def ingest_fmp(session: Session, api_key: str) -> int:
-    assets = session.scalars(select(QiAsset).where(QiAsset.is_active.is_(True))).all()
-    pe = dt.date.today()
-    n = 0
-    for a in assets:
-        f = fetch_fundamentals(api_key, a.symbol)
-        if not f:
+def ingest_fmp(_session: Session, api_key: str) -> int:
+    """Delega para _ingest_fmp_batched que abre sessão por lote."""
+    return _ingest_fmp_batched(api_key)
+
+
+def _ingest_fmp_batched(api_key: str) -> int:
+    """
+    Ingest FMP fundamentals em lotes de QI_INGEST_BATCH_SIZE ativos.
+    Sessão nova por lote.
+    """
+    with get_session() as s:
+        q = select(QiAsset).where(QiAsset.is_active.is_(True)).order_by(QiAsset.symbol.asc())
+        if _FMP_MAX > 0:
+            q = q.limit(_FMP_MAX)
+        asset_list = [(a.id, a.symbol) for a in s.scalars(q).all()]
+
+    if not asset_list:
+        return 0
+
+    cap = "all" if _FMP_MAX <= 0 else str(_FMP_MAX)
+    total = 0
+    n_batches = math.ceil(len(asset_list) / _BATCH_SIZE)
+    print(
+        f"FMP: {len(asset_list)} ativos (QI_FMP_MAX_ASSETS={cap}) em "
+        f"{n_batches} lotes de {_BATCH_SIZE}."
+    )
+
+    for i in range(0, len(asset_list), _BATCH_SIZE):
+        batch = asset_list[i : i + _BATCH_SIZE]
+        batch_num = i // _BATCH_SIZE + 1
+        print(f"  Lote {batch_num}/{n_batches}...")
+
+        try:
+            with get_session() as s:
+                pe = dt.date.today()
+                n = 0
+                for asset_id, symbol in batch:
+                    if _FMP_DELAY > 0:
+                        time.sleep(_FMP_DELAY)
+                    f = fetch_fundamentals(api_key, symbol)
+                    if not f:
+                        continue
+                    # Persistir fundamentals também em qi_asset.metrics_cache (schema real do MVP).
+                    asset = s.get(QiAsset, asset_id)
+                    if asset:
+                        profile = (f.payload or {}).get("profile", {}) if isinstance(f.payload, dict) else {}
+                        key_metrics = (
+                            (f.payload or {}).get("key_metrics_ttm", {})
+                            if isinstance(f.payload, dict)
+                            else {}
+                        )
+                        cache = dict(asset.metrics_cache or {})
+                        cache.update(
+                            {
+                                "market_cap": f.market_cap,
+                                "pe_ratio": f.pe_ratio,
+                                "pb_ratio": f.pb_ratio,
+                                "beta": profile.get("beta"),
+                                "dividend_yield": key_metrics.get("dividendYieldTTM"),
+                                "debt_to_equity": f.debt_to_equity,
+                                "eps_ttm": f.eps_ttm,
+                                "fmp_updated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
+                            }
+                        )
+                        asset.metrics_cache = cache
+                        asset.updated_at = dt.datetime.now(dt.timezone.utc)
+                    pend = f.period_end or pe
+                    ins = pg_insert(QiFundamentalSnapshot).values(
+                        id=new_cuid_like(),
+                        asset_id=asset_id,
+                        period_end=pend,
+                        statement_type="TTM",
+                        market_cap=Decimal(str(f.market_cap))
+                        if f.market_cap is not None
+                        else None,
+                        pe_ratio=Decimal(str(f.pe_ratio))
+                        if f.pe_ratio is not None
+                        else None,
+                        pb_ratio=Decimal(str(f.pb_ratio))
+                        if f.pb_ratio is not None
+                        else None,
+                        ev_to_ebitda=Decimal(str(f.ev_to_ebitda))
+                        if f.ev_to_ebitda is not None
+                        else None,
+                        debt_to_equity=Decimal(str(f.debt_to_equity))
+                        if f.debt_to_equity is not None
+                        else None,
+                        roe=Decimal(str(f.roe)) if f.roe is not None else None,
+                        revenue_ttm=Decimal(str(f.revenue_ttm))
+                        if f.revenue_ttm is not None
+                        else None,
+                        eps_ttm=Decimal(str(f.eps_ttm)) if f.eps_ttm is not None else None,
+                        payload=f.payload,
+                        source="fmp",
+                    )
+                    stmt = ins.on_conflict_do_update(
+                        index_elements=[
+                            "asset_id",
+                            "period_end",
+                            "statement_type",
+                            "source",
+                        ],
+                        set_={
+                            "market_cap": ins.excluded.market_cap,
+                            "pe_ratio": ins.excluded.pe_ratio,
+                            "pb_ratio": ins.excluded.pb_ratio,
+                            "ev_to_ebitda": ins.excluded.ev_to_ebitda,
+                            "debt_to_equity": ins.excluded.debt_to_equity,
+                            "roe": ins.excluded.roe,
+                            "revenue_ttm": ins.excluded.revenue_ttm,
+                            "eps_ttm": ins.excluded.eps_ttm,
+                            "payload": ins.excluded.payload,
+                            "fetched_at": dt.datetime.now(dt.timezone.utc),
+                        },
+                    )
+                    s.execute(stmt)
+                    n += 1
+                total += n
+                print(f"    Lote {batch_num}: +{n} snapshots (Σ {total})")
+        except Exception as e:
+            print(f"    Lote {batch_num} falhou: {e} — continuando...")
             continue
-        pend = f.period_end or pe
-        ins = pg_insert(QiFundamentalSnapshot).values(
-            id=new_cuid_like(),
-            asset_id=a.id,
-            period_end=pend,
-            statement_type="TTM",
-            market_cap=Decimal(str(f.market_cap)) if f.market_cap is not None else None,
-            pe_ratio=Decimal(str(f.pe_ratio)) if f.pe_ratio is not None else None,
-            pb_ratio=Decimal(str(f.pb_ratio)) if f.pb_ratio is not None else None,
-            ev_to_ebitda=Decimal(str(f.ev_to_ebitda)) if f.ev_to_ebitda is not None else None,
-            debt_to_equity=Decimal(str(f.debt_to_equity)) if f.debt_to_equity is not None else None,
-            roe=Decimal(str(f.roe)) if f.roe is not None else None,
-            revenue_ttm=Decimal(str(f.revenue_ttm)) if f.revenue_ttm is not None else None,
-            eps_ttm=Decimal(str(f.eps_ttm)) if f.eps_ttm is not None else None,
-            payload=f.payload,
-            source="fmp",
-        )
-        stmt = ins.on_conflict_do_update(
-            index_elements=["asset_id", "period_end", "statement_type", "source"],
-            set_={
-                "market_cap": ins.excluded.market_cap,
-                "pe_ratio": ins.excluded.pe_ratio,
-                "pb_ratio": ins.excluded.pb_ratio,
-                "ev_to_ebitda": ins.excluded.ev_to_ebitda,
-                "debt_to_equity": ins.excluded.debt_to_equity,
-                "roe": ins.excluded.roe,
-                "revenue_ttm": ins.excluded.revenue_ttm,
-                "eps_ttm": ins.excluded.eps_ttm,
-                "payload": ins.excluded.payload,
-                "fetched_at": dt.datetime.now(dt.timezone.utc),
-            },
-        )
-        session.execute(stmt)
-        n += 1
-    return n
+
+    return total
 
 
 def main() -> None:
+    phase_display = _phases_raw or "all"
+    if not RUN_FRED:
+        print(
+            f"[run_ingest_daily] QI_INGEST_PHASE={phase_display} — "
+            "FRED skipped (gerido pelo cron TS qi-macro)"
+        )
+
     with get_session() as session:
-        if _phase("fred") or _phase("polygon") or _phase("fmp"):
+        if RUN_FRED or RUN_POLYGON or RUN_FMP:
             seeded = seed_assets_if_empty(session)
             if seeded:
                 print(f"Seeded {seeded} assets from CSV.")
 
         fk = fred_api_key()
-        if fk and _phase("fred"):
+        if fk and RUN_FRED:
             jid = job_start(session, "FRED", "macro_observations")
             try:
                 n = ingest_fred(session, fk)
@@ -341,7 +556,7 @@ def main() -> None:
             except Exception as e:
                 job_finish(session, jid, False, error_message=str(e)[:2000])
                 print(f"FRED failed: {e}\n{traceback.format_exc()}")
-        elif _phase("fred") and not fk:
+        elif RUN_FRED and not fk:
             print("Skip FRED (FRED_API_KEY unset).")
 
         # Sinalizador % + liberação do Polygon
@@ -358,8 +573,20 @@ def main() -> None:
                 "QI_MIN_FRED_PCT=0 para não bloquear Polygon."
             )
 
+        if RUN_YFINANCE:
+            jid = job_start(session, "YFINANCE", "daily_ohlcv_yf")
+            session.commit()
+            try:
+                n = ingest_yfinance(session)
+                job_finish(session, jid, True, rows_upserted=n)
+                print(f"yfinance: wrote {n} daily bars (upserts).")
+            except Exception as e:
+                session.rollback()
+                job_finish(session, jid, False, error_message=str(e)[:2000])
+                print(f"yfinance failed: {e}\n{traceback.format_exc()}")
+
         pk = polygon_api_key()
-        if pk and _phase("polygon"):
+        if pk and RUN_POLYGON:
             if not gate_ok:
                 print(
                     ">>> Polygon: pulado — aumente a cobertura FRED ou defina "
@@ -367,27 +594,33 @@ def main() -> None:
                 )
             else:
                 jid = job_start(session, "POLYGON", "daily_ohlcv")
+                # Liberta a transação antes do ingest longo (lotes abrem sessões próprias).
+                # Sem isto, Neon/outros PG matam a sessão com idle-in-transaction timeout.
+                session.commit()
                 try:
                     n = ingest_polygon(session, pk)
                     job_finish(session, jid, True, rows_upserted=n)
                     print(f"Polygon: wrote {n} daily bars (upserts).")
                 except Exception as e:
+                    session.rollback()
                     job_finish(session, jid, False, error_message=str(e)[:2000])
                     print(f"Polygon failed: {e}\n{traceback.format_exc()}")
-        elif not pk and _phase("polygon"):
+        elif not pk and RUN_POLYGON:
             print("Skip Polygon (POLYGON_API_KEY unset).")
 
         mk = fmp_api_key()
-        if mk and _phase("fmp"):
+        if mk and RUN_FMP:
             jid = job_start(session, "FMP", "fundamentals_ttm")
+            session.commit()
             try:
                 n = ingest_fmp(session, mk)
                 job_finish(session, jid, True, rows_upserted=n)
                 print(f"FMP: upserted {n} fundamental snapshots.")
             except Exception as e:
+                session.rollback()
                 job_finish(session, jid, False, error_message=str(e)[:2000])
                 print(f"FMP failed: {e}\n{traceback.format_exc()}")
-        elif not mk and _phase("fmp"):
+        elif not mk and RUN_FMP:
             print("Skip FMP (FMP_API_KEY unset).")
 
 

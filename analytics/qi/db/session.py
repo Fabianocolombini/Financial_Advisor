@@ -23,8 +23,16 @@ def _get_engine():
         _engine = create_engine(
             _engine_url(database_url()),
             pool_pre_ping=True,
-            pool_size=5,
-            max_overflow=10,
+            pool_size=2,
+            max_overflow=2,
+            pool_recycle=120,
+            connect_args={
+                "keepalives": 1,
+                "keepalives_idle": 30,
+                "keepalives_interval": 10,
+                "keepalives_count": 5,
+                "connect_timeout": 10,
+            },
         )
     return _engine
 

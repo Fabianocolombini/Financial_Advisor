@@ -36,27 +36,27 @@ def _num(x: Any) -> float | None:
 
 def fetch_fundamentals(api_key: str, symbol: str) -> FmpFundamentals | None:
     sym = symbol.upper()
-    base = "https://financialmodelingprep.com/api/v3"
+    base = "https://financialmodelingprep.com/stable"
     params = {"apikey": api_key}
     with httpx.Client(timeout=45.0) as client:
-        prof = client.get(f"{base}/profile/{sym}", params=params)
+        prof = client.get(f"{base}/profile", params={**params, "symbol": sym})
         if prof.status_code != 200:
             return None
         plist = prof.json()
         if not plist or not isinstance(plist, list):
             return None
         p = plist[0]
-        km = client.get(f"{base}/key-metrics-ttm/{sym}", params=params)
+        km = client.get(f"{base}/key-metrics-ttm", params={**params, "symbol": sym})
         krows = km.json() if km.status_code == 200 else []
         k0 = krows[0] if krows and isinstance(krows, list) else {}
-        ratios = client.get(f"{base}/ratios-ttm/{sym}", params=params)
+        ratios = client.get(f"{base}/ratios-ttm", params={**params, "symbol": sym})
         rrows = ratios.json() if ratios.status_code == 200 else []
         r0 = rrows[0] if rrows and isinstance(rrows, list) else {}
 
     pe = _num(p.get("pe")) or _num(r0.get("peRatioTTM"))
     pb = _num(p.get("priceToBookRatioTTM")) or _num(r0.get("priceToBookRatioTTM"))
-    mcap = _num(p.get("mktCap"))
-    ev_e = _num(k0.get("enterpriseValueOverEBITDATTM"))
+    mcap = _num(p.get("mktCap")) or _num(p.get("marketCap")) or _num(k0.get("marketCap"))
+    ev_e = _num(k0.get("enterpriseValueOverEBITDATTM")) or _num(k0.get("evToEBITDATTM"))
     de = _num(r0.get("debtEquityRatioTTM"))
     roe_v = _num(r0.get("returnOnEquityTTM"))
     rev = _num(k0.get("revenuePerShareTTM"))

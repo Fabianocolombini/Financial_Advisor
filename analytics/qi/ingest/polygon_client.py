@@ -3,11 +3,18 @@
 from __future__ import annotations
 
 
+import os
+import time
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime, timezone
 from typing import Any
 
 import httpx
+
+# Plano free Polygon: 5 req/min. 13s entre tickers garante <= 5/min.
+# Upgrade para Starter pago remove este limite — ajuste via env.
+_COOLDOWN_SEC = int(os.environ.get("QI_POLYGON_COOLDOWN_SEC", "65"))
+_DELAY_SEC = float(os.environ.get("QI_POLYGON_DELAY_SEC", "13"))
 
 
 @dataclass
@@ -38,11 +45,23 @@ def fetch_daily_aggs(
     if api_key:
         params["apiKey"] = api_key
     with httpx.Client(timeout=120.0) as client:
-        res = client.get(url, params=params)
-        if res.status_code == 403:
-            raise RuntimeError("Polygon returned 403 — check POLYGON_API_KEY and plan limits.")
-        res.raise_for_status()
-        body = res.json()
+        body: dict[str, Any] = {}
+        for attempt in range(8):
+            res = client.get(url, params=params)
+            if res.status_code == 403:
+                raise RuntimeError("Polygon returned 403 — check POLYGON_API_KEY and plan limits.")
+            if res.status_code == 429:
+                print(
+                    f"Polygon 429 rate-limit (attempt {attempt + 1}/8) — "
+                    f"aguardando {_COOLDOWN_SEC}s antes de tentar novamente..."
+                )
+                time.sleep(_COOLDOWN_SEC)
+                continue
+            res.raise_for_status()
+            body = res.json()
+            break
+        else:
+            res.raise_for_status()
     results = body.get("results") or []
     out: list[DailyBar] = []
     for r in results:
@@ -50,9 +69,8 @@ def fetch_daily_aggs(
         ts = r.get("t")
         if ts is None:
             continue
-        from datetime import UTC, datetime
 
-        d = datetime.fromtimestamp(ts / 1000, tz=UTC).date()
+        d = datetime.fromtimestamp(ts / 1000, tz=timezone.utc).date()
         out.append(
             DailyBar(
                 trade_date=d,
