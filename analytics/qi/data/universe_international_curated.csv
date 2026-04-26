@@ -1,0 +1,43 @@
+symbol,name,asset_type,gics_sector,bucket,region
+SAN,Banco Santander SA ADR,EQUITY,Financials,growth,europe
+ISP,Intesa Sanpaolo SpA ADR,EQUITY,Financials,growth,europe
+NGG,National Grid plc ADR,EQUITY,Utilities,growth,europe
+ITX.MC,Industria de Diseno Textil ADR,EQUITY,Consumer Discretionary,growth,europe
+TEF.MC,Telefonica SA ADR,EQUITY,Communication Services,growth,europe
+VOD,Vodafone Group plc ADR,EQUITY,Communication Services,growth,europe
+ERIC,Telefonaktiebolaget LM Ericsson ADR,EQUITY,Information Technology,growth,europe
+NOK,Nokia Oyj ADR,EQUITY,Information Technology,growth,europe
+RHHBY,Roche Holding Ltd ADR,EQUITY,Health Care,stabilizer,europe
+SONY,Sony Group Corporation ADR,EQUITY,Consumer Discretionary,growth,japan
+HMC,Honda Motor Co Ltd ADR,EQUITY,Consumer Discretionary,growth,japan
+TM,Toyota Motor Corporation ADR,EQUITY,Consumer Discretionary,growth,japan
+MUFG,Mitsubishi UFJ Financial Group ADR,EQUITY,Financials,growth,japan
+SMFG,Sumitomo Mitsui Financial Group ADR,EQUITY,Financials,growth,japan
+MFG,Mizuho Financial Group Inc ADR,EQUITY,Financials,growth,japan
+IX,ORIX Corporation ADR,EQUITY,Financials,growth,japan
+KB,KB Financial Group Inc ADR,EQUITY,Financials,growth,emerging
+SHG,Shinhan Financial Group Co Ltd ADR,EQUITY,Financials,growth,emerging
+BBAR,Banco BBVA Argentina SA ADR,EQUITY,Financials,growth,emerging
+BCH,Banco de Chile ADR,EQUITY,Financials,growth,emerging
+SSL,Sasol Ltd ADR,EQUITY,Energy,stabilizer,emerging
+PHI,PLDT Inc ADR,EQUITY,Communication Services,growth,emerging
+GRFS,Grifols SA ADR,EQUITY,Health Care,stabilizer,europe
+ING,ING Groep NV ADR,EQUITY,Financials,growth,europe
+DB,Deutsche Bank AG ADR,EQUITY,Financials,growth,europe
+GSK,GSK plc ADR,EQUITY,Health Care,stabilizer,europe
+RELX,RELX PLC ADR,EQUITY,Industrials,growth,europe
+DANOY,Danone SA ADR,EQUITY,Consumer Staples,income,europe
+STM,STMicroelectronics NV ADR,EQUITY,Information Technology,growth,europe
+PHG,Koninklijke Philips NV ADR,EQUITY,Health Care,stabilizer,europe
+ASX,ASE Technology Holding Co Ltd ADR,EQUITY,Information Technology,growth,emerging
+UMC,United Microelectronics Corp ADR,EQUITY,Information Technology,growth,emerging
+HDB,HDFC Bank Ltd ADR,EQUITY,Financials,growth,emerging
+IBN,ICICI Bank Ltd ADR,EQUITY,Financials,growth,emerging
+WIT,Wipro Ltd ADR,EQUITY,Information Technology,growth,emerging
+LVMUY,LVMH Moet Hennessy Louis Vuitton ADR,EQUITY,Consumer Discretionary,growth,europe
+NWG,NatWest Group plc ADR,EQUITY,Financials,growth,europe
+LYG,Lloyds Banking Group plc ADR,EQUITY,Financials,growth,europe
+BCS,Barclays PLC ADR,EQUITY,Financials,growth,europe
+TD,Toronto-Dominion Bank ADR,EQUITY,Financials,growth,canada
+RY,Royal Bank of Canada ADR,EQUITY,Financials,growth,canada
+BMO,Bank of Montreal ADR,EQUITY,Financials,growth,canada

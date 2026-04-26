@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 import datetime as dt
 from pathlib import Path
+from typing import Any
 
 from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
@@ -32,6 +33,13 @@ def seed_assets_if_empty(session: Session, *, force: bool = False) -> int:
             atype = row["asset_type"].strip().upper()
             name = row["name"].strip()
             sector = (row.get("gics_sector") or "").strip() or None
+            bucket = (row.get("bucket") or "").strip() or None
+            region = (row.get("region") or "").strip() or None
+            metrics_cache: dict[str, Any] = {}
+            if bucket:
+                metrics_cache["bucket"] = bucket
+            if region:
+                metrics_cache["region"] = region
             ins = pg_insert(t).values(
                 id=new_cuid_like(),
                 symbol=sym,
@@ -43,7 +51,7 @@ def seed_assets_if_empty(session: Session, *, force: bool = False) -> int:
                 gics_industry=None,
                 cik=None,
                 is_active=True,
-                metrics_cache=None,
+                metrics_cache=metrics_cache if metrics_cache else None,
                 first_seen_at=now,
                 updated_at=now,
             )
@@ -53,6 +61,7 @@ def seed_assets_if_empty(session: Session, *, force: bool = False) -> int:
                     "name": ins.excluded.name,
                     "asset_type": ins.excluded.asset_type,
                     "gics_sector": ins.excluded.gics_sector,
+                    "metrics_cache": ins.excluded.metrics_cache,
                     "updated_at": ins.excluded.updated_at,
                 },
             )

@@ -1,41 +1,298 @@
-symbol,name,asset_type,gics_sector
-SPY,SPDR S&P 500 ETF Trust,ETF,
-QQQ,Invesco QQQ Trust,ETF,
-IWM,iShares Russell 2000 ETF,ETF,
-XLK,Technology Select Sector SPDR Fund,ETF,Technology
-XLF,Financial Select Sector SPDR Fund,ETF,Financials
-XLE,Energy Select Sector SPDR Fund,ETF,Energy
-XLV,Health Care Select Sector SPDR Fund,ETF,Health Care
-XLI,Industrial Select Sector SPDR Fund,ETF,Industrials
-XLP,Consumer Staples Select Sector SPDR Fund,ETF,Consumer Staples
-XLY,Consumer Discretionary Select Sector SPDR Fund,ETF,Consumer Discretionary
-XLB,Materials Select Sector SPDR Fund,ETF,Materials
-XLRE,Real Estate Select Sector SPDR Fund,ETF,Real Estate
-XLU,Utilities Select Sector SPDR Fund,ETF,Utilities
-XLC,Communication Services Select Sector SPDR Fund,ETF,Communication Services
-AAPL,Apple Inc.,EQUITY,Technology
-MSFT,Microsoft Corporation,EQUITY,Technology
-NVDA,NVIDIA Corporation,EQUITY,Technology
-JPM,JPMorgan Chase & Co.,EQUITY,Financials
-BAC,Bank of America Corporation,EQUITY,Financials
-XOM,Exxon Mobil Corporation,EQUITY,Energy
-CVX,Chevron Corporation,EQUITY,Energy
-UNH,UnitedHealth Group Incorporated,EQUITY,Health Care
-JNJ,Johnson & Johnson,EQUITY,Health Care
-CAT,Caterpillar Inc.,EQUITY,Industrials
-HON,Honeywell International Inc.,EQUITY,Industrials
-PG,The Procter & Gamble Company,EQUITY,Consumer Staples
-KO,The Coca-Cola Company,EQUITY,Consumer Staples
-AMZN,Amazon.com Inc.,EQUITY,Consumer Discretionary
-TSLA,Tesla Inc.,EQUITY,Consumer Discretionary
-LIN,Linde plc,EQUITY,Materials
-SHW,The Sherwin-Williams Company,EQUITY,Materials
-AMT,American Tower Corporation,EQUITY,Real Estate
-PLD,Prologis Inc.,EQUITY,Real Estate
-NEE,NextEra Energy Inc.,EQUITY,Utilities
-DUK,Duke Energy Corporation,EQUITY,Utilities
-META,Meta Platforms Inc.,EQUITY,Communication Services
-GOOGL,Alphabet Inc. Class A,EQUITY,Communication Services
-GLD,SPDR Gold Shares,ETF,
-BND,Vanguard Total Bond Market ETF,ETF,
-TLT,iShares 20+ Year Treasury Bond ETF,ETF,
+symbol,name,asset_type,gics_sector,bucket,region
+SPY,SPDR S&P 500 ETF Trust,ETF,,benchmark,us
+QQQ,Invesco QQQ Trust,ETF,,benchmark,us
+IWM,iShares Russell 2000 ETF,ETF,,benchmark,us
+VTI,Vanguard Total Stock Market ETF,ETF,,benchmark,us
+ACWI,iShares MSCI ACWI ETF,ETF,,benchmark,global
+RSP,Invesco S&P 500 Equal Weight ETF,ETF,,benchmark,us
+EFA,iShares MSCI EAFE ETF,ETF,,international,developed_ex_us
+VEA,Vanguard Developed Markets ETF,ETF,,international,developed_ex_us
+VWO,Vanguard Emerging Markets ETF,ETF,,international,emerging
+EEM,iShares MSCI Emerging Markets ETF,ETF,,international,emerging
+EWJ,iShares MSCI Japan ETF,ETF,,international,japan
+EWZ,iShares MSCI Brazil ETF,ETF,,international,brazil
+INDA,iShares MSCI India ETF,ETF,,international,india
+FXI,iShares China Large-Cap ETF,ETF,,international,china
+EWG,iShares MSCI Germany ETF,ETF,,international,europe
+EWU,iShares MSCI United Kingdom ETF,ETF,,international,europe
+EWC,iShares MSCI Canada ETF,ETF,,international,canada
+EWA,iShares MSCI Australia ETF,ETF,,international,australia
+EWY,iShares MSCI South Korea ETF,ETF,,international,asia
+EWT,iShares MSCI Taiwan ETF,ETF,,international,asia
+MCHI,iShares MSCI China ETF,ETF,,international,china
+BND,Vanguard Total Bond Market ETF,ETF,,fixed_income,us
+AGG,iShares Core US Aggregate Bond ETF,ETF,,fixed_income,us
+TLT,iShares 20+ Year Treasury Bond ETF,ETF,,fixed_income,us
+IEF,iShares 7-10 Year Treasury Bond ETF,ETF,,fixed_income,us
+SHY,iShares 1-3 Year Treasury Bond ETF,ETF,,fixed_income,us
+HYG,iShares iBoxx High Yield Corp Bond ETF,ETF,,fixed_income,us
+LQD,iShares iBoxx Investment Grade Corp Bond ETF,ETF,,fixed_income,us
+TIP,iShares TIPS Bond ETF,ETF,,fixed_income,us
+BNDX,Vanguard Total International Bond ETF,ETF,,fixed_income,international
+EMB,iShares JP Morgan EM Bond ETF,ETF,,fixed_income,emerging
+GLD,SPDR Gold Shares,ETF,,commodities,global
+GDX,VanEck Gold Miners ETF,ETF,Materials,commodities,global
+DBA,Invesco DB Agriculture Fund,ETF,,commodities,global
+IAU,iShares Gold Trust,ETF,,commodities,global
+SLV,iShares Silver Trust,ETF,,commodities,global
+USO,United States Oil Fund,ETF,,commodities,global
+DBC,Invesco DB Commodity Index,ETF,,commodities,global
+PDBC,Invesco Optimum Yield Diversified Commodity ETF,ETF,,commodities,global
+VYM,Vanguard High Dividend Yield ETF,ETF,,income,us
+SCHD,Schwab US Dividend Equity ETF,ETF,,income,us
+DVY,iShares Select Dividend ETF,ETF,,income,us
+JEPI,JPMorgan Equity Premium Income ETF,ETF,,income,us
+JEPQ,JPMorgan Nasdaq Equity Premium Income ETF,ETF,,income,us
+HDV,iShares Core High Dividend ETF,ETF,,income,us
+DGRO,iShares Core Dividend Growth ETF,ETF,,income,us
+XLK,Technology Select Sector SPDR,ETF,Information Technology,sector_etf,us
+XLF,Financial Select Sector SPDR,ETF,Financials,sector_etf,us
+XLE,Energy Select Sector SPDR,ETF,Energy,sector_etf,us
+XLV,Health Care Select Sector SPDR,ETF,Health Care,sector_etf,us
+XLI,Industrial Select Sector SPDR,ETF,Industrials,sector_etf,us
+XLP,Consumer Staples Select Sector SPDR,ETF,Consumer Staples,sector_etf,us
+XLY,Consumer Discretionary Select Sector SPDR,ETF,Consumer Discretionary,sector_etf,us
+XLB,Materials Select Sector SPDR,ETF,Materials,sector_etf,us
+XLRE,Real Estate Select Sector SPDR,ETF,Real Estate,sector_etf,us
+XLU,Utilities Select Sector SPDR,ETF,Utilities,sector_etf,us
+XLC,Communication Services Select Sector SPDR,ETF,Communication Services,sector_etf,us
+VGT,Vanguard Information Technology ETF,ETF,Information Technology,sector_etf,us
+VFH,Vanguard Financials ETF,ETF,Financials,sector_etf,us
+VDE,Vanguard Energy ETF,ETF,Energy,sector_etf,us
+VHT,Vanguard Health Care ETF,ETF,Health Care,sector_etf,us
+VIS,Vanguard Industrials ETF,ETF,Industrials,sector_etf,us
+VDC,Vanguard Consumer Staples ETF,ETF,Consumer Staples,sector_etf,us
+VCR,Vanguard Consumer Discretionary ETF,ETF,Consumer Discretionary,sector_etf,us
+VAW,Vanguard Materials ETF,ETF,Materials,sector_etf,us
+VNQ,Vanguard Real Estate ETF,ETF,Real Estate,sector_etf,us
+VPU,Vanguard Utilities ETF,ETF,Utilities,sector_etf,us
+VOX,Vanguard Communication Services ETF,ETF,Communication Services,sector_etf,us
+IBB,iShares Biotechnology ETF,ETF,Health Care,sector_etf,us
+IYR,iShares US Real Estate ETF,ETF,Real Estate,sector_etf,us
+KBE,SPDR S&P Bank ETF,ETF,Financials,sector_etf,us
+KRE,SPDR S&P Regional Banking ETF,ETF,Financials,sector_etf,us
+AAPL,Apple Inc,EQUITY,Information Technology,growth,us
+MSFT,Microsoft Corporation,EQUITY,Information Technology,growth,us
+NVDA,NVIDIA Corporation,EQUITY,Information Technology,growth,us
+AVGO,Broadcom Inc,EQUITY,Information Technology,growth,us
+ORCL,Oracle Corporation,EQUITY,Information Technology,growth,us
+CRM,Salesforce Inc,EQUITY,Information Technology,growth,us
+ADBE,Adobe Inc,EQUITY,Information Technology,growth,us
+AMD,Advanced Micro Devices,EQUITY,Information Technology,growth,us
+QCOM,Qualcomm Inc,EQUITY,Information Technology,growth,us
+TXN,Texas Instruments Inc,EQUITY,Information Technology,growth,us
+INTC,Intel Corporation,EQUITY,Information Technology,growth,us
+MU,Micron Technology Inc,EQUITY,Information Technology,growth,us
+AMAT,Applied Materials Inc,EQUITY,Information Technology,growth,us
+KLAC,KLA Corporation,EQUITY,Information Technology,growth,us
+LRCX,Lam Research Corporation,EQUITY,Information Technology,growth,us
+NOW,ServiceNow Inc,EQUITY,Information Technology,growth,us
+INTU,Intuit Inc,EQUITY,Information Technology,growth,us
+PANW,Palo Alto Networks Inc,EQUITY,Information Technology,growth,us
+CRWD,CrowdStrike Holdings,EQUITY,Information Technology,growth,us
+FTNT,Fortinet Inc,EQUITY,Information Technology,growth,us
+IBM,International Business Machines,EQUITY,Information Technology,growth,us
+ACN,Accenture PLC,EQUITY,Information Technology,growth,us
+CDNS,Cadence Design Systems,EQUITY,Information Technology,growth,us
+SNPS,Synopsys Inc,EQUITY,Information Technology,growth,us
+DELL,Dell Technologies,EQUITY,Information Technology,growth,us
+HPQ,HP Inc,EQUITY,Information Technology,growth,us
+TSM,Taiwan Semiconductor Manufacturing,EQUITY,Information Technology,growth,international
+ASML,ASML Holding NV,EQUITY,Information Technology,growth,international
+SAP,SAP SE,EQUITY,Information Technology,growth,international
+INFY,Infosys Limited,EQUITY,Information Technology,growth,international
+JPM,JPMorgan Chase & Co,EQUITY,Financials,growth,us
+BAC,Bank of America Corp,EQUITY,Financials,growth,us
+WFC,Wells Fargo & Co,EQUITY,Financials,growth,us
+GS,Goldman Sachs Group,EQUITY,Financials,growth,us
+MS,Morgan Stanley,EQUITY,Financials,growth,us
+BLK,BlackRock Inc,EQUITY,Financials,growth,us
+AXP,American Express Co,EQUITY,Financials,growth,us
+V,Visa Inc,EQUITY,Financials,growth,us
+MA,Mastercard Inc,EQUITY,Financials,growth,us
+COF,Capital One Financial,EQUITY,Financials,growth,us
+USB,US Bancorp,EQUITY,Financials,growth,us
+PNC,PNC Financial Services,EQUITY,Financials,growth,us
+SCHW,Charles Schwab Corp,EQUITY,Financials,growth,us
+CB,Chubb Limited,EQUITY,Financials,growth,us
+MMC,Marsh & McLennan Companies,EQUITY,Financials,growth,us
+AON,Aon PLC,EQUITY,Financials,growth,us
+ICE,Intercontinental Exchange,EQUITY,Financials,growth,us
+CME,CME Group Inc,EQUITY,Financials,growth,us
+SPGI,S&P Global Inc,EQUITY,Financials,growth,us
+MCO,Moody's Corporation,EQUITY,Financials,growth,us
+BX,Blackstone Inc,EQUITY,Financials,growth,us
+APO,Apollo Global Management,EQUITY,Financials,growth,us
+HSBC,HSBC Holdings PLC,EQUITY,Financials,growth,international
+UBS,UBS Group AG,EQUITY,Financials,growth,international
+ITUB,Itau Unibanco Holding,EQUITY,Financials,growth,international
+BBD,Banco Bradesco SA,EQUITY,Financials,growth,international
+XOM,Exxon Mobil Corporation,EQUITY,Energy,stabilizer,us
+CVX,Chevron Corporation,EQUITY,Energy,stabilizer,us
+COP,ConocoPhillips,EQUITY,Energy,stabilizer,us
+EOG,EOG Resources Inc,EQUITY,Energy,stabilizer,us
+SLB,SLB (Schlumberger),EQUITY,Energy,stabilizer,us
+PSX,Phillips 66,EQUITY,Energy,stabilizer,us
+VLO,Valero Energy Corporation,EQUITY,Energy,stabilizer,us
+MPC,Marathon Petroleum Corp,EQUITY,Energy,stabilizer,us
+OXY,Occidental Petroleum,EQUITY,Energy,stabilizer,us
+HAL,Halliburton Company,EQUITY,Energy,stabilizer,us
+DVN,Devon Energy Corporation,EQUITY,Energy,stabilizer,us
+FANG,Diamondback Energy,EQUITY,Energy,stabilizer,us
+HES,Hess Corporation,EQUITY,Energy,stabilizer,us
+SHEL,Shell PLC,EQUITY,Energy,stabilizer,international
+BP,BP PLC,EQUITY,Energy,stabilizer,international
+TTE,TotalEnergies SE,EQUITY,Energy,stabilizer,international
+PBR,Petroleo Brasileiro (Petrobras),EQUITY,Energy,stabilizer,international
+EC,Ecopetrol SA,EQUITY,Energy,stabilizer,international
+JNJ,Johnson & Johnson,EQUITY,Health Care,stabilizer,us
+UNH,UnitedHealth Group Inc,EQUITY,Health Care,stabilizer,us
+LLY,Eli Lilly and Company,EQUITY,Health Care,stabilizer,us
+PFE,Pfizer Inc,EQUITY,Health Care,stabilizer,us
+ABT,Abbott Laboratories,EQUITY,Health Care,stabilizer,us
+TMO,Thermo Fisher Scientific,EQUITY,Health Care,stabilizer,us
+MDT,Medtronic PLC,EQUITY,Health Care,stabilizer,us
+AMGN,Amgen Inc,EQUITY,Health Care,stabilizer,us
+GILD,Gilead Sciences Inc,EQUITY,Health Care,stabilizer,us
+ISRG,Intuitive Surgical Inc,EQUITY,Health Care,stabilizer,us
+SYK,Stryker Corporation,EQUITY,Health Care,stabilizer,us
+BSX,Boston Scientific Corp,EQUITY,Health Care,stabilizer,us
+REGN,Regeneron Pharmaceuticals,EQUITY,Health Care,stabilizer,us
+VRTX,Vertex Pharmaceuticals,EQUITY,Health Care,stabilizer,us
+CI,Cigna Group,EQUITY,Health Care,stabilizer,us
+ELV,Elevance Health Inc,EQUITY,Health Care,stabilizer,us
+CVS,CVS Health Corporation,EQUITY,Health Care,stabilizer,us
+HCA,HCA Healthcare Inc,EQUITY,Health Care,stabilizer,us
+NVO,Novo Nordisk AS,EQUITY,Health Care,stabilizer,international
+AZN,AstraZeneca PLC,EQUITY,Health Care,stabilizer,international
+NVS,Novartis AG,EQUITY,Health Care,stabilizer,international
+SNY,Sanofi SA,EQUITY,Health Care,stabilizer,international
+CAT,Caterpillar Inc,EQUITY,Industrials,growth,us
+HON,Honeywell International,EQUITY,Industrials,growth,us
+UPS,United Parcel Service,EQUITY,Industrials,growth,us
+GE,GE Aerospace,EQUITY,Industrials,growth,us
+BA,Boeing Company,EQUITY,Industrials,growth,us
+RTX,RTX Corporation,EQUITY,Industrials,growth,us
+DE,Deere & Company,EQUITY,Industrials,growth,us
+LMT,Lockheed Martin Corp,EQUITY,Industrials,growth,us
+NOC,Northrop Grumman Corp,EQUITY,Industrials,growth,us
+GD,General Dynamics Corp,EQUITY,Industrials,growth,us
+EMR,Emerson Electric Co,EQUITY,Industrials,growth,us
+ETN,Eaton Corporation PLC,EQUITY,Industrials,growth,us
+PH,Parker-Hannifin Corp,EQUITY,Industrials,growth,us
+FDX,FedEx Corporation,EQUITY,Industrials,growth,us
+UNP,Union Pacific Corporation,EQUITY,Industrials,growth,us
+CSX,CSX Corporation,EQUITY,Industrials,growth,us
+NSC,Norfolk Southern Corp,EQUITY,Industrials,growth,us
+WM,Waste Management Inc,EQUITY,Industrials,growth,us
+CTAS,Cintas Corporation,EQUITY,Industrials,growth,us
+UBER,Uber Technologies Inc,EQUITY,Industrials,growth,us
+DAL,Delta Air Lines Inc,EQUITY,Industrials,growth,us
+ROK,Rockwell Automation,EQUITY,Industrials,growth,us
+ABB.SW,ABB Ltd,EQUITY,Industrials,growth,international
+SIEGY,Siemens AG,EQUITY,Industrials,growth,international
+PG,Procter & Gamble Co,EQUITY,Consumer Staples,income,us
+KO,Coca-Cola Company,EQUITY,Consumer Staples,income,us
+PEP,PepsiCo Inc,EQUITY,Consumer Staples,income,us
+WMT,Walmart Inc,EQUITY,Consumer Staples,income,us
+COST,Costco Wholesale Corp,EQUITY,Consumer Staples,income,us
+PM,Philip Morris International,EQUITY,Consumer Staples,income,us
+MO,Altria Group Inc,EQUITY,Consumer Staples,income,us
+CL,Colgate-Palmolive Co,EQUITY,Consumer Staples,income,us
+KMB,Kimberly-Clark Corp,EQUITY,Consumer Staples,income,us
+GIS,General Mills Inc,EQUITY,Consumer Staples,income,us
+HSY,Hershey Company,EQUITY,Consumer Staples,income,us
+MKC,McCormick & Company,EQUITY,Consumer Staples,income,us
+SYY,Sysco Corporation,EQUITY,Consumer Staples,income,us
+ADM,Archer-Daniels-Midland Co,EQUITY,Consumer Staples,income,us
+MDLZ,Mondelez International,EQUITY,Consumer Staples,income,us
+ULVR.L,Unilever PLC,EQUITY,Consumer Staples,income,international
+NSRGY,Nestle SA,EQUITY,Consumer Staples,income,international
+DEO,Diageo PLC,EQUITY,Consumer Staples,income,international
+BTI,British American Tobacco,EQUITY,Consumer Staples,income,international
+AMZN,Amazon.com Inc,EQUITY,Consumer Discretionary,growth,us
+TSLA,Tesla Inc,EQUITY,Consumer Discretionary,growth,us
+HD,Home Depot Inc,EQUITY,Consumer Discretionary,growth,us
+MCD,McDonald's Corporation,EQUITY,Consumer Discretionary,growth,us
+NKE,Nike Inc,EQUITY,Consumer Discretionary,growth,us
+SBUX,Starbucks Corporation,EQUITY,Consumer Discretionary,growth,us
+TGT,Target Corporation,EQUITY,Consumer Discretionary,growth,us
+LOW,Lowe's Companies Inc,EQUITY,Consumer Discretionary,growth,us
+TJX,TJX Companies Inc,EQUITY,Consumer Discretionary,growth,us
+BKNG,Booking Holdings Inc,EQUITY,Consumer Discretionary,growth,us
+MAR,Marriott International,EQUITY,Consumer Discretionary,growth,us
+HLT,Hilton Worldwide Holdings,EQUITY,Consumer Discretionary,growth,us
+ROST,Ross Stores Inc,EQUITY,Consumer Discretionary,growth,us
+DHI,DR Horton Inc,EQUITY,Consumer Discretionary,growth,us
+LEN,Lennar Corporation,EQUITY,Consumer Discretionary,growth,us
+GM,General Motors Company,EQUITY,Consumer Discretionary,growth,us
+F,Ford Motor Company,EQUITY,Consumer Discretionary,growth,us
+ABNB,Airbnb Inc,EQUITY,Consumer Discretionary,growth,us
+BABA,Alibaba Group Holding,EQUITY,Consumer Discretionary,growth,international
+JD,JD.com Inc,EQUITY,Consumer Discretionary,growth,international
+PDD,PDD Holdings Inc,EQUITY,Consumer Discretionary,growth,international
+LIN,Linde PLC,EQUITY,Materials,stabilizer,us
+APD,Air Products and Chemicals,EQUITY,Materials,stabilizer,us
+SHW,Sherwin-Williams Company,EQUITY,Materials,stabilizer,us
+FCX,Freeport-McMoRan Inc,EQUITY,Materials,stabilizer,us
+NEM,Newmont Corporation,EQUITY,Materials,stabilizer,us
+NUE,Nucor Corporation,EQUITY,Materials,stabilizer,us
+DOW,Dow Inc,EQUITY,Materials,stabilizer,us
+DD,DuPont de Nemours Inc,EQUITY,Materials,stabilizer,us
+ALB,Albemarle Corporation,EQUITY,Materials,stabilizer,us
+CF,CF Industries Holdings,EQUITY,Materials,stabilizer,us
+MOS,Mosaic Company,EQUITY,Materials,stabilizer,us
+VMC,Vulcan Materials Company,EQUITY,Materials,stabilizer,us
+MLM,Martin Marietta Materials,EQUITY,Materials,stabilizer,us
+BHP,BHP Group Limited,EQUITY,Materials,stabilizer,international
+RIO,Rio Tinto PLC,EQUITY,Materials,stabilizer,international
+VALE,Vale SA,EQUITY,Materials,stabilizer,international
+AA,Alcoa Corporation,EQUITY,Materials,stabilizer,us
+AMT,American Tower Corporation,EQUITY,Real Estate,income,us
+PLD,Prologis Inc,EQUITY,Real Estate,income,us
+EQIX,Equinix Inc,EQUITY,Real Estate,income,us
+SPG,Simon Property Group,EQUITY,Real Estate,income,us
+O,Realty Income Corporation,EQUITY,Real Estate,income,us
+DLR,Digital Realty Trust,EQUITY,Real Estate,income,us
+PSA,Public Storage,EQUITY,Real Estate,income,us
+EXR,Extra Space Storage,EQUITY,Real Estate,income,us
+AVB,AvalonBay Communities,EQUITY,Real Estate,income,us
+EQR,Equity Residential,EQUITY,Real Estate,income,us
+WPC,W.P. Carey Inc,EQUITY,Real Estate,income,us
+VICI,VICI Properties Inc,EQUITY,Real Estate,income,us
+CCI,Crown Castle Inc,EQUITY,Real Estate,income,us
+SBA,SBA Communications Corp,EQUITY,Real Estate,income,us
+ARE,Alexandria Real Estate,EQUITY,Real Estate,income,us
+NEE,NextEra Energy Inc,EQUITY,Utilities,income,us
+DUK,Duke Energy Corporation,EQUITY,Utilities,income,us
+SO,Southern Company,EQUITY,Utilities,income,us
+AEP,American Electric Power,EQUITY,Utilities,income,us
+EXC,Exelon Corporation,EQUITY,Utilities,income,us
+D,Dominion Energy Inc,EQUITY,Utilities,income,us
+SRE,Sempra Energy,EQUITY,Utilities,income,us
+PEG,Public Service Enterprise Group,EQUITY,Utilities,income,us
+XEL,Xcel Energy Inc,EQUITY,Utilities,income,us
+ED,Consolidated Edison Inc,EQUITY,Utilities,income,us
+WEC,WEC Energy Group,EQUITY,Utilities,income,us
+ES,Eversource Energy,EQUITY,Utilities,income,us
+ETR,Entergy Corporation,EQUITY,Utilities,income,us
+FE,FirstEnergy Corp,EQUITY,Utilities,income,us
+CMS,CMS Energy Corporation,EQUITY,Utilities,income,us
+ATO,Atmos Energy Corporation,EQUITY,Utilities,income,us
+AWK,American Water Works,EQUITY,Utilities,income,us
+META,Meta Platforms Inc,EQUITY,Communication Services,growth,us
+GOOGL,Alphabet Inc Class A,EQUITY,Communication Services,growth,us
+GOOG,Alphabet Inc Class C,EQUITY,Communication Services,growth,us
+NFLX,Netflix Inc,EQUITY,Communication Services,growth,us
+DIS,Walt Disney Company,EQUITY,Communication Services,growth,us
+CMCSA,Comcast Corporation,EQUITY,Communication Services,growth,us
+T,AT&T Inc,EQUITY,Communication Services,income,us
+VZ,Verizon Communications,EQUITY,Communication Services,income,us
+TMUS,T-Mobile US Inc,EQUITY,Communication Services,growth,us
+CHTR,Charter Communications,EQUITY,Communication Services,growth,us
+WBD,Warner Bros Discovery,EQUITY,Communication Services,growth,us
+SNAP,Snap Inc,EQUITY,Communication Services,growth,us
+PINS,Pinterest Inc,EQUITY,Communication Services,growth,us
+SPOT,Spotify Technology SA,EQUITY,Communication Services,growth,international
+NTES,NetEase Inc,EQUITY,Communication Services,growth,international
+BIDU,Baidu Inc,EQUITY,Communication Services,growth,international
