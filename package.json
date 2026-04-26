@@ -14,9 +14,20 @@
     "db:studio": "prisma studio",
     "test": "vitest run",
     "test:watch": "vitest",
+    "env:keys": "python3 scripts/prompt_env_keys.py",
+    "qi:discover": "sh -c 'cd analytics && PYTHONPATH=. python3 -m qi.jobs.discover_assets'",
+    "qi:enrich-sectors": "sh -c 'cd analytics && PYTHONPATH=. python3 -m qi.jobs.enrich_sectors_fmp'",
+    "qi:enrich-sectors-yfinance": "sh -c 'cd analytics && PYTHONPATH=. python3 -m qi.jobs.enrich_sectors_yfinance'",
     "qi:ingest": "sh -c 'cd analytics && PYTHONPATH=. python3 -m qi.jobs.run_ingest_daily'",
+    "qi:build-universe": "sh -c 'cd analytics && PYTHONPATH=. python3 -m qi.jobs.build_global_universe'",
     "qi:universe": "sh -c 'cd analytics && PYTHONPATH=. python3 -m qi.jobs.run_universe_weekly'",
-    "qi:analysis": "sh -c 'cd analytics && PYTHONPATH=. python3 -m qi.jobs.run_analysis'"
+    "qi:analysis": "sh -c 'cd analytics && PYTHONPATH=. python3 -m qi.jobs.run_analysis_daily'",
+    "qi:scheduler": "sh -c 'cd analytics && PYTHONPATH=. python3 -m qi.scheduler'",
+    "qi:scheduler:once": "sh -c 'cd analytics && PYTHONPATH=. python3 -m qi.jobs.run_ingest_daily && python3 -m qi.jobs.run_analysis'",
+    "qi:check-env": "python3 analytics/qi/scripts/check_env.py",
+    "qi:check-db": "python3 analytics/qi/scripts/check_db.py",
+    "qi:check-migrations": "bash analytics/qi/scripts/check_migrations.sh",
+    "qi:preflight": "npm run qi:check-env && npm run qi:check-db && npm run qi:check-migrations"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",

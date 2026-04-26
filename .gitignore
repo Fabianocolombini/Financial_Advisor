@@ -39,6 +39,12 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.env.secrets
+.env.keys
+*.secret
+
+# Python venv (local / CI experiments)
+.venv/
 
 # vercel
 .vercel

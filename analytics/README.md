@@ -9,7 +9,7 @@ cd analytics
 python3 -m pip install -r requirements.txt
 ```
 
-Ensure root `.env.local` defines `DATABASE_URL` (same as Next.js). **Preços QI v0.2:** apenas **Polygon** via `python3 -m qi.jobs.run_ingest_daily` (`QI_INGEST_PHASE=polygon` ou `all`). Não usar Yahoo/TS para `qi_market_price_daily` em produção.
+Ensure root `.env.local` defines `DATABASE_URL` (same as Next.js). Coloque também `FRED_API_KEY` e `POLYGON_API_KEY` nesse ficheiro — ver [docs/ENVIRONMENT.md](../docs/ENVIRONMENT.md). **Preços QI v0.2:** apenas **Polygon** via `python3 -m qi.jobs.run_ingest_daily` (`QI_INGEST_PHASE=polygon` ou `all`). Não usar Yahoo/TS para `qi_market_price_daily` em produção.
 
 Optional:
 
@@ -20,7 +20,7 @@ Optional:
 - `QI_POLYGON_MAX_ASSETS` — throttle Polygon batch (default `40`)
 - `QI_UNIVERSE_MAX_PER_SECTOR` — guard rail (default `120`)
 - `QI_AS_OF_DATE` — `YYYY-MM-DD` for `run_analysis` only
-- `QI_INGEST_PHASE` — `all` (default) | `fred` | `polygon` | `fmp` — roda só essa fase
+- `QI_INGEST_PHASE` — `all` ou vazio = todas as fases; ou lista separada por vírgula (`fred`, `polygon`, `fmp`). Produção com FRED no TS: `polygon,fmp`.
 - `QI_MIN_FRED_PCT` — `0`–`100` (default `100`): só ingere Polygon se a cobertura FRED for ≥ este %. Com `QI_FRED_UNIVERSE=full`, use `0` até o backfill avançar (senão o gate fica quase impossível).
 - `QI_FRED_MANIFEST` — nome do ficheiro JSON em `analytics/qi/data/` (default `macro_series.json`). Produção = core; sandbox = `macro_series_sandbox.json` (ver [docs/FRED_MACRO_EXPANSION.md](docs/FRED_MACRO_EXPANSION.md))
 - `QI_FRED_UNIVERSE` — `manifest` (default) = lista fixa do manifest | `full` = percorre a **árvore de categorias** FRED (séries deduplicadas); ver expansão controlada em [docs/FRED_MACRO_EXPANSION.md](docs/FRED_MACRO_EXPANSION.md)
