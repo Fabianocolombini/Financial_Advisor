@@ -58,7 +58,9 @@ def main() -> None:
             m = run_macro_regime(session, as_of)
             r = run_risk_regime(session, as_of)
             ns = run_sector_rotation(session, as_of)
+            session.flush()
             na = run_asset_scoring(session, as_of)
+            session.flush()
             rid = run_allocation(session, as_of)
             print(
                 f"as_of={as_of} macro={m} risk={r} sector_rows={ns} asset_rows={na} "

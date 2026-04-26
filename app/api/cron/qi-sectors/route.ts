@@ -7,6 +7,11 @@ export const runtime = "nodejs";
 export const maxDuration = 300;
 
 /**
+ * CRON desativado em produção (removido de vercel.json).
+ * Motor analítico QI corre via Python (`run_analysis.py`) no host dedicado.
+ * Para reativar escritas TS: `QI_ALLOW_TS_QI_WRITERS=true` + voltar a agendar no vercel.json.
+ * Invocação manual: GET /api/cron/qi-sectors com Authorization: Bearer CRON_SECRET
+ *
  * Rotação sectorial + scoring de ativos (snapshots).
  * Auth: `Authorization: Bearer $CRON_SECRET`
  */

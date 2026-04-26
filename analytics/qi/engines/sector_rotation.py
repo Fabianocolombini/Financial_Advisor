@@ -14,7 +14,7 @@ from qi.db.models import QiAsset, QiMarketPriceDaily, QiSectorScoreSnapshot
 from qi.ids import new_cuid_like
 
 _SECTOR_ETF = {
-    "Technology": "XLK",
+    "Information Technology": "XLK",
     "Financials": "XLF",
     "Energy": "XLE",
     "Health Care": "XLV",
@@ -32,7 +32,7 @@ def _close_on(session: Session, symbol: str, days_ago: int) -> float | None:
     aid = session.scalar(select(QiAsset.id).where(QiAsset.symbol == symbol))
     if not aid:
         return None
-    rows = session.scalars(
+    rows = session.execute(
         select(QiMarketPriceDaily.close, QiMarketPriceDaily.trade_date)
         .where(QiMarketPriceDaily.asset_id == aid, QiMarketPriceDaily.source == "POLYGON")
         .order_by(QiMarketPriceDaily.trade_date.desc())
