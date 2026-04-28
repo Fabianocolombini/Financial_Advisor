@@ -22,7 +22,9 @@ from sqlalchemy.dialects.postgresql import ENUM, JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 # --- PostgreSQL enums (created by Prisma migrations; do not create_type) ---
-QiAssetType = ENUM("EQUITY", "ETF", "INDEX", "OTHER", name="QiAssetType", create_type=False)
+QiAssetType = ENUM(
+    "EQUITY", "ETF", "COMMODITY", "INDEX", "OTHER", name="QiAssetType", create_type=False
+)
 QiPriceSource = ENUM("POLYGON", "YFINANCE", "OTHER", name="QiPriceSource", create_type=False)
 QiMacroProvider = ENUM("FRED", name="QiMacroProvider", create_type=False)
 QiFundStmt = ENUM("Q", "A", "TTM", name="QiFundamentalStatementType", create_type=False)

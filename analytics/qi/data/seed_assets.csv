@@ -1,4 +1,8 @@
 symbol,name,asset_type,gics_sector,bucket,region
+CL=F,Crude Oil WTI Futures,COMMODITY,Commodities,commodity,global
+NG=F,Natural Gas Futures,COMMODITY,Commodities,commodity,global
+ZW=F,Wheat Futures,COMMODITY,Commodities,commodity,global
+HG=F,Copper High Grade Futures,COMMODITY,Commodities,commodity,global
 SPY,SPDR S&P 500 ETF Trust,ETF,,benchmark,us
 QQQ,Invesco QQQ Trust,ETF,,benchmark,us
 IWM,iShares Russell 2000 ETF,ETF,,benchmark,us

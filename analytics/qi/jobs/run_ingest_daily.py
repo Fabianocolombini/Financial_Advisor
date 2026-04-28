@@ -29,6 +29,9 @@ from qi.ingest.fred_client import (
     fetch_fred_observations,
     series_metadata,
 )
+from qi.ingest.cftc_client import ingest_cot_data
+from qi.ingest.edgar_13f_client import ingest_13f_holdings
+from qi.ingest.edgar_insider_client import ingest_insider_transactions
 from qi.ingest.job_logging import job_finish, job_start
 from qi.ingest.polygon_client import fetch_daily_aggs
 from qi.ingest.yfinance_client import ingest_prices_yfinance
@@ -50,20 +53,41 @@ _YF_INCREMENTAL = os.environ.get("QI_YFINANCE_INCREMENTAL", "false").strip().low
     "true",
     "yes",
 )
+_SEED_FORCE = os.environ.get("QI_SEED_FORCE", "false").strip().lower() in ("1", "true", "yes")
+_INSIDER_BATCH_SIZE = int(os.environ.get("QI_INSIDER_BATCH_SIZE", "100"))
+_INSTITUTIONAL_MAX_FILERS = int(os.environ.get("QI_INSTITUTIONAL_MAX_FILERS", "10"))
+
+FRED_SERIES_EXPANDED = [
+    "BAMLH0A0HYM2",
+    "BAMLC0A0CM",
+    "DTWEXBGS",
+    "T10YIE",
+    "UMCSENT",
+    "MANEMP",
+    "RSXFS",
+]
 
 # Fases suportadas:
 #   "fred"      → apenas macro FRED
 #   "polygon"   → apenas preços Polygon (mantido; desativado em "all" dev)
 #   "yfinance"  → apenas preços yfinance (zero-custo)
 #   "fmp"       → apenas fundamentals FMP
+#   "fred_expanded" → séries macro adicionais
+#   "insider"   → SEC EDGAR Form 4
+#   "institutional" → SEC EDGAR 13F
+#   "cot"       → CFTC COT
 #   "all"       → fred + yfinance + fmp  (dev default — sem Polygon)
 #   "all_prod"  → fred + polygon + fmp   (produção com plano Polygon pago)
 _phases_raw = os.environ.get("QI_INGEST_PHASE", "all").strip()
 _pr = _phases_raw.lower()
 if not _pr or _pr == "all":
-    _INGEST_PHASES = frozenset({"fred", "yfinance", "fmp"})
+    _INGEST_PHASES = frozenset(
+        {"fred", "fred_expanded", "yfinance", "fmp", "insider", "institutional", "cot"}
+    )
 elif _pr == "all_prod":
-    _INGEST_PHASES = frozenset({"fred", "polygon", "fmp"})
+    _INGEST_PHASES = frozenset(
+        {"fred", "fred_expanded", "polygon", "fmp", "insider", "institutional", "cot"}
+    )
 else:
     _INGEST_PHASES = frozenset(
         p.strip().lower() for p in _phases_raw.split(",") if p.strip()
@@ -72,6 +96,10 @@ RUN_FRED = "fred" in _INGEST_PHASES
 RUN_POLYGON = "polygon" in _INGEST_PHASES
 RUN_YFINANCE = "yfinance" in _INGEST_PHASES
 RUN_FMP = "fmp" in _INGEST_PHASES
+RUN_FRED_EXPANDED = "fred_expanded" in _INGEST_PHASES
+RUN_INSIDER = "insider" in _INGEST_PHASES
+RUN_INSTITUTIONAL = "institutional" in _INGEST_PHASES
+RUN_COT = "cot" in _INGEST_PHASES
 # 0–100: só roda Polygon se cobertura FRED >= este % (padrão 100). Use 0 para ignorar.
 _MIN_FRED_PCT = float(os.environ.get("QI_MIN_FRED_PCT", "100"))
 # manifest = só macro_series.json | full = árvore de categorias FRED (dedupe)
@@ -258,6 +286,42 @@ def ingest_fred(session: Session, api_key: str) -> int:
             row.last_successful_run_at = now
             row.updated_at = now
         session.flush()
+    return total
+
+
+def ingest_fred_expanded(session: Session, api_key: str) -> int:
+    total = 0
+    now = dt.datetime.now(dt.timezone.utc)
+    for ext in FRED_SERIES_EXPANDED:
+        try:
+            meta = series_metadata(api_key, ext)
+        except Exception:
+            meta = {}
+        sid = _ensure_macro_series(session, ext, meta.get("title"), meta)
+        start = _latest_macro_date(session, sid)
+        obs_start = (start + dt.timedelta(days=1)).isoformat() if start else _BACKFILL
+        try:
+            observations = fetch_fred_observations(api_key, ext, obs_start)
+        except Exception:
+            observations = []
+        for o in observations:
+            d = dt.date.fromisoformat(o.date)
+            stmt = pg_insert(QiMacroSeriesPoint).values(
+                id=new_cuid_like(),
+                series_id=sid,
+                observed_on=d,
+                value=Decimal(str(o.value)),
+                raw=o.raw,
+            )
+            stmt = stmt.on_conflict_do_nothing(index_elements=["series_id", "observed_on"])
+            res = session.execute(stmt)
+            if res.rowcount:
+                total += 1
+        row = session.get(QiMacroSeries, sid)
+        if row:
+            row.last_successful_run_at = now
+            row.updated_at = now
+    session.flush()
     return total
 
 
@@ -541,8 +605,8 @@ def main() -> None:
         )
 
     with get_session() as session:
-        if RUN_FRED or RUN_POLYGON or RUN_FMP:
-            seeded = seed_assets_if_empty(session)
+        if RUN_FRED or RUN_FRED_EXPANDED or RUN_POLYGON or RUN_YFINANCE or RUN_FMP:
+            seeded = seed_assets_if_empty(session, force=_SEED_FORCE)
             if seeded:
                 print(f"Seeded {seeded} assets from CSV.")
 
@@ -558,6 +622,18 @@ def main() -> None:
                 print(f"FRED failed: {e}\n{traceback.format_exc()}")
         elif RUN_FRED and not fk:
             print("Skip FRED (FRED_API_KEY unset).")
+
+        if fk and RUN_FRED_EXPANDED:
+            jid = job_start(session, "FRED", "macro_expanded")
+            try:
+                n = ingest_fred_expanded(session, fk)
+                job_finish(session, jid, True, rows_upserted=n)
+                print(f"FRED expanded: upserted {n} new macro points.")
+            except Exception as e:
+                job_finish(session, jid, False, error_message=str(e)[:2000])
+                print(f"FRED expanded failed: {e}\n{traceback.format_exc()}")
+        elif RUN_FRED_EXPANDED and not fk:
+            print("Skip FRED expanded (FRED_API_KEY unset).")
 
         # Sinalizador % + liberação do Polygon
         ok_n, tot_n, pct = fred_series_coverage(session)
@@ -622,6 +698,60 @@ def main() -> None:
                 print(f"FMP failed: {e}\n{traceback.format_exc()}")
         elif not mk and RUN_FMP:
             print("Skip FMP (FMP_API_KEY unset).")
+
+        if RUN_COT:
+            jid = job_start(session, "CFTC", "cot_positions")
+            session.commit()
+            try:
+                result = ingest_cot_data(session, weeks_back=52)
+                job_finish(session, jid, True, rows_upserted=result["rows_upserted"])
+                print(f"COT: upserted {result['rows_upserted']} rows.")
+            except Exception as e:
+                session.rollback()
+                job_finish(session, jid, False, error_message=str(e)[:2000])
+                print(f"COT failed: {e}\n{traceback.format_exc()}")
+
+        if RUN_INSIDER:
+            jid = job_start(session, "SEC_EDGAR", "insider_form4")
+            session.commit()
+            try:
+                symbols = [
+                    r[0]
+                    for r in session.execute(
+                        select(QiAsset.symbol)
+                        .where(QiAsset.is_active.is_(True))
+                        .order_by(QiAsset.symbol.asc())
+                        .limit(_INSIDER_BATCH_SIZE)
+                    ).all()
+                ]
+                result = ingest_insider_transactions(session, symbols=symbols, days_back=90)
+                job_finish(
+                    session,
+                    jid,
+                    True,
+                    rows_upserted=result["transactions_upserted"],
+                    rows_failed=result["symbols_failed"],
+                )
+                print(f"Insider: upserted {result['transactions_upserted']} transactions.")
+            except Exception as e:
+                session.rollback()
+                job_finish(session, jid, False, error_message=str(e)[:2000])
+                print(f"Insider failed: {e}\n{traceback.format_exc()}")
+
+        if RUN_INSTITUTIONAL:
+            jid = job_start(session, "SEC_EDGAR", "institutional_13f")
+            session.commit()
+            try:
+                result = ingest_13f_holdings(session, max_filers=_INSTITUTIONAL_MAX_FILERS)
+                job_finish(session, jid, True, rows_upserted=result["holdings_upserted"])
+                print(
+                    f"13F: upserted {result['holdings_upserted']} holdings "
+                    f"across {result['filers_ok']} filers."
+                )
+            except Exception as e:
+                session.rollback()
+                job_finish(session, jid, False, error_message=str(e)[:2000])
+                print(f"13F failed: {e}\n{traceback.format_exc()}")
 
 
 if __name__ == "__main__":

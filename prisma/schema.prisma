@@ -180,6 +180,7 @@ model MarketObservation {
 enum QiAssetType {
   EQUITY
   ETF
+  COMMODITY
   INDEX
   OTHER
 }
@@ -251,6 +252,8 @@ model QiAsset {
   assetScoreSnapshots QiAssetScoreSnapshot[]
   cotContractMaps     QiCotContractMap[]
   institutionalFlows  QiInstitutionalFlowSnapshot[]
+  insiderTransactions QiInsiderTransaction[]
+  institutionalHolds  QiInstitutionalHolding[]
   portfolioHoldings   QiPortfolioHolding[]
 
   @@index([gicsSector])
@@ -574,4 +577,64 @@ model QiInstitutionalFlowSnapshot {
   @@index([assetId, periodEnd])
   @@index([filerCik, periodEnd])
   @@map("qi_institutional_flow_snapshot")
+}
+
+model QiInsiderTransaction {
+  id              String   @id @default(cuid())
+  assetId         String   @map("asset_id")
+  asset           QiAsset  @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  symbol          String
+  filedAt         DateTime @map("filed_at")
+  transactionDate DateTime @map("transaction_date") @db.Date
+  insiderName     String   @map("insider_name")
+  insiderTitle    String?  @map("insider_title")
+  transactionType String   @map("transaction_type")
+  shares          Float
+  pricePerShare   Float?   @map("price_per_share")
+  valueTotal      Float?   @map("value_total")
+  ownershipType   String   @map("ownership_type")
+  formUrl         String?  @map("form_url")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@unique([symbol, filedAt, insiderName, transactionType, shares])
+  @@index([assetId, filedAt])
+  @@map("qi_insider_transaction")
+}
+
+model QiInstitutionalHolding {
+  id             String   @id @default(cuid())
+  assetId        String   @map("asset_id")
+  asset          QiAsset  @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  symbol         String
+  filerCik       String   @map("filer_cik")
+  filerName      String   @map("filer_name")
+  periodOfReport DateTime @map("period_of_report") @db.Date
+  sharesHeld     Float    @map("shares_held")
+  valueUsd       Float    @map("value_usd")
+  changeInShares Float?   @map("change_in_shares")
+  changePct      Float?   @map("change_pct")
+  filedAt        DateTime @map("filed_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@unique([symbol, filerCik, periodOfReport])
+  @@index([filerCik, periodOfReport])
+  @@map("qi_institutional_holding")
+}
+
+model QiCotPosition {
+  id                 String   @id @default(cuid())
+  commodity          String
+  reportDate         DateTime @map("report_date") @db.Date
+  commercialLong     Int      @map("commercial_long")
+  commercialShort    Int      @map("commercial_short")
+  noncommercialLong  Int      @map("noncommercial_long")
+  noncommercialShort Int      @map("noncommercial_short")
+  netSpeculative     Int      @map("net_speculative")
+  netSpeculativePct  Float?   @map("net_speculative_pct")
+  openInterest       Int?     @map("open_interest")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  @@unique([commodity, reportDate])
+  @@index([reportDate])
+  @@map("qi_cot_position")
 }
