@@ -22,6 +22,7 @@ Output: relatórios `.md` com racional matemático explícito.
 | [docs/schema-dados-abas.md](docs/schema-dados-abas.md) | Schema JSON das abas |
 | [docs/projeto-motor-decisao-alocacao.md](docs/projeto-motor-decisao-alocacao.md) | z-score, S, estágio, SQLite |
 | [docs/tabela-classes-ativos-indicadores.md](docs/tabela-classes-ativos-indicadores.md) | 13 classes + fontes |
+| [docs/classes-ativos-catalogo-claude.md](docs/classes-ativos-catalogo-claude.md) | **17 tabs UI, catálogo, motor, ranking 90d/90%, backlog** |
 | [docs/guia-decisao-entrada-por-sleeve.md](docs/guia-decisao-entrada-por-sleeve.md) | Racional de entrada |
 
 ## Comandos motor

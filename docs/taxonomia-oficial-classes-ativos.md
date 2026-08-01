@@ -1,5 +1,7 @@
 # Taxonomia oficial — classes de ativo (referência de mercado)
 
+> **Operacional (app + catálogo + motor):** ver [classes-ativos-catalogo-claude.md](classes-ativos-catalogo-claude.md) — 17 tabs, ranking 90d/90%, gaps motor.
+
 Base: Callan / GICS / Morningstar. Alinhado a `classes-ativos-indicadores-fontes.md`.
 
 ## Hierarquia (13 blocos operacionais)
