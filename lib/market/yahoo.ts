@@ -1,7 +1,8 @@
 export type YahooBar = {
   date: string;
   value: number;
-  raw: { timestamp: number; close: number };
+  volume: number;
+  raw: { timestamp: number; close: number; volume: number };
 };
 
 type YahooChartJson = {
@@ -9,7 +10,10 @@ type YahooChartJson = {
     result?: Array<{
       timestamp: number[];
       indicators?: {
-        quote?: Array<{ close: Array<number | null> }>;
+        quote?: Array<{
+          close: Array<number | null>;
+          volume?: Array<number | null>;
+        }>;
       };
     }>;
     error?: { description?: string };
@@ -55,6 +59,7 @@ export async function fetchYahooChartCloses(
   if (!result?.timestamp?.length) return [];
 
   const closes = result.indicators?.quote?.[0]?.close;
+  const volumes = result.indicators?.quote?.[0]?.volume;
   if (!closes || closes.length !== result.timestamp.length) return [];
 
   const out: YahooBar[] = [];
@@ -62,9 +67,16 @@ export async function fetchYahooChartCloses(
     const ts = result.timestamp[i];
     const c = closes[i];
     if (c == null || !Number.isFinite(c)) continue;
+    const v = volumes?.[i];
+    const volume = v != null && Number.isFinite(v) ? v : 0;
     const d = new Date(ts * 1000);
     const date = d.toISOString().slice(0, 10);
-    out.push({ date, value: c, raw: { timestamp: ts, close: c } });
+    out.push({
+      date,
+      value: c,
+      volume,
+      raw: { timestamp: ts, close: c, volume },
+    });
   }
 
   return out;

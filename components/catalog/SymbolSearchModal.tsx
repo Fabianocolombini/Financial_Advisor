@@ -227,8 +227,8 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
 
           {classId !== "all" ? (
             <p className="border-t border-zinc-800/80 px-4 py-2 text-xs leading-snug text-zinc-500">
-              Showing <span className="text-zinc-300">{activeClassLabel}</span> catalog —
-              tap ★ to follow symbols from this group only.
+              Showing <span className="text-zinc-300">{activeClassLabel}</span> — top
+              symbols by trading volume until 50% of class liquidity. Tap ★ to follow.
             </p>
           ) : null}
         </div>
@@ -281,7 +281,13 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
           ) : null}
 
           {loading ? (
-            <p className="px-4 py-8 text-center text-sm text-zinc-500">Searching…</p>
+            <p className="px-4 py-8 text-center text-sm text-zinc-500">
+              {query.trim()
+                ? "Searching…"
+                : classId !== "all"
+                  ? "Ranking by volume…"
+                  : "Loading…"}
+            </p>
           ) : results.length === 0 ? (
             <p className="px-4 py-8 text-center text-sm text-zinc-500">
               No symbols found in {activeClassLabel}.
@@ -305,10 +311,20 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-baseline gap-2">
                           <span className="font-title text-white">{item.symbol}</span>
+                          {item.liquiditySharePct != null && item.liquiditySharePct > 0 ? (
+                            <span className="text-xs tabular-nums text-zinc-400 sm:hidden">
+                              {item.liquiditySharePct.toFixed(1)}%
+                            </span>
+                          ) : null}
                           <span className="truncate text-sm text-zinc-500">{item.name}</span>
                         </div>
                       </div>
                       <div className="hidden shrink-0 text-right text-xs text-zinc-500 sm:block">
+                        {item.liquiditySharePct != null && item.liquiditySharePct > 0 ? (
+                          <div className="tabular-nums text-zinc-300">
+                            {item.liquiditySharePct.toFixed(1)}%
+                          </div>
+                        ) : null}
                         <div>{kindLabel(item.kind)}</div>
                         <div>{item.exchange}</div>
                       </div>

@@ -611,8 +611,12 @@ export const CATALOG_INSTRUMENTS: CatalogInstrument[] = (() => {
 })();
 
 export function getCatalogByClass(classId: string, limit = 30): CatalogInstrument[] {
+  return getCatalogInstrumentsByClass(classId).slice(0, limit);
+}
+
+export function getCatalogInstrumentsByClass(classId: string): CatalogInstrument[] {
   if (classId === "all") {
-    return CATALOG_INSTRUMENTS.slice(0, limit);
+    return CATALOG_INSTRUMENTS;
   }
-  return CATALOG_INSTRUMENTS.filter((i) => i.classId === classId).slice(0, limit);
+  return CATALOG_INSTRUMENTS.filter((i) => i.classId === classId);
 }

@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { CATALOG_INSTRUMENTS, getCatalogByClass } from "./instruments";
+import { CATALOG_INSTRUMENTS, getCatalogByClass, getCatalogInstrumentsByClass } from "./instruments";
+import { rankCatalogByVolume } from "./volume-rank";
 import type { CatalogInstrument, CatalogSearchResult } from "./types";
 
 function assetTypeToKind(assetType: string): string {
@@ -117,6 +118,14 @@ export async function searchCatalog(options: {
   const query = q.trim();
 
   if (!query) {
+    if (classId !== "all") {
+      const instruments = getCatalogInstrumentsByClass(classId);
+      const ranked = await rankCatalogByVolume(instruments);
+      return ranked.map((item) => ({
+        ...catalogToResult(item, watchlistSymbols),
+        liquiditySharePct: item.liquiditySharePct,
+      }));
+    }
     const curated = getCatalogByClass(classId, limit);
     return curated.map((item) => catalogToResult(item, watchlistSymbols));
   }

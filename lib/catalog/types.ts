@@ -14,4 +14,6 @@ export type AssetClassTab = {
 export type CatalogSearchResult = CatalogInstrument & {
   source: "catalog" | "database";
   inWatchlist?: boolean;
+  /** Share of class avg daily dollar volume (browse-by-class only). */
+  liquiditySharePct?: number | null;
 };
