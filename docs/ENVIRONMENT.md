@@ -60,6 +60,8 @@ Variáveis `QI_*` (gate FRED, fases de ingest, etc.) estão comentadas em [`.env
 
 Defina as **mesmas** variáveis em **Settings → Environment Variables** do projecto (sem ficheiro `.env.local` no servidor).
 
+**Guia completo de nuvem** (Google OAuth, crons, motor Python via GitHub Actions, Vercel Blob): [CLOUD_SETUP.md](CLOUD_SETUP.md).
+
 ## O que não fazer
 
 - Não commitar `.env.local`, `.env`, nem ficheiros com nomes tipo `.env.secrets` se os criar à mão sem regra no `.gitignore`.

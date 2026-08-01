@@ -49,6 +49,23 @@ model User {
   budgetCategories BudgetCategory[]
   budgetEntries    BudgetEntry[]
   transactions     Transaction[]
+  watchlistItems   UserWatchlistItem[]
+}
+
+model UserWatchlistItem {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  symbol    String
+  classId   String   @map("class_id")
+  name      String
+  exchange  String?
+  kind      String?
+  addedAt   DateTime @default(now()) @map("added_at")
+
+  @@unique([userId, symbol])
+  @@index([userId])
+  @@map("user_watchlist_item")
 }
 
 model VerificationToken {

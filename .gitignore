@@ -46,9 +46,10 @@ yarn-error.log*
 # Python venv (local / CI experiments)
 .venv/
 
-# vercel
-.vercel
+/motor/data/
+/motor/output/
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.vercel

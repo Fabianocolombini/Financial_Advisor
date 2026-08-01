@@ -1,3 +1,4 @@
+import { unauthorizedCronResponse } from "@/lib/cron-auth";
 import { spawnSync } from "child_process";
 import { NextResponse } from "next/server";
 
@@ -17,15 +18,8 @@ export const maxDuration = 300;
  * a small VM, or locally: `npm run qi:ingest` etc.
  */
 export async function GET(request: Request) {
-  // TODO: turbopack-tracing-warning
-  // This route intentionally uses Node runtime + child_process spawnSync to invoke Python modules.
-  // Turbopack may emit NFT tracing warnings for this file (next.config.ts import trace), but
-  // this is expected for server-only orchestration code and not a runtime behavior regression.
-  const secret = process.env.CRON_SECRET;
-  const auth = request.headers.get("authorization");
-  if (!secret || auth !== `Bearer ${secret}`) {
-    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
-  }
+  const denied = unauthorizedCronResponse(request);
+  if (denied) return denied;
 
   if (process.env.QI_RUN_PYTHON !== "true") {
     return NextResponse.json({

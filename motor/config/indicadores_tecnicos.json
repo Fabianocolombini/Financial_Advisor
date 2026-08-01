@@ -1,0 +1,12 @@
+{
+  "indicadores": [
+    {"id": "preco_vs_mm50", "nome": "Preço vs MM50", "peso": 0.25, "direcao": "positiva"},
+    {"id": "preco_vs_mm200", "nome": "Preço vs MM200", "peso": 0.25, "direcao": "positiva"},
+    {"id": "rsi_14", "nome": "RSI 14d", "peso": 0.20, "direcao": "positiva"},
+    {"id": "volume_vs_media", "nome": "Volume vs média", "peso": 0.15, "direcao": "positiva"},
+    {"id": "vol_realizada", "nome": "Volatilidade realizada 20d", "peso": 0.15, "direcao": "negativa"}
+  ],
+  "zscore_window": 252,
+  "rsi_period": 14,
+  "vol_window": 20
+}

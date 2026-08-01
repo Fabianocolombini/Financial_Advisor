@@ -36,7 +36,7 @@ Preencha no mínimo:
 | Ambiente | URI |
 |----------|-----|
 | Desenvolvimento | `http://localhost:3000/api/auth/callback/google` |
-| Produção (Vercel) | `https://SEU_DOMINIO.vercel.app/api/auth/callback/google` |
+| Produção (Vercel) | `https://financial-advisor-sable.vercel.app/api/auth/callback/google` |
 | Domínio customizado | `https://seudominio.com/api/auth/callback/google` |
 
 4. **Origens JavaScript autorizadas** (opcional para este fluxo server-side, mas útil):
@@ -79,5 +79,7 @@ curl -s -H "Authorization: Bearer SEU_CRON_SECRET" http://localhost:3000/api/cro
 ```
 
 3. Na **Vercel**: adicione as mesmas variáveis; o [`vercel.json`](../vercel.json) agenda cron diário (UTC 11:00). Ajuste o horário no painel se precisar.
+
+**Setup completo em nuvem** (Google OAuth, motor Python, Blob): ver [CLOUD_SETUP.md](CLOUD_SETUP.md).
 
 Séries padrão (MVP): **FRED `DFF`**, **Yahoo `SPY`** (fechamento diário via chart API não oficial). Amplie em [`lib/market/defaults.ts`](../lib/market/defaults.ts).

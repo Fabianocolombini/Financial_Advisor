@@ -1,0 +1,50 @@
+name: Motor Daily
+
+on:
+  schedule:
+    # 06:00 UTC — antes dos crons Vercel (ingest-market 11:00, qi-macro 11:15)
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: motor-daily
+  cancel-in-progress: false
+
+jobs:
+  motor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: motor/requirements.txt
+
+      - name: Install motor dependencies
+        run: pip install -r motor/requirements.txt
+
+      - name: Download SQLite from Vercel Blob
+        env:
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+        run: python motor/scripts/blob_sync.py download
+        continue-on-error: true
+
+      - name: Run motor daily (fontes + pipeline + relatórios)
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: PYTHONPATH=. python motor/scripts/run_daily.py
+
+      - name: Upload SQLite to Vercel Blob
+        env:
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+        run: python motor/scripts/blob_sync.py upload
+
+      - name: Upload relatórios to Vercel Blob
+        env:
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+        run: python motor/scripts/blob_sync.py upload-reports

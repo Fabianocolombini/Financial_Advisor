@@ -1,0 +1,194 @@
+{
+  "version": "1.0",
+  "etapa": "ingestao_fontes",
+  "fontes": {
+    "fred": { "priority": 1, "enabled": true, "tipo": "api" },
+    "yfinance": { "priority": 2, "enabled": true, "tipo": "library" },
+    "edgar": { "priority": 3, "enabled": true, "tipo": "api" },
+    "world_bank": { "priority": 4, "enabled": true, "tipo": "api" },
+    "ecb": { "priority": 4, "enabled": true, "tipo": "api" },
+    "nareit": { "priority": 5, "enabled": false, "tipo": "manual", "nota": "Fase 2" },
+    "cftc": { "priority": 6, "enabled": false, "tipo": "parsing", "nota": "Fase 3" },
+    "multpl": { "priority": 6, "enabled": false, "tipo": "scraping", "nota": "Fase 3" }
+  },
+  "indicadores_tecnicos_genericos": [
+    { "id": "preco_vs_mm50", "fonte": "yfinance", "calculo": "price_vs_sma50" },
+    { "id": "preco_vs_mm200", "fonte": "yfinance", "calculo": "price_vs_sma200" },
+    { "id": "rsi_14", "fonte": "yfinance", "calculo": "rsi_14" },
+    { "id": "volume_vs_media", "fonte": "yfinance", "calculo": "volume_vs_avg" },
+    { "id": "vol_realizada", "fonte": "yfinance", "calculo": "realized_vol_20d" }
+  ],
+  "tickers_teste": {
+    "SPY": "us_equity",
+    "EFA": "intl_equity",
+    "EEM": "em_equity",
+    "VNQ": "real_estate",
+    "GLD": "commodities_precious",
+    "USO": "commodities_energy",
+    "AMLP": "energy_mlp",
+    "IBB": "healthcare_biotech",
+    "ARCC": "alt_bdc",
+    "IGF": "alt_infrastructure",
+    "UUP": "currencies",
+    "SHY": "cash_equivalents",
+    "TLT": "fi_treasury",
+    "LQD": "fi_ig",
+    "HYG": "fi_hy",
+    "TIP": "fi_tips",
+    "PFF": "fi_preferred"
+  },
+  "classes": [
+    {
+      "id": "cash_equivalents",
+      "nome": "Cash Equivalents",
+      "indicadores": [
+        { "id": "dtb3", "nome": "T-bill 3m yield", "fonte": "fred", "serie": "DTB3" },
+        { "id": "yield_real_caixa", "nome": "Yield real caixa", "fonte": "calculado", "formula": "DTB3 - CPIAUCSL" },
+        { "id": "spread_caixa_long", "nome": "Spread caixa vs long", "fonte": "calculado", "formula": "DGS10 - DTB3" }
+      ]
+    },
+    {
+      "id": "fi_treasury",
+      "nome": "Fixed Income - US Government/Treasury",
+      "indicadores": [
+        { "id": "t10y2y", "fonte": "fred", "serie": "T10Y2Y" },
+        { "id": "t10y3m", "fonte": "fred", "serie": "T10Y3M" },
+        { "id": "dff", "fonte": "fred", "serie": "DFF" },
+        { "id": "yield_real_10y", "fonte": "calculado", "formula": "DGS10 - T10YIE" }
+      ]
+    },
+    {
+      "id": "fi_ig",
+      "nome": "Fixed Income - Investment Grade Corporate",
+      "indicadores": [
+        { "id": "ig_oas", "fonte": "fred", "serie": "BAMLC0A0CM" },
+        { "id": "ig_aaa", "fonte": "fred", "serie": "BAMLC0A1CAAA" },
+        { "id": "ig_aa", "fonte": "fred", "serie": "BAMLC0A2CAA" },
+        { "id": "ig_a", "fonte": "fred", "serie": "BAMLC0A3CA" },
+        { "id": "ig_bbb", "fonte": "fred", "serie": "BAMLC0A4CBBB" }
+      ]
+    },
+    {
+      "id": "fi_hy",
+      "nome": "Fixed Income - High Yield Corporate",
+      "indicadores": [
+        { "id": "hy_oas", "fonte": "fred", "serie": "BAMLH0A0HYM2" },
+        { "id": "hy_bb", "fonte": "fred", "serie": "BAMLH0A1HYBB" },
+        { "id": "hy_b", "fonte": "fred", "serie": "BAMLH0A2HYB" },
+        { "id": "hy_ccc", "fonte": "fred", "serie": "BAMLH0A3HYC" },
+        { "id": "hy_minus_ig", "fonte": "calculado", "formula": "BAMLH0A0HYM2 - BAMLC0A0CM" },
+        { "id": "loan_officer", "fonte": "fred", "serie": "DRALACBS" }
+      ]
+    },
+    {
+      "id": "fi_tips",
+      "nome": "Fixed Income - TIPS",
+      "indicadores": [
+        { "id": "t10yie", "fonte": "fred", "serie": "T10YIE" },
+        { "id": "t5yie", "fonte": "fred", "serie": "T5YIE" },
+        { "id": "dfii10", "fonte": "fred", "serie": "DFII10" },
+        { "id": "cpi", "fonte": "fred", "serie": "CPIAUCSL" }
+      ]
+    },
+    {
+      "id": "fi_preferred",
+      "nome": "Fixed Income - Preferred Securities",
+      "indicadores": [
+        { "id": "dividend_yield", "fonte": "yfinance", "field": "dividend_yield", "ticker_proxy": "PFF" },
+        { "id": "hy_context", "fonte": "fred", "serie": "BAMLH0A0HYM2" }
+      ]
+    },
+    {
+      "id": "us_equity",
+      "nome": "US Equity",
+      "indicadores": [
+        { "id": "pe_ratio", "fonte": "yfinance", "field": "pe_ratio", "ticker_proxy": "SPY" },
+        { "id": "vix", "fonte": "fred", "serie": "VIXCLS" }
+      ]
+    },
+    {
+      "id": "intl_equity",
+      "nome": "Developed ex-US Equity",
+      "indicadores": [
+        { "id": "pe_efa", "fonte": "yfinance", "field": "pe_ratio", "ticker_proxy": "EFA" },
+        { "id": "pe_spy", "fonte": "yfinance", "field": "pe_ratio", "ticker_proxy": "SPY" },
+        { "id": "pe_rel_intl_us", "fonte": "calculado", "formula": "pe_EFA_div_SPY" }
+      ]
+    },
+    {
+      "id": "em_equity",
+      "nome": "Emerging Market Equity",
+      "indicadores": [
+        { "id": "pe_eem", "fonte": "yfinance", "field": "pe_ratio", "ticker_proxy": "EEM" },
+        { "id": "gdp_growth_em", "fonte": "world_bank", "indicator": "NY.GDP.MKTP.KD.ZG", "country": "EM" }
+      ]
+    },
+    {
+      "id": "real_estate",
+      "nome": "Real Estate / REITs",
+      "indicadores": [
+        { "id": "price_vnq", "fonte": "yfinance", "field": "close", "ticker_proxy": "VNQ" },
+        { "id": "dgs10", "fonte": "fred", "serie": "DGS10" }
+      ]
+    },
+    {
+      "id": "commodities_precious",
+      "nome": "Commodities - Precious Metals",
+      "indicadores": [
+        { "id": "dfii10", "fonte": "fred", "serie": "DFII10" },
+        { "id": "dxy", "fonte": "fred", "serie": "DTWEXBGS" },
+        { "id": "gold_price", "fonte": "yfinance", "field": "close", "ticker_proxy": "GLD" },
+        { "id": "cpi", "fonte": "fred", "serie": "CPIAUCSL" }
+      ]
+    },
+    {
+      "id": "commodities_energy",
+      "nome": "Commodities - Energy",
+      "indicadores": [
+        { "id": "wti", "fonte": "fred", "serie": "DCOILWTICO" },
+        { "id": "henry_hub", "fonte": "fred", "serie": "DHHNGSP" }
+      ]
+    },
+    {
+      "id": "energy_mlp",
+      "nome": "Energy GICS - MLP",
+      "indicadores": [
+        { "id": "wti", "fonte": "fred", "serie": "DCOILWTICO" },
+        { "id": "henry_hub", "fonte": "fred", "serie": "DHHNGSP" },
+        { "id": "price_amlp", "fonte": "yfinance", "field": "close", "ticker_proxy": "AMLP" }
+      ]
+    },
+    {
+      "id": "healthcare_biotech",
+      "nome": "Health Care - Biotechnology",
+      "indicadores": [
+        { "id": "revenue_growth", "fonte": "yfinance", "field": "revenue_growth", "ticker_proxy": "IBB" }
+      ]
+    },
+    {
+      "id": "alt_bdc",
+      "nome": "Alternatives - BDC",
+      "indicadores": [
+        { "id": "non_accrual_rate", "fonte": "edgar", "metric": "non_accrual_rate", "ticker_proxy": "ARCC" },
+        { "id": "dividend_yield", "fonte": "yfinance", "field": "dividend_yield", "ticker_proxy": "ARCC" },
+        { "id": "hy_oas", "fonte": "fred", "serie": "BAMLH0A0HYM2" }
+      ]
+    },
+    {
+      "id": "alt_infrastructure",
+      "nome": "Alternatives - Infrastructure",
+      "indicadores": [
+        { "id": "price_igf", "fonte": "yfinance", "field": "close", "ticker_proxy": "IGF" }
+      ]
+    },
+    {
+      "id": "currencies",
+      "nome": "Currencies",
+      "indicadores": [
+        { "id": "eurusd", "fonte": "fred", "serie": "DEXUSEU" },
+        { "id": "dff", "fonte": "fred", "serie": "DFF" },
+        { "id": "ecb_rate", "fonte": "ecb", "series_key": "FM.B.U2.EUR.4F.KR.MRR_NR.LE" }
+      ]
+    }
+  ]
+}

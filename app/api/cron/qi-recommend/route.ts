@@ -1,3 +1,4 @@
+import { unauthorizedCronResponse } from "@/lib/cron-auth";
 import { tsQiWritersBlockedResponse } from "@/lib/qi/ts-qi-writers-guard";
 import { runQiRecommendation } from "@/lib/qi/optimizer";
 import { NextResponse } from "next/server";
@@ -15,11 +16,8 @@ export const maxDuration = 120;
  * Auth: `Authorization: Bearer $CRON_SECRET`
  */
 export async function GET(request: Request) {
-  const secret = process.env.CRON_SECRET;
-  const auth = request.headers.get("authorization");
-  if (!secret || auth !== `Bearer ${secret}`) {
-    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
-  }
+  const denied = unauthorizedCronResponse(request);
+  if (denied) return denied;
 
   const blocked = tsQiWritersBlockedResponse();
   if (blocked) return blocked;

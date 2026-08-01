@@ -1,0 +1,74 @@
+{
+  "id": "credito_alternativo",
+  "nome": "Crédito Alternativo / High Yield",
+  "descricao": "HY spreads, BDCs, preferreds — apetite a risco e qualidade de crédito",
+  "pesos_camada": {
+    "macro": 0.45,
+    "valuation": 0.20,
+    "tecnico": 0.15,
+    "fundamental": 0.40
+  },
+  "indicadores": [
+    {
+      "id": "hy_spread",
+      "nome": "Spread OAS HY agregado",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "BAMLH0A0HYM2",
+      "peso": 0.35,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "hy_minus_ig",
+      "nome": "Diferencial HY - IG",
+      "camada": "macro",
+      "fonte": "calculado",
+      "formula": "BAMLH0A0HYM2 - BAMLC0A0CM",
+      "peso": 0.25,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "hy_bb_spread",
+      "nome": "Spread HY BB",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "BAMLH0A1HYBB",
+      "peso": 0.20,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "hy_b_spread",
+      "nome": "Spread HY B",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "BAMLH0A2HYB",
+      "peso": 0.20,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "loan_officer",
+      "nome": "Loan Officer Survey (proxy crédito)",
+      "camada": "fundamental",
+      "fonte": "fred",
+      "serie": "DRALACBS",
+      "peso": 0.30,
+      "zscore_window": 252,
+      "direcao": "negativa"
+    }
+  ],
+  "universo": [
+    {"ticker": "ARCC", "nome": "Ares Capital Corp", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
+    {"ticker": "MAIN", "nome": "Main Street Capital", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
+    {"ticker": "OBDC", "nome": "Blue Owl Capital Corp", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
+    {"ticker": "HYG", "nome": "iShares High Yield Corporate Bond", "benchmark": "AGG"}
+  ],
+  "estagio": {
+    "regressao_dias": 90,
+    "limiar_ascendente": 0.02,
+    "limiar_descendente": -0.02
+  }
+}

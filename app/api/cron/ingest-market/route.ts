@@ -1,3 +1,4 @@
+import { unauthorizedCronResponse } from "@/lib/cron-auth";
 import { ingestMarketData } from "@/lib/market/ingest";
 import { NextResponse } from "next/server";
 
@@ -9,11 +10,8 @@ export const maxDuration = 60;
  * Local: curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron/ingest-market
  */
 export async function GET(request: Request) {
-  const secret = process.env.CRON_SECRET;
-  const auth = request.headers.get("authorization");
-  if (!secret || auth !== `Bearer ${secret}`) {
-    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
-  }
+  const denied = unauthorizedCronResponse(request);
+  if (denied) return denied;
 
   const fredKey = process.env.FRED_API_KEY;
   if (!fredKey) {

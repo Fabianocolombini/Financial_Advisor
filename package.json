@@ -31,7 +31,16 @@
     "qi:check-env": "python3 analytics/qi/scripts/check_env.py",
     "qi:check-db": "python3 analytics/qi/scripts/check_db.py",
     "qi:check-migrations": "bash analytics/qi/scripts/check_migrations.sh",
-    "qi:preflight": "npm run qi:check-env && npm run qi:check-db && npm run qi:check-migrations"
+    "qi:preflight": "npm run qi:check-env && npm run qi:check-db && npm run qi:check-migrations",
+    "motor:test": "PYTHONPATH=. python3 -m motor.src.ingestao.fred_client --test",
+    "motor:test-fontes": "PYTHONPATH=. python3 -m motor.src.ingestao.test_conexoes",
+    "motor:fontes": "PYTHONPATH=. python3 -m motor.src.ingestao.pipeline_fontes",
+    "motor:pipeline": "PYTHONPATH=. python3 -m motor.src.pipeline",
+    "motor:report": "PYTHONPATH=. python3 -m motor.src.output.gerar_relatorio",
+    "motor:daily": "PYTHONPATH=. python3 motor/scripts/run_daily.py",
+    "motor:blob-download": "python3 motor/scripts/blob_sync.py download",
+    "motor:blob-upload": "python3 motor/scripts/blob_sync.py upload",
+    "motor:blob-upload-reports": "python3 motor/scripts/blob_sync.py upload-reports"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
