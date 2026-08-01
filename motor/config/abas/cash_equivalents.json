@@ -1,0 +1,54 @@
+{
+  "id": "cash_equivalents",
+  "nome": "Caixa e equivalentes",
+  "descricao": "T-bills e ultra-short — yield de caixa vs duration",
+  "pesos_camada": {
+    "macro": 0.35,
+    "valuation": 0.45,
+    "tecnico": 0.20,
+    "fundamental": 0.0
+  },
+  "indicadores": [
+    {
+      "id": "dtb3",
+      "nome": "3-Month T-Bill yield",
+      "camada": "valuation",
+      "fonte": "fred",
+      "serie": "DTB3",
+      "peso": 0.50,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "yield_real_10y",
+      "nome": "Yield real 10y",
+      "camada": "macro",
+      "fonte": "calculado",
+      "formula": "DGS10 - T10YIE",
+      "peso": 0.30,
+      "zscore_window": 252,
+      "direcao": "negativa"
+    },
+    {
+      "id": "spread_10y_3m",
+      "nome": "Spread 10y-3m",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "T10Y3M",
+      "peso": 0.20,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    }
+  ],
+  "universo": [
+    {"ticker": "SHV", "nome": "iShares Short Treasury Bond", "benchmark": "AGG"},
+    {"ticker": "SGOV", "nome": "iShares 0-3 Month Treasury Bond", "benchmark": "AGG"},
+    {"ticker": "BIL", "nome": "SPDR Bloomberg 1-3 Month T-Bill", "benchmark": "AGG"},
+    {"ticker": "SHY", "nome": "iShares 1-3 Year Treasury Bond", "benchmark": "AGG"}
+  ],
+  "estagio": {
+    "regressao_dias": 90,
+    "limiar_ascendente": 0.02,
+    "limiar_descendente": -0.02
+  }
+}

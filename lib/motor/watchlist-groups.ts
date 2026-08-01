@@ -87,6 +87,8 @@ export function buildWatchlistGroups(
         entryValidated: tick?.entryValidated ?? false,
         dominantIndicator: tick?.dominantIndicator ?? classSnap?.dominantIndicator ?? null,
         rationale: tick?.rationale ?? classSnap?.rationale ?? [],
+        perf1dPct: tick?.perf1dPct ?? null,
+        perf1mPct: tick?.perf1mPct ?? null,
         indicators,
         hasMotorData,
       };

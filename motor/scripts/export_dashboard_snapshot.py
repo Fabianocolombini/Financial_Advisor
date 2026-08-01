@@ -28,6 +28,7 @@ def main() -> None:
     from motor.src.db.connection import get_connection, init_db
     from motor.src.dates import motor_as_of_date, motor_snapshot_timestamps
     from motor.src.decisao.snapshot_quality import check_snapshot_quality
+    from motor.src.decisao.ticker_performance import enrich_ticker_performance
     from motor.src.decisao.validacao import (
         dominant_component,
         validate_class_entry,
@@ -138,7 +139,8 @@ def main() -> None:
                 diverge,
                 dominant,
             )
-            snapshot["tickers"][ticker] = {
+            snapshot["tickers"][ticker] = enrich_ticker_performance(
+                {
                 "symbol": ticker,
                 "abaId": row["aba_id"],
                 "classId": class_id,
@@ -160,7 +162,8 @@ def main() -> None:
                     }
                     for c in top_inds
                 ],
-            }
+            },
+            )
 
     data_dates: list[dt.date] = []
     for cls in snapshot["classes"].values():

@@ -3,6 +3,7 @@
 ABA_TO_CLASS: dict[str, str] = {
     "taxas": "fi_treasury",
     "credito_alternativo": "alt_bdc",
+    "cash_equivalents": "cash_equivalents",
     "fi_ig": "fi_ig",
     "fi_hy": "fi_hy",
     "reits": "real_estate",

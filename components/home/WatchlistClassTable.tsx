@@ -35,6 +35,19 @@ function formatScore(score: number | null): string {
   return score.toFixed(3);
 }
 
+function formatPerf(pct: number | null): string {
+  if (pct == null || Number.isNaN(pct)) return "—";
+  const sign = pct > 0 ? "+" : "";
+  return `${sign}${pct.toFixed(2)}%`;
+}
+
+function perfClass(pct: number | null): string {
+  if (pct == null) return "text-zinc-500";
+  if (pct > 0) return "text-emerald-400";
+  if (pct < 0) return "text-red-400";
+  return "text-zinc-400";
+}
+
 function indicatorColumns(rows: WatchlistRow[]): { id: string; name: string }[] {
   const seen = new Map<string, string>();
   for (const row of rows) {
@@ -98,6 +111,9 @@ function SecurityRow({
       </td>
       <td className="px-3 py-3 tabular-nums text-sm text-white">
         {formatScore(row.score)}
+      </td>
+      <td className={`px-3 py-3 tabular-nums text-sm ${perfClass(row.perf1dPct)}`}>
+        {formatPerf(row.perf1dPct)}
       </td>
       <td className="px-3 py-3">
         <span
@@ -179,6 +195,7 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
             <tr>
               <th className="px-4 py-3 font-medium">Symbol</th>
               <th className="px-3 py-3 font-medium">Score</th>
+              <th className="px-3 py-3 font-medium">1D</th>
               <th className="px-3 py-3 font-medium">Stage</th>
               <th className="px-3 py-3 font-medium">Entry</th>
               <th className="px-3 py-3 font-medium">Driver</th>

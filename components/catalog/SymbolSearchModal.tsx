@@ -4,6 +4,7 @@ import { ASSET_CLASS_TABS } from "@/lib/catalog/asset-classes";
 import type { CatalogSearchResult } from "@/lib/catalog/types";
 import { SymbolAvatar } from "@/components/catalog/SymbolAvatar";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 type WatchlistItem = {
   id: string;
@@ -42,8 +43,13 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
   const [results, setResults] = useState<CatalogSearchResult[]>([]);
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const loadWatchlist = useCallback(async () => {
     const res = await fetch("/api/watchlist");
@@ -52,22 +58,19 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
     setWatchlist(json.data);
   }, []);
 
-  const runSearch = useCallback(
-    async (q: string, cls: string) => {
-      setLoading(true);
-      try {
-        const params = new URLSearchParams({ class: cls, limit: "30" });
-        if (q.trim()) params.set("q", q.trim());
-        const res = await fetch(`/api/catalog/search?${params}`);
-        if (!res.ok) return;
-        const json = (await res.json()) as { data: CatalogSearchResult[] };
-        setResults(json.data);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [],
-  );
+  const runSearch = useCallback(async (q: string, cls: string) => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({ class: cls, limit: "40" });
+      if (q.trim()) params.set("q", q.trim());
+      const res = await fetch(`/api/catalog/search?${params}`);
+      if (!res.ok) return;
+      const json = (await res.json()) as { data: CatalogSearchResult[] };
+      setResults(json.data);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -130,20 +133,23 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
     void runSearch(query, classId);
   };
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
   const watchlistSymbols = new Set(watchlist.map((w) => w.symbol));
+  const activeClassLabel =
+    ASSET_CLASS_TABS.find((t) => t.id === classId)?.label ?? "All";
+  const showWatchlistSection = classId === "all" && !query.trim();
 
-  return (
+  const modal = (
     <div
-      className="fixed inset-x-0 bottom-0 top-0 z-50 flex items-start justify-center bg-black/60 px-4 pb-8 pt-[7.25rem] sm:pt-[6.5rem]"
+      className="fixed inset-x-0 bottom-0 top-[7.5rem] z-40 flex items-start justify-center bg-black/55 px-4 pb-8 pt-2 sm:top-[6.75rem]"
       role="dialog"
       aria-modal="true"
       aria-label="Search symbols"
       onClick={onClose}
     >
       <div
-        className="flex max-h-[min(720px,calc(100vh-8rem))] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-black shadow-2xl"
+        className="flex max-h-[min(720px,calc(100vh-9rem))] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-black shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-2 border-b border-zinc-800 px-4 py-3">
@@ -207,11 +213,18 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
           ))}
         </div>
 
+        {classId !== "all" ? (
+          <p className="border-b border-zinc-800/80 px-4 py-2 text-xs text-zinc-500">
+            Showing <span className="text-zinc-300">{activeClassLabel}</span> catalog —
+            tap ★ to follow symbols from this group only.
+          </p>
+        ) : null}
+
         <div className="flex-1 overflow-y-auto">
-          {watchlist.length > 0 && !query ? (
+          {showWatchlistSection && watchlist.length > 0 ? (
             <section className="border-b border-zinc-800 px-4 py-3">
               <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-500">
-                My watchlist
+                All followed symbols
               </h3>
               <ul className="space-y-1">
                 {watchlist.map((item) => (
@@ -258,7 +271,7 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
             <p className="px-4 py-8 text-center text-sm text-zinc-500">Searching…</p>
           ) : results.length === 0 ? (
             <p className="px-4 py-8 text-center text-sm text-zinc-500">
-              No symbols found in the catalog.
+              No symbols found in {activeClassLabel}.
             </p>
           ) : (
             <ul>
@@ -308,4 +321,6 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
       </div>
     </div>
   );
+
+  return createPortal(modal, document.body);
 }

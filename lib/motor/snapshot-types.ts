@@ -42,6 +42,8 @@ export type MotorTickerSnapshot = {
   entryValidated?: boolean;
   rationale?: string[];
   dominantIndicator?: MotorDominantIndicator | null;
+  perf1dPct?: number | null;
+  perf1mPct?: number | null;
   indicators: MotorIndicatorSnapshot[];
 };
 
@@ -78,6 +80,8 @@ export type WatchlistRow = {
   entryValidated: boolean;
   dominantIndicator: MotorDominantIndicator | null;
   rationale: string[];
+  perf1dPct: number | null;
+  perf1mPct: number | null;
   indicators: MotorIndicatorSnapshot[];
   hasMotorData: boolean;
 };
