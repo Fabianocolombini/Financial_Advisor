@@ -36,6 +36,12 @@ npm run motor:report        # relatório .md
 
 Variáveis: `FRED_API_KEY` (`.env.local`), `MOTOR_ABA` (default `taxas`).
 
+## Entrega e deploy
+
+- **Commit + push em `main`** após cada entrega de código (regra: `.cursor/rules/auto-commit-deploy.mdc`).
+- **Vercel Production** deploya automaticamente em cada push em `main`.
+- **Motor** (SQLite/snapshot no Blob): workflow `motor-daily.yml` (06:00 UTC) ou Actions → Motor Daily → Run workflow.
+
 ## Stack app (legado / mantido)
 
 Next.js 16, React 19, Prisma 6, PostgreSQL/Neon, Auth.js v5.
