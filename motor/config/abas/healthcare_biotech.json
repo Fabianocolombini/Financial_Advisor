@@ -1,0 +1,67 @@
+{
+  "id": "healthcare_biotech",
+  "nome": "Biotech e saúde",
+  "descricao": "Biotechnology ETFs — VIX, curva e yields",
+  "pesos_camada": {
+    "macro": 0.45,
+    "valuation": 0.35,
+    "tecnico": 0.10,
+    "fundamental": 0.0
+  },
+  "indicadores": [
+    {
+      "id": "vix",
+      "nome": "VIX",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "VIXCLS",
+      "peso": 0.35,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "spread_10y_2y",
+      "nome": "Spread 10y-2y",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "T10Y2Y",
+      "peso": 0.25,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "fed_funds",
+      "nome": "Fed Funds Rate",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "DFF",
+      "peso": 0.20,
+      "zscore_window": 252,
+      "direcao": "negativa"
+    },
+    {
+      "id": "yield_10y",
+      "nome": "Yield nominal 10y",
+      "camada": "valuation",
+      "fonte": "fred",
+      "serie": "DGS10",
+      "peso": 0.40,
+      "zscore_window": 252,
+      "direcao": "negativa"
+    }
+  ],
+  "universo": [
+    {"ticker": "IBB", "nome": "iShares Biotechnology ETF", "benchmark": "SPY"},
+    {"ticker": "XBI", "nome": "SPDR S&P Biotech ETF", "benchmark": "SPY"},
+    {"ticker": "BBH", "nome": "VanEck Biotech ETF", "benchmark": "SPY"},
+    {"ticker": "PBE", "nome": "Invesco Biotechnology & Genome ETF", "benchmark": "SPY"},
+    {"ticker": "FBT", "nome": "First Trust NYSE Arca Biotechnology Index Fund", "benchmark": "SPY"},
+    {"ticker": "SBIO", "nome": "ALPS Medical Breakthroughs ETF", "benchmark": "SPY"},
+    {"ticker": "ARKG", "nome": "ARK Genomic Revolution ETF", "benchmark": "SPY"}
+  ],
+  "estagio": {
+    "regressao_dias": 90,
+    "limiar_ascendente": 0.02,
+    "limiar_descendente": -0.02
+  }
+}

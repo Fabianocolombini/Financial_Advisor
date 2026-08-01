@@ -44,6 +44,7 @@ function mergeIndicators(
 export function buildWatchlistGroups(
   items: WatchlistItem[],
   snapshot: MotorDashboardSnapshot | null,
+  perf1dBySymbol?: Map<string, number>,
 ): WatchlistClassGroup[] {
   if (items.length === 0) return [];
 
@@ -66,12 +67,23 @@ export function buildWatchlistGroups(
     const classSnap = snapshot?.classes[classId];
 
     const rows: WatchlistRow[] = classItems.map((item) => {
-      const tick = snapshot?.tickers[item.symbol.toUpperCase()];
-      const hasMotorData = Boolean(tick);
+      const sym = item.symbol.toUpperCase();
+      const tick = snapshot?.tickers[sym];
+      const hasTickerMotor = Boolean(tick);
+      const hasClassMotor = Boolean(classSnap);
+      const hasMotorData = hasTickerMotor || hasClassMotor;
+      const yahooPerf = perf1dBySymbol?.get(sym);
+
       const indicators = mergeIndicators(
         tick?.indicators ?? [],
-        classSnap?.indicators ?? [],
+        hasTickerMotor ? [] : (classSnap?.indicators ?? []),
       );
+
+      const entryValidated = hasTickerMotor
+        ? tick!.entryValidated ?? false
+        : hasClassMotor
+          ? classSnap!.entryValidated ?? false
+          : false;
 
       return {
         id: item.id,
@@ -80,17 +92,19 @@ export function buildWatchlistGroups(
         name: item.name,
         exchange: item.exchange,
         kind: item.kind,
-        score: tick?.score ?? null,
+        score: tick?.score ?? classSnap?.score ?? null,
         stage: tick?.stage ?? classSnap?.stage ?? null,
         stageLabel: tick?.stageLabel ?? classSnap?.stageLabel ?? "Pending",
         divergesFromClass: tick?.divergesFromClass ?? false,
-        entryValidated: tick?.entryValidated ?? false,
-        dominantIndicator: tick?.dominantIndicator ?? classSnap?.dominantIndicator ?? null,
+        entryValidated,
+        dominantIndicator:
+          tick?.dominantIndicator ?? classSnap?.dominantIndicator ?? null,
         rationale: tick?.rationale ?? classSnap?.rationale ?? [],
-        perf1dPct: tick?.perf1dPct ?? null,
+        perf1dPct: tick?.perf1dPct ?? yahooPerf ?? null,
         perf1mPct: tick?.perf1mPct ?? null,
         indicators,
         hasMotorData,
+        motorScope: hasTickerMotor ? "ticker" : hasClassMotor ? "class" : "none",
       };
     });
 

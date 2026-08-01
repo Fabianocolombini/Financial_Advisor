@@ -84,6 +84,7 @@ export type WatchlistRow = {
   perf1mPct: number | null;
   indicators: MotorIndicatorSnapshot[];
   hasMotorData: boolean;
+  motorScope?: "ticker" | "class" | "none";
 };
 
 export type WatchlistClassGroup = {

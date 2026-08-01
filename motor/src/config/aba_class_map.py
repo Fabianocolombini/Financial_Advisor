@@ -8,6 +8,8 @@ ABA_TO_CLASS: dict[str, str] = {
     "fi_hy": "fi_hy",
     "reits": "real_estate",
     "us_equity": "us_equity",
+    "fi_tips": "fi_tips",
+    "healthcare_biotech": "healthcare_biotech",
 }
 
 CLASS_LABELS: dict[str, str] = {

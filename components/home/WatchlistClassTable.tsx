@@ -1,6 +1,7 @@
 "use client";
 
 import { SymbolAvatar } from "@/components/catalog/SymbolAvatar";
+import { WatchlistStarButton } from "@/components/home/WatchlistStarButton";
 import type { WatchlistClassGroup, WatchlistRow } from "@/lib/motor/snapshot-types";
 
 function stageBadgeClass(stageLabel: string): string {
@@ -67,14 +68,19 @@ function SecurityRow({
   const indMap = new Map(row.indicators.map((i) => [i.id, i]));
   const entryLabel = !row.hasMotorData
     ? "Pending"
-    : row.entryValidated
-      ? "Validated"
-      : "Not validated";
+    : row.motorScope === "class"
+      ? row.entryValidated
+        ? "Class validated"
+        : "Class not validated"
+      : row.entryValidated
+        ? "Validated"
+        : "Not validated";
 
   return (
     <tr className="border-b border-zinc-800/80 hover:bg-zinc-950/50">
-      <td className="py-2 pl-3 pr-2">
-        <div className="flex min-w-[12rem] items-center gap-2.5">
+      <td className="py-2 pl-2 pr-2">
+        <div className="flex min-w-[13rem] items-center gap-2">
+          <WatchlistStarButton symbol={row.symbol} />
           <SymbolAvatar
             symbol={row.symbol}
             exchange={row.exchange ?? "NYSE"}
