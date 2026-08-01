@@ -21,6 +21,7 @@ from motor.src.decisao.estagio import (
     diverge_categoria,
     estagio_ativo,
 )
+from motor.src.decisao.validacao import dominant_component, validate_ticker_entry
 from motor.src.db.connection import get_connection, init_db
 from motor.src.ingestao.edgar_client import ingest_aba_edgar
 from motor.src.ingestao.fred_client import ingest_for_aba
@@ -78,8 +79,24 @@ def run_pipeline(aba_id: str, start: str = "2019-01-01") -> dict:
         )
         est = estagio_ativo(ativo["score_composto"])
         div = diverge_categoria(cat_estagio, est, cat_score, ativo["score_composto"])
+        validation = validate_ticker_entry(
+            cat_estagio,
+            est,
+            cat_score,
+            ativo["score_composto"],
+            div,
+            dominant_component(ativo["componentes"]),
+        )
         persist_ativo_score(aba_id, ativo, est, div)
-        ativos_out.append({"ticker": ticker, "estagio": est, "diverge": div, "score": ativo["score_composto"]})
+        ativos_out.append(
+            {
+                "ticker": ticker,
+                "estagio": est,
+                "diverge": div,
+                "score": ativo["score_composto"],
+                "entryValidated": validation["entryValidated"],
+            }
+        )
 
     print(f"[motor] Relatório...")
     report_path = generate_report(aba_id)

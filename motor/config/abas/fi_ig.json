@@ -1,0 +1,74 @@
+{
+  "id": "fi_ig",
+  "nome": "Renda Fixa Corporativa IG",
+  "descricao": "Investment grade spreads e ETFs corporativos",
+  "pesos_camada": {
+    "macro": 0.55,
+    "valuation": 0.35,
+    "tecnico": 0.10,
+    "fundamental": 0.0
+  },
+  "indicadores": [
+    {
+      "id": "ig_spread",
+      "nome": "Spread OAS IG agregado",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "BAMLC0A0CM",
+      "peso": 0.40,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "ig_bbb_spread",
+      "nome": "Spread IG BBB",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "BAMLC0A4CBBB",
+      "peso": 0.30,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "ig_a_spread",
+      "nome": "Spread IG A",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "BAMLC0A3CA",
+      "peso": 0.20,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "yield_10y",
+      "nome": "Yield nominal 10y",
+      "camada": "valuation",
+      "fonte": "fred",
+      "serie": "DGS10",
+      "peso": 0.50,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "spread_10y_2y",
+      "nome": "Spread 10y-2y",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "T10Y2Y",
+      "peso": 0.10,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    }
+  ],
+  "universo": [
+    {"ticker": "LQD", "nome": "iShares IG Corporate Bond", "benchmark": "AGG"},
+    {"ticker": "VCIT", "nome": "Vanguard Intermediate-Term Corporate Bond", "benchmark": "AGG"},
+    {"ticker": "AGG", "nome": "iShares Core US Aggregate Bond", "benchmark": "SHY"},
+    {"ticker": "BND", "nome": "Vanguard Total Bond Market", "benchmark": "AGG"}
+  ],
+  "estagio": {
+    "regressao_dias": 90,
+    "limiar_ascendente": 0.02,
+    "limiar_descendente": -0.02
+  }
+}

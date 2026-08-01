@@ -39,6 +39,9 @@ jobs:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
         run: PYTHONPATH=. python motor/scripts/run_daily.py
 
+      - name: Validate MVP abas + snapshot
+        run: PYTHONPATH=. python motor/scripts/validate_abas.py
+
       - name: Upload SQLite and dashboard snapshot to Vercel Blob
         env:
           BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}

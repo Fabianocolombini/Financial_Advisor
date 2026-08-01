@@ -1,0 +1,64 @@
+{
+  "id": "us_equity",
+  "nome": "Mercado Amplo US",
+  "descricao": "US broad market — VIX, curva e momentum",
+  "pesos_camada": {
+    "macro": 0.45,
+    "valuation": 0.25,
+    "tecnico": 0.20,
+    "fundamental": 0.0
+  },
+  "indicadores": [
+    {
+      "id": "vix",
+      "nome": "VIX",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "VIXCLS",
+      "peso": 0.35,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "spread_10y_2y",
+      "nome": "Spread 10y-2y",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "T10Y2Y",
+      "peso": 0.25,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "fed_funds",
+      "nome": "Fed Funds Rate",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "DFF",
+      "peso": 0.20,
+      "zscore_window": 252,
+      "direcao": "negativa"
+    },
+    {
+      "id": "yield_10y",
+      "nome": "Yield nominal 10y",
+      "camada": "valuation",
+      "fonte": "fred",
+      "serie": "DGS10",
+      "peso": 0.20,
+      "zscore_window": 252,
+      "direcao": "negativa"
+    }
+  ],
+  "universo": [
+    {"ticker": "SPY", "nome": "SPDR S&P 500 ETF Trust", "benchmark": "AGG"},
+    {"ticker": "QQQ", "nome": "Invesco QQQ Trust", "benchmark": "SPY"},
+    {"ticker": "IWM", "nome": "iShares Russell 2000 ETF", "benchmark": "SPY"},
+    {"ticker": "VOO", "nome": "Vanguard S&P 500 ETF", "benchmark": "AGG"}
+  ],
+  "estagio": {
+    "regressao_dias": 90,
+    "limiar_ascendente": 0.02,
+    "limiar_descendente": -0.02
+  }
+}

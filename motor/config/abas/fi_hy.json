@@ -1,0 +1,64 @@
+{
+  "id": "fi_hy",
+  "nome": "High Yield Corporativo",
+  "descricao": "HY spreads e ETFs high yield",
+  "pesos_camada": {
+    "macro": 0.60,
+    "valuation": 0.25,
+    "tecnico": 0.15,
+    "fundamental": 0.0
+  },
+  "indicadores": [
+    {
+      "id": "hy_spread",
+      "nome": "Spread OAS HY agregado",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "BAMLH0A0HYM2",
+      "peso": 0.40,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "hy_minus_ig",
+      "nome": "Diferencial HY - IG",
+      "camada": "macro",
+      "fonte": "calculado",
+      "formula": "BAMLH0A0HYM2 - BAMLC0A0CM",
+      "peso": 0.30,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "hy_bb_spread",
+      "nome": "Spread HY BB",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "BAMLH0A1HYBB",
+      "peso": 0.15,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "hy_b_spread",
+      "nome": "Spread HY B",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "BAMLH0A2HYB",
+      "peso": 0.15,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    }
+  ],
+  "universo": [
+    {"ticker": "HYG", "nome": "iShares High Yield Corporate Bond", "benchmark": "AGG"},
+    {"ticker": "JNK", "nome": "SPDR Bloomberg High Yield Bond", "benchmark": "AGG"},
+    {"ticker": "USHY", "nome": "iShares Broad USD High Yield", "benchmark": "AGG"},
+    {"ticker": "SJNK", "nome": "SPDR Bloomberg Short Term High Yield", "benchmark": "AGG"}
+  ],
+  "estagio": {
+    "regressao_dias": 90,
+    "limiar_ascendente": 0.02,
+    "limiar_descendente": -0.02
+  }
+}

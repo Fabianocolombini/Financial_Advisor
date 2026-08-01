@@ -59,6 +59,7 @@ flowchart TB
 | `qi_asset`, `qi_market_price_daily`, scores QI, etc. | **Neon** | Pipeline Python QI (**pausado**) | Dados podem estar desatualizados |
 | `raw_series`, `price_daily`, `scores_historico`, … | **SQLite** (`motor/data/historico.db`) | GitHub Actions `motor-daily` | Persistido no **Vercel Blob** |
 | Relatórios motor (`relatorio_*.md`) | **Vercel Blob** (`motor/reports/`) | GitHub Actions pós-pipeline | Não estão no Neon |
+| Dashboard snapshot (`dashboard-snapshot.json`) | **Vercel Blob** (`motor/dashboard-snapshot.json`) | GitHub Actions após export | Scores + validação para Home |
 | Código e configs (`motor/config/abas/*.json`) | **Git** | Deploy / próximo run GH | Não são “dados” em si |
 
 ### O que **não** está no Neon
@@ -368,6 +369,8 @@ Marque cada item após verificar.
 
 - [ ] Workflow **Motor Daily** executou com sucesso (últimas 24–48 h)
 - [ ] Blob contém `motor/historico.db` (tamanho > 0)
+- [ ] Blob contém `motor/dashboard-snapshot.json` com `asOf` recente e `entryValidated` nos tickers
+- [ ] `npm run motor:verify-cloud-snapshot` OK (com `BLOB_READ_WRITE_TOKEN` local) ou logs GH com Snapshot upload
 - [ ] `raw_series` e/ou `scores_historico` têm dados recentes no SQLite
 - [ ] Relatórios `motor/reports/relatorio_*.md` no Blob (se pipeline gerou scores)
 
@@ -429,7 +432,7 @@ Editar `motor/config/abas/*.json` ou `fontes_manifest.json` → commit → push 
 | Motor GH falha no download | 1.ª execução (blob vazio) | Normal; pipeline cria DB novo |
 | Motor GH falha no upload | `BLOB_READ_WRITE_TOKEN` inválido | Recriar token Blob; atualizar secret GH |
 | `FRED_API_KEY não definida` (GH) | Secret GitHub ausente | Settings → Secrets → Actions |
-| Scores motor invisíveis na app | Motor ainda não ligado ao Next.js | Esperado no MVP; dados estão no Blob |
+| Scores motor invisíveis na app | Motor ainda não ligado ao Next.js | Home lê `dashboard-snapshot.json` do Blob; verificar token Vercel |
 | `qi_market_price_daily` parado | QI Python pausado | Não é regressão do motor; ver `ESTADO_DO_PROJETO.md` |
 | `/api/cron/motor` → 503 | Dispatch não configurado | Opcional; schedule GH às 06:00 UTC basta |
 | `/api/cron/qi-pipeline` skipped | `QI_RUN_PYTHON` não é `true` | Esperado na Vercel serverless |

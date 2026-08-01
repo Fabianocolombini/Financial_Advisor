@@ -84,6 +84,9 @@ export function buildWatchlistGroups(
         stage: tick?.stage ?? classSnap?.stage ?? null,
         stageLabel: tick?.stageLabel ?? classSnap?.stageLabel ?? "Pending",
         divergesFromClass: tick?.divergesFromClass ?? false,
+        entryValidated: tick?.entryValidated ?? false,
+        dominantIndicator: tick?.dominantIndicator ?? classSnap?.dominantIndicator ?? null,
+        rationale: tick?.rationale ?? classSnap?.rationale ?? [],
         indicators,
         hasMotorData,
       };
@@ -100,6 +103,8 @@ export function buildWatchlistGroups(
       label: labelForClass(classId, snapshot),
       classScore: classSnap?.score ?? null,
       classStageLabel: classSnap?.stageLabel ?? null,
+      classEntryValidated: classSnap?.entryValidated ?? null,
+      classDominantIndicator: classSnap?.dominantIndicator ?? null,
       classIndicators: classSnap?.indicators ?? [],
       rows,
     });

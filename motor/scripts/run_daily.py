@@ -44,6 +44,21 @@ def main() -> None:
         env={**os.environ, "PYTHONPATH": str(MOTOR_ROOT.parent)},
     )
 
+    snapshot_path = MOTOR_ROOT / "data" / "dashboard-snapshot.json"
+    if snapshot_path.is_file():
+        with snapshot_path.open(encoding="utf-8") as f:
+            snap = json.load(f)
+        quality = snap.get("quality", {})
+        if quality.get("stale"):
+            print(
+                "[motor:daily] WARN: snapshot asOf is stale — "
+                f"expected EOD {quality.get('expectedAsOf')}",
+                file=sys.stderr,
+            )
+        if not quality.get("ok", True):
+            print(f"[motor:daily] Snapshot quality issues: {quality.get('issues')}", file=sys.stderr)
+            sys.exit(1)
+
     print(json.dumps({"ok": True, "abas": results}, indent=2, ensure_ascii=False))
 
 

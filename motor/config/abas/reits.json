@@ -1,0 +1,54 @@
+{
+  "id": "reits",
+  "nome": "REITs",
+  "descricao": "Real estate ETFs — rates headwind e momentum",
+  "pesos_camada": {
+    "macro": 0.40,
+    "valuation": 0.40,
+    "tecnico": 0.20,
+    "fundamental": 0.0
+  },
+  "indicadores": [
+    {
+      "id": "yield_10y",
+      "nome": "Yield nominal 10y (cap rate proxy)",
+      "camada": "valuation",
+      "fonte": "fred",
+      "serie": "DGS10",
+      "peso": 0.50,
+      "zscore_window": 252,
+      "direcao": "negativa"
+    },
+    {
+      "id": "yield_real_10y",
+      "nome": "Yield real 10y",
+      "camada": "valuation",
+      "fonte": "calculado",
+      "formula": "DGS10 - T10YIE",
+      "peso": 0.30,
+      "zscore_window": 252,
+      "direcao": "negativa"
+    },
+    {
+      "id": "spread_10y_2y",
+      "nome": "Spread 10y-2y",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "T10Y2Y",
+      "peso": 0.20,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    }
+  ],
+  "universo": [
+    {"ticker": "VNQ", "nome": "Vanguard Real Estate ETF", "benchmark": "SPY"},
+    {"ticker": "IYR", "nome": "iShares US Real Estate ETF", "benchmark": "SPY"},
+    {"ticker": "XLRE", "nome": "Real Estate Select Sector SPDR", "benchmark": "SPY"},
+    {"ticker": "SCHH", "nome": "Schwab US REIT ETF", "benchmark": "SPY"}
+  ],
+  "estagio": {
+    "regressao_dias": 90,
+    "limiar_ascendente": 0.02,
+    "limiar_descendente": -0.02
+  }
+}

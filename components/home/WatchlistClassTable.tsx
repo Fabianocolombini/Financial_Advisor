@@ -17,6 +17,12 @@ function stageBadgeClass(stageLabel: string): string {
   }
 }
 
+function entryBadgeClass(validated: boolean, hasMotorData: boolean): string {
+  if (!hasMotorData) return "bg-zinc-900 text-zinc-500 ring-zinc-800";
+  if (validated) return "bg-emerald-500/10 text-emerald-400 ring-emerald-500/25";
+  return "bg-zinc-800 text-zinc-400 ring-zinc-700";
+}
+
 function formatIndicatorValue(value: number | null | undefined): string {
   if (value == null || Number.isNaN(value)) return "—";
   if (Math.abs(value) >= 1000) return value.toFixed(0);
@@ -51,6 +57,11 @@ function SecurityRow({
   onSelect: () => void;
 }) {
   const indMap = new Map(row.indicators.map((i) => [i.id, i]));
+  const entryLabel = !row.hasMotorData
+    ? "Pending"
+    : row.entryValidated
+      ? "Validated"
+      : "Not validated";
 
   return (
     <tr
@@ -97,6 +108,19 @@ function SecurityRow({
           {row.stageLabel}
         </span>
       </td>
+      <td className="px-3 py-3">
+        <span
+          className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset ${entryBadgeClass(
+            row.entryValidated,
+            row.hasMotorData,
+          )}`}
+        >
+          {entryLabel}
+        </span>
+      </td>
+      <td className="max-w-[10rem] truncate px-3 py-3 text-xs text-zinc-400">
+        {row.dominantIndicator?.name ?? "—"}
+      </td>
       {columns.map((col) => (
         <td key={col.id} className="px-3 py-3 tabular-nums text-sm text-zinc-300">
           {formatIndicatorValue(indMap.get(col.id)?.value)}
@@ -111,6 +135,7 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
   const [selectedSymbol, setSelectedSymbol] = useState<string | null>(
     group.rows[0]?.symbol ?? null,
   );
+  const selectedRow = group.rows.find((r) => r.symbol === selectedSymbol);
 
   return (
     <section className="space-y-3">
@@ -127,6 +152,19 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
                   · score {group.classScore.toFixed(3)}
                 </span>
               ) : null}
+              {group.classEntryValidated != null ? (
+                <span className="text-zinc-500">
+                  {" "}
+                  · sleeve{" "}
+                  {group.classEntryValidated ? "entry validated" : "entry not validated"}
+                </span>
+              ) : null}
+              {group.classDominantIndicator?.name ? (
+                <span className="text-zinc-600">
+                  {" "}
+                  · driver {group.classDominantIndicator.name}
+                </span>
+              ) : null}
             </p>
           ) : null}
         </div>
@@ -136,12 +174,14 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-zinc-800 bg-black">
-        <table className="w-full min-w-[48rem] text-left text-sm">
+        <table className="w-full min-w-[52rem] text-left text-sm">
           <thead className="border-b border-zinc-800 bg-zinc-950/80 text-xs text-zinc-500">
             <tr>
               <th className="px-4 py-3 font-medium">Symbol</th>
               <th className="px-3 py-3 font-medium">Score</th>
               <th className="px-3 py-3 font-medium">Stage</th>
+              <th className="px-3 py-3 font-medium">Entry</th>
+              <th className="px-3 py-3 font-medium">Driver</th>
               {columns.map((col) => (
                 <th
                   key={col.id}
@@ -165,6 +205,20 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
           </tbody>
         </table>
       </div>
+
+      {selectedRow && selectedRow.rationale.length > 0 ? (
+        <div className="rounded-lg border border-zinc-800/80 bg-zinc-950/50 px-4 py-3">
+          <p className="text-xs font-medium text-zinc-400">
+            Validation rationale — {selectedRow.symbol}
+          </p>
+          <ul className="mt-2 space-y-1 text-xs text-zinc-500">
+            {selectedRow.rationale.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
       <p className="text-[10px] text-zinc-600">
         Detailed chart view coming soon. Educational use only — not investment advice.
       </p>
