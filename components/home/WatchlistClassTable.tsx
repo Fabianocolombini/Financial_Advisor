@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { SymbolAvatar } from "@/components/catalog/SymbolAvatar";
 import type { WatchlistClassGroup, WatchlistRow } from "@/lib/motor/snapshot-types";
 
@@ -55,19 +54,15 @@ function indicatorColumns(rows: WatchlistRow[]): { id: string; name: string }[] 
       if (!seen.has(ind.id)) seen.set(ind.id, ind.name);
     }
   }
-  return [...seen.entries()].slice(0, 5).map(([id, name]) => ({ id, name }));
+  return [...seen.entries()].slice(0, 4).map(([id, name]) => ({ id, name }));
 }
 
 function SecurityRow({
   row,
   columns,
-  selected,
-  onSelect,
 }: {
   row: WatchlistRow;
   columns: { id: string; name: string }[];
-  selected: boolean;
-  onSelect: () => void;
 }) {
   const indMap = new Map(row.indicators.map((i) => [i.id, i]));
   const entryLabel = !row.hasMotorData
@@ -77,24 +72,14 @@ function SecurityRow({
       : "Not validated";
 
   return (
-    <tr
-      className={`group border-b border-zinc-800/80 transition-colors ${
-        selected ? "bg-zinc-900/80" : "hover:bg-zinc-950"
-      }`}
-      onClick={onSelect}
-    >
-      <td className="relative py-3 pl-4 pr-2">
-        {selected ? (
-          <span
-            className="absolute left-0 top-1/2 h-0 w-0 -translate-y-1/2 border-y-[6px] border-l-[6px] border-y-transparent border-l-zinc-400"
-            aria-hidden
-          />
-        ) : null}
-        <div className="flex min-w-[14rem] items-center gap-3">
+    <tr className="border-b border-zinc-800/80 hover:bg-zinc-950/50">
+      <td className="py-2 pl-3 pr-2">
+        <div className="flex min-w-[12rem] items-center gap-2.5">
           <SymbolAvatar
             symbol={row.symbol}
             exchange={row.exchange ?? "NYSE"}
             classId={row.classId}
+            size="sm"
           />
           <div className="min-w-0">
             <div className="flex items-center gap-2">
@@ -105,28 +90,28 @@ function SecurityRow({
                 <span className="text-[10px] text-amber-400">≠ class</span>
               ) : null}
             </div>
-            <p className="truncate text-sm text-zinc-400">{row.name}</p>
+            <p className="truncate text-xs text-zinc-500">{row.name}</p>
           </div>
         </div>
       </td>
-      <td className="px-3 py-3 tabular-nums text-sm text-white">
+      <td className="px-2 py-2 tabular-nums text-sm text-white">
         {formatScore(row.score)}
       </td>
-      <td className={`px-3 py-3 tabular-nums text-sm ${perfClass(row.perf1dPct)}`}>
+      <td className={`px-2 py-2 tabular-nums text-sm ${perfClass(row.perf1dPct)}`}>
         {formatPerf(row.perf1dPct)}
       </td>
-      <td className="px-3 py-3">
+      <td className="px-2 py-2">
         <span
-          className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset ${stageBadgeClass(
+          className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset ${stageBadgeClass(
             row.stageLabel,
           )}`}
         >
           {row.stageLabel}
         </span>
       </td>
-      <td className="px-3 py-3">
+      <td className="px-2 py-2">
         <span
-          className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset ${entryBadgeClass(
+          className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset ${entryBadgeClass(
             row.entryValidated,
             row.hasMotorData,
           )}`}
@@ -134,11 +119,11 @@ function SecurityRow({
           {entryLabel}
         </span>
       </td>
-      <td className="max-w-[10rem] truncate px-3 py-3 text-xs text-zinc-400">
+      <td className="max-w-[8rem] truncate px-2 py-2 text-[11px] text-zinc-400">
         {row.dominantIndicator?.name ?? "—"}
       </td>
       {columns.map((col) => (
-        <td key={col.id} className="px-3 py-3 tabular-nums text-sm text-zinc-300">
+        <td key={col.id} className="px-2 py-2 tabular-nums text-xs text-zinc-300">
           {formatIndicatorValue(indMap.get(col.id)?.value)}
         </td>
       ))}
@@ -148,61 +133,33 @@ function SecurityRow({
 
 export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
   const columns = indicatorColumns(group.rows);
-  const [selectedSymbol, setSelectedSymbol] = useState<string | null>(
-    group.rows[0]?.symbol ?? null,
-  );
-  const selectedRow = group.rows.find((r) => r.symbol === selectedSymbol);
 
   return (
-    <section className="space-y-3">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h2 className="font-title text-lg text-white">{group.label}</h2>
-          {group.classStageLabel ? (
-            <p className="mt-1 text-xs text-zinc-500">
-              Class stage:{" "}
-              <span className="text-zinc-300">{group.classStageLabel}</span>
-              {group.classScore != null ? (
-                <span className="text-zinc-500">
-                  {" "}
-                  · score {group.classScore.toFixed(3)}
-                </span>
-              ) : null}
-              {group.classEntryValidated != null ? (
-                <span className="text-zinc-500">
-                  {" "}
-                  · sleeve{" "}
-                  {group.classEntryValidated ? "entry validated" : "entry not validated"}
-                </span>
-              ) : null}
-              {group.classDominantIndicator?.name ? (
-                <span className="text-zinc-600">
-                  {" "}
-                  · driver {group.classDominantIndicator.name}
-                </span>
-              ) : null}
-            </p>
-          ) : null}
-        </div>
-        <p className="text-xs text-zinc-600">
-          Ranked by composite score (higher = more attractive to add)
-        </p>
+    <section className="space-y-1.5">
+      <div className="flex flex-wrap items-baseline justify-between gap-2 px-1">
+        <h2 className="font-title text-base text-white">{group.label}</h2>
+        {group.classStageLabel ? (
+          <p className="text-[11px] text-zinc-500">
+            {group.classStageLabel}
+            {group.classScore != null ? ` · ${group.classScore.toFixed(2)}` : ""}
+          </p>
+        ) : null}
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-zinc-800 bg-black">
-        <table className="w-full min-w-[52rem] text-left text-sm">
-          <thead className="border-b border-zinc-800 bg-zinc-950/80 text-xs text-zinc-500">
+      <div className="overflow-x-auto rounded-lg border border-zinc-800 bg-black">
+        <table className="w-full min-w-[48rem] text-left text-sm">
+          <thead className="border-b border-zinc-800 bg-zinc-950/90 text-[11px] text-zinc-500">
             <tr>
-              <th className="px-4 py-3 font-medium">Symbol</th>
-              <th className="px-3 py-3 font-medium">Score</th>
-              <th className="px-3 py-3 font-medium">1D</th>
-              <th className="px-3 py-3 font-medium">Stage</th>
-              <th className="px-3 py-3 font-medium">Entry</th>
-              <th className="px-3 py-3 font-medium">Driver</th>
+              <th className="px-3 py-2 font-medium">Symbol</th>
+              <th className="px-2 py-2 font-medium">Score</th>
+              <th className="px-2 py-2 font-medium">1D</th>
+              <th className="px-2 py-2 font-medium">Stage</th>
+              <th className="px-2 py-2 font-medium">Entry</th>
+              <th className="px-2 py-2 font-medium">Driver</th>
               {columns.map((col) => (
                 <th
                   key={col.id}
-                  className="max-w-[8rem] truncate px-3 py-3 font-medium"
+                  className="max-w-[7rem] truncate px-2 py-2 font-medium"
                 >
                   {col.name}
                 </th>
@@ -211,34 +168,11 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
           </thead>
           <tbody>
             {group.rows.map((row) => (
-              <SecurityRow
-                key={row.id}
-                row={row}
-                columns={columns}
-                selected={selectedSymbol === row.symbol}
-                onSelect={() => setSelectedSymbol(row.symbol)}
-              />
+              <SecurityRow key={row.id} row={row} columns={columns} />
             ))}
           </tbody>
         </table>
       </div>
-
-      {selectedRow && selectedRow.rationale.length > 0 ? (
-        <div className="rounded-lg border border-zinc-800/80 bg-zinc-950/50 px-4 py-3">
-          <p className="text-xs font-medium text-zinc-400">
-            Validation rationale — {selectedRow.symbol}
-          </p>
-          <ul className="mt-2 space-y-1 text-xs text-zinc-500">
-            {selectedRow.rationale.map((line) => (
-              <li key={line}>{line}</li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
-
-      <p className="text-[10px] text-zinc-600">
-        Detailed chart view coming soon. Educational use only — not investment advice.
-      </p>
     </section>
   );
 }

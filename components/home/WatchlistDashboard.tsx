@@ -17,15 +17,15 @@ export function WatchlistDashboard({
   emptyHint?: string;
 }) {
   return (
-    <div className="space-y-10">
+    <div className="space-y-5">
       <div className="space-y-2">
         <h1 className="font-title text-2xl tracking-tight text-white">{title}</h1>
-        <p className="font-body max-w-2xl text-zinc-400">{description}</p>
-        <MotorDataFreshness snapshot={snapshot} />
+        <p className="font-body max-w-2xl text-sm text-zinc-400">{description}</p>
+        <MotorDataFreshness snapshot={snapshot} prominent />
       </div>
 
       {groups.length === 0 ? (
-        <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-8 text-center">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-6 text-center">
           <p className="font-title text-white">No symbols in your watchlist</p>
           <p className="mt-2 text-sm text-zinc-500">
             {emptyHint ??
@@ -33,12 +33,19 @@ export function WatchlistDashboard({
           </p>
         </div>
       ) : (
-        <div className="space-y-10">
+        <div className="space-y-4">
+          <p className="text-[11px] text-zinc-600">
+            Ranked by composite score within each class (higher = more attractive to add).
+          </p>
           {groups.map((group) => (
             <WatchlistClassTable key={group.classId} group={group} />
           ))}
         </div>
       )}
+
+      <p className="text-[10px] text-zinc-600">
+        Educational use only — not investment advice.
+      </p>
     </div>
   );
 }

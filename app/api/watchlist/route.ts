@@ -1,6 +1,7 @@
 import { requireSession } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
 import { writeRateLimitOr429 } from "@/lib/rate-limit";
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -79,6 +80,9 @@ export async function POST(request: Request) {
     },
   });
 
+  revalidatePath("/");
+  revalidatePath("/mercado");
+
   return NextResponse.json({
     data: {
       id: item.id,
@@ -111,6 +115,9 @@ export async function DELETE(request: Request) {
       symbol: symbol.toUpperCase(),
     },
   });
+
+  revalidatePath("/");
+  revalidatePath("/mercado");
 
   return NextResponse.json({ ok: true });
 }

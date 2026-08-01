@@ -196,29 +196,34 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
           </button>
         </div>
 
-        <div className="flex gap-1 overflow-x-auto border-b border-zinc-800 px-3 py-2 scrollbar-thin">
-          {ASSET_CLASS_TABS.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setClassId(tab.id)}
-              className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                classId === tab.id
-                  ? "bg-white text-black"
-                  : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        <div className="shrink-0 border-b border-zinc-800">
+          <div
+            className="flex items-center gap-1.5 overflow-x-auto px-3 py-2.5"
+            style={{ scrollbarWidth: "thin" }}
+          >
+            {ASSET_CLASS_TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setClassId(tab.id)}
+                className={`inline-flex shrink-0 items-center rounded-full px-3 py-1.5 text-xs font-medium leading-none transition-colors ${
+                  classId === tab.id
+                    ? "bg-white text-black"
+                    : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-        {classId !== "all" ? (
-          <p className="border-b border-zinc-800/80 px-4 py-2 text-xs text-zinc-500">
-            Showing <span className="text-zinc-300">{activeClassLabel}</span> catalog —
-            tap ★ to follow symbols from this group only.
-          </p>
-        ) : null}
+          {classId !== "all" ? (
+            <p className="border-t border-zinc-800/80 px-4 py-2 text-xs leading-snug text-zinc-500">
+              Showing <span className="text-zinc-300">{activeClassLabel}</span> catalog —
+              tap ★ to follow symbols from this group only.
+            </p>
+          ) : null}
+        </div>
 
         <div className="flex-1 overflow-y-auto">
           {showWatchlistSection && watchlist.length > 0 ? (

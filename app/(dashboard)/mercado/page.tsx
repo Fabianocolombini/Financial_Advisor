@@ -13,7 +13,7 @@ export default async function MercadoPage() {
   return (
     <WatchlistDashboard
       title="Markets"
-      description="Performance and motor scores for the symbols you follow — grouped by asset class, ranked by attractiveness."
+      description="Performance and motor scores for the symbols you follow — grouped by asset class, ranked by attractiveness. Data date shown at top."
       snapshot={snapshot}
       groups={groups}
       emptyHint="Add symbols from search (Cash, Treasuries, US Equity…) with ★ — they will appear here with daily performance and scores."
