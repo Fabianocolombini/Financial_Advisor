@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import datetime as dt
 import json
 import sys
 
@@ -29,20 +28,32 @@ from motor.src.ingestao.yfinance_client import ingest_aba_universe
 from motor.src.output.gerar_relatorio import generate_report
 
 
-def run_pipeline(aba_id: str, start: str = "2019-01-01") -> dict:
+def run_pipeline(
+    aba_id: str,
+    start: str = "2019-01-01",
+    *,
+    score_universe: bool = True,
+) -> dict:
     init_db()
     aba = load_aba_config(aba_id)
     print(f"[motor] Ingest FRED para {aba_id}...")
     fred_counts = ingest_for_aba(aba_id, start)
-    print(f"[motor] Ingest yfinance universo...")
-    yf_counts = ingest_aba_universe(aba_id, start)
-    edgar_results = {}
-    if any(item.get("edgar_metric") for item in aba.get("universo", [])):
-        print(f"[motor] Ingest EDGAR...")
-        edgar_results = ingest_aba_edgar(aba_id)
 
-    print(f"[motor] Indicadores técnicos...")
-    tec_counts = compute_aba_tecnicos(aba_id)
+    yf_counts: dict[str, int] = {}
+    edgar_results: dict = {}
+    tec_counts: dict[str, int] = {}
+    ativos_out: list[dict] = []
+
+    if score_universe:
+        print(f"[motor] Ingest yfinance universo...")
+        yf_counts = ingest_aba_universe(aba_id, start)
+        if any(item.get("edgar_metric") for item in aba.get("universo", [])):
+            print(f"[motor] Ingest EDGAR...")
+            edgar_results = ingest_aba_edgar(aba_id)
+        print(f"[motor] Indicadores técnicos...")
+        tec_counts = compute_aba_tecnicos(aba_id)
+    else:
+        print(f"[motor] Skipping universe ingest (class macro only)")
 
     print(f"[motor] Score aba (backfill histórico)...")
     backfill_n = backfill_aba_scores(aba_id, days=120)
@@ -67,39 +78,42 @@ def run_pipeline(aba_id: str, start: str = "2019-01-01") -> dict:
 
     cat_estagio = estagio_info["estagio"]
     cat_score = aba_result["score_composto"]
-    ativos_out: list[dict] = []
-    for item in aba.get("universo", []):
-        ticker = item["ticker"].upper()
-        bench = (item.get("benchmark") or "").upper()
-        ativo = compute_ativo_score(
-            aba_id,
-            ticker,
-            bench,
-            item.get("edgar_metric"),
-        )
-        est = estagio_ativo(ativo["score_composto"])
-        div = diverge_categoria(cat_estagio, est, cat_score, ativo["score_composto"])
-        validation = validate_ticker_entry(
-            cat_estagio,
-            est,
-            cat_score,
-            ativo["score_composto"],
-            div,
-            dominant_component(ativo["componentes"]),
-        )
-        persist_ativo_score(aba_id, ativo, est, div)
-        ativos_out.append(
-            {
-                "ticker": ticker,
-                "estagio": est,
-                "diverge": div,
-                "score": ativo["score_composto"],
-                "entryValidated": validation["entryValidated"],
-            }
-        )
 
-    print(f"[motor] Relatório...")
-    report_path = generate_report(aba_id)
+    if score_universe:
+        for item in aba.get("universo", []):
+            ticker = item["ticker"].upper()
+            bench = (item.get("benchmark") or "").upper()
+            ativo = compute_ativo_score(
+                aba_id,
+                ticker,
+                bench,
+                item.get("edgar_metric"),
+            )
+            est = estagio_ativo(ativo["score_composto"])
+            div = diverge_categoria(cat_estagio, est, cat_score, ativo["score_composto"])
+            validation = validate_ticker_entry(
+                cat_estagio,
+                est,
+                cat_score,
+                ativo["score_composto"],
+                div,
+                dominant_component(ativo["componentes"]),
+            )
+            persist_ativo_score(aba_id, ativo, est, div)
+            ativos_out.append(
+                {
+                    "ticker": ticker,
+                    "estagio": est,
+                    "diverge": div,
+                    "score": ativo["score_composto"],
+                    "entryValidated": validation["entryValidated"],
+                }
+            )
+
+    report_path = None
+    if score_universe:
+        print(f"[motor] Relatório...")
+        report_path = generate_report(aba_id)
 
     return {
         "aba_id": aba_id,
@@ -112,7 +126,8 @@ def run_pipeline(aba_id: str, start: str = "2019-01-01") -> dict:
         "tecnicos": tec_counts,
         "edgar": edgar_results,
         "ativos": ativos_out,
-        "report": str(report_path),
+        "report": str(report_path) if report_path else None,
+        "score_universe": score_universe,
     }
 
 
@@ -120,9 +135,18 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Motor pipeline")
     parser.add_argument("--aba", default="taxas")
     parser.add_argument("--start", default="2019-01-01")
+    parser.add_argument(
+        "--score-universe",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
     args = parser.parse_args()
     try:
-        result = run_pipeline(args.aba, args.start)
+        result = run_pipeline(
+            args.aba,
+            args.start,
+            score_universe=args.score_universe,
+        )
         print(json.dumps(result, indent=2, ensure_ascii=False))
     except Exception as e:
         print(f"ERROR: {e}", file=sys.stderr)

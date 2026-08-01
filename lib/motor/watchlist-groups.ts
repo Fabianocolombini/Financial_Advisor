@@ -94,7 +94,7 @@ export function buildWatchlistGroups(
         kind: item.kind,
         score: tick?.score ?? classSnap?.score ?? null,
         stage: tick?.stage ?? classSnap?.stage ?? null,
-        stageLabel: tick?.stageLabel ?? classSnap?.stageLabel ?? "Pending",
+        stageLabel: tick?.stageLabel ?? classSnap?.stageLabel ?? "Analyzing",
         divergesFromClass: tick?.divergesFromClass ?? false,
         entryValidated,
         dominantIndicator:

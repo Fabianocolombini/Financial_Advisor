@@ -38,6 +38,7 @@
     "motor:pipeline": "PYTHONPATH=. python3 -m motor.src.pipeline",
     "motor:report": "PYTHONPATH=. python3 -m motor.src.output.gerar_relatorio",
     "motor:daily": "PYTHONPATH=. python3 motor/scripts/run_daily.py",
+    "motor:symbol": "PYTHONPATH=. python3 motor/scripts/run_symbol.py",
     "motor:export-snapshot": "PYTHONPATH=. python3 motor/scripts/export_dashboard_snapshot.py",
     "motor:validate-abas": "PYTHONPATH=. python3 motor/scripts/validate_abas.py",
     "motor:verify-cloud-snapshot": "python3 motor/scripts/verify_cloud_snapshot.py",

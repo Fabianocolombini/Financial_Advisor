@@ -67,7 +67,7 @@ function SecurityRow({
 }) {
   const indMap = new Map(row.indicators.map((i) => [i.id, i]));
   const entryLabel = !row.hasMotorData
-    ? "Pending"
+    ? "Analyzing"
     : row.motorScope === "class"
       ? row.entryValidated
         ? "Class validated"

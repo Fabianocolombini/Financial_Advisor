@@ -1,4 +1,5 @@
 import { requireSession } from "@/lib/api-auth";
+import { dispatchMotorSymbol } from "@/lib/motor/dispatch-symbol-motor";
 import { prisma } from "@/lib/prisma";
 import { writeRateLimitOr429 } from "@/lib/rate-limit";
 import { revalidatePath } from "next/cache";
@@ -83,6 +84,8 @@ export async function POST(request: Request) {
   revalidatePath("/");
   revalidatePath("/mercado");
 
+  const motorDispatch = await dispatchMotorSymbol(normalized, classId);
+
   return NextResponse.json({
     data: {
       id: item.id,
@@ -92,6 +95,10 @@ export async function POST(request: Request) {
       exchange: item.exchange,
       kind: item.kind,
       addedAt: item.addedAt.toISOString(),
+    },
+    motor: {
+      queued: motorDispatch.ok,
+      error: motorDispatch.error,
     },
   });
 }

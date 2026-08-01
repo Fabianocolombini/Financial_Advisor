@@ -4,6 +4,7 @@ import { ASSET_CLASS_TABS } from "@/lib/catalog/asset-classes";
 import type { CatalogSearchResult } from "@/lib/catalog/types";
 import { SymbolAvatar } from "@/components/catalog/SymbolAvatar";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 
 type WatchlistItem = {
@@ -38,6 +39,7 @@ function kindLabel(kind: string | undefined): string {
 }
 
 export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [classId, setClassId] = useState("all");
   const [results, setResults] = useState<CatalogSearchResult[]>([]);
@@ -117,7 +119,7 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
         method: "DELETE",
       });
     } else {
-      await fetch("/api/watchlist", {
+      const res = await fetch("/api/watchlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -128,6 +130,12 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
           kind: item.kind,
         }),
       });
+      const json = (await res.json()) as {
+        motor?: { queued?: boolean };
+      };
+      if (json.motor?.queued) {
+        router.refresh();
+      }
     }
     await loadWatchlist();
     void runSearch(query, classId);

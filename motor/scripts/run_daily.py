@@ -32,8 +32,8 @@ def main() -> None:
 
     results: list[dict] = []
     for aba_id in abas:
-        print(f"[motor:daily] Pipeline — {aba_id}...")
-        result = run_pipeline(aba_id)
+        print(f"[motor:daily] Pipeline — {aba_id} (class macro only)...")
+        result = run_pipeline(aba_id, score_universe=False)
         results.append(result)
 
     print("[motor:daily] Export dashboard snapshot...")

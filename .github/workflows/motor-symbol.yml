@@ -1,0 +1,54 @@
+name: Motor Symbol (on-demand)
+
+on:
+  workflow_dispatch:
+    inputs:
+      symbol:
+        description: "Ticker symbol (e.g. SCHP)"
+        required: true
+        type: string
+      class_id:
+        description: "Catalog classId (e.g. fi_tips)"
+        required: true
+        type: string
+
+concurrency:
+  group: motor-symbol-${{ github.event.inputs.symbol }}
+  cancel-in-progress: false
+
+jobs:
+  motor-symbol:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: motor/requirements.txt
+
+      - name: Install motor dependencies
+        run: pip install -r motor/requirements.txt
+
+      - name: Download SQLite from Vercel Blob
+        env:
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+        run: python motor/scripts/blob_sync.py download
+        continue-on-error: true
+
+      - name: Run symbol pipeline
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: |
+          PYTHONPATH=. python motor/scripts/run_symbol.py \
+            --symbol "${{ github.event.inputs.symbol }}" \
+            --class-id "${{ github.event.inputs.class_id }}"
+
+      - name: Upload SQLite and snapshot to Vercel Blob
+        env:
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+        run: python motor/scripts/blob_sync.py upload
