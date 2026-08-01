@@ -1,0 +1,76 @@
+{
+  "id": "fi_preferred",
+  "nome": "Preferred Securities",
+  "descricao": "Preferred ETFs — spreads HY/IG e contexto de taxas",
+  "pesos_camada": {
+    "macro": 0.50,
+    "valuation": 0.35,
+    "tecnico": 0.15,
+    "fundamental": 0.0
+  },
+  "indicadores": [
+    {
+      "id": "hy_spread",
+      "nome": "Spread OAS HY agregado",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "BAMLH0A0HYM2",
+      "peso": 0.40,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "ig_spread",
+      "nome": "Spread OAS IG agregado",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "BAMLC0A0CM",
+      "peso": 0.25,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "hy_minus_ig",
+      "nome": "Diferencial HY - IG",
+      "camada": "macro",
+      "fonte": "calculado",
+      "formula": "BAMLH0A0HYM2 - BAMLC0A0CM",
+      "peso": 0.20,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "yield_10y",
+      "nome": "Yield nominal 10y",
+      "camada": "valuation",
+      "fonte": "fred",
+      "serie": "DGS10",
+      "peso": 0.50,
+      "zscore_window": 252,
+      "direcao": "negativa"
+    },
+    {
+      "id": "dtb3",
+      "nome": "T-bill 3m yield",
+      "camada": "valuation",
+      "fonte": "fred",
+      "serie": "DTB3",
+      "peso": 0.30,
+      "zscore_window": 252,
+      "direcao": "negativa"
+    }
+  ],
+  "universo": [
+    {"ticker": "PFF", "nome": "iShares Preferred and Income Securities ETF", "benchmark": "AGG"},
+    {"ticker": "FPE", "nome": "First Trust Preferred Securities & Income ETF", "benchmark": "AGG"},
+    {"ticker": "PGX", "nome": "Invesco Preferred ETF", "benchmark": "AGG"},
+    {"ticker": "PFFD", "nome": "Global X U.S. Preferred ETF", "benchmark": "AGG"},
+    {"ticker": "PSK", "nome": "SPDR ICE Preferred Securities ETF", "benchmark": "AGG"},
+    {"ticker": "PFXF", "nome": "VanEck Preferred Securities ex Financials ETF", "benchmark": "AGG"}
+  ],
+  "estagio": {
+    "regressao_dias": 90,
+    "limiar_ascendente": 0.02,
+    "limiar_descendente": -0.02
+  }
+}

@@ -6,10 +6,21 @@ import json
 from typing import Any
 
 from motor.src.paths import aba_config_path, CONFIG_DIR
+from motor.src.config.aba_class_map import ABA_LEGACY_ALIASES
+
+
+def resolve_aba_config_id(aba_id: str) -> str:
+    if aba_config_path(aba_id).is_file():
+        return aba_id
+    legacy = ABA_LEGACY_ALIASES.get(aba_id)
+    if legacy and aba_config_path(legacy).is_file():
+        return legacy
+    return aba_id
 
 
 def load_aba_config(aba_id: str) -> dict[str, Any]:
-    path = aba_config_path(aba_id)
+    resolved = resolve_aba_config_id(aba_id)
+    path = aba_config_path(resolved)
     if not path.is_file():
         raise FileNotFoundError(f"Config aba não encontrada: {path}")
     return json.loads(path.read_text())

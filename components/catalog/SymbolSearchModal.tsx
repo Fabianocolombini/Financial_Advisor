@@ -1,6 +1,7 @@
 "use client";
 
 import { ASSET_CLASS_TABS } from "@/lib/catalog/asset-classes";
+import { GICS_SECTOR_ALL, GICS_SECTORS } from "@/lib/catalog/gics-sectors";
 import type { CatalogSearchResult } from "@/lib/catalog/types";
 import { SymbolAvatar } from "@/components/catalog/SymbolAvatar";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -42,6 +43,7 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [classId, setClassId] = useState("all");
+  const [sector, setSector] = useState(GICS_SECTOR_ALL);
   const [results, setResults] = useState<CatalogSearchResult[]>([]);
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -60,11 +62,14 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
     setWatchlist(json.data);
   }, []);
 
-  const runSearch = useCallback(async (q: string, cls: string) => {
+  const runSearch = useCallback(async (q: string, cls: string, sec: string) => {
     setLoading(true);
     try {
       const params = new URLSearchParams({ class: cls, limit: "40" });
       if (q.trim()) params.set("q", q.trim());
+      if (cls === "us_equity" && sec !== GICS_SECTOR_ALL) {
+        params.set("sector", sec);
+      }
       const res = await fetch(`/api/catalog/search?${params}`);
       if (!res.ok) return;
       const json = (await res.json()) as { data: CatalogSearchResult[] };
@@ -78,8 +83,9 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
     if (!open) return;
     setQuery("");
     setClassId("all");
+    setSector(GICS_SECTOR_ALL);
     void loadWatchlist();
-    void runSearch("", "all");
+    void runSearch("", "all", GICS_SECTOR_ALL);
     const t = setTimeout(() => inputRef.current?.focus(), 50);
     return () => clearTimeout(t);
   }, [open, loadWatchlist, runSearch]);
@@ -88,12 +94,12 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
     if (!open) return;
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      void runSearch(query, classId);
+      void runSearch(query, classId, sector);
     }, 200);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [query, classId, open, runSearch]);
+  }, [query, classId, sector, open, runSearch]);
 
   useEffect(() => {
     if (!open) return;
@@ -138,7 +144,7 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
       }
     }
     await loadWatchlist();
-    void runSearch(query, classId);
+    void runSearch(query, classId, sector);
   };
 
   if (!open || !mounted) return null;
@@ -147,6 +153,12 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
   const activeClassLabel =
     ASSET_CLASS_TABS.find((t) => t.id === classId)?.label ?? "All";
   const showWatchlistSection = classId === "all" && !query.trim();
+
+  const showSectorFilter = classId === "us_equity" && !query.trim();
+  const activeSectorLabel =
+    sector === GICS_SECTOR_ALL
+      ? "All sectors"
+      : sector;
 
   const modal = (
     <div
@@ -213,7 +225,10 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setClassId(tab.id)}
+                onClick={() => {
+                  setClassId(tab.id);
+                  if (tab.id !== "us_equity") setSector(GICS_SECTOR_ALL);
+                }}
                 className={`inline-flex shrink-0 items-center rounded-full px-3 py-1.5 text-xs font-medium leading-none transition-colors ${
                   classId === tab.id
                     ? "bg-white text-black"
@@ -227,9 +242,48 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
 
           {classId !== "all" ? (
             <p className="border-t border-zinc-800/80 px-4 py-2 text-xs leading-snug text-zinc-500">
-              Showing <span className="text-zinc-300">{activeClassLabel}</span> — top
-              symbols by 90-day trading volume until 90% of class liquidity. Tap ★ to follow.
+              Showing <span className="text-zinc-300">{activeClassLabel}</span>
+              {showSectorFilter && sector !== GICS_SECTOR_ALL ? (
+                <>
+                  {" "}
+                  · <span className="text-zinc-300">{activeSectorLabel}</span>
+                </>
+              ) : null}{" "}
+              — top symbols by 90-day trading volume until 90% of class liquidity. Tap ★ to follow.
             </p>
+          ) : null}
+
+          {showSectorFilter ? (
+            <div
+              className="flex items-center gap-1.5 overflow-x-auto border-t border-zinc-800/80 px-3 py-2"
+              style={{ scrollbarWidth: "thin" }}
+            >
+              <button
+                type="button"
+                onClick={() => setSector(GICS_SECTOR_ALL)}
+                className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-[11px] font-medium leading-none transition-colors ${
+                  sector === GICS_SECTOR_ALL
+                    ? "bg-zinc-700 text-white"
+                    : "text-zinc-500 hover:bg-zinc-900 hover:text-white"
+                }`}
+              >
+                All sectors
+              </button>
+              {GICS_SECTORS.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setSector(s)}
+                  className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-[11px] font-medium leading-none transition-colors ${
+                    sector === s
+                      ? "bg-zinc-700 text-white"
+                      : "text-zinc-500 hover:bg-zinc-900 hover:text-white"
+                  }`}
+                >
+                  {s.replace("Information Technology", "Tech").replace("Consumer Discretionary", "Cons. Disc.").replace("Consumer Staples", "Cons. Staples").replace("Communication Services", "Comm. Svcs.")}
+                </button>
+              ))}
+            </div>
           ) : null}
         </div>
 

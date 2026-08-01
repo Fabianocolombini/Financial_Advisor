@@ -128,7 +128,7 @@ def run_test() -> dict[str, Any]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--test", action="store_true")
-    parser.add_argument("--aba", default="taxas")
+    parser.add_argument("--aba", default="fi_treasury")
     parser.add_argument("--start", default=_DEFAULT_START)
     parser.add_argument("--manifest", action="store_true", help="Ingerir manifesto completo")
     args = parser.parse_args()

@@ -1,0 +1,54 @@
+{
+  "id": "commodities_energy",
+  "nome": "Commodities — energia",
+  "descricao": "Oil & gas macro — WTI e Henry Hub",
+  "pesos_camada": {
+    "macro": 0.60,
+    "valuation": 0.30,
+    "tecnico": 0.10,
+    "fundamental": 0.0
+  },
+  "indicadores": [
+    {
+      "id": "wti",
+      "nome": "WTI crude oil",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "DCOILWTICO",
+      "peso": 0.50,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "henry_hub",
+      "nome": "Henry Hub natural gas",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "DHHNGSP",
+      "peso": 0.30,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "yield_10y",
+      "nome": "Yield nominal 10y",
+      "camada": "valuation",
+      "fonte": "fred",
+      "serie": "DGS10",
+      "peso": 0.20,
+      "zscore_window": 252,
+      "direcao": "negativa"
+    }
+  ],
+  "universo": [
+    {"ticker": "USO", "nome": "United States Oil Fund", "benchmark": "SPY"},
+    {"ticker": "XLE", "nome": "Energy Select Sector SPDR", "benchmark": "SPY"},
+    {"ticker": "XOP", "nome": "SPDR S&P Oil & Gas E&P ETF", "benchmark": "SPY"},
+    {"ticker": "UNG", "nome": "United States Natural Gas Fund", "benchmark": "SPY"}
+  ],
+  "estagio": {
+    "regressao_dias": 90,
+    "limiar_ascendente": 0.02,
+    "limiar_descendente": -0.02
+  }
+}

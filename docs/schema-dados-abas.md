@@ -24,7 +24,7 @@ motor/
 
 ```json
 {
-  "id": "taxas",
+  "id": "fi_treasury",
   "nome": "Renda Fixa Soberana",
   "descricao": "Treasuries, T-bills, contexto de curva e Fed",
   "pesos_camada": {
@@ -91,7 +91,7 @@ Definidos em `config/indicadores_tecnicos.json`. Calculados para cada ticker em 
 
 ## Exemplo Taxas (seção 2)
 
-Ver [`motor/config/abas/taxas.json`](../../motor/config/abas/taxas.json).
+Ver [`motor/config/abas/fi_treasury.json`](../../motor/config/abas/fi_treasury.json).
 
 ## Exemplo Crédito Alternativo (seção 3)
 
@@ -101,7 +101,7 @@ Ver [`motor/config/abas/credito_alternativo.json`](../../motor/config/abas/credi
 
 | Classe | Arquivo config |
 |--------|----------------|
-| Renda Fixa Soberana | `taxas.json` |
+| Renda Fixa Soberana | `fi_treasury.json` |
 | RF Corporativa IG | `bonds_corporativos.json` |
 | Crédito Alt / HY | `credito_alternativo.json` |
 | Dividendos | `dividendos.json` |

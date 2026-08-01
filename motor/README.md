@@ -14,7 +14,7 @@ npm run motor:fontes        # ingest completo do manifesto
 
 ```bash
 npm run motor:test
-npm run motor:pipeline -- --aba taxas
+npm run motor:pipeline -- --aba fi_treasury
 npm run motor:report -- --aba credito_alternativo
 ```
 

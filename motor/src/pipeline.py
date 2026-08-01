@@ -36,6 +36,7 @@ def run_pipeline(
 ) -> dict:
     init_db()
     aba = load_aba_config(aba_id)
+    aba_id = aba.get("id", aba_id)
     print(f"[motor] Ingest FRED para {aba_id}...")
     fred_counts = ingest_for_aba(aba_id, start)
 
@@ -133,7 +134,7 @@ def run_pipeline(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Motor pipeline")
-    parser.add_argument("--aba", default="taxas")
+    parser.add_argument("--aba", default="fi_treasury")
     parser.add_argument("--start", default="2019-01-01")
     parser.add_argument(
         "--score-universe",

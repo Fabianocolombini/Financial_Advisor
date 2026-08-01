@@ -25,7 +25,7 @@ Referência: [classes-ativos-indicadores-fontes.md](classes-ativos-indicadores-f
 | 7 | Crédito Alt + EDGAR | BDC divergindo da categoria |
 
 ```bash
-npm run motor:pipeline -- --aba taxas
+npm run motor:pipeline -- --aba fi_treasury
 npm run motor:report -- --aba credito_alternativo
 ```
 

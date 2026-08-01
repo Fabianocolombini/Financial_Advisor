@@ -34,6 +34,10 @@ def compute_formula(formula: str) -> pd.Series:
         return s - s.shift(90)
     if formula == "pe_EFA_div_SPY":
         return _pe_ratio_ratio("EFA", "SPY")
+    if formula == "pe_EEM_div_SPY":
+        return _pe_ratio_ratio("EEM", "SPY")
+    if formula == "em_gdp_growth":
+        return _world_bank_series("NY.GDP.MKTP.KD.ZG", "EM")
     if " - " in formula:
         left, right = formula.split(" - ", 1)
         a = _series_from_db(left.strip())
@@ -50,6 +54,23 @@ def compute_formula(formula: str) -> pd.Series:
         combined = pd.concat(series_list, axis=1, join="inner")
         return combined.sum(axis=1)
     return _series_from_db(formula)
+
+
+def _world_bank_series(indicator: str, country: str) -> pd.Series:
+    with get_connection() as conn:
+        rows = conn.execute(
+            """
+            SELECT data, valor FROM world_bank_snapshot
+            WHERE indicator = ? AND country = ?
+            ORDER BY data
+            """,
+            (indicator, country),
+        ).fetchall()
+    if not rows:
+        return pd.Series(dtype=float)
+    dates = [dt.date.fromisoformat(r["data"]) for r in rows]
+    vals = [float(r["valor"]) for r in rows]
+    return pd.Series(vals, index=dates)
 
 
 def _pe_ratio_ratio(ticker_a: str, ticker_b: str) -> pd.Series:

@@ -1,0 +1,66 @@
+{
+  "id": "intl_equity",
+  "nome": "Developed ex-US Equity",
+  "descricao": "International developed — valuation relativa vs US e macro",
+  "pesos_camada": {
+    "macro": 0.45,
+    "valuation": 0.40,
+    "tecnico": 0.15,
+    "fundamental": 0.0
+  },
+  "indicadores": [
+    {
+      "id": "pe_rel_intl_us",
+      "nome": "P/E EFA relativo a SPY",
+      "camada": "valuation",
+      "fonte": "calculado",
+      "formula": "pe_EFA_div_SPY",
+      "peso": 0.55,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "vix",
+      "nome": "VIX",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "VIXCLS",
+      "peso": 0.30,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "spread_10y_2y",
+      "nome": "Spread 10y-2y",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "T10Y2Y",
+      "peso": 0.25,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "dxy",
+      "nome": "Dollar broad index",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "DTWEXBGS",
+      "peso": 0.20,
+      "zscore_window": 252,
+      "direcao": "negativa"
+    }
+  ],
+  "universo": [
+    {"ticker": "EFA", "nome": "iShares MSCI EAFE ETF", "benchmark": "SPY"},
+    {"ticker": "VEA", "nome": "Vanguard FTSE Developed Markets ETF", "benchmark": "SPY"},
+    {"ticker": "IEFA", "nome": "iShares Core MSCI EAFE IMI Index ETF", "benchmark": "SPY"},
+    {"ticker": "VXUS", "nome": "Vanguard Total International Stock ETF", "benchmark": "SPY"},
+    {"ticker": "SCHF", "nome": "Schwab International Equity ETF", "benchmark": "SPY"},
+    {"ticker": "VEU", "nome": "Vanguard FTSE All-World ex-US ETF", "benchmark": "SPY"}
+  ],
+  "estagio": {
+    "regressao_dias": 90,
+    "limiar_ascendente": 0.02,
+    "limiar_descendente": -0.02
+  }
+}

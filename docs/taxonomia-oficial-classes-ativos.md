@@ -9,7 +9,7 @@ Base: Callan / GICS / Morningstar. Alinhado a `classes-ativos-indicadores-fontes
 | ID | Classe | Config futuro |
 |----|--------|---------------|
 | `cash_equivalents` | Cash Equivalents | `caixa.json` |
-| `fi_treasury` | Fixed Income → US Government/Treasury | `taxas.json` |
+| `fi_treasury` | Fixed Income → US Government/Treasury | `fi_treasury.json` |
 | `fi_ig` | Fixed Income → Investment Grade Corporate | `bonds_corporativos.json` |
 | `fi_hy` | Fixed Income → High Yield Corporate | (parte crédito alt) |
 | `fi_tips` | Fixed Income → TIPS | `inflacao.json` |

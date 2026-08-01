@@ -4,6 +4,8 @@ export type CatalogInstrument = {
   classId: string;
   exchange: string;
   kind: string;
+  /** GICS sector (us_equity filter). */
+  sector?: string;
 };
 
 export type AssetClassTab = {

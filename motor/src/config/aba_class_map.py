@@ -1,7 +1,7 @@
 """Motor aba id → catalog classId (watchlist / Home grouping)."""
 
 ABA_TO_CLASS: dict[str, str] = {
-    "taxas": "fi_treasury",
+    "fi_treasury": "fi_treasury",
     "credito_alternativo": "alt_bdc",
     "cash_equivalents": "cash_equivalents",
     "fi_ig": "fi_ig",
@@ -10,6 +10,18 @@ ABA_TO_CLASS: dict[str, str] = {
     "us_equity": "us_equity",
     "fi_tips": "fi_tips",
     "healthcare_biotech": "healthcare_biotech",
+    "commodities_precious": "commodities_precious",
+    "commodities_energy": "commodities_energy",
+    "currencies": "currencies",
+    "fi_preferred": "fi_preferred",
+    "intl_equity": "intl_equity",
+    "em_equity": "em_equity",
+    "alt_infrastructure": "alt_infrastructure",
+}
+
+# SQLite rows written before rename taxas → fi_treasury
+ABA_LEGACY_ALIASES: dict[str, str] = {
+    "taxas": "fi_treasury",
 }
 
 CLASS_LABELS: dict[str, str] = {
@@ -35,7 +47,7 @@ CLASS_LABELS: dict[str, str] = {
 
 CLASS_TO_ABA: dict[str, str] = {class_id: aba_id for aba_id, class_id in ABA_TO_CLASS.items()}
 
-# Default benchmark for on-demand ticker scoring (EOD technical layer).
+# Sector benchmarks for technical score (relative strength within sleeve).
 CLASS_BENCHMARK: dict[str, str] = {
     "fi_treasury": "AGG",
     "fi_ig": "AGG",
@@ -43,18 +55,27 @@ CLASS_BENCHMARK: dict[str, str] = {
     "fi_tips": "AGG",
     "fi_preferred": "AGG",
     "cash_equivalents": "AGG",
-    "alt_bdc": "AGG",
-    "real_estate": "AGG",
+    "alt_bdc": "HYG",
+    "real_estate": "VNQ",
     "us_equity": "SPY",
     "intl_equity": "SPY",
     "em_equity": "SPY",
     "healthcare_biotech": "SPY",
     "commodities_precious": "GLD",
     "commodities_energy": "USO",
-    "energy_mlp": "SPY",
-    "alt_infrastructure": "SPY",
+    "energy_mlp": "AMLP",
+    "alt_infrastructure": "IGF",
     "currencies": "UUP",
 }
+
+
+def class_id_for_aba(aba_id: str) -> str:
+    """Resolve motor aba_id to catalog classId (handles legacy names)."""
+    if aba_id in ABA_TO_CLASS:
+        return ABA_TO_CLASS[aba_id]
+    if aba_id in ABA_LEGACY_ALIASES:
+        return ABA_LEGACY_ALIASES[aba_id]
+    return aba_id
 
 
 def resolve_aba_id(class_id: str) -> str | None:

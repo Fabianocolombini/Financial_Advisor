@@ -35,7 +35,7 @@ npm run motor:pipeline      # Etapa 2+: score por aba
 npm run motor:report        # relatório .md
 ```
 
-Variáveis: `FRED_API_KEY` (`.env.local`), `MOTOR_ABA` (default `taxas`).
+Variáveis: `FRED_API_KEY` (`.env.local`), `MOTOR_ABA` (default `fi_treasury`).
 
 ## Entrega e deploy
 

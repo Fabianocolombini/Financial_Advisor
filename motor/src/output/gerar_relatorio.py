@@ -139,7 +139,7 @@ def main() -> None:
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--aba", default="taxas")
+    parser.add_argument("--aba", default="fi_treasury")
     args = parser.parse_args()
     path = generate_report(args.aba)
     print(path)

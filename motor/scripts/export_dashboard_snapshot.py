@@ -23,7 +23,7 @@ def stage_en(estagio: str | None) -> str:
 def main() -> None:
     import datetime as dt
 
-    from motor.src.config.aba_class_map import ABA_TO_CLASS, CLASS_LABELS
+    from motor.src.config.aba_class_map import CLASS_LABELS, class_id_for_aba
     from motor.src.config_loader import load_aba_config
     from motor.src.db.connection import get_connection, init_db
     from motor.src.dates import motor_as_of_date, motor_snapshot_timestamps
@@ -61,7 +61,7 @@ def main() -> None:
 
         for row in aba_rows:
             aba_id = row["aba_id"]
-            class_id = ABA_TO_CLASS.get(aba_id, aba_id)
+            class_id = class_id_for_aba(aba_id)
             componentes = json.loads(row["componentes_json"])
             top_inds = sorted(
                 componentes,
@@ -119,7 +119,7 @@ def main() -> None:
 
         for row in ativo_rows:
             ticker = row["ticker"].upper()
-            class_id = ABA_TO_CLASS.get(row["aba_id"], row["aba_id"])
+            class_id = class_id_for_aba(row["aba_id"])
             componentes = json.loads(row["componentes_json"])
             top_inds = sorted(
                 componentes,

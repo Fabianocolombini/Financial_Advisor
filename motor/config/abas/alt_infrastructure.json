@@ -1,0 +1,71 @@
+{
+  "id": "alt_infrastructure",
+  "nome": "Infrastructure / Utilities",
+  "descricao": "Infra global — energia, utilities e EDGAR em emissores líquidos",
+  "pesos_camada": {
+    "macro": 0.45,
+    "valuation": 0.25,
+    "tecnico": 0.15,
+    "fundamental": 0.35
+  },
+  "indicadores": [
+    {
+      "id": "wti",
+      "nome": "WTI crude oil",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "DCOILWTICO",
+      "peso": 0.35,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "henry_hub",
+      "nome": "Henry Hub natural gas",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "DHHNGSP",
+      "peso": 0.25,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "yield_10y",
+      "nome": "Yield nominal 10y",
+      "camada": "valuation",
+      "fonte": "fred",
+      "serie": "DGS10",
+      "peso": 0.40,
+      "zscore_window": 252,
+      "direcao": "negativa"
+    },
+    {
+      "id": "spread_10y_2y",
+      "nome": "Spread 10y-2y",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "T10Y2Y",
+      "peso": 0.20,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    }
+  ],
+  "universo": [
+    {"ticker": "IGF", "nome": "iShares Global Infrastructure ETF", "benchmark": "IGF"},
+    {"ticker": "IFRA", "nome": "iShares U.S. Infrastructure ETF", "benchmark": "IGF"},
+    {"ticker": "PAVE", "nome": "Global X U.S. Infrastructure Development ETF", "benchmark": "IGF"},
+    {"ticker": "TOLZ", "nome": "ProShares DJ Brookfield Global Infrastructure ETF", "benchmark": "IGF"},
+    {"ticker": "NFRA", "nome": "FlexShares STOXX Global Broad Infrastructure Index Fund", "benchmark": "IGF"},
+    {"ticker": "NEE", "nome": "NextEra Energy Inc.", "benchmark": "IGF", "edgar_metric": "non_accrual_rate"},
+    {"ticker": "DUK", "nome": "Duke Energy Corporation", "benchmark": "IGF", "edgar_metric": "non_accrual_rate"},
+    {"ticker": "BIP", "nome": "Brookfield Infrastructure Partners L.P.", "benchmark": "IGF", "edgar_metric": "non_accrual_rate"},
+    {"ticker": "CCI", "nome": "Crown Castle Inc.", "benchmark": "IGF", "edgar_metric": "non_accrual_rate"},
+    {"ticker": "AMT", "nome": "American Tower Corporation", "benchmark": "IGF", "edgar_metric": "non_accrual_rate"},
+    {"ticker": "ENB", "nome": "Enbridge Inc.", "benchmark": "IGF", "edgar_metric": "non_accrual_rate"}
+  ],
+  "estagio": {
+    "regressao_dias": 90,
+    "limiar_ascendente": 0.02,
+    "limiar_descendente": -0.02
+  }
+}

@@ -17,7 +17,7 @@ Definidos em `motor/config/indicadores_tecnicos.json`.
 
 ## Classes e indicadores principais
 
-### 1. Renda Fixa Soberana → `taxas.json`
+### 1. Renda Fixa Soberana → `fi_treasury.json`
 Macro: T10Y2Y, T10Y3M, DFF — FRED. Valuation: yield real (DGS10−T10YIE).
 
 ### 2. RF Corporativa IG → `bonds_corporativos.json`

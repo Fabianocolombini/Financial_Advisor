@@ -1,0 +1,54 @@
+{
+  "id": "currencies",
+  "nome": "FX / moedas",
+  "descricao": "Dollar index e Fed — macro FX",
+  "pesos_camada": {
+    "macro": 0.70,
+    "valuation": 0.20,
+    "tecnico": 0.10,
+    "fundamental": 0.0
+  },
+  "indicadores": [
+    {
+      "id": "eurusd",
+      "nome": "USD/EUR",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "DEXUSEU",
+      "peso": 0.35,
+      "zscore_window": 252,
+      "direcao": "negativa"
+    },
+    {
+      "id": "dxy",
+      "nome": "Dollar broad index",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "DTWEXBGS",
+      "peso": 0.35,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "fed_funds",
+      "nome": "Fed Funds Rate",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "DFF",
+      "peso": 0.30,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    }
+  ],
+  "universo": [
+    {"ticker": "UUP", "nome": "Invesco DB US Dollar Index Bullish Fund", "benchmark": "AGG"},
+    {"ticker": "FXE", "nome": "Invesco CurrencyShares Euro Trust", "benchmark": "AGG"},
+    {"ticker": "FXY", "nome": "Invesco CurrencyShares Japanese Yen Trust", "benchmark": "AGG"},
+    {"ticker": "CEW", "nome": "WisdomTree Emerging Currency Strategy Fund", "benchmark": "AGG"}
+  ],
+  "estagio": {
+    "regressao_dias": 90,
+    "limiar_ascendente": 0.02,
+    "limiar_descendente": -0.02
+  }
+}

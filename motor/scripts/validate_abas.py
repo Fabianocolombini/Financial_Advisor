@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Acceptance checks for taxas + credito_alternativo (and optional other abas)."""
+"""Acceptance checks for fi_treasury + credito_alternativo (and optional other abas)."""
 
 from __future__ import annotations
 
@@ -21,7 +21,8 @@ def main() -> None:
     errors: list[str] = []
 
     with get_connection() as conn:
-        for aba_id in ("taxas", "credito_alternativo"):
+        for canonical in ("fi_treasury", "credito_alternativo"):
+            historico_aba = canonical
             row = conn.execute(
                 """
                 SELECT data, score_composto, estagio, slope
@@ -29,25 +30,36 @@ def main() -> None:
                 WHERE aba_id = ?
                 ORDER BY data DESC LIMIT 1
                 """,
-                (aba_id,),
+                (canonical,),
             ).fetchone()
+            if not row and canonical == "fi_treasury":
+                row = conn.execute(
+                    """
+                    SELECT data, score_composto, estagio, slope
+                    FROM scores_historico
+                    WHERE aba_id = 'taxas'
+                    ORDER BY data DESC LIMIT 1
+                    """
+                ).fetchone()
+                if row:
+                    historico_aba = "taxas"
             if not row:
-                errors.append(f"{aba_id}: no scores_historico row")
+                errors.append(f"{canonical}: no scores_historico row")
                 continue
             if row["estagio"] is None:
-                errors.append(f"{aba_id}: missing estagio on latest score")
+                errors.append(f"{canonical}: missing estagio on latest score")
             if row["data"] < expected.isoformat():
-                print(f"[validate_abas] WARN {aba_id} data {row['data']} < expected {expected}")
+                print(f"[validate_abas] WARN {canonical} data {row['data']} < expected {expected}")
 
             ativos = conn.execute(
                 """
                 SELECT ticker, score_composto, estagio, diverge_categoria
                 FROM scores_ativo WHERE aba_id = ? AND data = ?
                 """,
-                (aba_id, row["data"]),
+                (historico_aba, row["data"]),
             ).fetchall()
             if not ativos:
-                errors.append(f"{aba_id}: no scores_ativo for {row['data']}")
+                errors.append(f"{canonical}: no scores_ativo for {row['data']}")
 
         bdc_div = conn.execute(
             """
@@ -59,9 +71,11 @@ def main() -> None:
         if not bdc_div:
             errors.append("credito_alternativo: no BDC ticker scores")
 
-    reports = list(OUTPUT_DIR.glob("relatorio_taxas_*.md"))
+    reports = list(OUTPUT_DIR.glob("relatorio_fi_treasury_*.md"))
     if not reports:
-        errors.append("missing relatorio_taxas_*.md")
+        reports = list(OUTPUT_DIR.glob("relatorio_taxas_*.md"))
+    if not reports:
+        errors.append("missing relatorio_fi_treasury_*.md (or legacy relatorio_taxas_*.md)")
     reports_alt = list(OUTPUT_DIR.glob("relatorio_credito_alternativo_*.md"))
     if not reports_alt:
         errors.append("missing relatorio_credito_alternativo_*.md")
@@ -86,7 +100,7 @@ def main() -> None:
             print(f"[validate_abas] FAIL: {e}", file=sys.stderr)
         sys.exit(1)
 
-    print("[validate_abas] OK — taxas + credito_alternativo acceptance checks passed")
+    print("[validate_abas] OK — fi_treasury + credito_alternativo acceptance checks passed")
 
 
 if __name__ == "__main__":

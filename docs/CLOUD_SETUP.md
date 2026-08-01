@@ -128,7 +128,7 @@ flowchart LR
 Passos do workflow:
 
 1. `python motor/scripts/blob_sync.py download` — restaura `historico.db` (ignora 404 na primeira execução).
-2. `python motor/scripts/run_daily.py` — ingestão de fontes, pipeline de todas as abas (`taxas`, `credito_alternativo`), relatórios `.md`.
+2. `python motor/scripts/run_daily.py` — ingestão de fontes, pipeline de todas as abas (`fi_treasury`, `credito_alternativo`, …), relatórios `.md`.
 3. `python motor/scripts/blob_sync.py upload` — persiste SQLite.
 4. `python motor/scripts/blob_sync.py upload-reports` — envia relatórios para `motor/reports/`.
 

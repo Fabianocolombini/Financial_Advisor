@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { CATALOG_INSTRUMENTS, getCatalogByClass, getCatalogInstrumentsByClass } from "./instruments";
 import { rankCatalogByVolume } from "./volume-rank";
@@ -102,15 +103,29 @@ async function searchDatabase(
   return results;
 }
 
+const rankCatalogByVolumeCached = unstable_cache(
+  async (classId: string, sector?: string) => {
+    let instruments = getCatalogInstrumentsByClass(classId);
+    if (sector && sector !== "all") {
+      instruments = instruments.filter((item) => item.sector === sector);
+    }
+    return rankCatalogByVolume(instruments);
+  },
+  ["catalog-volume-rank"],
+  { revalidate: 3600 },
+);
+
 export async function searchCatalog(options: {
   q?: string;
   classId?: string;
+  sector?: string;
   watchlistSymbols?: Set<string>;
   limit?: number;
 }): Promise<CatalogSearchResult[]> {
   const {
     q = "",
     classId = "all",
+    sector = "all",
     watchlistSymbols = new Set<string>(),
     limit = 30,
   } = options;
@@ -119,8 +134,7 @@ export async function searchCatalog(options: {
 
   if (!query) {
     if (classId !== "all") {
-      const instruments = getCatalogInstrumentsByClass(classId);
-      const ranked = await rankCatalogByVolume(instruments);
+      const ranked = await rankCatalogByVolumeCached(classId, sector);
       return ranked.map((item) => ({
         ...catalogToResult(item, watchlistSymbols),
         liquiditySharePct: item.liquiditySharePct,
@@ -132,6 +146,7 @@ export async function searchCatalog(options: {
 
   const catalogHits = CATALOG_INSTRUMENTS.filter((item) => {
     if (classId !== "all" && item.classId !== classId) return false;
+    if (sector !== "all" && item.sector !== sector) return false;
     return matchesQuery(item, query);
   }).slice(0, limit);
 

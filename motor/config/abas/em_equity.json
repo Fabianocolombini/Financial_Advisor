@@ -1,0 +1,66 @@
+{
+  "id": "em_equity",
+  "nome": "Emerging Market Equity",
+  "descricao": "Emerging markets — valuation relativa e crescimento macro",
+  "pesos_camada": {
+    "macro": 0.50,
+    "valuation": 0.35,
+    "tecnico": 0.15,
+    "fundamental": 0.0
+  },
+  "indicadores": [
+    {
+      "id": "pe_rel_em_us",
+      "nome": "P/E EEM relativo a SPY",
+      "camada": "valuation",
+      "fonte": "calculado",
+      "formula": "pe_EEM_div_SPY",
+      "peso": 0.50,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "gdp_growth_em",
+      "nome": "Crescimento PIB EM (World Bank)",
+      "camada": "macro",
+      "fonte": "calculado",
+      "formula": "em_gdp_growth",
+      "peso": 0.30,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "vix",
+      "nome": "VIX",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "VIXCLS",
+      "peso": 0.25,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "dxy",
+      "nome": "Dollar broad index",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "DTWEXBGS",
+      "peso": 0.25,
+      "zscore_window": 252,
+      "direcao": "negativa"
+    }
+  ],
+  "universo": [
+    {"ticker": "EEM", "nome": "iShares MSCI Emerging Markets ETF", "benchmark": "SPY"},
+    {"ticker": "VWO", "nome": "Vanguard FTSE Emerging Markets ETF", "benchmark": "SPY"},
+    {"ticker": "IEMG", "nome": "iShares Core MSCI Emerging Markets IMI Index ETF", "benchmark": "SPY"},
+    {"ticker": "SCHE", "nome": "Schwab Emerging Markets Equity ETF", "benchmark": "SPY"},
+    {"ticker": "SPEM", "nome": "SPDR Portfolio Emerging Markets ETF", "benchmark": "SPY"},
+    {"ticker": "EMXC", "nome": "iShares MSCI Emerging Markets ex China ETF", "benchmark": "SPY"}
+  ],
+  "estagio": {
+    "regressao_dias": 90,
+    "limiar_ascendente": 0.02,
+    "limiar_descendente": -0.02
+  }
+}

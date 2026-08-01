@@ -1,0 +1,64 @@
+{
+  "id": "commodities_precious",
+  "nome": "Commodities — metais preciosos",
+  "descricao": "Gold/silver macro — real yields, DXY, CPI",
+  "pesos_camada": {
+    "macro": 0.55,
+    "valuation": 0.35,
+    "tecnico": 0.10,
+    "fundamental": 0.0
+  },
+  "indicadores": [
+    {
+      "id": "dfii10",
+      "nome": "Yield real 10y TIPS",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "DFII10",
+      "peso": 0.35,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "dxy",
+      "nome": "Dollar broad index",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "DTWEXBGS",
+      "peso": 0.25,
+      "zscore_window": 252,
+      "direcao": "negativa"
+    },
+    {
+      "id": "cpi",
+      "nome": "CPI headline",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "CPIAUCSL",
+      "peso": 0.25,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "yield_10y",
+      "nome": "Yield nominal 10y",
+      "camada": "valuation",
+      "fonte": "fred",
+      "serie": "DGS10",
+      "peso": 0.35,
+      "zscore_window": 252,
+      "direcao": "negativa"
+    }
+  ],
+  "universo": [
+    {"ticker": "GLD", "nome": "SPDR Gold Shares", "benchmark": "AGG"},
+    {"ticker": "IAU", "nome": "iShares Gold Trust", "benchmark": "AGG"},
+    {"ticker": "SLV", "nome": "iShares Silver Trust", "benchmark": "AGG"},
+    {"ticker": "GDX", "nome": "VanEck Gold Miners ETF", "benchmark": "SPY"}
+  ],
+  "estagio": {
+    "regressao_dias": 90,
+    "limiar_ascendente": 0.02,
+    "limiar_descendente": -0.02
+  }
+}
