@@ -278,6 +278,19 @@ const intlEquity: CatalogInstrument[] = [
   inst("FLJP", "Franklin FTSE Japan ETF", "intl_equity"),
   inst("FLGB", "Franklin FTSE United Kingdom ETF", "intl_equity"),
   inst("BBEU", "JPMorgan BetaBuilders Europe ETF", "intl_equity"),
+  inst("VEU", "Vanguard FTSE All-World ex-US ETF", "intl_equity"),
+  inst("URTH", "iShares MSCI World ex USA ETF", "intl_equity"),
+  inst("DXJ", "WisdomTree Japan Hedged Equity Fund", "intl_equity"),
+  inst("HEDJ", "WisdomTree Europe Hedged Equity Fund", "intl_equity"),
+  inst("FEZ", "SPDR EURO STOXX 50 ETF", "intl_equity"),
+  inst("IEUS", "iShares MSCI Europe Small-Cap ETF", "intl_equity"),
+  inst("SCHC", "Schwab International Small-Cap Equity ETF", "intl_equity"),
+  inst("ISCF", "iShares MSCI International Quality Factor ETF", "intl_equity"),
+  inst("IMTM", "iShares MSCI Intl Momentum Factor ETF", "intl_equity"),
+  inst("AVDV", "Avantis International Small Cap Value ETF", "intl_equity"),
+  inst("FNDF", "Schwab Fundamental International Equity ETF", "intl_equity"),
+  inst("FLLA", "Franklin FTSE Latin America ETF", "intl_equity"),
+  inst("FLKR", "Franklin FTSE South Korea ETF", "intl_equity"),
 ];
 
 const emEquity: CatalogInstrument[] = [

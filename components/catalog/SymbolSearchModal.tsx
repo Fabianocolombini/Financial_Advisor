@@ -228,7 +228,7 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
           {classId !== "all" ? (
             <p className="border-t border-zinc-800/80 px-4 py-2 text-xs leading-snug text-zinc-500">
               Showing <span className="text-zinc-300">{activeClassLabel}</span> — top
-              symbols by trading volume until 50% of class liquidity. Tap ★ to follow.
+              symbols by 90-day trading volume until 90% of class liquidity. Tap ★ to follow.
             </p>
           ) : null}
         </div>

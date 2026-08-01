@@ -22,7 +22,7 @@ CLASS_LABELS: dict[str, str] = {
     "cash_equivalents": "Cash",
     "fi_tips": "TIPS",
     "fi_preferred": "Preferred",
-    "intl_equity": "Intl Equity",
+    "intl_equity": "International",
     "em_equity": "Emerging Markets",
     "commodities_precious": "Precious Metals",
     "commodities_energy": "Energy",

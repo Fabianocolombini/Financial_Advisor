@@ -10,7 +10,7 @@ export const ASSET_CLASS_TABS: AssetClassTab[] = [
   { id: "fi_tips", label: "TIPS" },
   { id: "fi_preferred", label: "Preferred" },
   { id: "us_equity", label: "US Equity" },
-  { id: "intl_equity", label: "Intl" },
+  { id: "intl_equity", label: "International" },
   { id: "em_equity", label: "Emerging" },
   { id: "real_estate", label: "REITs" },
   { id: "commodities_precious", label: "Metals" },

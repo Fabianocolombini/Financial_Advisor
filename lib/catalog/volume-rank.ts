@@ -1,28 +1,27 @@
 import { fetchYahooChartCloses } from "@/lib/market/yahoo";
 import type { CatalogInstrument } from "./types";
 
-const LOOKBACK_DAYS = 21;
-const CUMULATIVE_TARGET_PCT = 50;
+const LOOKBACK_DAYS = 90;
+const CUMULATIVE_TARGET_PCT = 90;
+const CALENDAR_BUFFER_DAYS = 45;
 
-function avgDollarVolume(bars: { value: number; volume: number }[]): number {
+function totalDollarVolume(bars: { value: number; volume: number }[]): number {
   const slice = bars.slice(-LOOKBACK_DAYS);
   let sum = 0;
-  let n = 0;
   for (const bar of slice) {
     if (bar.volume > 0 && bar.value > 0) {
       sum += bar.value * bar.volume;
-      n += 1;
     }
   }
-  return n > 0 ? sum / n : 0;
+  return sum;
 }
 
 async function dollarVolumeForSymbol(symbol: string): Promise<number> {
   const period2 = Math.floor(Date.now() / 1000);
-  const period1 = period2 - (LOOKBACK_DAYS + 10) * 86400;
+  const period1 = period2 - (LOOKBACK_DAYS + CALENDAR_BUFFER_DAYS) * 86400;
   try {
     const bars = await fetchYahooChartCloses(symbol, period1, period2);
-    return avgDollarVolume(bars);
+    return totalDollarVolume(bars);
   } catch {
     return 0;
   }
@@ -51,12 +50,13 @@ async function mapWithConcurrency<T, R>(
 
 export type RankedCatalogInstrument = CatalogInstrument & {
   liquiditySharePct: number;
-  avgDollarVolume: number;
+  /** Total dollar volume over the lookback window (90d). */
+  liquidityVolume: number;
 };
 
 /**
- * Rank class instruments by average daily dollar volume (EOD).
- * Returns top names until cumulative share reaches 50% of class liquidity.
+ * Rank class instruments by total dollar volume over ~90 trading days (EOD).
+ * Returns top names until cumulative share reaches 90% of class liquidity.
  */
 export async function rankCatalogByVolume(
   instruments: CatalogInstrument[],
@@ -67,33 +67,33 @@ export async function rankCatalogByVolume(
     instruments,
     async (item) => ({
       item,
-      avgDollarVolume: await dollarVolumeForSymbol(item.symbol),
+      liquidityVolume: await dollarVolumeForSymbol(item.symbol),
     }),
   );
 
-  const withVolume = volumes.filter((row) => row.avgDollarVolume > 0);
+  const withVolume = volumes.filter((row) => row.liquidityVolume > 0);
   if (withVolume.length === 0) {
-    return instruments.slice(0, 12).map((item) => ({
+    return instruments.slice(0, 20).map((item) => ({
       ...item,
       liquiditySharePct: 0,
-      avgDollarVolume: 0,
+      liquidityVolume: 0,
     }));
   }
 
-  const total = withVolume.reduce((sum, row) => sum + row.avgDollarVolume, 0);
+  const total = withVolume.reduce((sum, row) => sum + row.liquidityVolume, 0);
   const sorted = [...withVolume].sort(
-    (a, b) => b.avgDollarVolume - a.avgDollarVolume,
+    (a, b) => b.liquidityVolume - a.liquidityVolume,
   );
 
   const ranked: RankedCatalogInstrument[] = [];
   let cumulative = 0;
 
   for (const row of sorted) {
-    const sharePct = (row.avgDollarVolume / total) * 100;
+    const sharePct = (row.liquidityVolume / total) * 100;
     ranked.push({
       ...row.item,
       liquiditySharePct: sharePct,
-      avgDollarVolume: row.avgDollarVolume,
+      liquidityVolume: row.liquidityVolume,
     });
     cumulative += sharePct;
     if (cumulative >= CUMULATIVE_TARGET_PCT) break;
