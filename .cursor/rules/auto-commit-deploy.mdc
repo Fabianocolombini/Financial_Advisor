@@ -11,10 +11,10 @@ Quando você implementou, corrigiu ou atualizou arquivos do repositório e a tar
 
 1. **Sempre** `git add` dos arquivos relevantes (nunca `.env`, secrets, `motor/data/`).
 2. **Sempre** criar commit com mensagem clara (1–2 frases, foco no why).
-3. **Sempre** `git push` em `main` (ou na branch do feature, se o usuário estiver nela).
-4. Informar ao usuário o hash do commit e que o deploy na Vercel segue automaticamente.
+3. **Push** em `main` só quando o usuário pedir ou confirmar — cada push dispara deploy Vercel (integração Git).
+4. Informar o hash do commit; se houve push, que o deploy segue na Vercel.
 
-Não pedir confirmação para commit/push — é o fluxo padrão do projeto.
+Não pedir confirmação para commit; push requer pedido explícito ou confirmação (evita rajadas de deploy).
 
 ## Exceções (não commitar)
 
@@ -24,7 +24,7 @@ Não pedir confirmação para commit/push — é o fluxo padrão do projeto.
 
 ## Deploy
 
-- **Next.js (app):** push em `main` → Vercel Production deploy automático (`financial-advisor-sable.vercel.app`).
+- **Next.js (app):** push em `main` → **um** deploy via integração Git Vercel (`financial-advisor-sable.vercel.app`). GHA `vercel-deploy.yml` é só manual (`workflow_dispatch`).
 - **Motor (scores/snapshot):** GitHub Actions `motor-daily.yml` (06:00 UTC) ou disparo manual após mudanças em `motor/`.
 
 Após push que altera `motor/`, mencionar que o snapshot em produção atualiza no próximo Motor Daily (ou disparo manual do workflow).

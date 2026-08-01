@@ -1,8 +1,10 @@
 name: Vercel Production Deploy
 
+# Manual backup only — production deploys come from Vercel Git integration on push.
+# Automatic push trigger removed to avoid duplicate builds (Git + GHA on every commit).
+
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: vercel-production

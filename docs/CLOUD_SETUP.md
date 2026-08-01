@@ -199,7 +199,7 @@ curl -s -H "Authorization: Bearer SEU_CRON_SECRET" \
 
 ## 4. Deploy Vercel em cada push (`main`)
 
-GitHub Actions: `.github/workflows/vercel-deploy.yml` (backup se a integração Git da Vercel parar).
+Deploy automático: **só** integração Git Vercel em push `main`. `.github/workflows/vercel-deploy.yml` é backup **manual** (`workflow_dispatch`) — não roda em push (evita deploy duplicado).
 
 ### 4.1 Secret obrigatório no GitHub
 
