@@ -24,8 +24,10 @@
 .DS_Store
 *.pem
 
-# cursor / local debug
-.cursor/
+# cursor / local debug (keep shared rules in repo)
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
 
 # debug
 npm-debug.log*

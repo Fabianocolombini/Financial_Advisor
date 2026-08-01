@@ -1,0 +1,35 @@
+---
+description: Sempre commitar e fazer push após entregar mudanças; deploy via Vercel no push em main
+alwaysApply: true
+---
+
+# Commit e deploy automáticos
+
+## Após completar uma tarefa com mudanças no código
+
+Quando você implementou, corrigiu ou atualizou arquivos do repositório e a tarefa está pronta:
+
+1. **Sempre** `git add` dos arquivos relevantes (nunca `.env`, secrets, `motor/data/`).
+2. **Sempre** criar commit com mensagem clara (1–2 frases, foco no why).
+3. **Sempre** `git push` em `main` (ou na branch do feature, se o usuário estiver nela).
+4. Informar ao usuário o hash do commit e que o deploy na Vercel segue automaticamente.
+
+Não pedir confirmação para commit/push — é o fluxo padrão do projeto.
+
+## Exceções (não commitar)
+
+- Usuário pediu explicitamente **não** commitar ou só revisar.
+- Apenas perguntas / leitura sem edições.
+- Commit falhou por hook: corrigir e **novo** commit (não amend, salvo regras de amend do usuário).
+
+## Deploy
+
+- **Next.js (app):** push em `main` → Vercel Production deploy automático (`financial-advisor-sable.vercel.app`).
+- **Motor (scores/snapshot):** GitHub Actions `motor-daily.yml` (06:00 UTC) ou disparo manual após mudanças em `motor/`.
+
+Após push que altera `motor/`, mencionar que o snapshot em produção atualiza no próximo Motor Daily (ou disparo manual do workflow).
+
+## Verificação rápida antes do push
+
+- `npm run build` se mudou app TypeScript/React.
+- Não incluir credenciais nem `motor/data/historico.db` / `dashboard-snapshot.json` (gitignored).
