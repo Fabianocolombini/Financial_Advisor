@@ -25,7 +25,7 @@ export function AddBudgetCategoryForm() {
     setPending(false);
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
-      setError(j.error ?? "Falha ao criar categoria");
+      setError(j.error ?? "Failed to create category");
       return;
     }
     form.reset();
@@ -35,26 +35,24 @@ export function AddBudgetCategoryForm() {
   return (
     <form
       onSubmit={onSubmit}
-      className="flex flex-wrap items-end gap-2 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950"
+      className="flex flex-wrap items-end gap-2 rounded-xl border border-zinc-800 bg-zinc-950 p-4"
     >
-      <label className="block min-w-[12rem] flex-1 text-xs text-zinc-600 dark:text-zinc-400">
-        Nova categoria
+      <label className="block min-w-[12rem] flex-1 text-xs text-zinc-400">
+        New category
         <input
           name="name"
           required
-          placeholder="Ex.: Moradia"
-          className="mt-1 w-full rounded-md border border-zinc-200 bg-white px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+          placeholder="e.g. Housing"
+          className="mt-1 w-full rounded-md border border-zinc-700 bg-black px-2 py-1.5 text-sm text-white"
         />
       </label>
-      {error ? (
-        <p className="w-full text-xs text-red-600 dark:text-red-400">{error}</p>
-      ) : null}
+      {error ? <p className="w-full text-xs text-red-400">{error}</p> : null}
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+        className="rounded-lg bg-white px-3 py-2 text-sm font-medium text-black disabled:opacity-50"
       >
-        {pending ? "…" : "Adicionar"}
+        {pending ? "…" : "Add"}
       </button>
     </form>
   );

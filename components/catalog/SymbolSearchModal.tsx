@@ -2,6 +2,7 @@
 
 import { ASSET_CLASS_TABS } from "@/lib/catalog/asset-classes";
 import type { CatalogSearchResult } from "@/lib/catalog/types";
+import { SymbolAvatar } from "@/components/catalog/SymbolAvatar";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type WatchlistItem = {
@@ -19,18 +20,18 @@ type SymbolSearchModalProps = {
 };
 
 function kindLabel(kind: string | undefined): string {
-  if (!kind) return "ativo";
+  if (!kind) return "asset";
   const map: Record<string, string> = {
     etf: "fund etf",
-    stock: "ação",
+    stock: "stock",
     forex: "forex",
     commodity: "commodity",
-    futures: "futuros",
+    futures: "futures",
     etn: "etn",
     trust: "trust",
     cef: "fund",
-    index: "índice",
-    other: "outro",
+    index: "index",
+    other: "other",
   };
   return map[kind] ?? kind;
 }
@@ -91,6 +92,15 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
 
   useEffect(() => {
     if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
@@ -126,14 +136,14 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/70 px-4 pt-16 pb-8"
+      className="fixed inset-x-0 bottom-0 top-0 z-50 flex items-start justify-center bg-black/60 px-4 pb-8 pt-[7.25rem] sm:pt-[6.5rem]"
       role="dialog"
       aria-modal="true"
-      aria-label="Buscar ativos"
+      aria-label="Search symbols"
       onClick={onClose}
     >
       <div
-        className="flex max-h-[min(720px,calc(100vh-6rem))] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-black shadow-2xl"
+        className="flex max-h-[min(720px,calc(100vh-8rem))] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-black shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-2 border-b border-zinc-800 px-4 py-3">
@@ -156,7 +166,7 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Símbolo, ISIN ou CUSIP"
+            placeholder="Symbol, ISIN or CUSIP"
             className="min-w-0 flex-1 bg-transparent text-sm text-white placeholder:text-zinc-500 focus:outline-none"
           />
           {query ? (
@@ -165,14 +175,14 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
               onClick={() => setQuery("")}
               className="text-xs text-zinc-400 hover:text-white"
             >
-              Limpar
+              Clear
             </button>
           ) : null}
           <button
             type="button"
             onClick={onClose}
             className="rounded p-1 text-zinc-400 hover:bg-zinc-900 hover:text-white"
-            aria-label="Fechar"
+            aria-label="Close"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -201,7 +211,7 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
           {watchlist.length > 0 && !query ? (
             <section className="border-b border-zinc-800 px-4 py-3">
               <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-500">
-                Meus interesses
+                My watchlist
               </h3>
               <ul className="space-y-1">
                 {watchlist.map((item) => (
@@ -209,9 +219,17 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
                     key={item.id}
                     className="flex items-center justify-between gap-3 rounded-lg px-2 py-2 hover:bg-zinc-950"
                   >
-                    <div className="min-w-0">
-                      <span className="font-semibold text-white">{item.symbol}</span>
-                      <span className="ml-2 truncate text-sm text-zinc-500">{item.name}</span>
+                    <div className="flex min-w-0 items-center gap-3">
+                      <SymbolAvatar
+                        symbol={item.symbol}
+                        exchange={item.exchange ?? "NYSE"}
+                        classId={item.classId}
+                        size="sm"
+                      />
+                      <div className="min-w-0">
+                        <span className="font-title text-white">{item.symbol}</span>
+                        <span className="ml-2 truncate text-sm text-zinc-500">{item.name}</span>
+                      </div>
                     </div>
                     <button
                       type="button"
@@ -228,7 +246,7 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
                       }
                       className="shrink-0 text-xs text-amber-400 hover:text-amber-300"
                     >
-                      Remover
+                      Remove
                     </button>
                   </li>
                 ))}
@@ -237,10 +255,10 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
           ) : null}
 
           {loading ? (
-            <p className="px-4 py-8 text-center text-sm text-zinc-500">Buscando…</p>
+            <p className="px-4 py-8 text-center text-sm text-zinc-500">Searching…</p>
           ) : results.length === 0 ? (
             <p className="px-4 py-8 text-center text-sm text-zinc-500">
-              Nenhum ativo encontrado na base.
+              No symbols found in the catalog.
             </p>
           ) : (
             <ul>
@@ -253,16 +271,14 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
                       onClick={() => void toggleWatchlist(item)}
                       className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-zinc-950"
                     >
-                      <span
-                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-                          starred ? "bg-amber-500/20 text-amber-400" : "bg-zinc-900 text-zinc-400"
-                        }`}
-                      >
-                        {item.symbol.slice(0, 2)}
-                      </span>
+                      <SymbolAvatar
+                        symbol={item.symbol}
+                        exchange={item.exchange}
+                        classId={item.classId}
+                      />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-baseline gap-2">
-                          <span className="font-semibold text-white">{item.symbol}</span>
+                          <span className="font-title text-white">{item.symbol}</span>
                           <span className="truncate text-sm text-zinc-500">{item.name}</span>
                         </div>
                       </div>
@@ -287,7 +303,7 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
         </div>
 
         <p className="border-t border-zinc-800 px-4 py-2 text-center text-[10px] text-zinc-600">
-          Busca limitada ao catálogo e base do projeto. Não constitui recomendação de investimento.
+          Catalog search only. Not investment advice.
         </p>
       </div>
     </div>

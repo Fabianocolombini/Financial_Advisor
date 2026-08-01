@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { formatBRL } from "@/lib/format";
+import { formatBRL, formatDate } from "@/lib/format";
 
 type Goal = {
   id: string;
@@ -38,38 +38,32 @@ export function EditGoalRow({ goal }: { goal: Goal }) {
     setPending(false);
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
-      setError(j.error ?? "Falha ao salvar");
+      setError(j.error ?? "Failed to save");
       return;
     }
     setOpen(false);
     router.refresh();
   }
 
-  const deadlineStr = goal.deadline
-    ? goal.deadline.toISOString().slice(0, 10)
-    : "";
+  const deadlineStr = goal.deadline ? goal.deadline.toISOString().slice(0, 10) : "";
 
   return (
     <div className="p-4">
       {!open ? (
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
-            <p className="font-medium text-zinc-900 dark:text-zinc-50">
-              {goal.title}
-            </p>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              Alvo: {formatBRL(goal.targetAmount)}
-              {goal.deadline
-                ? ` · até ${goal.deadline.toLocaleDateString("pt-BR")}`
-                : ""}
+            <p className="font-medium text-white">{goal.title}</p>
+            <p className="text-sm text-zinc-400">
+              Target: {formatBRL(goal.targetAmount)}
+              {goal.deadline ? ` · by ${formatDate(goal.deadline)}` : ""}
             </p>
           </div>
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="text-xs text-zinc-500 underline hover:text-zinc-800 dark:hover:text-zinc-300"
+            className="text-xs text-zinc-500 underline hover:text-zinc-300"
           >
-            Editar
+            Edit
           </button>
         </div>
       ) : (
@@ -78,7 +72,7 @@ export function EditGoalRow({ goal }: { goal: Goal }) {
             name="title"
             required
             defaultValue={goal.title}
-            className="w-full rounded-md border border-zinc-200 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+            className="w-full rounded-md border border-zinc-700 bg-black px-2 py-1.5 text-sm text-white"
           />
           <div className="flex flex-wrap gap-2">
             <input
@@ -88,32 +82,26 @@ export function EditGoalRow({ goal }: { goal: Goal }) {
               step="0.01"
               required
               defaultValue={goal.targetAmount}
-              className="w-36 rounded-md border border-zinc-200 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+              className="w-36 rounded-md border border-zinc-700 bg-black px-2 py-1.5 text-sm text-white"
             />
             <input
               name="deadline"
               type="date"
               defaultValue={deadlineStr}
-              className="rounded-md border border-zinc-200 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+              className="rounded-md border border-zinc-700 bg-black px-2 py-1.5 text-sm text-white"
             />
           </div>
-          {error ? (
-            <p className="text-xs text-red-600 dark:text-red-400">{error}</p>
-          ) : null}
+          {error ? <p className="text-xs text-red-400">{error}</p> : null}
           <div className="flex gap-2">
             <button
               type="submit"
               disabled={pending}
-              className="rounded-md bg-zinc-900 px-2 py-1 text-xs text-white dark:bg-zinc-100 dark:text-zinc-900"
+              className="rounded-md bg-white px-2 py-1 text-xs text-black"
             >
-              Salvar
+              Save
             </button>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="text-xs text-zinc-500"
-            >
-              Cancelar
+            <button type="button" onClick={() => setOpen(false)} className="text-xs text-zinc-500">
+              Cancel
             </button>
           </div>
         </form>

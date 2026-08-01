@@ -8,15 +8,13 @@ export function SummaryCard({
   hint?: string;
 }) {
   return (
-    <article className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-      <h2 className="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+    <article className="rounded-xl border border-zinc-800 bg-zinc-950 p-5">
+      <h2 className="font-body text-xs uppercase tracking-wide text-zinc-500">
         {title}
       </h2>
-      <p className="mt-2 text-2xl font-semibold tabular-nums text-zinc-900 dark:text-zinc-50">
-        {value}
-      </p>
+      <p className="font-title mt-2 text-2xl tabular-nums text-white">{value}</p>
       {hint ? (
-        <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{hint}</p>
+        <p className="font-body mt-2 text-sm text-zinc-400">{hint}</p>
       ) : null}
     </article>
   );

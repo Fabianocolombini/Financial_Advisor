@@ -34,7 +34,7 @@ export function EditBudgetEntryRow({
     setPending(false);
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
-      setError(j.error ?? "Falha ao salvar");
+      setError(j.error ?? "Failed to save");
       return;
     }
     setOpen(false);
@@ -46,13 +46,8 @@ export function EditBudgetEntryRow({
       {!open ? (
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span>
-            <span className="font-medium text-zinc-900 dark:text-zinc-50">
-              {categoryName}
-            </span>
-            <span className="text-zinc-600 dark:text-zinc-400">
-              {" "}
-              — planejado {formatBRL(plannedAmount)}
-            </span>
+            <span className="font-medium text-white">{categoryName}</span>
+            <span className="text-zinc-400"> — planned {formatBRL(plannedAmount)}</span>
           </span>
           <div className="flex items-center gap-2">
             <button
@@ -60,18 +55,16 @@ export function EditBudgetEntryRow({
               onClick={() => setOpen(true)}
               className="text-xs text-zinc-500 underline"
             >
-              Editar
+              Edit
             </button>
             <DeleteApiButton url={`/api/budget/entries/${entryId}`} />
           </div>
         </div>
       ) : (
         <form onSubmit={onSubmit} className="flex flex-wrap items-end gap-2">
-          <span className="font-medium text-zinc-900 dark:text-zinc-50">
-            {categoryName}
-          </span>
-          <label className="text-xs text-zinc-600 dark:text-zinc-400">
-            R$
+          <span className="font-medium text-white">{categoryName}</span>
+          <label className="text-xs text-zinc-400">
+            BRL
             <input
               name="plannedAmount"
               type="number"
@@ -79,25 +72,19 @@ export function EditBudgetEntryRow({
               step="0.01"
               required
               defaultValue={plannedAmount}
-              className="ml-1 w-28 rounded-md border border-zinc-200 px-2 py-1 dark:border-zinc-700 dark:bg-zinc-900"
+              className="ml-1 w-28 rounded-md border border-zinc-700 bg-black px-2 py-1 text-white"
             />
           </label>
-          {error ? (
-            <span className="w-full text-xs text-red-600">{error}</span>
-          ) : null}
+          {error ? <span className="w-full text-xs text-red-400">{error}</span> : null}
           <button
             type="submit"
             disabled={pending}
-            className="rounded-md bg-zinc-900 px-2 py-1 text-xs text-white dark:bg-zinc-100 dark:text-zinc-900"
+            className="rounded-md bg-white px-2 py-1 text-xs text-black"
           >
             OK
           </button>
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            className="text-xs text-zinc-500"
-          >
-            Cancelar
+          <button type="button" onClick={() => setOpen(false)} className="text-xs text-zinc-500">
+            Cancel
           </button>
         </form>
       )}

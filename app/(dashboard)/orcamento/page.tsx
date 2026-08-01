@@ -40,7 +40,7 @@ export default async function OrcamentoPage({ searchParams }: Props) {
     const m = now.getMonth() + 1;
     return (
       <div className="text-sm text-red-600">
-        Parâmetros year/month inválidos. Use{" "}
+        Invalid year/month. Use{" "}
         <a href={`/orcamento?year=${y}&month=${m}`} className="underline">
           {y}/{m}
         </a>
@@ -105,11 +105,9 @@ export default async function OrcamentoPage({ searchParams }: Props) {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-          Orçamento
-        </h1>
-        <p className="mt-2 max-w-2xl text-zinc-600 dark:text-zinc-400">
-          Planejado x realizado por categoria no mês selecionado.
+        <h1 className="font-title text-2xl tracking-tight text-white">Budget</h1>
+        <p className="font-body mt-2 max-w-2xl text-zinc-400">
+          Planned vs actual by category for the selected month.
         </p>
       </div>
 
@@ -118,19 +116,15 @@ export default async function OrcamentoPage({ searchParams }: Props) {
       <AddBudgetCategoryForm />
 
       <div className="space-y-4">
-        <h2 className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
-          Categorias
-        </h2>
+        <h2 className="font-title text-sm text-white">Categories</h2>
         <ul className="flex flex-wrap gap-2">
           {categories.length === 0 ? (
-            <li className="text-sm text-zinc-500 dark:text-zinc-400">
-              Nenhuma categoria.
-            </li>
+            <li className="text-sm text-zinc-500">No categories.</li>
           ) : (
             categories.map((c) => (
               <li
                 key={c.id}
-                className="flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+                className="flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-sm text-white"
               >
                 <span>{c.name}</span>
                 <DeleteApiButton
@@ -144,19 +138,15 @@ export default async function OrcamentoPage({ searchParams }: Props) {
       </div>
 
       <section id="planejado" className="space-y-4">
-        <h2 className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
-          Valores planejados
-        </h2>
+        <h2 className="font-title text-sm text-white">Planned amounts</h2>
         <AddBudgetEntryForm
           categories={categories.map((c) => ({ id: c.id, name: c.name }))}
           year={year}
           month={month}
         />
-        <ul className="divide-y divide-zinc-200 rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+        <ul className="divide-y divide-zinc-800 rounded-xl border border-zinc-800">
           {entries.length === 0 ? (
-            <li className="p-4 text-sm text-zinc-500 dark:text-zinc-400">
-              Nenhum valor planejado para este mês.
-            </li>
+            <li className="p-4 text-sm text-zinc-500">No planned amounts for this month.</li>
           ) : (
             entries.map((e) => (
               <EditBudgetEntryRow
@@ -171,31 +161,29 @@ export default async function OrcamentoPage({ searchParams }: Props) {
       </section>
 
       <section id="comparativo" className="space-y-4">
-        <h2 className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
-          Comparativo (planejado x realizado)
-        </h2>
-        <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-800">
-          <table className="w-full min-w-[28rem] text-left text-sm">
-            <thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50">
+        <h2 className="font-title text-sm text-white">Comparison (planned vs actual)</h2>
+        <div className="overflow-x-auto rounded-xl border border-zinc-800">
+          <table className="w-full min-w-[28rem] text-left text-sm text-white">
+            <thead className="border-b border-zinc-800 bg-zinc-950">
               <tr>
-                <th className="p-3 font-medium">Categoria</th>
-                <th className="p-3 font-medium">Planejado</th>
-                <th className="p-3 font-medium">Realizado</th>
-                <th className="p-3 font-medium">Diferença</th>
+                <th className="p-3 font-medium">Category</th>
+                <th className="p-3 font-medium">Planned</th>
+                <th className="p-3 font-medium">Actual</th>
+                <th className="p-3 font-medium">Variance</th>
               </tr>
             </thead>
             <tbody>
               {comparison.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="p-4 text-zinc-500">
-                    Sem dados para comparar neste mês.
+                    No data to compare this month.
                   </td>
                 </tr>
               ) : (
                 comparison.map((row) => (
                   <tr
                     key={row.categoryId || "uncat"}
-                    className="border-b border-zinc-100 dark:border-zinc-800"
+                    className="border-b border-zinc-800"
                   >
                     <td className="p-3">{row.categoryName}</td>
                     <td className="p-3 tabular-nums">
@@ -204,7 +192,7 @@ export default async function OrcamentoPage({ searchParams }: Props) {
                     <td className="p-3 tabular-nums">
                       {formatBRL(row.actual.toNumber())}
                     </td>
-                    <td className="p-3 tabular-nums text-zinc-600 dark:text-zinc-400">
+                    <td className="p-3 tabular-nums text-zinc-400">
                       {formatBRL(row.variance.toNumber())}
                     </td>
                   </tr>
@@ -216,15 +204,13 @@ export default async function OrcamentoPage({ searchParams }: Props) {
       </section>
 
       <section id="transacoes" className="space-y-4">
-        <h2 className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
-          Lançamentos reais do mês
-        </h2>
+        <h2 className="font-title text-sm text-white">Transactions this month</h2>
         <AddTransactionForm
           categories={categories.map((c) => ({ id: c.id, name: c.name }))}
           defaultYear={year}
           defaultMonth={month}
         />
-        <div className="rounded-xl border border-zinc-200 dark:border-zinc-800">
+        <div className="rounded-xl border border-zinc-800">
           <TransactionList rows={txRows} />
         </div>
       </section>

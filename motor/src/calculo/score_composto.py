@@ -12,8 +12,17 @@ from motor.src.calculo.derivados import compute_formula, get_fred_series, latest
 from motor.src.calculo.indicadores_tecnicos import get_tecnico_series
 from motor.src.calculo.zscore import apply_direction, zscore_latest
 from motor.src.config_loader import load_aba_config, load_tecnicos_config
+from motor.src.dates import motor_as_of_date
 from motor.src.db.connection import get_connection, init_db
 from motor.src.ingestao.edgar_client import get_edgar_metric
+
+
+def _truncate_series(series: pd.Series, as_of: dt.date) -> pd.Series:
+    if series.empty:
+        return series
+    cap = pd.Timestamp(as_of)
+    idx = pd.DatetimeIndex(pd.to_datetime(series.index))
+    return series.loc[idx <= cap]
 
 
 def _indicator_series(ind: dict[str, Any]) -> pd.Series:
@@ -28,14 +37,18 @@ def _indicator_series(ind: dict[str, Any]) -> pd.Series:
     return pd.Series(dtype=float)
 
 
-def _score_indicator(ind: dict[str, Any], pesos_camada: dict[str, float]) -> dict[str, Any]:
+def _score_indicator(
+    ind: dict[str, Any],
+    pesos_camada: dict[str, float],
+    as_of: dt.date,
+) -> dict[str, Any]:
     window = int(ind.get("zscore_window", 252))
     camada = ind.get("camada", "macro")
     peso = float(ind.get("peso", 1.0))
     peso_camada = float(pesos_camada.get(camada, 1.0))
     direcao = ind.get("direcao", "positiva")
 
-    series = _indicator_series(ind)
+    series = _truncate_series(_indicator_series(ind), as_of)
     if series.empty and ind.get("fonte") == "edgar":
         val = get_edgar_metric(ind.get("ticker", ""), ind.get("edgar_metric", ""))
         z, latest, mean = (0.0, val or 0.0, val or 0.0)
@@ -59,14 +72,14 @@ def _score_indicator(ind: dict[str, Any], pesos_camada: dict[str, float]) -> dic
 def compute_aba_score(aba_id: str, as_of: dt.date | None = None) -> dict[str, Any]:
     init_db()
     aba = load_aba_config(aba_id)
-    as_of = as_of or dt.date.today()
+    as_of = as_of or motor_as_of_date()
     pesos_camada = aba.get("pesos_camada", {})
     components: list[dict[str, Any]] = []
     total_weight = 0.0
     total_contrib = 0.0
 
     for ind in aba.get("indicadores", []):
-        comp = _score_indicator(ind, pesos_camada)
+        comp = _score_indicator(ind, pesos_camada, as_of)
         components.append(comp)
         w = comp["peso"] * comp["peso_camada"]
         total_weight += w
@@ -94,7 +107,7 @@ def compute_ativo_score(
 ) -> dict[str, Any]:
     init_db()
     aba = load_aba_config(aba_id)
-    as_of = as_of or dt.date.today()
+    as_of = as_of or motor_as_of_date()
     tec_cfg = load_tecnicos_config()
     peso_tec_total = sum(i["peso"] for i in tec_cfg.get("indicadores", []))
     components: list[dict[str, Any]] = []
@@ -102,7 +115,7 @@ def compute_ativo_score(
     total_c = 0.0
 
     for ind in tec_cfg.get("indicadores", []):
-        series = get_tecnico_series(ticker, ind["id"])
+        series = _truncate_series(get_tecnico_series(ticker, ind["id"]), as_of)
         window = int(tec_cfg.get("zscore_window", 252))
         z, latest, _ = zscore_latest(series, window)
         z_adj = apply_direction(z, ind.get("direcao", "positiva"))
@@ -169,11 +182,14 @@ def backfill_aba_scores(aba_id: str, days: int = 120) -> int:
             ref_series = s
             break
     if ref_series is None or ref_series.empty:
-        result = compute_aba_score(aba_id)
+        result = compute_aba_score(aba_id, motor_as_of_date())
         persist_aba_score(result)
         return 1
 
-    dates = ref_series.index[-days:]
+    as_of_cap = motor_as_of_date()
+
+    eligible = ref_series.index[pd.to_datetime(ref_series.index) <= pd.Timestamp(as_of_cap)]
+    dates = eligible[-days:]
     n = 0
     for d in dates:
         components: list[dict[str, Any]] = []

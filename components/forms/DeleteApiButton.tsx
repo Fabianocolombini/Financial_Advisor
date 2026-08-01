@@ -5,7 +5,7 @@ import { useState } from "react";
 
 export function DeleteApiButton({
   url,
-  label = "Remover",
+  label = "Remove",
 }: {
   url: string;
   label?: string;
@@ -14,7 +14,7 @@ export function DeleteApiButton({
   const [pending, setPending] = useState(false);
 
   async function onClick() {
-    if (!confirm("Remover este registro?")) return;
+    if (!confirm("Remove this record?")) return;
     setPending(true);
     await fetch(url, { method: "DELETE" });
     setPending(false);
@@ -26,7 +26,7 @@ export function DeleteApiButton({
       type="button"
       onClick={onClick}
       disabled={pending}
-      className="text-xs text-red-600 hover:underline disabled:opacity-50 dark:text-red-400"
+      className="text-xs text-red-400 hover:underline disabled:opacity-50"
     >
       {pending ? "…" : label}
     </button>

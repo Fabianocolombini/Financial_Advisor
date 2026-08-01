@@ -47,13 +47,10 @@ export default async function MercadoPage() {
   return (
     <div className="space-y-10">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-          Mercado (QI)
-        </h1>
-        <p className="mt-2 max-w-2xl text-sm text-zinc-600 dark:text-zinc-400">
-          Regimes macro e de risco, ranking sectorial e última recomendação do
-          motor em TypeScript (versão {QI_MODEL_VERSION}). Os dados dependem dos
-          crons de ingestão.
+        <h1 className="font-title text-2xl tracking-tight text-white">Markets (QI)</h1>
+        <p className="font-body mt-2 max-w-2xl text-sm text-zinc-400">
+          Macro and risk regimes, sector ranking, and latest recommendation from the
+          TypeScript engine (version {QI_MODEL_VERSION}). Data depends on ingestion crons.
         </p>
       </div>
 

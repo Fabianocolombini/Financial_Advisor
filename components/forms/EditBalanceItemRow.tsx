@@ -34,7 +34,7 @@ export function EditBalanceItemRow({ item }: { item: Item }) {
     setPending(false);
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
-      setError(j.error ?? "Falha ao salvar");
+      setError(j.error ?? "Failed to save");
       return;
     }
     setOpen(false);
@@ -46,20 +46,17 @@ export function EditBalanceItemRow({ item }: { item: Item }) {
       {!open ? (
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
-            <p className="font-medium text-zinc-900 dark:text-zinc-50">
-              {item.label}
-            </p>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              {item.kind === "ASSET" ? "Ativo" : "Passivo"} ·{" "}
-              {formatBRL(item.amount)}
+            <p className="font-medium text-white">{item.label}</p>
+            <p className="text-sm text-zinc-400">
+              {item.kind === "ASSET" ? "Asset" : "Liability"} · {formatBRL(item.amount)}
             </p>
           </div>
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="text-xs text-zinc-500 underline hover:text-zinc-800 dark:hover:text-zinc-300"
+            className="text-xs text-zinc-500 underline hover:text-zinc-300"
           >
-            Editar
+            Edit
           </button>
         </div>
       ) : (
@@ -68,17 +65,17 @@ export function EditBalanceItemRow({ item }: { item: Item }) {
             name="label"
             required
             defaultValue={item.label}
-            className="w-full rounded-md border border-zinc-200 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+            className="w-full rounded-md border border-zinc-700 bg-black px-2 py-1.5 text-sm text-white"
           />
           <div className="flex flex-wrap gap-2">
             <select
               name="kind"
               required
               defaultValue={item.kind}
-              className="rounded-md border border-zinc-200 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+              className="rounded-md border border-zinc-700 bg-black px-2 py-1.5 text-sm text-white"
             >
-              <option value="ASSET">Ativo</option>
-              <option value="LIABILITY">Passivo</option>
+              <option value="ASSET">Asset</option>
+              <option value="LIABILITY">Liability</option>
             </select>
             <input
               name="amount"
@@ -87,26 +84,20 @@ export function EditBalanceItemRow({ item }: { item: Item }) {
               step="0.01"
               required
               defaultValue={item.amount}
-              className="w-36 rounded-md border border-zinc-200 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+              className="w-36 rounded-md border border-zinc-700 bg-black px-2 py-1.5 text-sm text-white"
             />
           </div>
-          {error ? (
-            <p className="text-xs text-red-600 dark:text-red-400">{error}</p>
-          ) : null}
+          {error ? <p className="text-xs text-red-400">{error}</p> : null}
           <div className="flex gap-2">
             <button
               type="submit"
               disabled={pending}
-              className="rounded-md bg-zinc-900 px-2 py-1 text-xs text-white dark:bg-zinc-100 dark:text-zinc-900"
+              className="rounded-md bg-white px-2 py-1 text-xs text-black"
             >
-              Salvar
+              Save
             </button>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="text-xs text-zinc-500"
-            >
-              Cancelar
+            <button type="button" onClick={() => setOpen(false)} className="text-xs text-zinc-500">
+              Cancel
             </button>
           </div>
         </form>

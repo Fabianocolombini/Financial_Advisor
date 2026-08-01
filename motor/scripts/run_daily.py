@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -33,6 +35,14 @@ def main() -> None:
         print(f"[motor:daily] Pipeline — {aba_id}...")
         result = run_pipeline(aba_id)
         results.append(result)
+
+    print("[motor:daily] Export dashboard snapshot...")
+    export_script = MOTOR_ROOT / "scripts" / "export_dashboard_snapshot.py"
+    subprocess.run(
+        [sys.executable, str(export_script)],
+        check=True,
+        env={**os.environ, "PYTHONPATH": str(MOTOR_ROOT.parent)},
+    )
 
     print(json.dumps({"ok": True, "abas": results}, indent=2, ensure_ascii=False))
 

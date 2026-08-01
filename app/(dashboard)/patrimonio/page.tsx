@@ -26,24 +26,18 @@ export default async function PatrimonioPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-          Patrimônio
-        </h1>
-        <p className="mt-2 max-w-2xl text-zinc-600 dark:text-zinc-400">
-          Ativos e passivos. Patrimônio líquido:{" "}
-          <strong className="text-zinc-900 dark:text-zinc-50">
-            {formatBRL(net.toNumber())}
-          </strong>
+        <h1 className="font-title text-2xl tracking-tight text-white">Net Worth</h1>
+        <p className="font-body mt-2 max-w-2xl text-zinc-400">
+          Assets and liabilities. Net worth:{" "}
+          <strong className="text-white">{formatBRL(net.toNumber())}</strong>
         </p>
       </div>
 
       <AddBalanceItemForm />
 
-      <ul className="divide-y divide-zinc-200 rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+      <ul className="divide-y divide-zinc-800 rounded-xl border border-zinc-800">
         {items.length === 0 ? (
-          <li className="p-4 text-sm text-zinc-500 dark:text-zinc-400">
-            Nenhum item cadastrado.
-          </li>
+          <li className="p-4 text-sm text-zinc-500">No items yet.</li>
         ) : (
           items.map((item) => (
             <li

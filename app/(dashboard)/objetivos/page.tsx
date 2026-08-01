@@ -16,21 +16,17 @@ export default async function ObjetivosPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-          Objetivos
-        </h1>
-        <p className="mt-2 max-w-2xl text-zinc-600 dark:text-zinc-400">
-          Metas financeiras vinculadas à sua conta.
+        <h1 className="font-title text-2xl tracking-tight text-white">Goals</h1>
+        <p className="font-body mt-2 max-w-2xl text-zinc-400">
+          Financial goals linked to your account.
         </p>
       </div>
 
       <AddGoalForm />
 
-      <ul className="divide-y divide-zinc-200 rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+      <ul className="divide-y divide-zinc-800 rounded-xl border border-zinc-800">
         {goals.length === 0 ? (
-          <li className="p-4 text-sm text-zinc-500 dark:text-zinc-400">
-            Nenhuma meta ainda.
-          </li>
+          <li className="p-4 text-sm text-zinc-500">No goals yet.</li>
         ) : (
           goals.map((g) => (
             <li

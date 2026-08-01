@@ -4,11 +4,11 @@ import { SymbolSearchTrigger } from "@/components/catalog/SymbolSearchTrigger";
 import { SignOutButton } from "./SignOutButton";
 
 const nav = [
-  { href: "/", label: "Início" },
-  { href: "/patrimonio", label: "Patrimônio" },
-  { href: "/objetivos", label: "Objetivos" },
-  { href: "/orcamento", label: "Orçamento" },
-  { href: "/mercado", label: "Mercado" },
+  { href: "/", label: "Home" },
+  { href: "/patrimonio", label: "Net Worth" },
+  { href: "/objetivos", label: "Goals" },
+  { href: "/orcamento", label: "Budget" },
+  { href: "/mercado", label: "Markets" },
 ] as const;
 
 type UserBar = {
@@ -25,16 +25,16 @@ export function AppShell({
   user: UserBar;
   showSignOut?: boolean;
 }) {
-  const label = user.name ?? user.email ?? "Conta";
+  const label = user.name ?? user.email ?? "Account";
 
   return (
     <div className="flex min-h-full flex-col bg-black text-white">
-      <header className="sticky top-0 z-40 border-b border-zinc-800 bg-black/95 backdrop-blur-md">
+      <header className="sticky top-0 z-[60] border-b border-zinc-800 bg-black backdrop-blur-md">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-3 sm:px-6">
           <div className="flex flex-wrap items-center gap-3">
             <Link
               href="/"
-              className="shrink-0 text-sm font-semibold tracking-tight text-white"
+              className="font-title shrink-0 text-sm tracking-tight text-white"
             >
               Financial Advisor
             </Link>

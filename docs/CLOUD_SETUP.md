@@ -210,6 +210,8 @@ curl -s -H "Authorization: Bearer SEU_CRON_SECRET" \
 
 ## 6. Checklist de verificação
 
+**Checklist completo** (onde cada dado mora, queries Neon, troubleshooting): [CLOUD_VERIFICATION_CHECKLIST.md](CLOUD_VERIFICATION_CHECKLIST.md).
+
 - [ ] Login Google funciona em https://financial-advisor-sable.vercel.app
 - [ ] `CRON_SECRET` definido na Vercel; crons `ingest-market` e `qi-macro` retornam 200
 - [ ] Blob store criado na Vercel; `BLOB_READ_WRITE_TOKEN` no GitHub
@@ -224,7 +226,9 @@ curl -s -H "Authorization: Bearer SEU_CRON_SECRET" \
 | Sintoma | Causa provável | Ação |
 |---------|----------------|------|
 | 401 nos crons | `CRON_SECRET` ausente na Vercel | Definir e redeploy |
-| Login sem botão Google | `AUTH_GOOGLE_*` ausentes | Completar Google Console + env vars |
+| Login sem botão Google | `AUTH_GOOGLE_*` ausentes | Google Console + env vars Vercel |
+| `error=Configuration` após clicar Google | `AUTH_SECRET` ou `DATABASE_URL` vazios na Vercel | Restaurar ambos e redeploy; limpar cookies do site |
+| Login Google ok mas volta ao signin | `DATABASE_URL` apontando a localhost ou vazio | Neon URL em Production + redeploy |
 | Loop de login | `AUTH_URL` incorreto | Deve ser URL exata da produção |
 | Motor workflow falha no download | Primeira execução (blob vazio) | Normal — pipeline cria DB novo |
 | Motor workflow falha no upload | `BLOB_READ_WRITE_TOKEN` inválido | Recriar token no painel Blob |
@@ -232,4 +236,4 @@ curl -s -H "Authorization: Bearer SEU_CRON_SECRET" \
 
 ---
 
-*Documentação relacionada: [SETUP.md](SETUP.md) (local), [ENVIRONMENT.md](ENVIRONMENT.md) (variáveis), [MOTOR_EXECUCAO.md](MOTOR_EXECUCAO.md) (etapas do motor).*
+*Documentação relacionada: [CLOUD_VERIFICATION_CHECKLIST.md](CLOUD_VERIFICATION_CHECKLIST.md) (verificação pós-setup), [SETUP.md](SETUP.md) (local), [ENVIRONMENT.md](ENVIRONMENT.md) (variáveis), [MOTOR_EXECUCAO.md](MOTOR_EXECUCAO.md) (etapas do motor).*

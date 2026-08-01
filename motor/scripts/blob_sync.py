@@ -15,6 +15,10 @@ MOTOR_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = MOTOR_ROOT / "data"
 OUTPUT_DIR = MOTOR_ROOT / "output"
 DB_PATH = DATA_DIR / "historico.db"
+SNAPSHOT_PATH = DATA_DIR / "dashboard-snapshot.json"
+SNAPSHOT_BLOB_PATH = os.environ.get(
+    "MOTOR_SNAPSHOT_BLOB_PATH", "motor/dashboard-snapshot.json"
+)
 
 BLOB_API = "https://blob.vercel-storage.com"
 DB_BLOB_PATH = os.environ.get("MOTOR_DB_BLOB_PATH", "motor/historico.db")
@@ -71,6 +75,25 @@ def upload_db() -> str:
     return blob_url
 
 
+def upload_snapshot() -> str | None:
+    """Envia dashboard-snapshot.json para o Blob."""
+    if not SNAPSHOT_PATH.is_file():
+        print("[blob_sync] Sem dashboard-snapshot.json — rode export_dashboard_snapshot")
+        return None
+    url = f"{BLOB_API}/{SNAPSHOT_BLOB_PATH}"
+    data = SNAPSHOT_PATH.read_bytes()
+    headers = _headers(content_type="application/json")
+    headers["x-add-random-suffix"] = "false"
+    headers["x-allow-overwrite"] = "true"
+    with httpx.Client(timeout=60.0) as client:
+        resp = client.put(url, headers=headers, content=data)
+        resp.raise_for_status()
+        payload = resp.json()
+    blob_url = payload.get("url", url)
+    print(f"[blob_sync] Snapshot → {blob_url}")
+    return blob_url
+
+
 def upload_reports() -> list[str]:
     """Envia relatórios .md de motor/output/ para o Blob."""
     if not OUTPUT_DIR.is_dir():
@@ -97,8 +120,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Sincroniza motor com Vercel Blob")
     parser.add_argument(
         "action",
-        choices=["download", "upload", "upload-reports", "sync"],
-        help="download | upload | upload-reports | sync (download + upload + reports)",
+        choices=["download", "upload", "upload-reports", "upload-snapshot", "sync"],
+        help="download | upload | upload-reports | upload-snapshot | sync",
     )
     args = parser.parse_args()
     try:
@@ -106,12 +129,16 @@ def main() -> None:
             download_db()
         elif args.action == "upload":
             upload_db()
+            upload_snapshot()
         elif args.action == "upload-reports":
             upload_reports()
+        elif args.action == "upload-snapshot":
+            upload_snapshot()
         elif args.action == "sync":
             download_db()
             upload_db()
             upload_reports()
+            upload_snapshot()
     except httpx.HTTPStatusError as e:
         print(f"[blob_sync] HTTP {e.response.status_code}: {e.response.text[:500]}", file=sys.stderr)
         sys.exit(1)

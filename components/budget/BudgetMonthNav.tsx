@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { APP_LOCALE } from "@/lib/locale";
 import { shiftMonth } from "@/lib/month";
 
 export function BudgetMonthNav({
@@ -10,27 +11,25 @@ export function BudgetMonthNav({
 }) {
   const prev = shiftMonth(year, month, -1);
   const next = shiftMonth(year, month, 1);
-  const label = new Date(year, month - 1, 1).toLocaleDateString("pt-BR", {
+  const label = new Date(year, month - 1, 1).toLocaleDateString(APP_LOCALE, {
     month: "long",
     year: "numeric",
   });
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/50">
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3">
       <Link
         href={`/orcamento?year=${prev.year}&month=${prev.month}`}
-        className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
+        className="text-sm text-zinc-400 hover:text-white"
       >
-        ← Mês anterior
+        ← Previous month
       </Link>
-      <span className="text-sm font-medium capitalize text-zinc-900 dark:text-zinc-50">
-        {label}
-      </span>
+      <span className="font-title text-sm capitalize text-white">{label}</span>
       <Link
         href={`/orcamento?year=${next.year}&month=${next.month}`}
-        className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
+        className="text-sm text-zinc-400 hover:text-white"
       >
-        Próximo mês →
+        Next month →
       </Link>
     </div>
   );
