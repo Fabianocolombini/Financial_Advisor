@@ -11,7 +11,7 @@ Este guia cobre o que roda na nuvem vs. local, e os passos para ativar login Goo
 
 | Componente | Onde | Trigger | Dados |
 |------------|------|---------|-------|
-| App Next.js (CRUD pessoal) | Vercel | Deploy automático | Neon Postgres |
+| App Next.js (CRUD pessoal) | Vercel | Push em `main` (GitHub Action + Vercel) | Neon Postgres |
 | Login Google | Vercel + Google Cloud | `AUTH_ENABLED=true` | Neon (`User`, `Session`) |
 | `ingest-market` | Vercel Cron 11:00 UTC | `vercel.json` | `MarketSeries` / `MarketObservation` |
 | `qi-macro` | Vercel Cron 11:15 UTC | `vercel.json` | `QiMacroSeries` / `QiMacroSeriesPoint` |
@@ -197,6 +197,32 @@ curl -s -H "Authorization: Bearer SEU_CRON_SECRET" \
 
 ---
 
+## 4. Deploy Vercel em cada push (`main`)
+
+GitHub Actions: `.github/workflows/vercel-deploy.yml` (backup se a integração Git da Vercel parar).
+
+### 4.1 Secret obrigatório no GitHub
+
+1. [Vercel → Account → Tokens](https://vercel.com/account/settings/tokens) → Create Token (scope: deploy).
+2. Repositório GitHub → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**:
+   - Nome: `VERCEL_TOKEN`
+   - Valor: o token criado
+
+Sem este secret, o workflow **Vercel Production Deploy** falha; use `vercel --prod` local ou reconecte o Git na Vercel.
+
+### 4.2 Reconectar Git na Vercel (recomendado)
+
+Vercel → projeto **financial-advisor** → **Settings** → **Git** → confirmar repo `Fabianocolombini/Financial_Advisor`, branch `main`, **Production Branch** = `main`. Se desconectado, **Connect Git Repository** e redeploy.
+
+### 4.3 Deploy manual (emergência)
+
+```bash
+vercel link   # se necessário
+vercel --prod
+```
+
+---
+
 ## 5. O que permanece local
 
 | Tarefa | Quando local |
@@ -212,6 +238,7 @@ curl -s -H "Authorization: Bearer SEU_CRON_SECRET" \
 
 **Checklist completo** (onde cada dado mora, queries Neon, troubleshooting): [CLOUD_VERIFICATION_CHECKLIST.md](CLOUD_VERIFICATION_CHECKLIST.md).
 
+- [ ] Secret `VERCEL_TOKEN` no GitHub (deploy automático em cada push)
 - [ ] Login Google funciona em https://financial-advisor-sable.vercel.app
 - [ ] `CRON_SECRET` definido na Vercel; crons `ingest-market` e `qi-macro` retornam 200
 - [ ] Blob store criado na Vercel; `BLOB_READ_WRITE_TOKEN` no GitHub
@@ -232,6 +259,8 @@ curl -s -H "Authorization: Bearer SEU_CRON_SECRET" \
 | Loop de login | `AUTH_URL` incorreto | Deve ser URL exata da produção |
 | Motor workflow falha no download | Primeira execução (blob vazio) | Normal — pipeline cria DB novo |
 | Motor workflow falha no upload | `BLOB_READ_WRITE_TOKEN` inválido | Recriar token no painel Blob |
+| Commits no GitHub mas Vercel não builda | Integração Git desconectada | Reconectar Git na Vercel (§4.2) ou adicionar `VERCEL_TOKEN` (§4.1) |
+| Workflow `Vercel Production Deploy` falha | `VERCEL_TOKEN` ausente no GitHub | Criar token Vercel + secret no repo |
 | `FRED_API_KEY não definida` | Secret GitHub ausente | Adicionar em repo secrets |
 
 ---
