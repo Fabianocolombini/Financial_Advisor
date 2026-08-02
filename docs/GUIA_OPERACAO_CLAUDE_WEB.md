@@ -101,7 +101,23 @@ Repositório → **Settings** → **Secrets** → **Actions**:
 | `BLOB_READ_WRITE_TOKEN` | Upload SQLite + `dashboard-snapshot.json` |
 
 ### Disparar Motor Daily manualmente
-GitHub → **Actions** → **Motor Daily** → **Run workflow** → branch `main`.
+
+**Opção A (UI):** GitHub → **Actions** → **Motor Daily** → **Run workflow** → branch `main`.
+
+**Opção B (sem UI — Claude Web / agent):** ver [COMANDO_CLAUDE_WEB_MOTOR_DAILY.md](COMANDO_CLAUDE_WEB_MOTOR_DAILY.md).
+
+**Opção C (push tag):** commit com `[motor-daily]` na mensagem dispara o job em push em `main`:
+
+```bash
+git commit --allow-empty -m "chore: [motor-daily] trigger pipeline"
+git push origin main
+```
+
+**Opção D (curl):** se `GITHUB_MOTOR_DISPATCH_TOKEN` está na Vercel:
+
+```bash
+npm run motor:trigger-daily   # usa CRON_SECRET ou GITHUB_MOTOR_DISPATCH_TOKEN no env
+```
 
 Esperado nos logs:
 - `Download OK` ou blob ausente (1ª vez)
@@ -190,7 +206,7 @@ Não commitar secrets. Não expor valores de tokens em resposta.
 |-----|----------|
 | [CLOUD_SETUP.md](CLOUD_SETUP.md) | Setup inicial nuvem |
 | [CLOUD_VERIFICATION_CHECKLIST.md](CLOUD_VERIFICATION_CHECKLIST.md) | Checklist completo + queries Neon |
-| [MOTOR_EXECUCAO.md](MOTOR_EXECUCAO.md) | Pipeline motor |
+| [COMANDO_CLAUDE_WEB_MOTOR_DAILY.md](COMANDO_CLAUDE_WEB_MOTOR_DAILY.md) | Prompt para disparar Motor Daily sem o usuário |
 | `.github/workflows/vercel-deploy.yml` | Deploy em push |
 | `.github/workflows/motor-daily.yml` | Motor diário |
 | `.cursor/rules/auto-commit-deploy.mdc` | Regra: commit+push após entregas |

@@ -5,6 +5,9 @@ on:
     # 06:00 UTC — antes dos crons Vercel (ingest-market 11:00, qi-macro 11:15)
     - cron: "0 6 * * *"
   workflow_dispatch:
+  # Disparo remoto sem gh local: commit em main com [motor-daily] na mensagem
+  push:
+    branches: [main]
 
 concurrency:
   group: motor-daily
@@ -12,6 +15,10 @@ concurrency:
 
 jobs:
   motor:
+    if: >
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' && contains(github.event.head_commit.message, '[motor-daily]'))
     runs-on: ubuntu-latest
     timeout-minutes: 180
     steps:
