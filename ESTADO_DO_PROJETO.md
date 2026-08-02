@@ -1,4 +1,4 @@
-# Financial Advisor — Estado do Projeto (jul/2026)
+# Financial Advisor — Estado do Projeto (ago/2026)
 
 ## Visão
 
@@ -9,34 +9,44 @@ Suporte educacional — não assessoria regulada.
 
 | Linha | Status | Path |
 |-------|--------|------|
-| **Motor por abas** (foco MVP) | Em construção | `motor/` |
+| **Motor por abas** (foco MVP) | **Etapa 1A entregue** — teste em produção | `motor/` |
 | **QI legado** | Pausado / referência | `analytics/qi/` |
-| **App Next.js** (CRUD pessoal) | Mantido, fora do MVP motor | `app/` |
+| **App Next.js** (CRUD + Markets) | Mantido; `/mercado` com motor snapshot | `app/` |
 
-## Motor (novo)
+## Motor — Etapa 1A (entregue)
 
-- Python + SQLite (`motor/data/historico.db`)
-- **Etapa 1:** pipeline de fontes — `npm run motor:fontes`
-- **Etapa 2+:** score por aba — `npm run motor:pipeline`
-- Manifesto de ingestão: `motor/config/fontes_manifest.json`
-- Config por aba (score): `motor/config/abas/*.json`
+- Python + SQLite (`motor/data/historico.db`) → Vercel Blob
+- **16 abas** em `motor/config/abas/*.json`
+- **Motor Daily:** fontes → macro classe → **top-90% liquidez** por classe → snapshot
+- **Markets:** watchlist + scores do Blob; fallback **class macro** se ticker sem score
+- **On-demand ★:** workflow `motor-symbol` (opcional, via PAT GitHub)
+
+### Comandos
+
+```bash
+npm run motor:daily           # pipeline 1A local
+npm run motor:validate-abas   # aceite MVP
+npm run motor:verify-cloud-snapshot
+```
+
+### Teste produção
+
+[docs/ETAPA_1A_TESTE.md](docs/ETAPA_1A_TESTE.md)
+
+## Próximo — Etapa 1B (não iniciar antes de 1A validada)
+
+1. Gráficos ao clicar indicador (histórico `price_daily` / FRED)
+2. `energy_mlp` aba motor dedicada (opcional)
+3. Tab All com ranking global 90% (pesado)
 
 ## QI legado (pausado)
 
-- PostgreSQL/Prisma, 667 ativos, FMP/Polygon
-- Sanity check (2026-05-25): cobertura 90d **14,87%** vs gate 80% → UI `/mercado` bloqueada
-- Não deletar; usar como referência de ingestão
+PostgreSQL/Prisma, FMP/Polygon — referência apenas. Crons `qi-macro` / dados Neon podem estar desatualizados.
 
 ## Documentação canónica
 
-- [docs/tabela-classes-ativos-indicadores.md](docs/tabela-classes-ativos-indicadores.md)
-- [docs/schema-dados-abas.md](docs/schema-dados-abas.md)
-- [docs/projeto-motor-decisao-alocacao.md](docs/projeto-motor-decisao-alocacao.md)
-- [docs/guia-decisao-entrada-por-sleeve.md](docs/guia-decisao-entrada-por-sleeve.md)
 - [docs/MOTOR_EXECUCAO.md](docs/MOTOR_EXECUCAO.md)
-
-## Próximos passos
-
-1. Validar aba Taxas ponta a ponta
-2. Validar Crédito Alternativo + divergência BDC
-3. Decidir bridge para Next.js `/mercado`
+- [docs/ETAPA_1A_TESTE.md](docs/ETAPA_1A_TESTE.md)
+- [docs/classes-ativos-catalogo-claude.md](docs/classes-ativos-catalogo-claude.md)
+- [docs/CLOUD_SETUP.md](docs/CLOUD_SETUP.md)
+- [docs/CLOUD_VERIFICATION_CHECKLIST.md](docs/CLOUD_VERIFICATION_CHECKLIST.md)

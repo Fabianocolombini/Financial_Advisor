@@ -88,6 +88,12 @@ def main() -> None:
             errors.append("snapshot missing fi_treasury class")
         if not snap.get("classes", {}).get("alt_bdc"):
             errors.append("snapshot missing alt_bdc class")
+        quality = snap.get("quality", {})
+        if not quality.get("ok", True):
+            errors.append(f"snapshot quality failed: {quality.get('issues')}")
+        ticker_count = len(snap.get("tickers", {}))
+        if ticker_count < 10:
+            errors.append(f"snapshot tickerCount too low: {ticker_count}")
         tickers = snap.get("tickers", {})
         for sym in ("TLT", "ARCC"):
             if sym not in tickers:

@@ -32,7 +32,7 @@ def all_fred_series(manifest: dict[str, Any] | None = None) -> set[str]:
 def _formula_deps(formula: str) -> set[str]:
     import re
 
-    if formula == "pe_EFA_div_SPY":
+    if formula in ("pe_EFA_div_SPY", "pe_EEM_div_SPY", "em_gdp_growth"):
         return set()
     if formula.startswith("delta_"):
         return {formula.replace("delta_", "").replace("_90d", "")}

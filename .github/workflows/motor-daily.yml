@@ -13,7 +13,7 @@ concurrency:
 jobs:
   motor:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 180
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,6 +25,15 @@ jobs:
           cache: pip
           cache-dependency-path: motor/requirements.txt
 
+      - name: Setup Node (catalog export)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install Node dependencies
+        run: npm ci
+
       - name: Install motor dependencies
         run: pip install -r motor/requirements.txt
 
@@ -34,7 +43,7 @@ jobs:
         run: python motor/scripts/blob_sync.py download
         continue-on-error: true
 
-      - name: Run motor daily (fontes + pipeline + relatórios)
+      - name: Run motor daily (1A — fontes + macro + top-90% + snapshot)
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
         run: PYTHONPATH=. python motor/scripts/run_daily.py

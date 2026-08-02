@@ -12,7 +12,7 @@ Output: relatórios `.md` com racional matemático explícito.
 
 **QI legado** (`analytics/qi/`) = pausado; PostgreSQL, FMP/Polygon, regime GICS — referência apenas.
 
-**Next.js** = CRUD pessoal mantido; `/mercado` bloqueado até motor validar 2 abas.
+**Next.js** = CRUD pessoal + **Markets** (`/mercado`) via snapshot motor (Etapa 1A).
 
 ## Documentação motor
 
@@ -23,6 +23,7 @@ Output: relatórios `.md` com racional matemático explícito.
 | [docs/projeto-motor-decisao-alocacao.md](docs/projeto-motor-decisao-alocacao.md) | z-score, S, estágio, SQLite |
 | [docs/tabela-classes-ativos-indicadores.md](docs/tabela-classes-ativos-indicadores.md) | 13 classes + fontes |
 | [docs/classes-ativos-catalogo-claude.md](docs/classes-ativos-catalogo-claude.md) | **17 tabs UI, catálogo, motor, ranking 90d/90%, backlog** |
+| [docs/ETAPA_1A_TESTE.md](docs/ETAPA_1A_TESTE.md) | Checklist teste 1A em produção |
 | [docs/guia-decisao-entrada-por-sleeve.md](docs/guia-decisao-entrada-por-sleeve.md) | Racional de entrada |
 
 ## Comandos motor
@@ -30,12 +31,16 @@ Output: relatórios `.md` com racional matemático explícito.
 ```bash
 npm run motor:test-fontes   # Etapa 1: smoke test por fonte
 npm run motor:fontes        # Etapa 1: ingest manifesto completo
-npm run motor:test          # FRED smoke (legado)
-npm run motor:pipeline      # Etapa 2+: score por aba
+npm run motor:export-catalog # Catálogo → catalog_by_class.json
+npm run motor:daily         # 1A: fontes + macro + top-90% + snapshot
+npm run motor:validate-abas # Aceite fi_treasury + credito_alternativo
+npm run motor:pipeline      # Score uma aba (manual)
 npm run motor:report        # relatório .md
+npm run motor:symbol        # on-demand um ticker (--symbol / --class-id)
+npm run motor:blob-upload   # snapshot + SQLite → Blob
 ```
 
-Variáveis: `FRED_API_KEY` (`.env.local`), `MOTOR_ABA` (default `fi_treasury`).
+Variáveis: `FRED_API_KEY` (`.env.local`), `BLOB_READ_WRITE_TOKEN` (Vercel + GH Actions).
 
 ## Entrega e deploy
 

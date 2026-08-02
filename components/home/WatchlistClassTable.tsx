@@ -71,7 +71,7 @@ function SecurityRow({
     : row.motorScope === "class"
       ? row.entryValidated
         ? "Class validated"
-        : "Class not validated"
+        : "Class macro"
       : row.entryValidated
         ? "Validated"
         : "Not validated";
@@ -146,10 +146,15 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
         <h2 className="font-title text-base text-white">{group.label}</h2>
         {group.classStageLabel ? (
           <p className="text-[11px] text-zinc-500">
-            {group.classStageLabel}
+            Class: {group.classStageLabel}
             {group.classScore != null ? ` · ${group.classScore.toFixed(2)}` : ""}
+            {group.classDominantIndicator?.name
+              ? ` · ${group.classDominantIndicator.name}`
+              : ""}
           </p>
-        ) : null}
+        ) : (
+          <p className="text-[11px] text-zinc-600">Class macro pending</p>
+        )}
       </div>
 
       <div className="overflow-x-auto rounded-lg border border-zinc-800 bg-black">

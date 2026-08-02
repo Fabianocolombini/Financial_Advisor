@@ -1,4 +1,5 @@
 import type { MotorDashboardSnapshot } from "./snapshot-types";
+import { head } from "@vercel/blob";
 import { readFile } from "fs/promises";
 import path from "path";
 
@@ -12,13 +13,8 @@ export async function loadMotorDashboardSnapshot(): Promise<MotorDashboardSnapsh
   const token = process.env.BLOB_READ_WRITE_TOKEN?.trim();
   if (token) {
     try {
-      const res = await fetch(`https://blob.vercel-storage.com/${BLOB_PATH}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "x-api-version": "7",
-        },
-        next: { revalidate: 300 },
-      });
+      const meta = await head(BLOB_PATH, { token });
+      const res = await fetch(meta.url, { next: { revalidate: 300 } });
       if (res.ok) {
         return (await res.json()) as MotorDashboardSnapshot;
       }

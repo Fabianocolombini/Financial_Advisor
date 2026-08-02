@@ -69,8 +69,10 @@ export function buildWatchlistGroups(
     const rows: WatchlistRow[] = classItems.map((item) => {
       const sym = item.symbol.toUpperCase();
       const tick = snapshot?.tickers[sym];
-      const hasTickerMotor = Boolean(tick);
-      const hasClassMotor = Boolean(classSnap);
+      const hasTickerMotor = Boolean(tick?.score != null && tick?.data);
+      const hasClassMotor = Boolean(
+        classSnap?.score != null && classSnap?.data,
+      );
       const hasMotorData = hasTickerMotor || hasClassMotor;
       const yahooPerf = perf1dBySymbol?.get(sym);
 
@@ -85,6 +87,12 @@ export function buildWatchlistGroups(
           ? classSnap!.entryValidated ?? false
           : false;
 
+      const stageLabel = hasTickerMotor
+        ? tick!.stageLabel ?? "Hold"
+        : hasClassMotor
+          ? classSnap!.stageLabel ?? "Hold"
+          : "Analyzing";
+
       return {
         id: item.id,
         symbol: item.symbol,
@@ -94,7 +102,7 @@ export function buildWatchlistGroups(
         kind: item.kind,
         score: tick?.score ?? classSnap?.score ?? null,
         stage: tick?.stage ?? classSnap?.stage ?? null,
-        stageLabel: tick?.stageLabel ?? classSnap?.stageLabel ?? "Analyzing",
+        stageLabel,
         divergesFromClass: tick?.divergesFromClass ?? false,
         entryValidated,
         dominantIndicator:

@@ -140,18 +140,18 @@ Sem overlap no catálogo (`lib/catalog/instruments.ts`).
 
 ## Backlog de melhorias (ordem revisada ago/2026)
 
-### ✅ Feito nesta rodada
+### ✅ Feito nesta rodada (Etapa 1A)
 
 1. Cache ranking volume (1h / `classId`)
-2. Abas motor baratas: `commodities_precious`, `commodities_energy`, `currencies`
-3. Regra Cash vs Treasuries + rename `taxas` → `fi_treasury`
-4. Universo BDC motor alinhado ao catálogo (30 tickers + HYG)
-5. Benchmarks setoriais: `energy_mlp` → AMLP, `alt_infrastructure` → IGF, `alt_bdc` → HYG
-6. Abas motor: `fi_preferred`, `intl_equity`, `em_equity`
-7. Aba motor `alt_infrastructure` (EDGAR + macro FRED)
-8. Filtro GICS por setor na busca `us_equity` (UI + API)
+2. Abas motor + manifesto como fonte de indicadores no score
+3. Cash vs Treasuries + `fi_treasury` rename
+4. BDC universo alinhado ao catálogo
+5. **Motor daily:** ingest fontes + macro classe + **score top-90% liquidez** por classe
+6. **`catalog_by_class.json`** exportado do catálogo para o motor
+7. Snapshot Blob via `@vercel/blob` `head()` na app
+8. UX Markets: fallback **class macro** (score/stage/indicadores) quando ticker ainda não tem score
 
-### Próximo
+### Próximo (1B — não iniciar antes de 1A validada em produção)
 
 1. **`energy_mlp`** — aba motor com benchmark AMLP (decisão: aba dedicada vs reutilizar `commodities_energy`)
 2. **`GITHUB_MOTOR_DISPATCH_TOKEN`** nos GitHub Secrets (★ → `motor-symbol`)

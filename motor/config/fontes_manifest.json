@@ -51,21 +51,21 @@
       "id": "fi_treasury",
       "nome": "Fixed Income - US Government/Treasury",
       "indicadores": [
-        { "id": "t10y2y", "fonte": "fred", "serie": "T10Y2Y" },
-        { "id": "t10y3m", "fonte": "fred", "serie": "T10Y3M" },
-        { "id": "dff", "fonte": "fred", "serie": "DFF" },
-        { "id": "yield_real_10y", "fonte": "calculado", "formula": "DGS10 - T10YIE" }
+        { "id": "t10y2y", "nome": "Spread 10y-2y", "fonte": "fred", "serie": "T10Y2Y" },
+        { "id": "t10y3m", "nome": "Spread 10y-3m", "fonte": "fred", "serie": "T10Y3M" },
+        { "id": "dff", "nome": "Fed Funds", "fonte": "fred", "serie": "DFF" },
+        { "id": "yield_real_10y", "nome": "Yield real 10y", "fonte": "calculado", "formula": "DGS10 - T10YIE" },
+        { "id": "yield_10y", "nome": "Yield nominal 10y", "fonte": "fred", "serie": "DGS10" }
       ]
     },
     {
       "id": "fi_ig",
       "nome": "Fixed Income - Investment Grade Corporate",
       "indicadores": [
-        { "id": "ig_oas", "fonte": "fred", "serie": "BAMLC0A0CM" },
-        { "id": "ig_aaa", "fonte": "fred", "serie": "BAMLC0A1CAAA" },
-        { "id": "ig_aa", "fonte": "fred", "serie": "BAMLC0A2CAA" },
-        { "id": "ig_a", "fonte": "fred", "serie": "BAMLC0A3CA" },
-        { "id": "ig_bbb", "fonte": "fred", "serie": "BAMLC0A4CBBB" }
+        { "id": "ig_oas", "nome": "Spread OAS IG", "fonte": "fred", "serie": "BAMLC0A0CM" },
+        { "id": "ig_aaa", "nome": "Spread IG AAA", "fonte": "fred", "serie": "BAMLC0A1CAAA" },
+        { "id": "ig_bbb", "nome": "Spread IG BBB", "fonte": "fred", "serie": "BAMLC0A4CBBB" },
+        { "id": "spread_ig_treasury", "nome": "Spread IG vs Treasury", "fonte": "calculado", "formula": "BAMLC0A0CM - DGS10" }
       ]
     },
     {
@@ -94,41 +94,50 @@
       "id": "fi_preferred",
       "nome": "Fixed Income - Preferred Securities",
       "indicadores": [
-        { "id": "dividend_yield", "fonte": "yfinance", "field": "dividend_yield", "ticker_proxy": "PFF" },
-        { "id": "hy_context", "fonte": "fred", "serie": "BAMLH0A0HYM2" }
+        { "id": "dividend_yield", "nome": "Dividend yield PFF", "fonte": "yfinance", "field": "dividend_yield", "ticker_proxy": "PFF" },
+        { "id": "hy_context", "nome": "Spread HY contexto", "fonte": "fred", "serie": "BAMLH0A0HYM2" },
+        { "id": "ig_context", "nome": "Spread IG contexto", "fonte": "fred", "serie": "BAMLC0A0CM" },
+        { "id": "yield_10y", "nome": "Yield 10y", "fonte": "fred", "serie": "DGS10" }
       ]
     },
     {
       "id": "us_equity",
       "nome": "US Equity",
       "indicadores": [
-        { "id": "pe_ratio", "fonte": "yfinance", "field": "pe_ratio", "ticker_proxy": "SPY" },
-        { "id": "vix", "fonte": "fred", "serie": "VIXCLS" }
+        { "id": "pe_ratio", "nome": "P/E SPY", "fonte": "yfinance", "field": "pe_ratio", "ticker_proxy": "SPY" },
+        { "id": "vix", "nome": "VIX", "fonte": "fred", "serie": "VIXCLS" },
+        { "id": "spread_10y_2y", "nome": "Spread 10y-2y", "fonte": "fred", "serie": "T10Y2Y" },
+        { "id": "dff", "nome": "Fed Funds", "fonte": "fred", "serie": "DFF" }
       ]
     },
     {
       "id": "intl_equity",
       "nome": "Developed ex-US Equity",
       "indicadores": [
-        { "id": "pe_efa", "fonte": "yfinance", "field": "pe_ratio", "ticker_proxy": "EFA" },
-        { "id": "pe_spy", "fonte": "yfinance", "field": "pe_ratio", "ticker_proxy": "SPY" },
-        { "id": "pe_rel_intl_us", "fonte": "calculado", "formula": "pe_EFA_div_SPY" }
+        { "id": "pe_rel_intl_us", "nome": "P/E EFA relativo SPY", "fonte": "calculado", "formula": "pe_EFA_div_SPY" },
+        { "id": "vix", "nome": "VIX", "fonte": "fred", "serie": "VIXCLS" },
+        { "id": "dxy", "nome": "Dollar index", "fonte": "fred", "serie": "DTWEXBGS" },
+        { "id": "eurusd", "nome": "USD/EUR", "fonte": "fred", "serie": "DEXUSEU" }
       ]
     },
     {
       "id": "em_equity",
       "nome": "Emerging Market Equity",
       "indicadores": [
-        { "id": "pe_eem", "fonte": "yfinance", "field": "pe_ratio", "ticker_proxy": "EEM" },
-        { "id": "gdp_growth_em", "fonte": "world_bank", "indicator": "NY.GDP.MKTP.KD.ZG", "country": "EM" }
+        { "id": "pe_rel_em_us", "nome": "P/E EEM relativo SPY", "fonte": "calculado", "formula": "pe_EEM_div_SPY" },
+        { "id": "gdp_growth_em", "nome": "PIB EM (World Bank)", "fonte": "world_bank", "indicator": "NY.GDP.MKTP.KD.ZG", "country": "EM" },
+        { "id": "vix", "nome": "VIX", "fonte": "fred", "serie": "VIXCLS" },
+        { "id": "dxy", "nome": "Dollar index", "fonte": "fred", "serie": "DTWEXBGS" }
       ]
     },
     {
       "id": "real_estate",
       "nome": "Real Estate / REITs",
       "indicadores": [
-        { "id": "price_vnq", "fonte": "yfinance", "field": "close", "ticker_proxy": "VNQ" },
-        { "id": "dgs10", "fonte": "fred", "serie": "DGS10" }
+        { "id": "price_vnq", "nome": "Preço VNQ", "fonte": "yfinance", "field": "close", "ticker_proxy": "VNQ" },
+        { "id": "dgs10", "nome": "Yield 10y (cap rate proxy)", "fonte": "fred", "serie": "DGS10" },
+        { "id": "yield_real_10y", "nome": "Yield real 10y", "fonte": "calculado", "formula": "DGS10 - T10YIE" },
+        { "id": "spread_10y_2y", "nome": "Spread 10y-2y", "fonte": "fred", "serie": "T10Y2Y" }
       ]
     },
     {
@@ -162,7 +171,10 @@
       "id": "healthcare_biotech",
       "nome": "Health Care - Biotechnology",
       "indicadores": [
-        { "id": "revenue_growth", "fonte": "yfinance", "field": "revenue_growth", "ticker_proxy": "IBB" }
+        { "id": "revenue_growth", "nome": "Revenue growth IBB", "fonte": "yfinance", "field": "revenue_growth", "ticker_proxy": "IBB" },
+        { "id": "vix", "nome": "VIX", "fonte": "fred", "serie": "VIXCLS" },
+        { "id": "yield_10y", "nome": "Yield 10y", "fonte": "fred", "serie": "DGS10" },
+        { "id": "spread_10y_2y", "nome": "Spread 10y-2y", "fonte": "fred", "serie": "T10Y2Y" }
       ]
     },
     {
@@ -178,16 +190,20 @@
       "id": "alt_infrastructure",
       "nome": "Alternatives - Infrastructure",
       "indicadores": [
-        { "id": "price_igf", "fonte": "yfinance", "field": "close", "ticker_proxy": "IGF" }
+        { "id": "price_igf", "nome": "Preço IGF", "fonte": "yfinance", "field": "close", "ticker_proxy": "IGF" },
+        { "id": "wti", "nome": "WTI", "fonte": "fred", "serie": "DCOILWTICO" },
+        { "id": "henry_hub", "nome": "Henry Hub", "fonte": "fred", "serie": "DHHNGSP" },
+        { "id": "yield_10y", "nome": "Yield 10y", "fonte": "fred", "serie": "DGS10" }
       ]
     },
     {
       "id": "currencies",
       "nome": "Currencies",
       "indicadores": [
-        { "id": "eurusd", "fonte": "fred", "serie": "DEXUSEU" },
-        { "id": "dff", "fonte": "fred", "serie": "DFF" },
-        { "id": "ecb_rate", "fonte": "ecb", "series_key": "FM.B.U2.EUR.4F.KR.MRR_NR.LE" }
+        { "id": "eurusd", "nome": "USD/EUR", "fonte": "fred", "serie": "DEXUSEU" },
+        { "id": "dxy", "nome": "Dollar broad index", "fonte": "fred", "serie": "DTWEXBGS" },
+        { "id": "dff", "nome": "Fed Funds", "fonte": "fred", "serie": "DFF" },
+        { "id": "ecb_rate", "nome": "ECB main refinancing rate", "fonte": "ecb", "series_key": "FM.B.U2.EUR.4F.KR.MRR_NR.LE" }
       ]
     }
   ]

@@ -14,7 +14,9 @@
 
 ## Classes e indicadores
 
-Ver manifesto executável: [`motor/config/fontes_manifest.json`](../../motor/config/fontes_manifest.json).
+Manifesto executável (ingestão Etapa 1): [`motor/config/fontes_manifest.json`](../../motor/config/fontes_manifest.json).
+
+**Score do motor (Etapa 2+):** as abas usam os indicadores do manifesto por `classId` — ver `motor/src/config/manifest_indicators.py`. Fontes suportadas no score: FRED, yfinance (EOD + snapshots), World Bank, ECB, EDGAR, fórmulas calculadas.
 
 Resumo por classe — fontes gratuitas:
 

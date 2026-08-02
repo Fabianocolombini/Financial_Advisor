@@ -39,6 +39,7 @@
     "motor:report": "PYTHONPATH=. python3 -m motor.src.output.gerar_relatorio",
     "motor:daily": "PYTHONPATH=. python3 motor/scripts/run_daily.py",
     "motor:symbol": "PYTHONPATH=. python3 motor/scripts/run_symbol.py",
+    "motor:export-catalog": "tsx scripts/export-catalog-for-motor.ts",
     "motor:export-snapshot": "PYTHONPATH=. python3 motor/scripts/export_dashboard_snapshot.py",
     "motor:validate-abas": "PYTHONPATH=. python3 motor/scripts/validate_abas.py",
     "motor:verify-cloud-snapshot": "python3 motor/scripts/verify_cloud_snapshot.py",
@@ -49,6 +50,7 @@
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
     "@prisma/client": "^6.19.0",
+    "@vercel/blob": "^0.27.0",
     "next": "16.2.2",
     "next-auth": "^5.0.0-beta.30",
     "react": "19.2.4",
@@ -63,8 +65,8 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.2",
     "prisma": "^6.19.0",
-    "vitest": "^3.2.4",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.4"
   }
 }

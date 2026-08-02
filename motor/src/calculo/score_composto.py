@@ -8,7 +8,8 @@ from typing import Any
 
 import pandas as pd
 
-from motor.src.calculo.derivados import compute_formula, get_fred_series, latest_raw_value
+from motor.src.calculo.series_sources import indicator_series
+from motor.src.config.manifest_indicators import scoring_indicators_for_aba
 from motor.src.calculo.indicadores_tecnicos import get_tecnico_series
 from motor.src.calculo.zscore import apply_direction, zscore_latest
 from motor.src.config_loader import load_aba_config, load_tecnicos_config
@@ -26,15 +27,7 @@ def _truncate_series(series: pd.Series, as_of: dt.date) -> pd.Series:
 
 
 def _indicator_series(ind: dict[str, Any]) -> pd.Series:
-    fonte = ind.get("fonte")
-    if fonte == "fred":
-        return get_fred_series(ind["serie"])
-    if fonte == "calculado":
-        return compute_formula(ind["formula"])
-    if fonte == "edgar":
-        # Single-point series for z-score fallback
-        return pd.Series(dtype=float)
-    return pd.Series(dtype=float)
+    return indicator_series(ind)
 
 
 def _score_indicator(
@@ -50,7 +43,9 @@ def _score_indicator(
 
     series = _truncate_series(_indicator_series(ind), as_of)
     if series.empty and ind.get("fonte") == "edgar":
-        val = get_edgar_metric(ind.get("ticker", ""), ind.get("edgar_metric", ""))
+        ticker = (ind.get("ticker_proxy") or ind.get("ticker") or "").upper()
+        metric = ind.get("metric") or ind.get("edgar_metric") or ""
+        val = get_edgar_metric(ticker, metric) if ticker and metric else None
         z, latest, mean = (0.0, val or 0.0, val or 0.0)
     else:
         z, latest, mean = zscore_latest(series, window)
@@ -74,11 +69,12 @@ def compute_aba_score(aba_id: str, as_of: dt.date | None = None) -> dict[str, An
     aba = load_aba_config(aba_id)
     as_of = as_of or motor_as_of_date()
     pesos_camada = aba.get("pesos_camada", {})
+    indicators = scoring_indicators_for_aba(aba_id, aba)
     components: list[dict[str, Any]] = []
     total_weight = 0.0
     total_contrib = 0.0
 
-    for ind in aba.get("indicadores", []):
+    for ind in indicators:
         comp = _score_indicator(ind, pesos_camada, as_of)
         components.append(comp)
         w = comp["peso"] * comp["peso_camada"]
@@ -172,7 +168,7 @@ def backfill_aba_scores(aba_id: str, days: int = 120) -> int:
     init_db()
     aba = load_aba_config(aba_id)
     pesos_camada = aba.get("pesos_camada", {})
-    indicators = aba.get("indicadores", [])
+    indicators = scoring_indicators_for_aba(aba_id, aba)
 
     # Reference dates from first macro indicator
     ref_series = None

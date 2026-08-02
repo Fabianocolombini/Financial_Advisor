@@ -1,0 +1,2147 @@
+{
+  "version": 1,
+  "classes": {
+    "cash_equivalents": [
+      {
+        "symbol": "SHV",
+        "name": "iShares Short Treasury Bond ETF"
+      },
+      {
+        "symbol": "BIL",
+        "name": "SPDR Bloomberg 1-3 Month T-Bill ETF"
+      },
+      {
+        "symbol": "SGOV",
+        "name": "iShares 0-3 Month Treasury Bond ETF"
+      },
+      {
+        "symbol": "GBIL",
+        "name": "Goldman Sachs Access Treasury 0-1 Year ETF"
+      },
+      {
+        "symbol": "TFLO",
+        "name": "iShares Treasury Floating Rate Bond ETF"
+      },
+      {
+        "symbol": "USFR",
+        "name": "WisdomTree Floating Rate Treasury ETF"
+      },
+      {
+        "symbol": "MINT",
+        "name": "PIMCO Enhanced Short Maturity Active ETF"
+      },
+      {
+        "symbol": "NEAR",
+        "name": "iShares Short Maturity Bond ETF"
+      },
+      {
+        "symbol": "JPST",
+        "name": "JPMorgan Ultra-Short Income ETF"
+      },
+      {
+        "symbol": "ICSH",
+        "name": "iShares Ultra Short-Term Bond ETF"
+      },
+      {
+        "symbol": "FLOT",
+        "name": "iShares Floating Rate Bond ETF"
+      },
+      {
+        "symbol": "SPSB",
+        "name": "SPDR Portfolio Short Term Corporate Bond ETF"
+      },
+      {
+        "symbol": "TBIL",
+        "name": "US Treasury 3 Month Bill ETF"
+      },
+      {
+        "symbol": "FLRN",
+        "name": "SPDR Bloomberg Investment Grade Floating Rate ETF"
+      },
+      {
+        "symbol": "GSY",
+        "name": "Invesco Ultra Short Duration ETF"
+      },
+      {
+        "symbol": "FTSL",
+        "name": "First Trust Senior Loan Fund ETF"
+      },
+      {
+        "symbol": "BILS",
+        "name": "SPDR Bloomberg 3-12 Month T-Bill ETF"
+      },
+      {
+        "symbol": "CLOA",
+        "name": "iShares AAA CLO Active ETF"
+      },
+      {
+        "symbol": "CLOZ",
+        "name": "Panagram AAA CLO ETF"
+      },
+      {
+        "symbol": "SHYD",
+        "name": "VanEck Short High Yield Muni ETF"
+      },
+      {
+        "symbol": "VMOT",
+        "name": "Vanguard Ultra-Short-Term Bond ETF"
+      },
+      {
+        "symbol": "ULST",
+        "name": "SPDR SSgA Ultra Short Term Bond ETF"
+      },
+      {
+        "symbol": "CSHI",
+        "name": "Neuberger Berman Short Duration Income ETF"
+      },
+      {
+        "symbol": "JAAA",
+        "name": "Janus Henderson AAA CLO ETF"
+      },
+      {
+        "symbol": "BSCQ",
+        "name": "Invesco BulletShares 2026 Corporate Bond ETF"
+      }
+    ],
+    "fi_treasury": [
+      {
+        "symbol": "TLT",
+        "name": "iShares 20+ Year Treasury Bond ETF"
+      },
+      {
+        "symbol": "IEF",
+        "name": "iShares 7-10 Year Treasury Bond ETF"
+      },
+      {
+        "symbol": "GOVT",
+        "name": "iShares U.S. Treasury Bond ETF"
+      },
+      {
+        "symbol": "VGIT",
+        "name": "Vanguard Intermediate-Term Treasury ETF"
+      },
+      {
+        "symbol": "VGLT",
+        "name": "Vanguard Long-Term Treasury ETF"
+      },
+      {
+        "symbol": "SCHR",
+        "name": "Schwab Intermediate-Term U.S. Treasury ETF"
+      },
+      {
+        "symbol": "SCHQ",
+        "name": "Schwab Long-Term U.S. Treasury ETF"
+      },
+      {
+        "symbol": "SPTL",
+        "name": "SPDR Portfolio Long Term Treasury ETF"
+      },
+      {
+        "symbol": "EDV",
+        "name": "Vanguard Extended Duration Treasury ETF"
+      },
+      {
+        "symbol": "ZROZ",
+        "name": "PIMCO 25+ Year Zero Coupon U.S. Treasury ETF"
+      },
+      {
+        "symbol": "TLH",
+        "name": "iShares 10-20 Year Treasury Bond ETF"
+      },
+      {
+        "symbol": "SPTI",
+        "name": "SPDR Portfolio Intermediate Term Treasury ETF"
+      },
+      {
+        "symbol": "SCHO",
+        "name": "Schwab Short-Term U.S. Treasury ETF"
+      },
+      {
+        "symbol": "SPTS",
+        "name": "SPDR Portfolio Short Term Treasury ETF"
+      },
+      {
+        "symbol": "GOVZ",
+        "name": "iShares U.S. Treasury Bond ETF (Zero Coupon)"
+      },
+      {
+        "symbol": "UTEN",
+        "name": "US Treasury 10 Year Note ETF"
+      },
+      {
+        "symbol": "UTWO",
+        "name": "US Treasury 2 Year Note ETF"
+      },
+      {
+        "symbol": "UTHY",
+        "name": "US Treasury 30 Year Bond ETF"
+      },
+      {
+        "symbol": "TYD",
+        "name": "Direxion Daily 7-10 Year Treasury Bull 3X"
+      },
+      {
+        "symbol": "TMV",
+        "name": "Direxion Daily 20+ Year Treasury Bear 3X"
+      },
+      {
+        "symbol": "IEI",
+        "name": "iShares 3-7 Year Treasury Bond ETF"
+      },
+      {
+        "symbol": "SHY",
+        "name": "iShares 1-3 Year Treasury Bond ETF"
+      },
+      {
+        "symbol": "VGSH",
+        "name": "Vanguard Short-Term Treasury ETF"
+      },
+      {
+        "symbol": "BND",
+        "name": "Vanguard Total Bond Market ETF"
+      },
+      {
+        "symbol": "AGG",
+        "name": "iShares Core U.S. Aggregate Bond ETF"
+      },
+      {
+        "symbol": "SCHZ",
+        "name": "Schwab U.S. Aggregate Bond ETF"
+      },
+      {
+        "symbol": "SPAB",
+        "name": "SPDR Portfolio Aggregate Bond ETF"
+      },
+      {
+        "symbol": "VTEB",
+        "name": "Vanguard Tax-Exempt Bond ETF"
+      },
+      {
+        "symbol": "SUB",
+        "name": "iShares Short-Term National Muni Bond ETF"
+      },
+      {
+        "symbol": "SHM",
+        "name": "SPDR Nuveen Bloomberg Short Term Municipal Bond ETF"
+      },
+      {
+        "symbol": "TFI",
+        "name": "SPDR Nuveen Bloomberg Municipal Bond ETF"
+      },
+      {
+        "symbol": "PZA",
+        "name": "Invesco National AMT-Free Municipal Bond ETF"
+      },
+      {
+        "symbol": "VMBS",
+        "name": "Vanguard Mortgage-Backed Securities ETF"
+      },
+      {
+        "symbol": "GNMA",
+        "name": "iShares GNMA Bond ETF"
+      },
+      {
+        "symbol": "SPTB",
+        "name": "SPDR Portfolio Treasury Bond ETF"
+      }
+    ],
+    "fi_ig": [
+      {
+        "symbol": "LQD",
+        "name": "iShares iBoxx $ Investment Grade Corporate Bond ETF"
+      },
+      {
+        "symbol": "VCIT",
+        "name": "Vanguard Intermediate-Term Corporate Bond ETF"
+      },
+      {
+        "symbol": "VCSH",
+        "name": "Vanguard Short-Term Corporate Bond ETF"
+      },
+      {
+        "symbol": "IGIB",
+        "name": "iShares Intermediate-Term Corporate Bond ETF"
+      },
+      {
+        "symbol": "IGSB",
+        "name": "iShares Short-Term Corporate Bond ETF"
+      },
+      {
+        "symbol": "SPLB",
+        "name": "SPDR Portfolio Long Term Corporate Bond ETF"
+      },
+      {
+        "symbol": "USIG",
+        "name": "iShares Broad USD Investment Grade Corporate Bond ETF"
+      },
+      {
+        "symbol": "CORP",
+        "name": "PIMCO Investment Grade Corporate Bond Index ETF"
+      },
+      {
+        "symbol": "LQDH",
+        "name": "iShares Interest Rate Hedged Corporate Bond ETF"
+      },
+      {
+        "symbol": "SCHI",
+        "name": "Schwab 5-10 Year Corporate Bond ETF"
+      },
+      {
+        "symbol": "GIGB",
+        "name": "Goldman Sachs Access Investment Grade Corporate Bond ETF"
+      },
+      {
+        "symbol": "IGLB",
+        "name": "iShares 10+ Year Investment Grade Corporate Bond ETF"
+      },
+      {
+        "symbol": "VCLT",
+        "name": "Vanguard Long-Term Corporate Bond ETF"
+      },
+      {
+        "symbol": "SPIB",
+        "name": "SPDR Portfolio Intermediate Term Corporate Bond ETF"
+      },
+      {
+        "symbol": "FLTR",
+        "name": "VanEck IG Floating Rate ETF"
+      },
+      {
+        "symbol": "IAGG",
+        "name": "iShares Core International Aggregate Bond ETF"
+      },
+      {
+        "symbol": "BNDX",
+        "name": "Vanguard Total International Bond ETF"
+      },
+      {
+        "symbol": "EMB",
+        "name": "iShares J.P. Morgan USD Emerging Markets Bond ETF"
+      },
+      {
+        "symbol": "VWOB",
+        "name": "Vanguard Emerging Markets Government Bond ETF"
+      },
+      {
+        "symbol": "CWB",
+        "name": "SPDR Bloomberg Convertible Securities ETF"
+      },
+      {
+        "symbol": "ANGL",
+        "name": "VanEck Fallen Angel High Yield Bond ETF"
+      },
+      {
+        "symbol": "BKLN",
+        "name": "Invesco Senior Loan ETF"
+      },
+      {
+        "symbol": "SRLN",
+        "name": "SPDR Blackstone Senior Loan ETF"
+      },
+      {
+        "symbol": "JCPB",
+        "name": "JPMorgan Core Plus Bond ETF"
+      },
+      {
+        "symbol": "JMBS",
+        "name": "Janus Henderson Mortgage-Backed Securities ETF"
+      },
+      {
+        "symbol": "MBB",
+        "name": "iShares MBS ETF"
+      }
+    ],
+    "fi_hy": [
+      {
+        "symbol": "HYG",
+        "name": "iShares iBoxx $ High Yield Corporate Bond ETF"
+      },
+      {
+        "symbol": "JNK",
+        "name": "SPDR Bloomberg High Yield Bond ETF"
+      },
+      {
+        "symbol": "USHY",
+        "name": "iShares Broad USD High Yield Corporate Bond ETF"
+      },
+      {
+        "symbol": "SHYG",
+        "name": "iShares 0-5 Year High Yield Corporate Bond ETF"
+      },
+      {
+        "symbol": "HYLB",
+        "name": "Xtrackers USD High Yield Corporate Bond ETF"
+      },
+      {
+        "symbol": "PHB",
+        "name": "Invesco Fundamental High Yield Corporate Bond ETF"
+      },
+      {
+        "symbol": "SJNK",
+        "name": "SPDR Bloomberg Short Term High Yield Bond ETF"
+      },
+      {
+        "symbol": "FALN",
+        "name": "iShares Fallen Angels USD Bond ETF"
+      },
+      {
+        "symbol": "HYGH",
+        "name": "iShares Interest Rate Hedged High Yield Bond ETF"
+      },
+      {
+        "symbol": "SPHY",
+        "name": "SPDR Portfolio High Yield Bond ETF"
+      },
+      {
+        "symbol": "HYLS",
+        "name": "First Trust Tactical High Yield ETF"
+      },
+      {
+        "symbol": "PGHY",
+        "name": "Invesco Global Short Term High Yield Bond ETF"
+      },
+      {
+        "symbol": "HYZD",
+        "name": "WisdomTree Interest Rate Hedged High Yield Bond ETF"
+      },
+      {
+        "symbol": "BSJK",
+        "name": "Invesco BulletShares 2027 High Yield Corporate Bond ETF"
+      },
+      {
+        "symbol": "BSJL",
+        "name": "Invesco BulletShares 2028 High Yield Corporate Bond ETF"
+      },
+      {
+        "symbol": "BSJM",
+        "name": "Invesco BulletShares 2029 High Yield Corporate Bond ETF"
+      },
+      {
+        "symbol": "BSJN",
+        "name": "Invesco BulletShares 2030 High Yield Corporate Bond ETF"
+      },
+      {
+        "symbol": "BSJO",
+        "name": "Invesco BulletShares 2031 High Yield Corporate Bond ETF"
+      },
+      {
+        "symbol": "HYMB",
+        "name": "SPDR Nuveen Bloomberg High Yield Municipal Bond ETF"
+      },
+      {
+        "symbol": "HYD",
+        "name": "VanEck High Yield Muni ETF"
+      },
+      {
+        "symbol": "FMHI",
+        "name": "First Trust Municipal High Income ETF"
+      },
+      {
+        "symbol": "HYBB",
+        "name": "iShares BB Rated Corporate Bond ETF"
+      },
+      {
+        "symbol": "HYS",
+        "name": "PIMCO 0-5 Year High Yield Corporate Bond Index ETF"
+      },
+      {
+        "symbol": "HYEM",
+        "name": "VanEck Emerging Markets High Yield Bond ETF"
+      },
+      {
+        "symbol": "EMHY",
+        "name": "iShares J.P. Morgan EM High Yield Bond ETF"
+      },
+      {
+        "symbol": "HYXU",
+        "name": "iShares Global ex USD High Yield Corporate Bond ETF"
+      },
+      {
+        "symbol": "HYDW",
+        "name": "Xtrackers Low Beta High Yield Bond ETF"
+      },
+      {
+        "symbol": "HYGV",
+        "name": "FlexShares High Yield Value-Scored Bond ETF"
+      }
+    ],
+    "fi_tips": [
+      {
+        "symbol": "TIP",
+        "name": "iShares TIPS Bond ETF"
+      },
+      {
+        "symbol": "SCHP",
+        "name": "Schwab U.S. TIPS ETF"
+      },
+      {
+        "symbol": "VTIP",
+        "name": "Vanguard Short-Term Inflation-Protected Securities ETF"
+      },
+      {
+        "symbol": "STIP",
+        "name": "iShares 0-5 Year TIPS Bond ETF"
+      },
+      {
+        "symbol": "LTPZ",
+        "name": "PIMCO 15+ Year U.S. TIPS Index ETF"
+      },
+      {
+        "symbol": "TIPX",
+        "name": "SPDR Bloomberg 1-10 Year TIPS ETF"
+      },
+      {
+        "symbol": "PBTP",
+        "name": "Invesco 0-5 Year U.S. TIPS ETF"
+      },
+      {
+        "symbol": "GTIP",
+        "name": "Goldman Sachs Access Inflation Protected USD Bond ETF"
+      },
+      {
+        "symbol": "STPZ",
+        "name": "PIMCO 1-5 Year U.S. TIPS Index ETF"
+      },
+      {
+        "symbol": "TDTT",
+        "name": "FlexShares iBoxx 3-Year Target Duration TIPS ETF"
+      },
+      {
+        "symbol": "TDTF",
+        "name": "FlexShares iBoxx 5-Year Target Duration TIPS ETF"
+      },
+      {
+        "symbol": "IVOL",
+        "name": "Quadratic Interest Rate Volatility & Inflation Hedge ETF"
+      },
+      {
+        "symbol": "RINF",
+        "name": "ProShares Inflation Expectations ETF"
+      },
+      {
+        "symbol": "SPIP",
+        "name": "SPDR Portfolio TIPS ETF"
+      },
+      {
+        "symbol": "IPE",
+        "name": "SPDR Bloomberg Barclays TIPS ETF"
+      },
+      {
+        "symbol": "WIP",
+        "name": "SPDR FTSE International Government Inflation-Protected Bond ETF"
+      },
+      {
+        "symbol": "TIPZ",
+        "name": "PIMCO Broad U.S. TIPS Index ETF"
+      },
+      {
+        "symbol": "TIPS",
+        "name": "Northern Trust 2030 Inflation-Linked Distributing Ladder ETF"
+      },
+      {
+        "symbol": "TAIL",
+        "name": "Cambria Tail Risk ETF"
+      },
+      {
+        "symbol": "CPI",
+        "name": "IQ Real Return ETF"
+      },
+      {
+        "symbol": "LTPB",
+        "name": "iShares 10+ Year Investment Grade Corporate Bond ETF"
+      },
+      {
+        "symbol": "FIP",
+        "name": "FT Cboe Vest U.S. Equity Buffer ETF"
+      },
+      {
+        "symbol": "LDSF",
+        "name": "iShares Short Duration Bond Active ETF"
+      },
+      {
+        "symbol": "STOT",
+        "name": "SPDR DoubleLine Short Duration Total Return Tactical ETF"
+      },
+      {
+        "symbol": "BNDD",
+        "name": "Quadratic Deflation ETF"
+      }
+    ],
+    "fi_preferred": [
+      {
+        "symbol": "PFF",
+        "name": "iShares Preferred and Income Securities ETF"
+      },
+      {
+        "symbol": "PGX",
+        "name": "Invesco Preferred ETF"
+      },
+      {
+        "symbol": "PFFD",
+        "name": "Global X U.S. Preferred ETF"
+      },
+      {
+        "symbol": "PFFR",
+        "name": "InfraCap REIT Preferred ETF"
+      },
+      {
+        "symbol": "FPE",
+        "name": "First Trust Preferred Securities & Income ETF"
+      },
+      {
+        "symbol": "PSPG",
+        "name": "PGIM Short Duration High Yield Opportunities ETF"
+      },
+      {
+        "symbol": "PFFA",
+        "name": "Virtus InfraCap U.S. Preferred Stock ETF"
+      },
+      {
+        "symbol": "PFFV",
+        "name": "Global X Variable Rate Preferred ETF"
+      },
+      {
+        "symbol": "VRDP",
+        "name": "Invesco Variable Rate Preferred ETF"
+      },
+      {
+        "symbol": "SPFF",
+        "name": "Global X SuperIncome Preferred ETF"
+      },
+      {
+        "symbol": "PFFL",
+        "name": "ETRACS 2x Leveraged Preferred Stock ETN"
+      },
+      {
+        "symbol": "PREF",
+        "name": "Principal Spectrum Preferred Securities Active ETF"
+      },
+      {
+        "symbol": "EPRF",
+        "name": "Innovator S&P Investment Grade Preferred ETF"
+      },
+      {
+        "symbol": "JPS",
+        "name": "Nuveen Preferred & Income Securities Fund"
+      },
+      {
+        "symbol": "PSF",
+        "name": "Cohen & Steers Select Preferred & Income Fund"
+      },
+      {
+        "symbol": "PSK",
+        "name": "SPDR ICE Preferred Securities ETF"
+      },
+      {
+        "symbol": "PFXF",
+        "name": "VanEck Preferred Securities ex Financials ETF"
+      },
+      {
+        "symbol": "PGF",
+        "name": "Invesco Financial Preferred ETF"
+      },
+      {
+        "symbol": "HPS",
+        "name": "Hancock Preferred Income Fund"
+      },
+      {
+        "symbol": "HPI",
+        "name": "John Hancock Preferred Income Fund"
+      },
+      {
+        "symbol": "HPF",
+        "name": "John Hancock Preferred Income Fund II"
+      },
+      {
+        "symbol": "PSA",
+        "name": "Public Storage Preferred"
+      },
+      {
+        "symbol": "ALL",
+        "name": "Allstate Corporation"
+      },
+      {
+        "symbol": "BAC",
+        "name": "Bank of America Corporation"
+      },
+      {
+        "symbol": "JPM",
+        "name": "JPMorgan Chase & Co."
+      },
+      {
+        "symbol": "WFC",
+        "name": "Wells Fargo & Company"
+      },
+      {
+        "symbol": "MS",
+        "name": "Morgan Stanley"
+      },
+      {
+        "symbol": "GS",
+        "name": "Goldman Sachs Group Inc."
+      },
+      {
+        "symbol": "C",
+        "name": "Citigroup Inc."
+      },
+      {
+        "symbol": "USB",
+        "name": "U.S. Bancorp"
+      }
+    ],
+    "us_equity": [
+      {
+        "symbol": "SPY",
+        "name": "SPDR S&P 500 ETF Trust"
+      },
+      {
+        "symbol": "QQQ",
+        "name": "Invesco QQQ Trust"
+      },
+      {
+        "symbol": "IWM",
+        "name": "iShares Russell 2000 ETF"
+      },
+      {
+        "symbol": "DIA",
+        "name": "SPDR Dow Jones Industrial Average ETF"
+      },
+      {
+        "symbol": "IVW",
+        "name": "iShares S&P 500 Growth ETF"
+      },
+      {
+        "symbol": "IVV",
+        "name": "iShares Core S&P 500 ETF"
+      },
+      {
+        "symbol": "VOO",
+        "name": "Vanguard S&P 500 ETF"
+      },
+      {
+        "symbol": "VTI",
+        "name": "Vanguard Total Stock Market ETF"
+      },
+      {
+        "symbol": "VUG",
+        "name": "Vanguard Growth ETF"
+      },
+      {
+        "symbol": "VTV",
+        "name": "Vanguard Value ETF"
+      },
+      {
+        "symbol": "SCHX",
+        "name": "Schwab U.S. Large-Cap ETF"
+      },
+      {
+        "symbol": "SCHG",
+        "name": "Schwab U.S. Large-Cap Growth ETF"
+      },
+      {
+        "symbol": "SCHD",
+        "name": "Schwab U.S. Dividend Equity ETF"
+      },
+      {
+        "symbol": "SPLG",
+        "name": "SPDR Portfolio S&P 500 ETF"
+      },
+      {
+        "symbol": "ITOT",
+        "name": "iShares Core S&P Total U.S. Stock Market ETF"
+      },
+      {
+        "symbol": "MDY",
+        "name": "SPDR S&P MidCap 400 ETF Trust"
+      },
+      {
+        "symbol": "IJH",
+        "name": "iShares Core S&P Mid-Cap ETF"
+      },
+      {
+        "symbol": "IJR",
+        "name": "iShares Core S&P Small-Cap ETF"
+      },
+      {
+        "symbol": "VO",
+        "name": "Vanguard Mid-Cap ETF"
+      },
+      {
+        "symbol": "VB",
+        "name": "Vanguard Small-Cap ETF"
+      },
+      {
+        "symbol": "VBR",
+        "name": "Vanguard Small-Cap Value ETF"
+      },
+      {
+        "symbol": "QUAL",
+        "name": "iShares MSCI USA Quality Factor ETF"
+      },
+      {
+        "symbol": "USMV",
+        "name": "iShares MSCI USA Min Vol Factor ETF"
+      },
+      {
+        "symbol": "MTUM",
+        "name": "iShares MSCI USA Momentum Factor ETF"
+      },
+      {
+        "symbol": "RSP",
+        "name": "Invesco S&P 500 Equal Weight ETF"
+      },
+      {
+        "symbol": "SPYG",
+        "name": "SPDR Portfolio S&P 500 Growth ETF"
+      },
+      {
+        "symbol": "SPYV",
+        "name": "SPDR Portfolio S&P 500 Value ETF"
+      },
+      {
+        "symbol": "XLK",
+        "name": "Technology Select Sector SPDR Fund"
+      },
+      {
+        "symbol": "XLF",
+        "name": "Financial Select Sector SPDR Fund"
+      },
+      {
+        "symbol": "XLY",
+        "name": "Consumer Discretionary Select Sector SPDR Fund"
+      },
+      {
+        "symbol": "XLP",
+        "name": "Consumer Staples Select Sector SPDR Fund"
+      },
+      {
+        "symbol": "XLI",
+        "name": "Industrial Select Sector SPDR Fund"
+      },
+      {
+        "symbol": "XLB",
+        "name": "Materials Select Sector SPDR Fund"
+      },
+      {
+        "symbol": "XLRE",
+        "name": "Real Estate Select Sector SPDR Fund"
+      },
+      {
+        "symbol": "XLC",
+        "name": "Communication Services Select Sector SPDR Fund"
+      },
+      {
+        "symbol": "AAPL",
+        "name": "Apple Inc."
+      },
+      {
+        "symbol": "MSFT",
+        "name": "Microsoft Corporation"
+      },
+      {
+        "symbol": "NVDA",
+        "name": "NVIDIA Corporation"
+      },
+      {
+        "symbol": "JNJ",
+        "name": "Johnson & Johnson"
+      },
+      {
+        "symbol": "UNH",
+        "name": "UnitedHealth Group Incorporated"
+      },
+      {
+        "symbol": "AMZN",
+        "name": "Amazon.com Inc."
+      },
+      {
+        "symbol": "TSLA",
+        "name": "Tesla Inc."
+      },
+      {
+        "symbol": "PG",
+        "name": "Procter & Gamble Company"
+      },
+      {
+        "symbol": "KO",
+        "name": "The Coca-Cola Company"
+      },
+      {
+        "symbol": "CAT",
+        "name": "Caterpillar Inc."
+      },
+      {
+        "symbol": "BA",
+        "name": "The Boeing Company"
+      },
+      {
+        "symbol": "XOM",
+        "name": "Exxon Mobil Corporation"
+      },
+      {
+        "symbol": "CVX",
+        "name": "Chevron Corporation"
+      },
+      {
+        "symbol": "LIN",
+        "name": "Linde plc"
+      },
+      {
+        "symbol": "FCX",
+        "name": "Freeport-McMoRan Inc."
+      },
+      {
+        "symbol": "NEE",
+        "name": "NextEra Energy Inc."
+      },
+      {
+        "symbol": "PLD",
+        "name": "Prologis Inc."
+      },
+      {
+        "symbol": "GOOGL",
+        "name": "Alphabet Inc. Class A"
+      },
+      {
+        "symbol": "META",
+        "name": "Meta Platforms Inc."
+      }
+    ],
+    "intl_equity": [
+      {
+        "symbol": "EFA",
+        "name": "iShares MSCI EAFE ETF"
+      },
+      {
+        "symbol": "VEA",
+        "name": "Vanguard FTSE Developed Markets ETF"
+      },
+      {
+        "symbol": "IEFA",
+        "name": "iShares Core MSCI EAFE IMI Index ETF"
+      },
+      {
+        "symbol": "IXUS",
+        "name": "iShares Core MSCI Total International Stock ETF"
+      },
+      {
+        "symbol": "VXUS",
+        "name": "Vanguard Total International Stock ETF"
+      },
+      {
+        "symbol": "SCHF",
+        "name": "Schwab International Equity ETF"
+      },
+      {
+        "symbol": "EFV",
+        "name": "iShares MSCI EAFE Value ETF"
+      },
+      {
+        "symbol": "IEUR",
+        "name": "iShares Core MSCI Europe ETF"
+      },
+      {
+        "symbol": "EWJ",
+        "name": "iShares MSCI Japan ETF"
+      },
+      {
+        "symbol": "EWG",
+        "name": "iShares MSCI Germany ETF"
+      },
+      {
+        "symbol": "EWU",
+        "name": "iShares MSCI United Kingdom ETF"
+      },
+      {
+        "symbol": "EWC",
+        "name": "iShares MSCI Canada ETF"
+      },
+      {
+        "symbol": "EWL",
+        "name": "iShares MSCI Switzerland ETF"
+      },
+      {
+        "symbol": "EWP",
+        "name": "iShares MSCI Spain ETF"
+      },
+      {
+        "symbol": "EWS",
+        "name": "iShares MSCI Singapore ETF"
+      },
+      {
+        "symbol": "EWA",
+        "name": "iShares MSCI Australia ETF"
+      },
+      {
+        "symbol": "EZU",
+        "name": "iShares MSCI Eurozone ETF"
+      },
+      {
+        "symbol": "VGK",
+        "name": "Vanguard FTSE Europe ETF"
+      },
+      {
+        "symbol": "EPP",
+        "name": "iShares MSCI Pacific ex Japan ETF"
+      },
+      {
+        "symbol": "HEFA",
+        "name": "iShares Currency Hedged MSCI EAFE ETF"
+      },
+      {
+        "symbol": "DBEF",
+        "name": "Xtrackers MSCI EAFE Hedged Equity ETF"
+      },
+      {
+        "symbol": "IEV",
+        "name": "iShares Europe ETF"
+      },
+      {
+        "symbol": "ACWX",
+        "name": "iShares MSCI ACWI ex U.S. ETF"
+      },
+      {
+        "symbol": "SPDW",
+        "name": "SPDR Portfolio Developed World ex-US ETF"
+      },
+      {
+        "symbol": "SCHY",
+        "name": "Schwab International Dividend Equity ETF"
+      },
+      {
+        "symbol": "IDV",
+        "name": "iShares International Select Dividend ETF"
+      },
+      {
+        "symbol": "VPL",
+        "name": "Vanguard FTSE Pacific ETF"
+      },
+      {
+        "symbol": "FLJP",
+        "name": "Franklin FTSE Japan ETF"
+      },
+      {
+        "symbol": "FLGB",
+        "name": "Franklin FTSE United Kingdom ETF"
+      },
+      {
+        "symbol": "BBEU",
+        "name": "JPMorgan BetaBuilders Europe ETF"
+      },
+      {
+        "symbol": "VEU",
+        "name": "Vanguard FTSE All-World ex-US ETF"
+      },
+      {
+        "symbol": "URTH",
+        "name": "iShares MSCI World ex USA ETF"
+      },
+      {
+        "symbol": "DXJ",
+        "name": "WisdomTree Japan Hedged Equity Fund"
+      },
+      {
+        "symbol": "HEDJ",
+        "name": "WisdomTree Europe Hedged Equity Fund"
+      },
+      {
+        "symbol": "FEZ",
+        "name": "SPDR EURO STOXX 50 ETF"
+      },
+      {
+        "symbol": "IEUS",
+        "name": "iShares MSCI Europe Small-Cap ETF"
+      },
+      {
+        "symbol": "SCHC",
+        "name": "Schwab International Small-Cap Equity ETF"
+      },
+      {
+        "symbol": "ISCF",
+        "name": "iShares MSCI International Quality Factor ETF"
+      },
+      {
+        "symbol": "IMTM",
+        "name": "iShares MSCI Intl Momentum Factor ETF"
+      },
+      {
+        "symbol": "AVDV",
+        "name": "Avantis International Small Cap Value ETF"
+      },
+      {
+        "symbol": "FNDF",
+        "name": "Schwab Fundamental International Equity ETF"
+      },
+      {
+        "symbol": "FLLA",
+        "name": "Franklin FTSE Latin America ETF"
+      },
+      {
+        "symbol": "FLKR",
+        "name": "Franklin FTSE South Korea ETF"
+      }
+    ],
+    "em_equity": [
+      {
+        "symbol": "EEM",
+        "name": "iShares MSCI Emerging Markets ETF"
+      },
+      {
+        "symbol": "VWO",
+        "name": "Vanguard FTSE Emerging Markets ETF"
+      },
+      {
+        "symbol": "IEMG",
+        "name": "iShares Core MSCI Emerging Markets IMI Index ETF"
+      },
+      {
+        "symbol": "SCHE",
+        "name": "Schwab Emerging Markets Equity ETF"
+      },
+      {
+        "symbol": "SPEM",
+        "name": "SPDR Portfolio Emerging Markets ETF"
+      },
+      {
+        "symbol": "EMXC",
+        "name": "iShares MSCI Emerging Markets ex China ETF"
+      },
+      {
+        "symbol": "EEMV",
+        "name": "iShares MSCI Emerging Markets Min Vol Factor ETF"
+      },
+      {
+        "symbol": "GEM",
+        "name": "Goldman Sachs ActiveBeta Emerging Markets Equity ETF"
+      },
+      {
+        "symbol": "DEM",
+        "name": "WisdomTree Emerging Markets High Dividend Fund"
+      },
+      {
+        "symbol": "FM",
+        "name": "iShares MSCI Frontier and Select EM ETF"
+      },
+      {
+        "symbol": "EEMS",
+        "name": "iShares MSCI Emerging Markets Small-Cap ETF"
+      },
+      {
+        "symbol": "MCHI",
+        "name": "iShares MSCI China ETF"
+      },
+      {
+        "symbol": "FXI",
+        "name": "iShares China Large-Cap ETF"
+      },
+      {
+        "symbol": "EWY",
+        "name": "iShares MSCI South Korea ETF"
+      },
+      {
+        "symbol": "EWT",
+        "name": "iShares MSCI Taiwan ETF"
+      },
+      {
+        "symbol": "EWH",
+        "name": "iShares MSCI Hong Kong ETF"
+      },
+      {
+        "symbol": "EWZ",
+        "name": "iShares MSCI Brazil ETF"
+      },
+      {
+        "symbol": "EZA",
+        "name": "iShares MSCI South Africa ETF"
+      },
+      {
+        "symbol": "INDA",
+        "name": "iShares MSCI India ETF"
+      },
+      {
+        "symbol": "EPHE",
+        "name": "iShares MSCI Philippines ETF"
+      },
+      {
+        "symbol": "THD",
+        "name": "iShares MSCI Thailand ETF"
+      },
+      {
+        "symbol": "EIDO",
+        "name": "iShares MSCI Indonesia ETF"
+      },
+      {
+        "symbol": "ECH",
+        "name": "iShares MSCI Chile ETF"
+      },
+      {
+        "symbol": "ARGT",
+        "name": "Global X MSCI Argentina ETF"
+      },
+      {
+        "symbol": "EMQQ",
+        "name": "Emerging Markets Internet & Ecommerce ETF"
+      },
+      {
+        "symbol": "VNM",
+        "name": "VanEck Vietnam ETF"
+      },
+      {
+        "symbol": "KWEB",
+        "name": "KraneShares CSI China Internet ETF"
+      },
+      {
+        "symbol": "ASHR",
+        "name": "Xtrackers Harvest CSI 300 China A-Shares ETF"
+      },
+      {
+        "symbol": "EMGF",
+        "name": "iShares Emerging Markets Equity Factor ETF"
+      }
+    ],
+    "real_estate": [
+      {
+        "symbol": "VNQ",
+        "name": "Vanguard Real Estate ETF"
+      },
+      {
+        "symbol": "SCHH",
+        "name": "Schwab U.S. REIT ETF"
+      },
+      {
+        "symbol": "IYR",
+        "name": "iShares U.S. Real Estate ETF"
+      },
+      {
+        "symbol": "REET",
+        "name": "iShares Global REIT ETF"
+      },
+      {
+        "symbol": "RWR",
+        "name": "SPDR Dow Jones REIT ETF"
+      },
+      {
+        "symbol": "USRT",
+        "name": "iShares Core U.S. REIT ETF"
+      },
+      {
+        "symbol": "VNQI",
+        "name": "Vanguard Global ex-U.S. Real Estate ETF"
+      },
+      {
+        "symbol": "IFGL",
+        "name": "iShares International Developed Real Estate ETF"
+      },
+      {
+        "symbol": "REM",
+        "name": "iShares Mortgage Real Estate ETF"
+      },
+      {
+        "symbol": "MORT",
+        "name": "VanEck Mortgage REIT Income ETF"
+      },
+      {
+        "symbol": "SRVR",
+        "name": "Pacer Data & Infrastructure Real Estate ETF"
+      },
+      {
+        "symbol": "RWX",
+        "name": "SPDR Dow Jones International Real Estate ETF"
+      },
+      {
+        "symbol": "FREL",
+        "name": "Fidelity MSCI Real Estate Index ETF"
+      },
+      {
+        "symbol": "BBRE",
+        "name": "JPMorgan BetaBuilders MSCI U.S. REIT ETF"
+      },
+      {
+        "symbol": "REZ",
+        "name": "iShares Residential and Multisector Real Estate ETF"
+      },
+      {
+        "symbol": "HOMZ",
+        "name": "Hoya Capital Housing ETF"
+      },
+      {
+        "symbol": "INDS",
+        "name": "Pacer Industrial Real Estate ETF"
+      },
+      {
+        "symbol": "NETL",
+        "name": "NETLease Corporate Real Estate ETF"
+      },
+      {
+        "symbol": "PPTY",
+        "name": "U.S. Diversified Real Estate ETF"
+      },
+      {
+        "symbol": "AMT",
+        "name": "American Tower Corporation"
+      },
+      {
+        "symbol": "EQIX",
+        "name": "Equinix Inc."
+      },
+      {
+        "symbol": "SPG",
+        "name": "Simon Property Group"
+      },
+      {
+        "symbol": "O",
+        "name": "Realty Income Corporation"
+      },
+      {
+        "symbol": "WELL",
+        "name": "Welltower Inc."
+      },
+      {
+        "symbol": "DLR",
+        "name": "Digital Realty Trust"
+      },
+      {
+        "symbol": "AVB",
+        "name": "AvalonBay Communities"
+      },
+      {
+        "symbol": "EQR",
+        "name": "Equity Residential"
+      }
+    ],
+    "commodities_precious": [
+      {
+        "symbol": "GLD",
+        "name": "SPDR Gold Shares"
+      },
+      {
+        "symbol": "IAU",
+        "name": "iShares Gold Trust"
+      },
+      {
+        "symbol": "SLV",
+        "name": "iShares Silver Trust"
+      },
+      {
+        "symbol": "SIVR",
+        "name": "abrdn Physical Silver Shares ETF"
+      },
+      {
+        "symbol": "PPLT",
+        "name": "abrdn Physical Platinum Shares ETF"
+      },
+      {
+        "symbol": "PALL",
+        "name": "abrdn Physical Palladium Shares ETF"
+      },
+      {
+        "symbol": "GLDM",
+        "name": "SPDR Gold MiniShares Trust"
+      },
+      {
+        "symbol": "SGOL",
+        "name": "abrdn Physical Gold Shares ETF"
+      },
+      {
+        "symbol": "BAR",
+        "name": "GraniteShares Gold Trust"
+      },
+      {
+        "symbol": "OUNZ",
+        "name": "VanEck Merk Gold Trust"
+      },
+      {
+        "symbol": "GLTR",
+        "name": "abrdn Physical Precious Metals Basket Shares ETF"
+      },
+      {
+        "symbol": "GDX",
+        "name": "VanEck Gold Miners ETF"
+      },
+      {
+        "symbol": "GDXJ",
+        "name": "VanEck Junior Gold Miners ETF"
+      },
+      {
+        "symbol": "SIL",
+        "name": "Global X Silver Miners ETF"
+      },
+      {
+        "symbol": "RING",
+        "name": "iShares MSCI Global Gold Miners ETF"
+      },
+      {
+        "symbol": "GOAU",
+        "name": "U.S. Global GO GOLD and Precious Metal Miners ETF"
+      },
+      {
+        "symbol": "NUGT",
+        "name": "Direxion Daily Gold Miners Index Bull 2X Shares"
+      },
+      {
+        "symbol": "DUST",
+        "name": "Direxion Daily Gold Miners Index Bear 2X Shares"
+      },
+      {
+        "symbol": "SLVP",
+        "name": "iShares MSCI Global Silver and Metals Miners ETF"
+      },
+      {
+        "symbol": "PLTM",
+        "name": "GraniteShares Platinum Trust"
+      },
+      {
+        "symbol": "AAAU",
+        "name": "Goldman Sachs Physical Gold ETF"
+      },
+      {
+        "symbol": "PHYS",
+        "name": "Sprott Physical Gold Trust"
+      },
+      {
+        "symbol": "PSLV",
+        "name": "Sprott Physical Silver Trust"
+      },
+      {
+        "symbol": "XAUUSD",
+        "name": "Gold Spot"
+      },
+      {
+        "symbol": "GOLD",
+        "name": "Barrick Gold Corporation"
+      },
+      {
+        "symbol": "NEM",
+        "name": "Newmont Corporation"
+      },
+      {
+        "symbol": "FNV",
+        "name": "Franco-Nevada Corporation"
+      },
+      {
+        "symbol": "WPM",
+        "name": "Wheaton Precious Metals Corp."
+      },
+      {
+        "symbol": "RGLD",
+        "name": "Royal Gold Inc."
+      },
+      {
+        "symbol": "GDXU",
+        "name": "MicroSectors Gold Miners 3X Leveraged ETN"
+      }
+    ],
+    "commodities_energy": [
+      {
+        "symbol": "USO",
+        "name": "United States Oil Fund"
+      },
+      {
+        "symbol": "UCO",
+        "name": "ProShares Ultra Bloomberg Crude Oil"
+      },
+      {
+        "symbol": "BNO",
+        "name": "United States Brent Oil Fund"
+      },
+      {
+        "symbol": "XLE",
+        "name": "Energy Select Sector SPDR Fund"
+      },
+      {
+        "symbol": "VDE",
+        "name": "Vanguard Energy ETF"
+      },
+      {
+        "symbol": "IYE",
+        "name": "iShares U.S. Energy ETF"
+      },
+      {
+        "symbol": "OILK",
+        "name": "ProShares K-1 Free Crude Oil ETF"
+      },
+      {
+        "symbol": "CRAK",
+        "name": "VanEck Oil Refiners ETF"
+      },
+      {
+        "symbol": "FENY",
+        "name": "Fidelity MSCI Energy Index ETF"
+      },
+      {
+        "symbol": "IEZ",
+        "name": "iShares U.S. Oil Equipment & Services ETF"
+      },
+      {
+        "symbol": "XOP",
+        "name": "SPDR S&P Oil & Gas Exploration & Production ETF"
+      },
+      {
+        "symbol": "PXE",
+        "name": "Invesco Energy Exploration & Production ETF"
+      },
+      {
+        "symbol": "GUSH",
+        "name": "Direxion Daily S&P Oil & Gas Exp. & Prod. Bull 2X Shares"
+      },
+      {
+        "symbol": "DRIP",
+        "name": "Direxion Daily S&P Oil & Gas Exp. & Prod. Bear 2X Shares"
+      },
+      {
+        "symbol": "NRGU",
+        "name": "MicroSectors U.S. Big Oil Index 3X Leveraged ETN"
+      },
+      {
+        "symbol": "UNG",
+        "name": "United States Natural Gas Fund"
+      },
+      {
+        "symbol": "BOIL",
+        "name": "ProShares Ultra Bloomberg Natural Gas"
+      },
+      {
+        "symbol": "KOLD",
+        "name": "ProShares UltraShort Bloomberg Natural Gas"
+      },
+      {
+        "symbol": "COP",
+        "name": "ConocoPhillips"
+      },
+      {
+        "symbol": "SLB",
+        "name": "Schlumberger Limited"
+      },
+      {
+        "symbol": "EOG",
+        "name": "EOG Resources Inc."
+      },
+      {
+        "symbol": "OXY",
+        "name": "Occidental Petroleum"
+      },
+      {
+        "symbol": "MPC",
+        "name": "Marathon Petroleum"
+      },
+      {
+        "symbol": "VLO",
+        "name": "Valero Energy Corporation"
+      },
+      {
+        "symbol": "PSX",
+        "name": "Phillips 66"
+      },
+      {
+        "symbol": "HAL",
+        "name": "Halliburton Company"
+      },
+      {
+        "symbol": "BKR",
+        "name": "Baker Hughes Company"
+      },
+      {
+        "symbol": "WTI",
+        "name": "WTI Crude Oil Spot"
+      }
+    ],
+    "energy_mlp": [
+      {
+        "symbol": "AMLP",
+        "name": "Alerian MLP ETF"
+      },
+      {
+        "symbol": "MLPA",
+        "name": "Global X MLP ETF"
+      },
+      {
+        "symbol": "MLPX",
+        "name": "Global X MLP & Energy Infrastructure ETF"
+      },
+      {
+        "symbol": "ENFR",
+        "name": "Alerian Energy Infrastructure ETF"
+      },
+      {
+        "symbol": "TPYP",
+        "name": "Tortoise North American Pipeline Fund"
+      },
+      {
+        "symbol": "YMLP",
+        "name": "VanEck High Income MLP ETF"
+      },
+      {
+        "symbol": "EMLP",
+        "name": "First Trust North American Energy Infrastructure Fund"
+      },
+      {
+        "symbol": "IMMP",
+        "name": "Invesco SteelPath MLP Select 40 Index ETF"
+      },
+      {
+        "symbol": "AMZA",
+        "name": "InfraCap MLP ETF"
+      },
+      {
+        "symbol": "MLPB",
+        "name": "ETRACS Alerian MLP Infrastructure Index ETN"
+      },
+      {
+        "symbol": "PYPE",
+        "name": "EIP Carbon Impact MLP & Energy Transition ETF"
+      },
+      {
+        "symbol": "FEN",
+        "name": "First Trust Energy Income & Growth Fund"
+      },
+      {
+        "symbol": "EPD",
+        "name": "Enterprise Products Partners L.P."
+      },
+      {
+        "symbol": "ET",
+        "name": "Energy Transfer LP"
+      },
+      {
+        "symbol": "MPLX",
+        "name": "MPLX LP"
+      },
+      {
+        "symbol": "WMB",
+        "name": "The Williams Companies Inc."
+      },
+      {
+        "symbol": "KMI",
+        "name": "Kinder Morgan Inc."
+      },
+      {
+        "symbol": "OKE",
+        "name": "ONEOK Inc."
+      },
+      {
+        "symbol": "TRGP",
+        "name": "Targa Resources Corp."
+      },
+      {
+        "symbol": "PAA",
+        "name": "Plains All American Pipeline L.P."
+      },
+      {
+        "symbol": "PAGP",
+        "name": "Plains GP Holdings L.P."
+      },
+      {
+        "symbol": "SUN",
+        "name": "Sunoco LP"
+      },
+      {
+        "symbol": "HESM",
+        "name": "Hess Midstream LP"
+      },
+      {
+        "symbol": "DCP",
+        "name": "DCP Midstream LP"
+      },
+      {
+        "symbol": "DTM",
+        "name": "DT Midstream Inc."
+      },
+      {
+        "symbol": "AM",
+        "name": "Antero Midstream Corporation"
+      },
+      {
+        "symbol": "ENLC",
+        "name": "EnLink Midstream LLC"
+      },
+      {
+        "symbol": "USAC",
+        "name": "USA Compression Partners LP"
+      },
+      {
+        "symbol": "CEQP",
+        "name": "Crestwood Equity Partners LP"
+      },
+      {
+        "symbol": "NS",
+        "name": "NuStar Energy L.P."
+      }
+    ],
+    "healthcare_biotech": [
+      {
+        "symbol": "IBB",
+        "name": "iShares Biotechnology ETF"
+      },
+      {
+        "symbol": "XBI",
+        "name": "SPDR S&P Biotech ETF"
+      },
+      {
+        "symbol": "BBH",
+        "name": "VanEck Biotech ETF"
+      },
+      {
+        "symbol": "PBE",
+        "name": "Invesco Biotechnology & Genome ETF"
+      },
+      {
+        "symbol": "FBT",
+        "name": "First Trust NYSE Arca Biotechnology Index Fund"
+      },
+      {
+        "symbol": "SBIO",
+        "name": "ALPS Medical Breakthroughs ETF"
+      },
+      {
+        "symbol": "LABU",
+        "name": "Direxion Daily S&P Biotech Bull 3X Shares"
+      },
+      {
+        "symbol": "BTEC",
+        "name": "Principal Healthcare Innovators Index ETF"
+      },
+      {
+        "symbol": "IDNA",
+        "name": "iShares Genomics Immunology and Healthcare ETF"
+      },
+      {
+        "symbol": "GNOM",
+        "name": "Global X Genomics & Biotechnology ETF"
+      },
+      {
+        "symbol": "XLV",
+        "name": "Health Care Select Sector SPDR Fund"
+      },
+      {
+        "symbol": "VHT",
+        "name": "Vanguard Health Care ETF"
+      },
+      {
+        "symbol": "IYH",
+        "name": "iShares U.S. Healthcare ETF"
+      },
+      {
+        "symbol": "IBBJ",
+        "name": "Defiance Nasdaq Junior Biotechnology ETF"
+      },
+      {
+        "symbol": "ARKG",
+        "name": "ARK Genomic Revolution ETF"
+      },
+      {
+        "symbol": "AMGN",
+        "name": "Amgen Inc."
+      },
+      {
+        "symbol": "GILD",
+        "name": "Gilead Sciences Inc."
+      },
+      {
+        "symbol": "REGN",
+        "name": "Regeneron Pharmaceuticals"
+      },
+      {
+        "symbol": "VRTX",
+        "name": "Vertex Pharmaceuticals"
+      },
+      {
+        "symbol": "BIIB",
+        "name": "Biogen Inc."
+      },
+      {
+        "symbol": "MRNA",
+        "name": "Moderna Inc."
+      },
+      {
+        "symbol": "BNTX",
+        "name": "BioNTech SE"
+      },
+      {
+        "symbol": "ILMN",
+        "name": "Illumina Inc."
+      },
+      {
+        "symbol": "ISRG",
+        "name": "Intuitive Surgical Inc."
+      },
+      {
+        "symbol": "DXCM",
+        "name": "DexCom Inc."
+      },
+      {
+        "symbol": "ALNY",
+        "name": "Alnylam Pharmaceuticals"
+      },
+      {
+        "symbol": "SGEN",
+        "name": "Seagen Inc."
+      },
+      {
+        "symbol": "EXAS",
+        "name": "Exact Sciences Corporation"
+      },
+      {
+        "symbol": "CRSP",
+        "name": "CRISPR Therapeutics AG"
+      },
+      {
+        "symbol": "NTLA",
+        "name": "Intellia Therapeutics Inc."
+      }
+    ],
+    "alt_bdc": [
+      {
+        "symbol": "ARCC",
+        "name": "Ares Capital Corporation"
+      },
+      {
+        "symbol": "MAIN",
+        "name": "Main Street Capital Corporation"
+      },
+      {
+        "symbol": "OBDC",
+        "name": "Blue Owl Capital Corporation"
+      },
+      {
+        "symbol": "BXSL",
+        "name": "Blackstone Secured Lending Fund"
+      },
+      {
+        "symbol": "FSK",
+        "name": "FS KKR Capital Corp."
+      },
+      {
+        "symbol": "HTGC",
+        "name": "Hercules Capital Inc."
+      },
+      {
+        "symbol": "GBDC",
+        "name": "Golub Capital BDC Inc."
+      },
+      {
+        "symbol": "OCSL",
+        "name": "Oaktree Specialty Lending Corporation"
+      },
+      {
+        "symbol": "TSLX",
+        "name": "Sixth Street Specialty Lending Inc."
+      },
+      {
+        "symbol": "NMFC",
+        "name": "New Mountain Finance Corporation"
+      },
+      {
+        "symbol": "MFIC",
+        "name": "MidCap Financial Investment Corporation"
+      },
+      {
+        "symbol": "CSWC",
+        "name": "Capital Southwest Corporation"
+      },
+      {
+        "symbol": "TRIN",
+        "name": "Trinity Capital Inc."
+      },
+      {
+        "symbol": "PFLT",
+        "name": "PennantPark Floating Rate Capital Ltd."
+      },
+      {
+        "symbol": "TCPC",
+        "name": "BlackRock TCP Capital Corp."
+      },
+      {
+        "symbol": "SLRC",
+        "name": "SLR Investment Corp."
+      },
+      {
+        "symbol": "FDUS",
+        "name": "Fidus Investment Corporation"
+      },
+      {
+        "symbol": "GSBD",
+        "name": "Goldman Sachs BDC Inc."
+      },
+      {
+        "symbol": "BBDC",
+        "name": "Barings BDC Inc."
+      },
+      {
+        "symbol": "CGBD",
+        "name": "Carlyle Secured Lending Inc."
+      },
+      {
+        "symbol": "BCSF",
+        "name": "Bain Capital Specialty Finance Inc."
+      },
+      {
+        "symbol": "PNNT",
+        "name": "PennantPark Investment Corporation"
+      },
+      {
+        "symbol": "ORCC",
+        "name": "Owl Rock Capital Corporation"
+      },
+      {
+        "symbol": "SCM",
+        "name": "Stellus Capital Investment Corporation"
+      },
+      {
+        "symbol": "WHF",
+        "name": "WhiteHorse Finance Inc."
+      },
+      {
+        "symbol": "HRZN",
+        "name": "Horizon Technology Finance Corporation"
+      },
+      {
+        "symbol": "GAIN",
+        "name": "Gladstone Investment Corporation"
+      },
+      {
+        "symbol": "GLAD",
+        "name": "Gladstone Capital Corporation"
+      },
+      {
+        "symbol": "TPVG",
+        "name": "TriplePoint Venture Growth BDC Corp."
+      },
+      {
+        "symbol": "NEWT",
+        "name": "NewtekOne Inc."
+      }
+    ],
+    "alt_infrastructure": [
+      {
+        "symbol": "IGF",
+        "name": "iShares Global Infrastructure ETF"
+      },
+      {
+        "symbol": "IFRA",
+        "name": "iShares U.S. Infrastructure ETF"
+      },
+      {
+        "symbol": "TOLZ",
+        "name": "ProShares DJ Brookfield Global Infrastructure ETF"
+      },
+      {
+        "symbol": "NFRA",
+        "name": "FlexShares STOXX Global Broad Infrastructure Index Fund"
+      },
+      {
+        "symbol": "PAVE",
+        "name": "Global X U.S. Infrastructure Development ETF"
+      },
+      {
+        "symbol": "GRID",
+        "name": "First Trust NASDAQ Clean Edge Smart Grid Infrastructure ETF"
+      },
+      {
+        "symbol": "UTES",
+        "name": "Virtus Reaves Utilities ETF"
+      },
+      {
+        "symbol": "XLU",
+        "name": "Utilities Select Sector SPDR Fund"
+      },
+      {
+        "symbol": "VPU",
+        "name": "Vanguard Utilities ETF"
+      },
+      {
+        "symbol": "IDU",
+        "name": "iShares U.S. Utilities ETF"
+      },
+      {
+        "symbol": "DUK",
+        "name": "Duke Energy Corporation"
+      },
+      {
+        "symbol": "SO",
+        "name": "The Southern Company"
+      },
+      {
+        "symbol": "D",
+        "name": "Dominion Energy Inc."
+      },
+      {
+        "symbol": "AEP",
+        "name": "American Electric Power"
+      },
+      {
+        "symbol": "EXC",
+        "name": "Exelon Corporation"
+      },
+      {
+        "symbol": "SRE",
+        "name": "Sempra"
+      },
+      {
+        "symbol": "XEL",
+        "name": "Xcel Energy Inc."
+      },
+      {
+        "symbol": "WEC",
+        "name": "WEC Energy Group Inc."
+      },
+      {
+        "symbol": "ED",
+        "name": "Consolidated Edison Inc."
+      },
+      {
+        "symbol": "AWK",
+        "name": "American Water Works Company"
+      },
+      {
+        "symbol": "WTRG",
+        "name": "Essential Utilities Inc."
+      },
+      {
+        "symbol": "BIP",
+        "name": "Brookfield Infrastructure Partners L.P."
+      },
+      {
+        "symbol": "BIPC",
+        "name": "Brookfield Infrastructure Corporation"
+      },
+      {
+        "symbol": "CCI",
+        "name": "Crown Castle Inc."
+      },
+      {
+        "symbol": "SBAC",
+        "name": "SBA Communications Corporation"
+      },
+      {
+        "symbol": "FTS",
+        "name": "Fortis Inc."
+      },
+      {
+        "symbol": "ENB",
+        "name": "Enbridge Inc."
+      }
+    ],
+    "currencies": [
+      {
+        "symbol": "UUP",
+        "name": "Invesco DB US Dollar Index Bullish Fund"
+      },
+      {
+        "symbol": "FXE",
+        "name": "Invesco CurrencyShares Euro Trust"
+      },
+      {
+        "symbol": "FXB",
+        "name": "Invesco CurrencyShares British Pound Sterling Trust"
+      },
+      {
+        "symbol": "FXY",
+        "name": "Invesco CurrencyShares Japanese Yen Trust"
+      },
+      {
+        "symbol": "FXC",
+        "name": "Invesco CurrencyShares Canadian Dollar Trust"
+      },
+      {
+        "symbol": "FXA",
+        "name": "Invesco CurrencyShares Australian Dollar Trust"
+      },
+      {
+        "symbol": "EUO",
+        "name": "ProShares UltraShort Euro"
+      },
+      {
+        "symbol": "YCL",
+        "name": "ProShares Ultra Yen"
+      },
+      {
+        "symbol": "CEW",
+        "name": "WisdomTree Emerging Currency Strategy Fund"
+      },
+      {
+        "symbol": "DBV",
+        "name": "Invesco DB G10 Currency Harvest Fund"
+      },
+      {
+        "symbol": "USDU",
+        "name": "WisdomTree Bloomberg U.S. Dollar Bullish Fund"
+      },
+      {
+        "symbol": "UDN",
+        "name": "Invesco DB US Dollar Index Bearish Fund"
+      },
+      {
+        "symbol": "CYB",
+        "name": "WisdomTree Chinese Yuan Strategy Fund"
+      },
+      {
+        "symbol": "FXF",
+        "name": "Invesco CurrencyShares Swiss Franc Trust"
+      },
+      {
+        "symbol": "FXS",
+        "name": "Invesco CurrencyShares Swedish Krona Trust"
+      },
+      {
+        "symbol": "FXM",
+        "name": "Invesco CurrencyShares Mexican Peso Trust"
+      },
+      {
+        "symbol": "BZF",
+        "name": "WisdomTree Brazilian Real Strategy Fund"
+      },
+      {
+        "symbol": "ICLN",
+        "name": "iShares Global Clean Energy ETF"
+      },
+      {
+        "symbol": "EURUSD",
+        "name": "Euro / US Dollar"
+      },
+      {
+        "symbol": "GBPUSD",
+        "name": "British Pound / US Dollar"
+      },
+      {
+        "symbol": "USDJPY",
+        "name": "US Dollar / Japanese Yen"
+      },
+      {
+        "symbol": "AUDUSD",
+        "name": "Australian Dollar / US Dollar"
+      },
+      {
+        "symbol": "USDCAD",
+        "name": "US Dollar / Canadian Dollar"
+      },
+      {
+        "symbol": "USDCHF",
+        "name": "US Dollar / Swiss Franc"
+      },
+      {
+        "symbol": "NZDUSD",
+        "name": "New Zealand Dollar / US Dollar"
+      },
+      {
+        "symbol": "USDMXN",
+        "name": "US Dollar / Mexican Peso"
+      },
+      {
+        "symbol": "USDZAR",
+        "name": "US Dollar / South African Rand"
+      },
+      {
+        "symbol": "USDBRL",
+        "name": "US Dollar / Brazilian Real"
+      },
+      {
+        "symbol": "USDTRY",
+        "name": "US Dollar / Turkish Lira"
+      },
+      {
+        "symbol": "USDKRW",
+        "name": "US Dollar / Korean Won"
+      }
+    ]
+  }
+}
