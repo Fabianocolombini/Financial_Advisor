@@ -1,81 +1,77 @@
-# Comando Claude Web — disparar Motor Daily (sem ação do usuário)
+# Comando Claude Web — disparar Motor Daily (sem terminal)
 
-Copie **todo o bloco** abaixo no Claude Web (com acesso ao repositório GitHub ou terminal).
+Use quando o assistente tem **apenas browser** (GitHub UI) — sem `git`, `gh`, `vercel` CLI ou terminal.
 
 ---
 
-## Prompt
+## Prompt (copiar bloco inteiro)
 
 ```
 Projeto: Fabianocolombini/Financial_Advisor (branch main)
 Produção: https://financial-advisor-sable.vercel.app
 
-Tarefa: DISPARAR o workflow GitHub Actions "Motor Daily" AGORA para popular o snapshot do Markets (Etapa 1A).
+Contexto: Etapa 1A — Motor Daily popula snapshot Markets (scores top-90% liquidez).
 
-O usuário NÃO executa comandos manualmente — você deve fazer.
+FERRAMENTAS DISPONÍVEIS: browser GitHub (e opcional Vercel dashboard). SEM terminal, git, gh ou vercel CLI.
 
-Ordem de tentativa:
+TAREFAS (ordem):
 
-1) GitHub UI (se tiver browser)
-   - Actions → Motor Daily → Run workflow → branch main → Run workflow
-   - Confirmar job "motor" iniciado (não só workflow skipped)
+A) SECRETS GitHub Actions (obrigatório antes de run verde)
+   Repo → Settings → Secrets and variables → Actions
+   Confirmar que existem:
+   - FRED_API_KEY  (API FRED — sem isso o job falha em ~90s)
+   - BLOB_READ_WRITE_TOKEN (upload snapshot SQLite)
 
-2) Se tiver `gh` autenticado:
-   gh workflow run motor-daily.yml --ref main
-   gh run list --workflow=motor-daily.yml --limit 1
+   Se FRED_API_KEY falta: pedir ao usuário a chave FRED (fred.stlouisfed.org) OU
+   orientar: Vercel → financial-advisor → Settings → Environment Variables →
+   Production → FRED_API_KEY → Reveal → copiar → criar secret no GitHub com o mesmo nome.
 
-3) Se tiver Vercel CLI linkado ao projeto financial-advisor:
-   vercel env pull .env.vercel.tmp --environment=production --yes
-   source .env.vercel.tmp
-   curl -s -H "Authorization: Bearer $CRON_SECRET" \
-     https://financial-advisor-sable.vercel.app/api/cron/motor
-   (Só funciona se GITHUB_MOTOR_DISPATCH_TOKEN também está na Vercel.)
-   rm -f .env.vercel.tmp
+   NÃO expor o valor da chave na resposta — só confirmar "secret criado".
 
-4) SEMPRE FUNCIONA (push trigger):
-   git checkout main && git pull
-   git commit --allow-empty -m "chore: [motor-daily] trigger pipeline"
-   git push origin main
-   O workflow motor-daily.yml roda quando a mensagem do commit contém [motor-daily].
+B) DISPARAR workflow (único método viável com browser)
+   Actions → Motor Daily → Run workflow → branch main → Run workflow
+   Confirmar job "motor" IN PROGRESS (não "skipped").
 
-5) Monitorar até upload Blob:
-   - Logs: export catalog → fontes → macro abas → top-90% → validate_abas → blob upload
-   - Timeout: 180 min (primeira run pode levar 1–3 h)
+C) CHECAR FALHA RÁPIDA (~90s)
+   Se falhou em menos de 2 min → quase sempre FRED_API_KEY ausente no GitHub.
+   Step "Preflight — secrets obrigatórios" ou log: "FRED_API_KEY não definida".
 
-6) Verificar snapshot (após job verde):
-   npm run motor:verify-cloud-snapshot
-   (precisa BLOB_READ_WRITE_TOKEN no ambiente)
+D) SUCESSO (job longo 1–3 h)
+   Logs esperados: catalog export → fontes → macro 16 abas → top-90% → validate_abas → blob upload.
+   Não precisa monitorar 3 h — reportar URL da run e pedir nova checagem depois.
 
-Reportar: URL da run Actions, status final, tickerCount no snapshot, erros se falhou.
+E) APÓS JOB VERDE
+   Usuário testa /mercado — scores em papéis líquidos (não tudo "Analyzing").
 
-NÃO expor valores de secrets (CRON_SECRET, tokens, DATABASE_URL).
+Reportar: URL da run, status, step que falhou (se falhou), secrets faltando.
+NÃO expor CRON_SECRET, tokens, DATABASE_URL, FRED_API_KEY na resposta.
 ```
 
 ---
 
-## Secrets necessários (GitHub Actions)
+## Diagnóstico rápido (runs #2–#4)
 
-| Secret | Obrigatório |
-|--------|-------------|
-| `FRED_API_KEY` | Sim |
-| `BLOB_READ_WRITE_TOKEN` | Sim |
+| Run | Duração | Causa provável |
+|-----|---------|----------------|
+| #2–#4 | ~90–100s | `FRED_API_KEY` **ausente** nos GitHub Actions secrets |
+| Job longo OK | 1–3 h | Pipeline 1A completo |
 
-## Vercel Production (app lê snapshot)
-
-| Variável | Obrigatório |
-|----------|-------------|
-| `BLOB_READ_WRITE_TOKEN` | Sim |
-
-## Opcional (cron / ★ on-demand)
-
-| Variável | Onde | Uso |
-|----------|------|-----|
-| `GITHUB_MOTOR_DISPATCH_TOKEN` | Vercel + GitHub PAT | `/api/cron/motor` e workflow motor-symbol |
-| `GITHUB_REPO` | Vercel | `Fabianocolombini/Financial_Advisor` |
-| `CRON_SECRET` | Vercel | Auth do `/api/cron/motor` |
-
-Criar PAT: GitHub → Settings → Developer settings → Fine-grained token → repo Financial_Advisor → **Actions: Read and write**.
+Erro típico no log:
+```
+FRED_API_KEY não definida (.env.local ou ambiente)
+```
 
 ---
 
-Ver também: [ETAPA_1A_TESTE.md](ETAPA_1A_TESTE.md), [GUIA_OPERACAO_CLAUDE_WEB.md](GUIA_OPERACAO_CLAUDE_WEB.md).
+## Secrets
+
+| Onde | Secret / variável | Obrigatório |
+|------|-------------------|-------------|
+| GitHub Actions | `FRED_API_KEY` | Sim |
+| GitHub Actions | `BLOB_READ_WRITE_TOKEN` | Sim |
+| Vercel Production | `BLOB_READ_WRITE_TOKEN` | Sim (app lê snapshot) |
+| Vercel Production | `FRED_API_KEY` | Sim (crons ingest; motor usa GH) |
+
+---
+
+Ver: [ETAPA_1A_TESTE.md](ETAPA_1A_TESTE.md), [GUIA_OPERACAO_CLAUDE_WEB.md](GUIA_OPERACAO_CLAUDE_WEB.md).

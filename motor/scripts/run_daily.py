@@ -58,6 +58,14 @@ def main() -> None:
     except subprocess.CalledProcessError as e:
         print(f"[motor:daily] WARN: catalog export failed: {e}", file=sys.stderr)
 
+    from motor.src.paths import fred_api_key
+
+    try:
+        fred_api_key()
+    except RuntimeError as e:
+        print(f"[motor:daily] ERRO: {e}", file=sys.stderr)
+        sys.exit(1)
+
     print("[motor:daily] Etapa 1 — ingestão de fontes...")
     fontes = run_fontes_pipeline()
     print(json.dumps({"fontes_enabled": fontes.get("enabled")}, ensure_ascii=False))

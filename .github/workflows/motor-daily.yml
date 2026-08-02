@@ -44,6 +44,21 @@ jobs:
       - name: Install motor dependencies
         run: pip install -r motor/requirements.txt
 
+      - name: Preflight — secrets obrigatórios
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+        run: |
+          if [ -z "$FRED_API_KEY" ]; then
+            echo "::error::FRED_API_KEY ausente nos GitHub Actions secrets. Repo → Settings → Secrets → Actions → New secret."
+            exit 1
+          fi
+          if [ -z "$BLOB_READ_WRITE_TOKEN" ]; then
+            echo "::error::BLOB_READ_WRITE_TOKEN ausente nos GitHub Actions secrets."
+            exit 1
+          fi
+          echo "Preflight OK (FRED + Blob configurados)."
+
       - name: Download SQLite from Vercel Blob
         env:
           BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
