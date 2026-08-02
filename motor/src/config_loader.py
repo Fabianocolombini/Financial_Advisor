@@ -37,12 +37,25 @@ def load_tecnicos_config() -> dict[str, Any]:
 
 
 def _formula_series(formula: str) -> set[str]:
-    import re
-
-    if formula.startswith("delta_"):
-        base = formula.replace("delta_", "").replace("_90d", "")
-        return {base}
-    return set(re.findall(r"[A-Z][A-Z0-9]+", formula))
+    """FRED series IDs required by a calculated formula (not yfinance tickers)."""
+    # Named formulas — explicit deps; pe_* and em_gdp use yfinance / World Bank
+    named: dict[str, set[str]] = {
+        "delta_DFF_90d": {"DFF", "FEDFUNDS"},
+        "pe_EFA_div_SPY": set(),
+        "pe_EEM_div_SPY": set(),
+        "em_gdp_growth": set(),
+    }
+    if formula in named:
+        return set(named[formula])
+    if " - " in formula:
+        left, right = formula.split(" - ", 1)
+        return {left.strip(), right.strip()}
+    if " + " in formula:
+        return {p.strip() for p in formula.split(" + ")}
+    # Bare FRED series id (e.g. DGS10)
+    if formula and formula.replace("_", "").isalnum():
+        return {formula}
+    return set()
 
 
 def series_for_aba(aba: dict[str, Any]) -> set[str]:
