@@ -43,6 +43,8 @@ export type MotorTickerSnapshot = {
   rationale?: string[];
   dominantIndicator?: MotorDominantIndicator | null;
   perf1dPct?: number | null;
+  perf7dPct?: number | null;
+  perf15dPct?: number | null;
   perf1mPct?: number | null;
   indicators: MotorIndicatorSnapshot[];
 };
@@ -81,6 +83,8 @@ export type WatchlistRow = {
   dominantIndicator: MotorDominantIndicator | null;
   rationale: string[];
   perf1dPct: number | null;
+  perf7dPct: number | null;
+  perf15dPct: number | null;
   perf1mPct: number | null;
   indicators: MotorIndicatorSnapshot[];
   hasMotorData: boolean;

@@ -106,11 +106,18 @@ function SecurityRow({
       <td className={`px-2 py-2 tabular-nums text-sm ${perfClass(row.perf1dPct)}`}>
         {formatPerf(row.perf1dPct)}
       </td>
+      <td className={`px-2 py-2 tabular-nums text-sm ${perfClass(row.perf7dPct)}`}>
+        {formatPerf(row.perf7dPct)}
+      </td>
+      <td className={`px-2 py-2 tabular-nums text-sm ${perfClass(row.perf15dPct)}`}>
+        {formatPerf(row.perf15dPct)}
+      </td>
       <td className="px-2 py-2">
         <span
           className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset ${stageBadgeClass(
             row.stageLabel,
           )}`}
+          title="Score trend: Accumulate (rising), Hold (flat), Reduce (falling)"
         >
           {row.stageLabel}
         </span>
@@ -121,6 +128,7 @@ function SecurityRow({
             row.entryValidated,
             row.hasMotorData,
           )}`}
+          title="Entry timing for adding exposure — not data quality. Validated = model supports considering a buy."
         >
           {entryLabel}
         </span>
@@ -164,8 +172,20 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
               <th className="px-3 py-2 font-medium">Symbol</th>
               <th className="px-2 py-2 font-medium">Score</th>
               <th className="px-2 py-2 font-medium">1D</th>
-              <th className="px-2 py-2 font-medium">Stage</th>
-              <th className="px-2 py-2 font-medium">Entry</th>
+              <th className="px-2 py-2 font-medium">7D</th>
+              <th className="px-2 py-2 font-medium">15D</th>
+              <th
+                className="px-2 py-2 font-medium"
+                title="Score trend: Accumulate / Hold / Reduce"
+              >
+                Stage
+              </th>
+              <th
+                className="px-2 py-2 font-medium"
+                title="Timing to add exposure (not data validation)"
+              >
+                Entry
+              </th>
               <th className="px-2 py-2 font-medium">Driver</th>
               {columns.map((col) => (
                 <th

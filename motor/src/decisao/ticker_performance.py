@@ -29,7 +29,11 @@ def ticker_performance_pct(ticker: str, lookback_days: int = 1) -> float | None:
 def enrich_ticker_performance(ticker_data: dict) -> dict:
     sym = ticker_data.get("symbol", "")
     perf1d = ticker_performance_pct(sym, 1)
+    perf7d = ticker_performance_pct(sym, 7)
+    perf15d = ticker_performance_pct(sym, 15)
     perf1m = ticker_performance_pct(sym, 21)
     ticker_data["perf1dPct"] = round(perf1d, 2) if perf1d is not None else None
+    ticker_data["perf7dPct"] = round(perf7d, 2) if perf7d is not None else None
+    ticker_data["perf15dPct"] = round(perf15d, 2) if perf15d is not None else None
     ticker_data["perf1mPct"] = round(perf1m, 2) if perf1m is not None else None
     return ticker_data
