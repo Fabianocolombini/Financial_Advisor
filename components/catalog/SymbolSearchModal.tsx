@@ -46,6 +46,7 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
   const [sector, setSector] = useState(GICS_SECTOR_ALL);
   const [results, setResults] = useState<CatalogSearchResult[]>([]);
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
+  const [motorStatus, setMotorStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -120,10 +121,12 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
   }, [open, onClose]);
 
   const toggleWatchlist = async (item: CatalogSearchResult) => {
+    setMotorStatus(null);
     if (item.inWatchlist) {
       await fetch(`/api/watchlist?symbol=${encodeURIComponent(item.symbol)}`, {
         method: "DELETE",
       });
+      router.refresh();
     } else {
       const res = await fetch("/api/watchlist", {
         method: "POST",
@@ -137,11 +140,18 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
         }),
       });
       const json = (await res.json()) as {
-        motor?: { queued?: boolean };
+        motor?: { queued?: boolean; error?: string };
       };
       if (json.motor?.queued) {
-        router.refresh();
+        setMotorStatus(
+          `${item.symbol}: motor pipeline started (~1–2 min). Refresh Markets to see scores.`,
+        );
+      } else {
+        setMotorStatus(
+          `${item.symbol} added to watchlist. Motor on-demand not configured — scores after next daily run.`,
+        );
       }
+      router.refresh();
     }
     await loadWatchlist();
     void runSearch(query, classId, sector);
@@ -249,7 +259,14 @@ export function SymbolSearchModal({ open, onClose }: SymbolSearchModalProps) {
                   · <span className="text-zinc-300">{activeSectorLabel}</span>
                 </>
               ) : null}{" "}
-              — top symbols by 90-day trading volume until 90% of class liquidity. Tap ★ to follow.
+              — top symbols by 90-day trading volume until 90% of class liquidity. Tap ★ to follow
+              and run motor scoring for that symbol.
+            </p>
+          ) : null}
+
+          {motorStatus ? (
+            <p className="border-t border-zinc-800/80 px-4 py-2 text-xs text-amber-400/90">
+              {motorStatus}
             </p>
           ) : null}
 

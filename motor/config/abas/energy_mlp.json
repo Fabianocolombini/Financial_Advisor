@@ -1,0 +1,69 @@
+{
+  "id": "energy_mlp",
+  "nome": "Energy MLP",
+  "descricao": "MLP e infra de energia — macro petróleo/gás + valuation AMLP",
+  "pesos_camada": {
+    "macro": 0.55,
+    "valuation": 0.30,
+    "tecnico": 0.15,
+    "fundamental": 0.0
+  },
+  "indicadores": [
+    {
+      "id": "wti",
+      "nome": "WTI crude oil",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "DCOILWTICO",
+      "peso": 0.40,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "henry_hub",
+      "nome": "Henry Hub natural gas",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "DHHNGSP",
+      "peso": 0.25,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "price_amlp",
+      "nome": "AMLP price level",
+      "camada": "valuation",
+      "fonte": "yfinance",
+      "field": "close",
+      "ticker_proxy": "AMLP",
+      "peso": 0.35,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "yield_10y",
+      "nome": "Yield nominal 10y",
+      "camada": "valuation",
+      "fonte": "fred",
+      "serie": "DGS10",
+      "peso": 0.15,
+      "zscore_window": 252,
+      "direcao": "negativa"
+    }
+  ],
+  "universo": [
+    {"ticker": "AMLP", "nome": "Alerian MLP ETF", "benchmark": "AMLP"},
+    {"ticker": "MLPX", "nome": "Global X MLP & Energy Infrastructure ETF", "benchmark": "AMLP"},
+    {"ticker": "ENFR", "nome": "Alerian Energy Infrastructure ETF", "benchmark": "AMLP"},
+    {"ticker": "MLPA", "nome": "Global X MLP ETF", "benchmark": "AMLP"},
+    {"ticker": "EMLP", "nome": "First Trust North American Energy Infrastructure Fund", "benchmark": "AMLP"},
+    {"ticker": "TPYP", "nome": "Tortoise North American Pipeline Fund", "benchmark": "AMLP"},
+    {"ticker": "AMZA", "nome": "InfraCap MLP ETF", "benchmark": "AMLP"},
+    {"ticker": "PYPE", "nome": "EIP Carbon Impact MLP & Energy Transition ETF", "benchmark": "AMLP"}
+  ],
+  "estagio": {
+    "regressao_dias": 90,
+    "limiar_ascendente": 0.02,
+    "limiar_descendente": -0.02
+  }
+}

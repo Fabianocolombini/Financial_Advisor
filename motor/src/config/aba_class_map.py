@@ -17,6 +17,7 @@ ABA_TO_CLASS: dict[str, str] = {
     "intl_equity": "intl_equity",
     "em_equity": "em_equity",
     "alt_infrastructure": "alt_infrastructure",
+    "energy_mlp": "energy_mlp",
 }
 
 # SQLite rows written before rename taxas → fi_treasury
