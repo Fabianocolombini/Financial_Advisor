@@ -23,6 +23,8 @@ Output: relatórios `.md` com racional matemático explícito.
 | [docs/projeto-motor-decisao-alocacao.md](docs/projeto-motor-decisao-alocacao.md) | z-score, S, estágio, SQLite |
 | [docs/tabela-classes-ativos-indicadores.md](docs/tabela-classes-ativos-indicadores.md) | 13 classes + fontes |
 | [docs/classes-ativos-catalogo-claude.md](docs/classes-ativos-catalogo-claude.md) | **17 tabs UI, catálogo, motor, ranking 90d/90%, backlog** |
+| [docs/enriquecimento-indicadores.md](docs/enriquecimento-indicadores.md) | Fase 2 Tipo A/B/C, proxies |
+| [docs/COMANDO_CLAUDE_WEB_FASE2.md](docs/COMANDO_CLAUDE_WEB_FASE2.md) | **Claude Web: Motor Daily + External Weekly (browser)** |
 | [docs/ETAPA_1A_TESTE.md](docs/ETAPA_1A_TESTE.md) | Checklist teste 1A em produção |
 | [docs/guia-decisao-entrada-por-sleeve.md](docs/guia-decisao-entrada-por-sleeve.md) | Racional de entrada |
 

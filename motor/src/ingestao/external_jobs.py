@@ -7,7 +7,7 @@ import json
 import logging
 from typing import Any, Callable
 
-from motor.src.db.connection import get_connection
+from motor.src.db.connection import get_connection, init_db
 from motor.src.ingestao.cftc_client import ingest_cftc
 from motor.src.ingestao.fontes_registry import load_manifest
 
@@ -139,10 +139,15 @@ def _log_job(conn, fonte: str, status: str, detail: str) -> None:
 
 
 def run_external_jobs_logged(frequencies: list[str] | None = None) -> dict[str, Any]:
+    """Run scrapers and log results. Ensures Fase 2 schema on Blob DB downloads."""
+    init_db()
     with get_connection() as conn:
         out = run_external_jobs(frequencies, conn=conn)
         for name, res in out.items():
-            ok = bool(res.get("ok"))
-            _log_job(conn, name, "success" if ok else "degraded", json.dumps(res))
+            ok = bool(res.get("ok")) or bool(res.get("skipped"))
+            try:
+                _log_job(conn, name, "success" if ok else "degraded", json.dumps(res))
+            except Exception as e:
+                log.warning("could not log external job %s: %s", name, e)
         conn.commit()
     return out

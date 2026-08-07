@@ -10,7 +10,9 @@ Use quando o assistente tem **apenas browser** (GitHub UI) — sem `git`, `gh`, 
 Projeto: Fabianocolombini/Financial_Advisor (branch main)
 Produção: https://financial-advisor-sable.vercel.app
 
-Contexto: Etapa 1A — Motor Daily popula snapshot Markets (scores top-90% liquidez).
+Contexto: Etapa 1A + **Fase 2 enriquecimento** — Motor Daily popula snapshot Markets (scores top-90% liquidez + models.regime no JSON).
+
+**Fase 2 (browser):** ver também [COMANDO_CLAUDE_WEB_FASE2.md](COMANDO_CLAUDE_WEB_FASE2.md) — Motor External Weekly, validação `models.calibrated`, expectativa de UI.
 
 FERRAMENTAS DISPONÍVEIS: browser GitHub (e opcional Vercel dashboard). SEM terminal, git, gh ou vercel CLI.
 
@@ -37,7 +39,8 @@ C) CHECAR FALHA RÁPIDA (~90s)
    Step "Preflight — secrets obrigatórios" ou log: "FRED_API_KEY não definida".
 
 D) SUCESSO (job longo 1–3 h)
-   Logs esperados: catalog export → fontes → macro 16 abas → top-90% → validate_abas → blob upload.
+   Logs esperados: catalog export → fontes + external_jobs → macro abas → top-90% → validate_abas → blob upload.
+   Snapshot Fase 2: JSON deve ter bloco "models" (regime.calibrated) e classes.fi_treasury.abaId = "fi_treasury".
    Não precisa monitorar 3 h — reportar URL da run e pedir nova checagem depois.
 
 E) APÓS JOB VERDE

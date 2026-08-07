@@ -7,7 +7,8 @@
 | `npm run motor:fontes` | FRED + yfinance + **external_jobs** (CFTC, scrapers) |
 | `npm run motor:test-fontes` | Smoke incl. CFTC quando habilitado |
 
-Detalhe: [enriquecimento-indicadores.md](enriquecimento-indicadores.md).
+Detalhe: [enriquecimento-indicadores.md](enriquecimento-indicadores.md).  
+Operações manuais (browser): [COMANDO_CLAUDE_WEB_FASE2.md](COMANDO_CLAUDE_WEB_FASE2.md).
 
 Snapshot passa a incluir `isProxy` / `proxyRationale` em indicadores e bloco `models` (regime + EWMA).
 

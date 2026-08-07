@@ -65,6 +65,9 @@ jobs:
         run: python motor/scripts/blob_sync.py download
         continue-on-error: true
 
+      - name: Apply SQLite schema (Fase 2 migrations)
+        run: PYTHONPATH=. python -c "from motor.src.db.connection import init_db; init_db(); print('init_db OK')"
+
       - name: Run motor daily (1A — fontes + macro + top-90% + snapshot)
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
