@@ -37,7 +37,11 @@ def _indicator_export(c: dict) -> dict:
 def main() -> None:
     import datetime as dt
 
-    from motor.src.config.aba_class_map import CLASS_LABELS, class_id_for_aba
+    from motor.src.config.aba_class_map import (
+        ABA_LEGACY_ALIASES,
+        CLASS_LABELS,
+        class_id_for_aba,
+    )
     from motor.src.config_loader import load_aba_config
     from motor.src.db.connection import get_connection, init_db
     from motor.src.dates import motor_as_of_date, motor_snapshot_timestamps
@@ -73,7 +77,21 @@ def main() -> None:
             """
         ).fetchall()
 
+        # taxas + fi_treasury both map to fi_treasury — prefer newer date + canonical aba_id
+        by_class: dict[str, object] = {}
         for row in aba_rows:
+            class_id = class_id_for_aba(row["aba_id"])
+            prev = by_class.get(class_id)
+            if prev is None:
+                by_class[class_id] = row
+                continue
+            prev_row = prev
+            canonical = 0 if row["aba_id"] in ABA_LEGACY_ALIASES else 1
+            prev_canonical = 0 if prev_row["aba_id"] in ABA_LEGACY_ALIASES else 1
+            if (row["data"], canonical) > (prev_row["data"], prev_canonical):
+                by_class[class_id] = row
+
+        for row in by_class.values():
             aba_id = row["aba_id"]
             class_id = class_id_for_aba(aba_id)
             componentes = json.loads(row["componentes_json"])
