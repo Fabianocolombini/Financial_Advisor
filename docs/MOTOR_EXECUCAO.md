@@ -1,5 +1,18 @@
 # Instruções de Execução — Motor por Abas
 
+## Fase 2 — Enriquecimento (dados gratuitos + proxies)
+
+| Comando | Função |
+|---------|--------|
+| `npm run motor:fontes` | FRED + yfinance + **external_jobs** (CFTC, scrapers) |
+| `npm run motor:test-fontes` | Smoke incl. CFTC quando habilitado |
+
+Detalhe: [enriquecimento-indicadores.md](enriquecimento-indicadores.md).
+
+Snapshot passa a incluir `isProxy` / `proxyRationale` em indicadores e bloco `models` (regime + EWMA).
+
+---
+
 ## Etapa 1A (pronto — validação em produção)
 
 **Markets** lê `dashboard-snapshot.json` no Vercel Blob. Motor Daily atualiza diário.

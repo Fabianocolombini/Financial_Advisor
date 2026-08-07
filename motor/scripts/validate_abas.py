@@ -101,6 +101,18 @@ def main() -> None:
             elif "entryValidated" not in tickers[sym]:
                 errors.append(f"snapshot ticker {sym} missing entryValidated")
 
+        mlp = snap.get("classes", {}).get("energy_mlp")
+        if mlp:
+            ind_ids = {i.get("id") for i in mlp.get("indicators", [])}
+            if "distribution_yield_spread" not in ind_ids:
+                # class macro may not list all manifest ids in top-5; check manifest driver in pipeline
+                print(
+                    "[validate_abas] WARN: energy_mlp top indicators omit distribution_yield_spread "
+                    "(may be below top-5 contribution)"
+                )
+        else:
+            errors.append("snapshot missing energy_mlp class")
+
     if errors:
         for e in errors:
             print(f"[validate_abas] FAIL: {e}", file=sys.stderr)

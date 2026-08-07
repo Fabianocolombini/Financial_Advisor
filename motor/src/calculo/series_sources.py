@@ -7,7 +7,9 @@ from typing import Any
 
 import pandas as pd
 
+from motor.src.calculo.external_series_source import get_external_series
 from motor.src.calculo.derivados import compute_formula, get_fred_series
+from motor.src.calculo.proxy_indicators import compute_proxy_series, is_proxy_formula
 from motor.src.db.connection import get_connection
 
 
@@ -86,7 +88,15 @@ def indicator_series(ind: dict[str, Any]) -> pd.Series:
             return get_fred_series(serie)
         return pd.Series(dtype=float)
     if fonte == "calculado":
-        return compute_formula(ind.get("formula", ""))
+        formula = ind.get("formula", "")
+        if is_proxy_formula(formula):
+            ticker = (ind.get("ticker_proxy") or ind.get("ticker") or "").upper() or None
+            return compute_proxy_series(formula, ticker)
+        return compute_formula(formula)
+    if fonte == "proxy":
+        return compute_proxy_series(ind.get("formula", ""), ind.get("ticker_proxy"))
+    if fonte == "external":
+        return get_external_series(ind.get("source", ""), ind.get("series_id", ""))
     if fonte == "yfinance":
         ticker = (ind.get("ticker_proxy") or ind.get("ticker") or "").upper()
         field = ind.get("field", "close")

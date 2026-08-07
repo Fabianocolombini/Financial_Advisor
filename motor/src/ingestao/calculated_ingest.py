@@ -5,6 +5,7 @@ from __future__ import annotations
 import datetime as dt
 
 from motor.src.calculo.derivados import compute_formula
+from motor.src.calculo.proxy_indicators import is_proxy_formula
 from motor.src.ingestao.fontes_registry import calculated_indicators, load_manifest
 
 
@@ -12,7 +13,7 @@ def persist_calculated(conn) -> dict[str, int]:
     counts: dict[str, int] = {}
     for ind in calculated_indicators():
         formula = ind.get("formula", "")
-        if not formula:
+        if not formula or is_proxy_formula(formula):
             continue
         series = compute_formula(formula)
         if series.empty:
@@ -36,6 +37,8 @@ def persist_calculated_latest(conn) -> dict[str, float]:
     out: dict[str, float] = {}
     for ind in calculated_indicators():
         formula = ind.get("formula", "")
+        if not formula or is_proxy_formula(formula):
+            continue
         series = compute_formula(formula)
         if series.empty:
             continue

@@ -83,6 +83,70 @@ def _parse_non_accrual_from_html(text: str) -> float | None:
     return None
 
 
+def _parse_nav_from_html(text: str) -> float | None:
+    patterns = [
+        r"net asset value per share[^$]{0,40}\$?\s*(\d+\.?\d*)",
+        r"nav per share[^$]{0,40}\$?\s*(\d+\.?\d*)",
+        r"net assets per share[^$]{0,40}\$?\s*(\d+\.?\d*)",
+    ]
+    text_lower = text.lower()
+    for pat in patterns:
+        m = re.search(pat, text_lower, re.I)
+        if m:
+            try:
+                return float(m.group(1))
+            except ValueError:
+                continue
+    return None
+
+
+def _latest_price(ticker: str) -> float | None:
+    with get_connection() as conn:
+        row = conn.execute(
+            """
+            SELECT close FROM price_daily
+            WHERE ticker = ? ORDER BY data DESC LIMIT 1
+            """,
+            (ticker.upper(),),
+        ).fetchone()
+    if row:
+        return float(row["close"])
+    return None
+
+
+def fetch_nav_premium_discount(ticker: str) -> tuple[str, float] | None:
+    """Premium/discount % = (price/NAV - 1) * 100."""
+    with httpx.Client() as client:
+        cik = ticker_to_cik(client, ticker)
+        if not cik:
+            return None
+        filing = _latest_10q_url(client, cik)
+        if not filing:
+            return None
+        filed_at, doc_url = filing
+        time.sleep(0.2)
+        try:
+            r = client.get(doc_url, headers=EDGAR_HEADERS, timeout=60.0)
+            if r.status_code != 200:
+                return None
+            content = r.text
+        except Exception:
+            return None
+        nav = _parse_nav_from_html(content)
+        if nav is None or nav <= 0:
+            return None
+        price = _latest_price(ticker)
+        if price is None:
+            from motor.src.ingestao.yfinance_client import ingest_ticker
+
+            ingest_ticker(ticker.upper(), "2019-01-01")
+            price = _latest_price(ticker)
+        if price is None:
+            return None
+        pct = (price / nav - 1.0) * 100.0
+        return filed_at, pct
+
+
 def fetch_bdc_metric(ticker: str, metric: str) -> tuple[str, float] | None:
     """Return (filing_date, value) for metric."""
     with httpx.Client() as client:
@@ -105,6 +169,12 @@ def fetch_bdc_metric(ticker: str, metric: str) -> tuple[str, float] | None:
             val = _parse_non_accrual_from_html(content)
             if val is not None:
                 return filed_at, val
+        if metric == "nav_premium_discount":
+            nav = _parse_nav_from_html(content)
+            if nav and nav > 0:
+                price = _latest_price(ticker)
+                if price:
+                    return filed_at, (price / nav - 1.0) * 100.0
     return None
 
 

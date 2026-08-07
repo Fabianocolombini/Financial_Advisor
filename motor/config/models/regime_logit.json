@@ -1,0 +1,30 @@
+{
+  "intercept": -14.678705550124793,
+  "features": [
+    {
+      "id": "t10y2y",
+      "serie": "T10Y2Y",
+      "coefficient": -3.8945904694164852
+    },
+    {
+      "id": "vix",
+      "serie": "VIXCLS",
+      "coefficient": 0.321967491490564
+    },
+    {
+      "id": "hy_oas",
+      "serie": "BAMLH0A0HYM2",
+      "coefficient": 3.4839006348701482
+    },
+    {
+      "id": "eurusd",
+      "serie": "DEXUSEU",
+      "coefficient": -0.3803587030769164
+    }
+  ],
+  "calibrated": true,
+  "calibrated_at": "2026-08-06T23:12:52.548123+00:00",
+  "n_samples": 743,
+  "label_note": "y=1 se curva invertida, VIX>75p ou HY OAS>75p (contemporâneo, não forecast de retorno)",
+  "note": "Coeficientes ajustados por regressão logística sobre histórico FRED no SQLite."
+}

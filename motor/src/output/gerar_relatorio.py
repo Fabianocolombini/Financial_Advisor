@@ -42,6 +42,14 @@ def build_report_markdown(
             f"- Indicador dominante: **{dom['nome']}** (contribuição={_fmt(dom['contribuicao'])})"
         )
     lines.append("")
+    proxies = [c for c in aba_result.get("componentes", []) if c.get("is_proxy")]
+    if proxies:
+        lines.append("## Proxies (Tipo B)")
+        lines.append("")
+        for p in proxies:
+            rationale = p.get("proxy_rationale", "")
+            lines.append(f"- **{p['nome']}**: {rationale}")
+        lines.append("")
     lines.append("## Racional matemático")
     lines.append("")
     lines.append("| Indicador | Valor | z-score | Peso | Contribuição |")
@@ -52,6 +60,29 @@ def build_report_markdown(
             f"{_fmt(c['peso'], 2)} | {_fmt(c['contribuicao'])} |"
         )
     lines.append("")
+    try:
+        from motor.src.calculo.models import build_models_snapshot
+
+        models = build_models_snapshot()
+        regime = models.get("regime", {})
+        if regime:
+            lines.append("## Regime context (educacional)")
+            lines.append("")
+            prob = regime.get("regime_risk_probability")
+            if prob is not None:
+                lines.append(
+                    f"- Probabilidade logística de regime de risco elevado: **{_fmt(prob, 2)}**"
+                )
+            if regime.get("note"):
+                lines.append(f"- Nota: {regime['note']}")
+            if not regime.get("calibrated"):
+                warn = regime.get("calibration_warning") or "Modelo não calibrado (`calibrated: false`)."
+                lines.append(f"- ⚠ {warn}")
+            elif regime.get("n_samples"):
+                lines.append(f"- Calibrado com {regime['n_samples']} observações (ver `label_note`).")
+            lines.append("")
+    except Exception:
+        pass
     lines.append("## Universo (ativos)")
     lines.append("")
     lines.append("| Ticker | S | Estágio | vs Categoria |")

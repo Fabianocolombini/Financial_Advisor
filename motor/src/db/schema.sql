@@ -90,3 +90,12 @@ CREATE TABLE IF NOT EXISTS ingestion_log (
   records INTEGER DEFAULT 0,
   detail TEXT
 );
+
+CREATE TABLE IF NOT EXISTS external_series (
+  source TEXT NOT NULL,
+  series_id TEXT NOT NULL,
+  data DATE NOT NULL,
+  valor REAL,
+  meta_json TEXT,
+  PRIMARY KEY (source, series_id, data)
+);

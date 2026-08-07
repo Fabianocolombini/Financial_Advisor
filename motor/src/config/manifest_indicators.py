@@ -72,6 +72,12 @@ def enrich_for_scoring(ind: dict[str, Any]) -> dict[str, Any]:
     out.setdefault("zscore_window", 252)
     out["camada"] = _infer_camada(out)
     out["direcao"] = _infer_direcao(out)
+    if ind.get("is_proxy"):
+        out["is_proxy"] = True
+        if ind.get("proxy_rationale"):
+            out["proxy_rationale"] = ind["proxy_rationale"]
+    if ind.get("ingest_frequency"):
+        out["ingest_frequency"] = ind["ingest_frequency"]
     return out
 
 

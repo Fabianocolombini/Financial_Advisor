@@ -13,6 +13,16 @@ Suporte educacional — não assessoria regulada.
 | **QI legado** | Pausado / referência | `analytics/qi/` |
 | **App Next.js** (CRUD + Markets) | Mantido; `/mercado` com motor snapshot | `app/` |
 
+## Motor — Fase 2 enriquecimento (em progresso)
+
+- **Tipo A:** FRED extras, spreads calculados, CFTC, EDGAR NAV, scrapers (CME, Shiller, Nareit, etc.)
+- **Tipo B:** 6 proxies com `is_proxy` + `proxy_rationale` no snapshot
+- **Modelos:** logit regime + EWMA vol em `snapshot.models`
+- **MLP:** driver `distribution_yield_spread` (substitui `price_amlp`)
+- **UI Markets:** colunas atuais mantidas (charts → 1B)
+
+Ver [docs/enriquecimento-indicadores.md](docs/enriquecimento-indicadores.md).
+
 ## Motor — Etapa 1A (entregue)
 
 - Python + SQLite (`motor/data/historico.db`) → Vercel Blob

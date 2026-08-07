@@ -1,0 +1,9 @@
+{
+  "contracts": [
+    {"id": "treasury_bonds", "pattern": "UST BOND", "series_id": "cot_treasuries_net"},
+    {"id": "gold", "pattern": "GOLD - COMMODITY EXCHANGE", "series_id": "cot_gold_net"},
+    {"id": "crude_oil", "pattern": "CRUDE OIL, LIGHT SWEET", "series_id": "cot_crude_net"},
+    {"id": "natural_gas", "pattern": "NATURAL GAS", "series_id": "cot_natgas_net"},
+    {"id": "eur", "pattern": "EURO FX", "series_id": "cot_eur_net"}
+  ]
+}

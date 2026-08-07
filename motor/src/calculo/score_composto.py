@@ -51,7 +51,7 @@ def _score_indicator(
         z, latest, mean = zscore_latest(series, window)
     z_adj = apply_direction(z, direcao)
     contrib = z_adj * peso * peso_camada
-    return {
+    out = {
         "id": ind["id"],
         "nome": ind.get("nome", ind["id"]),
         "camada": camada,
@@ -62,6 +62,10 @@ def _score_indicator(
         "peso_camada": peso_camada,
         "contribuicao": contrib,
     }
+    if ind.get("is_proxy"):
+        out["is_proxy"] = True
+        out["proxy_rationale"] = ind.get("proxy_rationale", "")
+    return out
 
 
 def compute_aba_score(aba_id: str, as_of: dt.date | None = None) -> dict[str, Any]:

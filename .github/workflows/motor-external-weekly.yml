@@ -1,0 +1,47 @@
+name: Motor External Weekly
+
+on:
+  schedule:
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: motor-external-weekly
+  cancel-in-progress: false
+
+jobs:
+  external:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: motor/requirements.txt
+
+      - run: pip install -r motor/requirements.txt
+
+      - name: Download SQLite from Blob
+        env:
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+        run: python motor/scripts/blob_sync.py download
+        continue-on-error: true
+
+      - name: Run weekly external scrapers
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
+        run: |
+          PYTHONPATH=. python -c "
+          from motor.src.ingestao.external_jobs import run_external_jobs_logged
+          import json
+          print(json.dumps(run_external_jobs_logged(['weekly', 'monthly', 'quarterly']), indent=2))
+          "
+
+      - name: Upload SQLite
+        env:
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+        run: python motor/scripts/blob_sync.py upload

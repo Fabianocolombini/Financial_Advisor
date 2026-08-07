@@ -99,4 +99,7 @@ def ingest_ecb_rate(conn, series_key: str = _DEFAULT_SERIES) -> int:
         "INSERT OR REPLACE INTO raw_series (data, serie, valor) VALUES (?, ?, ?)",
         (d, serie_name, row["value"]),
     )
+    from motor.src.db.external_series_store import upsert_point
+
+    upsert_point("ecb", "deposit_rate", d, row["value"], conn=conn)
     return 1

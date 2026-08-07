@@ -32,7 +32,24 @@ def all_fred_series(manifest: dict[str, Any] | None = None) -> set[str]:
 def _formula_deps(formula: str) -> set[str]:
     import re
 
-    if formula in ("pe_EFA_div_SPY", "pe_EEM_div_SPY", "em_gdp_growth"):
+    _no_fred = {
+        "pe_EFA_div_SPY",
+        "pe_EEM_div_SPY",
+        "em_gdp_growth",
+        "preferred_spread",
+        "embi_spread",
+        "distribution_yield_spread",
+        "rate_differential",
+        "real_yield_curve",
+        "nareit_yield_spread",
+        "hy_distress_proxy_score",
+        "bond_vol_proxy",
+        "reit_valuation_percentile",
+        "risk_reversal_proxy",
+        "private_funding_proxy",
+        "earnings_revision_proxy",
+    }
+    if formula in _no_fred:
         return set()
     if formula.startswith("delta_"):
         return {formula.replace("delta_", "").replace("_90d", "")}

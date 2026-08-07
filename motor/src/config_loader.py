@@ -38,12 +38,23 @@ def load_tecnicos_config() -> dict[str, Any]:
 
 def _formula_series(formula: str) -> set[str]:
     """FRED series IDs required by a calculated formula (not yfinance tickers)."""
-    # Named formulas — explicit deps; pe_* and em_gdp use yfinance / World Bank
     named: dict[str, set[str]] = {
         "delta_DFF_90d": {"DFF", "FEDFUNDS"},
         "pe_EFA_div_SPY": set(),
         "pe_EEM_div_SPY": set(),
         "em_gdp_growth": set(),
+        "preferred_spread": {"DGS10"},
+        "embi_spread": {"DGS10"},
+        "distribution_yield_spread": {"DGS10"},
+        "rate_differential": {"DFF"},
+        "real_yield_curve": {"DFII5", "DFII10", "DFII30"},
+        "nareit_yield_spread": {"DGS10"},
+        "hy_distress_proxy_score": {"BAMLH0A3HYC"},
+        "bond_vol_proxy": set(),
+        "reit_valuation_percentile": set(),
+        "risk_reversal_proxy": set(),
+        "private_funding_proxy": set(),
+        "earnings_revision_proxy": set(),
     }
     if formula in named:
         return set(named[formula])
@@ -52,8 +63,8 @@ def _formula_series(formula: str) -> set[str]:
         return {left.strip(), right.strip()}
     if " + " in formula:
         return {p.strip() for p in formula.split(" + ")}
-    # Bare FRED series id (e.g. DGS10)
-    if formula and formula.replace("_", "").isalnum():
+    # Bare FRED series id (e.g. DGS10) — uppercase tokens only
+    if formula and formula.isupper() and formula.replace("_", "").isalnum():
         return {formula}
     return set()
 

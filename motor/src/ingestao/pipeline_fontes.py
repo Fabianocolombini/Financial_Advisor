@@ -11,6 +11,7 @@ from motor.src.db.connection import get_connection, init_db
 from motor.src.ingestao.calculated_ingest import persist_calculated_latest
 from motor.src.ingestao.ecb_client import ingest_ecb_rate
 from motor.src.ingestao.edgar_client import fetch_bdc_metric
+from motor.src.ingestao.external_jobs import run_external_jobs
 from motor.src.ingestao.fontes_registry import (
     all_fred_series,
     enabled_fontes,
@@ -146,6 +147,19 @@ def run_fontes_pipeline(start: str = "2019-01-01") -> dict[str, Any]:
             except Exception as e:
                 _log_finish(conn, log_id, "failed", 0, str(e))
                 result["fontes"]["ecb"] = {"error": str(e)}
+
+        log_id = _log_start(conn, "external_jobs")
+        try:
+            ext = run_external_jobs(
+                frequencies=["daily", "weekly", "monthly", "quarterly"],
+                conn=conn,
+            )
+            conn.commit()
+            _log_finish(conn, log_id, "success", len(ext), json.dumps(ext))
+            result["fontes"]["external_jobs"] = ext
+        except Exception as e:
+            _log_finish(conn, log_id, "degraded", 0, str(e))
+            result["fontes"]["external_jobs"] = {"error": str(e)}
 
         conn.commit()
 

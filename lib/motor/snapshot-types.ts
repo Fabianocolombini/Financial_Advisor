@@ -13,6 +13,30 @@ export type MotorIndicatorSnapshot = {
   value: number | null;
   zScore?: number | null;
   contribution?: number | null;
+  isProxy?: boolean;
+  proxyRationale?: string;
+};
+
+export type MotorRegimeModelSnapshot = {
+  regime_risk_probability: number;
+  logit_z?: number;
+  features?: Array<{ id: string; value: number; coefficient: number }>;
+  calibrated?: boolean;
+  calibration_warning?: string;
+  calibrated_at?: string;
+  n_samples?: number;
+  label_note?: string;
+  note?: string;
+};
+
+export type MotorEwmaVolSnapshot = Record<
+  string,
+  { ticker: string; ewma_vol_annualized: number; lambda: number }
+>;
+
+export type MotorModelsSnapshot = {
+  regime?: MotorRegimeModelSnapshot;
+  ewma_vol?: MotorEwmaVolSnapshot;
 };
 
 export type MotorClassSnapshot = {
@@ -64,6 +88,7 @@ export type MotorDashboardSnapshot = {
   asOfConvention?: "previous_day_close";
   updatedAt?: string | null;
   quality?: MotorSnapshotQuality;
+  models?: MotorModelsSnapshot;
   classes: Record<string, MotorClassSnapshot>;
   tickers: Record<string, MotorTickerSnapshot>;
 };

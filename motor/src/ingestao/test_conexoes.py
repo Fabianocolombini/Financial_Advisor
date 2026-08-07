@@ -8,6 +8,7 @@ import sys
 from typing import Any
 
 from motor.src.db.connection import get_connection, init_db
+from motor.src.ingestao.cftc_client import test_connection as cftc_test
 from motor.src.ingestao.ecb_client import test_connection as ecb_test
 from motor.src.ingestao.edgar_client import ticker_to_cik
 from motor.src.ingestao.fred_client import run_test as fred_test
@@ -49,6 +50,7 @@ def run_all_tests() -> dict[str, Any]:
         "edgar": lambda: test_edgar(),
         "world_bank": lambda: wb_test(),
         "ecb": lambda: ecb_test(),
+        "cftc": lambda: cftc_test(),
     }
 
     for name, fn in tests.items():
@@ -60,6 +62,9 @@ def run_all_tests() -> dict[str, Any]:
             r = fn()
             if name == "fred" and isinstance(r, dict) and "DGS10" in r:
                 r = {"ok": True, "series": r}
+            if name == "cftc":
+                degraded = not r.get("ok")
+                r = {"ok": True, "degraded": degraded, "sample": r}
             ok = bool(r.get("ok")) or r.get("skipped")
             results[name] = r
             _persist_status(name, ok, json.dumps(r))
@@ -67,11 +72,11 @@ def run_all_tests() -> dict[str, Any]:
             results[name] = {"ok": False, "error": str(e)}
             _persist_status(name, False, str(e))
 
-    # Disabled sources — document only
-    for name in ("nareit", "cftc", "multpl"):
+    # Disabled / optional sources
+    for name in ("nareit", "multpl", "cme_fedwatch", "shiller", "cboe", "eia"):
         cfg = manifest.get("fontes", {}).get(name, {})
         if not cfg.get("enabled"):
-            results[name] = {"ok": True, "skipped": True, "nota": cfg.get("nota", "Fase 2/3")}
+            results[name] = {"ok": True, "skipped": True, "nota": cfg.get("nota", "disabled")}
 
     results["all_ok"] = all(
         r.get("ok") or r.get("skipped") for r in results.values()

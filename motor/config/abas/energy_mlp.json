@@ -30,12 +30,11 @@
       "direcao": "positiva"
     },
     {
-      "id": "price_amlp",
-      "nome": "AMLP price level",
+      "id": "distribution_yield_spread",
+      "nome": "AMLP distribution yield − 10y",
       "camada": "valuation",
-      "fonte": "yfinance",
-      "field": "close",
-      "ticker_proxy": "AMLP",
+      "fonte": "calculado",
+      "formula": "distribution_yield_spread",
       "peso": 0.35,
       "zscore_window": 252,
       "direcao": "positiva"

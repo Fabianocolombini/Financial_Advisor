@@ -76,9 +76,13 @@ motor/
 |-------|-----------|
 | `id` | Identificador único no aba |
 | `camada` | `macro`, `valuation`, `tecnico`, `fundamental` |
-| `fonte` | `fred`, `yfinance`, `calculado`, `edgar` |
+| `fonte` | `fred`, `yfinance`, `calculado`, `edgar`, `external`, `ecb`, `world_bank` |
 | `serie` | ID FRED (se `fonte=fred`) |
+| `source` / `series_id` | Para `fonte=external` (tabela `external_series`) |
 | `formula` | Expressão para `calculado` (ex. `DGS10 - T10YIE`) |
+| `is_proxy` | `true` para Tipo B — obrigatório com `proxy_rationale` |
+| `proxy_rationale` | Frase educacional explicando limitação do proxy |
+| `ingest_frequency` | `daily`, `weekly`, `monthly` (jobs externos) |
 | `ticker_field` | Campo yfinance: `pe`, `dividend_yield`, etc. |
 | `edgar_metric` | `non_accrual_rate`, `nav` (BDC) |
 | `peso` | Peso dentro da camada (normalizado no cálculo) |

@@ -38,6 +38,21 @@ def compute_formula(formula: str) -> pd.Series:
         return _pe_ratio_ratio("EEM", "SPY")
     if formula == "em_gdp_growth":
         return _world_bank_series("NY.GDP.MKTP.KD.ZG", "EM")
+    if formula == "preferred_spread":
+        return _dividend_yield_minus_dgs10("PFF")
+    if formula == "embi_spread":
+        return _dividend_yield_minus_dgs10("EMB")
+    if formula == "distribution_yield_spread":
+        return _dividend_yield_minus_dgs10("AMLP")
+    if formula == "rate_differential":
+        return _rate_differential()
+    if formula == "real_yield_curve":
+        return _real_yield_curve()
+    if formula == "nareit_yield_spread":
+        ext = _external_series("nareit", "nareit_yield_spread")
+        if not ext.empty:
+            return ext
+        return _dividend_yield_minus_dgs10("VNQ")
     if " - " in formula:
         left, right = formula.split(" - ", 1)
         a = _series_from_db(left.strip())
@@ -88,6 +103,66 @@ def _pe_ratio_ratio(ticker_a: str, ticker_b: str) -> pd.Series:
     val = float(a["valor"]) / float(b["valor"])
     today = dt.date.today()
     return pd.Series([val], index=[today])
+
+
+def _external_series(source: str, series_id: str) -> pd.Series:
+    with get_connection() as conn:
+        rows = conn.execute(
+            """
+            SELECT data, valor FROM external_series
+            WHERE source = ? AND series_id = ? ORDER BY data
+            """,
+            (source, series_id),
+        ).fetchall()
+    if not rows:
+        return pd.Series(dtype=float)
+    dates = [dt.date.fromisoformat(r["data"]) for r in rows]
+    vals = [float(r["valor"]) for r in rows]
+    return pd.Series(vals, index=dates)
+
+
+def _yfinance_field_series(ticker: str, field: str) -> pd.Series:
+    with get_connection() as conn:
+        rows = conn.execute(
+            """
+            SELECT data, valor FROM yfinance_snapshot
+            WHERE ticker = ? AND field = ? ORDER BY data
+            """,
+            (ticker.upper(), field),
+        ).fetchall()
+    if not rows:
+        return pd.Series(dtype=float)
+    dates = [dt.date.fromisoformat(r["data"]) for r in rows]
+    vals = [float(r["valor"]) for r in rows if r["valor"] is not None]
+    return pd.Series(vals, index=dates[:len(vals)])
+
+
+def _dividend_yield_minus_dgs10(ticker: str) -> pd.Series:
+    dy = _yfinance_field_series(ticker, "dividend_yield")
+    dgs = _series_from_db("DGS10")
+    if dy.empty or dgs.empty:
+        return pd.Series(dtype=float)
+    combined = pd.concat([dy, dgs], axis=1, join="inner")
+    return combined.iloc[:, 0] - combined.iloc[:, 1]
+
+
+def _rate_differential() -> pd.Series:
+    dff = _series_from_db("DFF")
+    ecb = _external_series("ecb", "deposit_rate")
+    if ecb.empty:
+        ecb = _series_from_db("ECB_MRR")
+    if dff.empty or ecb.empty:
+        return pd.Series(dtype=float)
+    combined = pd.concat([dff, ecb], axis=1, join="inner")
+    return combined.iloc[:, 0] - combined.iloc[:, 1]
+
+
+def _real_yield_curve() -> pd.Series:
+    parts = [_series_from_db("DFII5"), _series_from_db("DFII10"), _series_from_db("DFII30")]
+    if any(p.empty for p in parts):
+        return pd.Series(dtype=float)
+    combined = pd.concat(parts, axis=1, join="inner")
+    return combined.mean(axis=1)
 
 
 def latest_raw_value(serie: str) -> float | None:

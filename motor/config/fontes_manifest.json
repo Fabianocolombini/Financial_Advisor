@@ -2,14 +2,25 @@
   "version": "1.0",
   "etapa": "ingestao_fontes",
   "fontes": {
-    "fred": { "priority": 1, "enabled": true, "tipo": "api" },
-    "yfinance": { "priority": 2, "enabled": true, "tipo": "library" },
-    "edgar": { "priority": 3, "enabled": true, "tipo": "api" },
-    "world_bank": { "priority": 4, "enabled": true, "tipo": "api" },
-    "ecb": { "priority": 4, "enabled": true, "tipo": "api" },
-    "nareit": { "priority": 5, "enabled": false, "tipo": "manual", "nota": "Fase 2" },
-    "cftc": { "priority": 6, "enabled": false, "tipo": "parsing", "nota": "Fase 3" },
-    "multpl": { "priority": 6, "enabled": false, "tipo": "scraping", "nota": "Fase 3" }
+    "fred": { "priority": 1, "enabled": true, "tipo": "api", "frequency": "daily" },
+    "yfinance": { "priority": 2, "enabled": true, "tipo": "library", "frequency": "daily" },
+    "edgar": { "priority": 3, "enabled": true, "tipo": "api", "frequency": "weekly" },
+    "world_bank": { "priority": 4, "enabled": true, "tipo": "api", "frequency": "monthly" },
+    "ecb": { "priority": 4, "enabled": true, "tipo": "api", "frequency": "daily" },
+    "cftc": { "priority": 5, "enabled": true, "tipo": "parsing", "frequency": "weekly" },
+    "nareit": { "priority": 5, "enabled": true, "tipo": "scraping", "frequency": "monthly" },
+    "cme_fedwatch": { "priority": 6, "enabled": true, "tipo": "scraping", "frequency": "daily" },
+    "shiller": { "priority": 6, "enabled": true, "tipo": "parse", "frequency": "monthly" },
+    "cboe": { "priority": 6, "enabled": true, "tipo": "scraping", "frequency": "daily" },
+    "aaii": { "priority": 7, "enabled": true, "tipo": "scraping", "frequency": "weekly" },
+    "naaim": { "priority": 7, "enabled": true, "tipo": "scraping", "frequency": "weekly" },
+    "finra": { "priority": 7, "enabled": true, "tipo": "scraping", "frequency": "monthly" },
+    "eia": { "priority": 7, "enabled": false, "tipo": "api", "frequency": "weekly", "nota": "Opcional: WCESTUS1 no FRED já cobre estoque cru; EIA API para séries extras (gás/produtos) com EIA_API_KEY" },
+    "etf_holdings": { "priority": 7, "enabled": true, "tipo": "scraping", "frequency": "daily" },
+    "wgc": { "priority": 8, "enabled": true, "tipo": "scraping", "frequency": "quarterly" },
+    "star_capital": { "priority": 8, "enabled": true, "tipo": "scraping", "frequency": "quarterly" },
+    "fda_calendar": { "priority": 8, "enabled": true, "tipo": "scraping", "frequency": "weekly" },
+    "multpl": { "priority": 9, "enabled": false, "tipo": "scraping", "nota": "Tipo C — documentado apenas" }
   },
   "indicadores_tecnicos_genericos": [
     { "id": "preco_vs_mm50", "fonte": "yfinance", "calculo": "price_vs_sma50" },
@@ -26,6 +37,8 @@
     "GLD": "commodities_precious",
     "USO": "commodities_energy",
     "AMLP": "energy_mlp",
+    "EMB": "em_equity",
+    "FXE": "currencies",
     "IBB": "healthcare_biotech",
     "ARCC": "alt_bdc",
     "IGF": "alt_infrastructure",
@@ -55,7 +68,19 @@
         { "id": "t10y3m", "nome": "Spread 10y-3m", "fonte": "fred", "serie": "T10Y3M" },
         { "id": "dff", "nome": "Fed Funds", "fonte": "fred", "serie": "DFF" },
         { "id": "yield_real_10y", "nome": "Yield real 10y", "fonte": "calculado", "formula": "DGS10 - T10YIE" },
-        { "id": "yield_10y", "nome": "Yield nominal 10y", "fonte": "fred", "serie": "DGS10" }
+        { "id": "yield_10y", "nome": "Yield nominal 10y", "fonte": "fred", "serie": "DGS10" },
+        { "id": "real_yield_curve", "nome": "Real yield curve (5/10/30 avg)", "fonte": "calculado", "formula": "real_yield_curve" },
+        { "id": "cot_net_position", "nome": "COT net Treasuries", "fonte": "external", "source": "cftc", "series_id": "cot_treasuries_net" },
+        { "id": "fed_cut_probability", "nome": "Fed cut probability", "fonte": "external", "source": "cme", "series_id": "fed_cut_probability" },
+        {
+          "id": "bond_vol_proxy",
+          "nome": "Bond vol proxy (TLT IV / realized)",
+          "fonte": "calculado",
+          "formula": "bond_vol_proxy",
+          "is_proxy": true,
+          "proxy_rationale": "CBOE TLT IV quando disponível; fallback vol realizada 20d TLT",
+          "ingest_frequency": "daily"
+        }
       ]
     },
     {
@@ -64,6 +89,8 @@
       "indicadores": [
         { "id": "ig_oas", "nome": "Spread OAS IG", "fonte": "fred", "serie": "BAMLC0A0CM" },
         { "id": "ig_aaa", "nome": "Spread IG AAA", "fonte": "fred", "serie": "BAMLC0A1CAAA" },
+        { "id": "ig_aa", "nome": "Spread IG AA", "fonte": "fred", "serie": "BAMLC0A2CAA" },
+        { "id": "ig_a", "nome": "Spread IG A", "fonte": "fred", "serie": "BAMLC0A3CA" },
         { "id": "ig_bbb", "nome": "Spread IG BBB", "fonte": "fred", "serie": "BAMLC0A4CBBB" },
         { "id": "spread_ig_treasury", "nome": "Spread IG vs Treasury", "fonte": "calculado", "formula": "BAMLC0A0CM - DGS10" }
       ]
@@ -77,7 +104,16 @@
         { "id": "hy_b", "fonte": "fred", "serie": "BAMLH0A2HYB" },
         { "id": "hy_ccc", "fonte": "fred", "serie": "BAMLH0A3HYC" },
         { "id": "hy_minus_ig", "fonte": "calculado", "formula": "BAMLH0A0HYM2 - BAMLC0A0CM" },
-        { "id": "loan_officer", "fonte": "fred", "serie": "DRALACBS" }
+        { "id": "loan_officer", "fonte": "fred", "serie": "DRALACBS" },
+        {
+          "id": "hy_distress_proxy_score",
+          "nome": "HY distress proxy",
+          "fonte": "calculado",
+          "formula": "hy_distress_proxy_score",
+          "is_proxy": true,
+          "proxy_rationale": "Percentil 5y CCC OAS + percentil vol realizada HYG",
+          "ingest_frequency": "daily"
+        }
       ]
     },
     {
@@ -87,6 +123,9 @@
         { "id": "t10yie", "fonte": "fred", "serie": "T10YIE" },
         { "id": "t5yie", "fonte": "fred", "serie": "T5YIE" },
         { "id": "dfii10", "fonte": "fred", "serie": "DFII10" },
+        { "id": "dfii5", "fonte": "fred", "serie": "DFII5" },
+        { "id": "dfii30", "fonte": "fred", "serie": "DFII30" },
+        { "id": "breakeven_5y5y", "nome": "5y5y breakeven", "fonte": "fred", "serie": "T5YIFR" },
         { "id": "cpi", "fonte": "fred", "serie": "CPIAUCSL" }
       ]
     },
@@ -97,7 +136,8 @@
         { "id": "dividend_yield", "nome": "Dividend yield PFF", "fonte": "yfinance", "field": "dividend_yield", "ticker_proxy": "PFF" },
         { "id": "hy_context", "nome": "Spread HY contexto", "fonte": "fred", "serie": "BAMLH0A0HYM2" },
         { "id": "ig_context", "nome": "Spread IG contexto", "fonte": "fred", "serie": "BAMLC0A0CM" },
-        { "id": "yield_10y", "nome": "Yield 10y", "fonte": "fred", "serie": "DGS10" }
+        { "id": "yield_10y", "nome": "Yield 10y", "fonte": "fred", "serie": "DGS10" },
+        { "id": "preferred_spread", "nome": "PFF yield − 10y", "fonte": "calculado", "formula": "preferred_spread" }
       ]
     },
     {
@@ -107,7 +147,22 @@
         { "id": "pe_ratio", "nome": "P/E SPY", "fonte": "yfinance", "field": "pe_ratio", "ticker_proxy": "SPY" },
         { "id": "vix", "nome": "VIX", "fonte": "fred", "serie": "VIXCLS" },
         { "id": "spread_10y_2y", "nome": "Spread 10y-2y", "fonte": "fred", "serie": "T10Y2Y" },
-        { "id": "dff", "nome": "Fed Funds", "fonte": "fred", "serie": "DFF" }
+        { "id": "dff", "nome": "Fed Funds", "fonte": "fred", "serie": "DFF" },
+        { "id": "cape_shiller", "nome": "CAPE Shiller", "fonte": "external", "source": "shiller", "series_id": "cape_shiller" },
+        { "id": "put_call_ratio", "nome": "Equity put/call", "fonte": "external", "source": "cboe", "series_id": "put_call_ratio" },
+        { "id": "aaii_sentiment", "nome": "AAII sentiment", "fonte": "external", "source": "aaii", "series_id": "aaii_sentiment" },
+        { "id": "naaim_exposure", "nome": "NAAIM exposure", "fonte": "external", "source": "naaim", "series_id": "naaim_exposure" },
+        { "id": "margin_debt", "nome": "FINRA margin debt", "fonte": "external", "source": "finra", "series_id": "margin_debt" },
+        {
+          "id": "earnings_revision_proxy",
+          "nome": "Earnings revision proxy",
+          "fonte": "calculado",
+          "formula": "earnings_revision_proxy",
+          "ticker_proxy": "SPY",
+          "is_proxy": true,
+          "proxy_rationale": "Retorno 3d post-earnings yfinance calendar; z-score histórico por ticker",
+          "ingest_frequency": "daily"
+        }
       ]
     },
     {
@@ -117,7 +172,8 @@
         { "id": "pe_rel_intl_us", "nome": "P/E EFA relativo SPY", "fonte": "calculado", "formula": "pe_EFA_div_SPY" },
         { "id": "vix", "nome": "VIX", "fonte": "fred", "serie": "VIXCLS" },
         { "id": "dxy", "nome": "Dollar index", "fonte": "fred", "serie": "DTWEXBGS" },
-        { "id": "eurusd", "nome": "USD/EUR", "fonte": "fred", "serie": "DEXUSEU" }
+        { "id": "eurusd", "nome": "USD/EUR", "fonte": "fred", "serie": "DEXUSEU" },
+        { "id": "cape_by_country", "fonte": "external", "source": "star", "series_id": "cape_by_country_us" }
       ]
     },
     {
@@ -125,6 +181,7 @@
       "nome": "Emerging Market Equity",
       "indicadores": [
         { "id": "pe_rel_em_us", "nome": "P/E EEM relativo SPY", "fonte": "calculado", "formula": "pe_EEM_div_SPY" },
+        { "id": "embi_spread", "nome": "EMB yield − 10y", "fonte": "calculado", "formula": "embi_spread" },
         { "id": "gdp_growth_em", "nome": "PIB EM (World Bank)", "fonte": "world_bank", "indicator": "NY.GDP.MKTP.KD.ZG", "country": "EM" },
         { "id": "vix", "nome": "VIX", "fonte": "fred", "serie": "VIXCLS" },
         { "id": "dxy", "nome": "Dollar index", "fonte": "fred", "serie": "DTWEXBGS" }
@@ -137,7 +194,17 @@
         { "id": "price_vnq", "nome": "Preço VNQ", "fonte": "yfinance", "field": "close", "ticker_proxy": "VNQ" },
         { "id": "dgs10", "nome": "Yield 10y (cap rate proxy)", "fonte": "fred", "serie": "DGS10" },
         { "id": "yield_real_10y", "nome": "Yield real 10y", "fonte": "calculado", "formula": "DGS10 - T10YIE" },
-        { "id": "spread_10y_2y", "nome": "Spread 10y-2y", "fonte": "fred", "serie": "T10Y2Y" }
+        { "id": "spread_10y_2y", "nome": "Spread 10y-2y", "fonte": "fred", "serie": "T10Y2Y" },
+        { "id": "nareit_yield_spread", "nome": "REIT yield spread", "fonte": "calculado", "formula": "nareit_yield_spread" },
+        {
+          "id": "reit_valuation_percentile",
+          "nome": "REIT valuation percentile",
+          "fonte": "calculado",
+          "formula": "reit_valuation_percentile",
+          "is_proxy": true,
+          "proxy_rationale": "Percentil 10y do spread Nareit (ou VNQ yield − 10y)",
+          "ingest_frequency": "monthly"
+        }
       ]
     },
     {
@@ -147,7 +214,10 @@
         { "id": "dfii10", "fonte": "fred", "serie": "DFII10" },
         { "id": "dxy", "fonte": "fred", "serie": "DTWEXBGS" },
         { "id": "gold_price", "fonte": "yfinance", "field": "close", "ticker_proxy": "GLD" },
-        { "id": "cpi", "fonte": "fred", "serie": "CPIAUCSL" }
+        { "id": "cpi", "fonte": "fred", "serie": "CPIAUCSL" },
+        { "id": "cot_gold_net", "nome": "COT gold net", "fonte": "external", "source": "cftc", "series_id": "cot_gold_net" },
+        { "id": "gld_holdings", "fonte": "external", "source": "etf_holdings", "series_id": "gld_holdings_tonnes" },
+        { "id": "cb_gold_buying", "fonte": "external", "source": "wgc", "series_id": "cb_gold_buying" }
       ]
     },
     {
@@ -155,7 +225,9 @@
       "nome": "Commodities - Energy",
       "indicadores": [
         { "id": "wti", "fonte": "fred", "serie": "DCOILWTICO" },
-        { "id": "henry_hub", "fonte": "fred", "serie": "DHHNGSP" }
+        { "id": "henry_hub", "fonte": "fred", "serie": "DHHNGSP" },
+        { "id": "crude_oil_stocks", "nome": "Estoque cru EUA (weekly)", "fonte": "fred", "serie": "WCESTUS1" },
+        { "id": "cot_crude_net", "fonte": "external", "source": "cftc", "series_id": "cot_crude_net" }
       ]
     },
     {
@@ -164,7 +236,7 @@
       "indicadores": [
         { "id": "wti", "fonte": "fred", "serie": "DCOILWTICO" },
         { "id": "henry_hub", "fonte": "fred", "serie": "DHHNGSP" },
-        { "id": "price_amlp", "fonte": "yfinance", "field": "close", "ticker_proxy": "AMLP" }
+        { "id": "distribution_yield_spread", "nome": "AMLP yield − 10y", "fonte": "calculado", "formula": "distribution_yield_spread" }
       ]
     },
     {
@@ -174,7 +246,17 @@
         { "id": "revenue_growth", "nome": "Revenue growth IBB", "fonte": "yfinance", "field": "revenue_growth", "ticker_proxy": "IBB" },
         { "id": "vix", "nome": "VIX", "fonte": "fred", "serie": "VIXCLS" },
         { "id": "yield_10y", "nome": "Yield 10y", "fonte": "fred", "serie": "DGS10" },
-        { "id": "spread_10y_2y", "nome": "Spread 10y-2y", "fonte": "fred", "serie": "T10Y2Y" }
+        { "id": "spread_10y_2y", "nome": "Spread 10y-2y", "fonte": "fred", "serie": "T10Y2Y" },
+        { "id": "fda_calendar_density", "fonte": "external", "source": "fda", "series_id": "fda_calendar_density" },
+        {
+          "id": "private_funding_proxy",
+          "nome": "Private biotech funding proxy",
+          "fonte": "calculado",
+          "formula": "private_funding_proxy",
+          "is_proxy": true,
+          "proxy_rationale": "Form D count biotech ETFs últimos 90d (EDGAR)",
+          "ingest_frequency": "weekly"
+        }
       ]
     },
     {
@@ -182,6 +264,7 @@
       "nome": "Alternatives - BDC",
       "indicadores": [
         { "id": "non_accrual_rate", "fonte": "edgar", "metric": "non_accrual_rate", "ticker_proxy": "ARCC" },
+        { "id": "nav_premium_discount", "fonte": "edgar", "metric": "nav_premium_discount", "ticker_proxy": "ARCC" },
         { "id": "dividend_yield", "fonte": "yfinance", "field": "dividend_yield", "ticker_proxy": "ARCC" },
         { "id": "hy_oas", "fonte": "fred", "serie": "BAMLH0A0HYM2" }
       ]
@@ -203,7 +286,17 @@
         { "id": "eurusd", "nome": "USD/EUR", "fonte": "fred", "serie": "DEXUSEU" },
         { "id": "dxy", "nome": "Dollar broad index", "fonte": "fred", "serie": "DTWEXBGS" },
         { "id": "dff", "nome": "Fed Funds", "fonte": "fred", "serie": "DFF" },
-        { "id": "ecb_rate", "nome": "ECB main refinancing rate", "fonte": "ecb", "series_key": "FM.B.U2.EUR.4F.KR.MRR_NR.LE" }
+        { "id": "ecb_rate", "nome": "ECB main refinancing rate", "fonte": "ecb", "series_key": "FM.B.U2.EUR.4F.KR.MRR_NR.LE" },
+        { "id": "rate_differential", "nome": "Fed Funds − ECB", "fonte": "calculado", "formula": "rate_differential" },
+        {
+          "id": "risk_reversal_proxy",
+          "nome": "FX risk reversal proxy",
+          "fonte": "calculado",
+          "formula": "risk_reversal_proxy",
+          "is_proxy": true,
+          "proxy_rationale": "Skew FXE options CBOE quando disponível; fallback vol realizada FXE",
+          "ingest_frequency": "daily"
+        }
       ]
     }
   ]

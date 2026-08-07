@@ -20,6 +20,20 @@ def stage_en(estagio: str | None) -> str:
     return mapping.get(estagio or "", "Hold")
 
 
+def _indicator_export(c: dict) -> dict:
+    row = {
+        "id": c["id"],
+        "name": c.get("nome", c["id"]),
+        "value": c.get("valor"),
+        "zScore": c.get("z_ajustado"),
+        "contribution": c.get("contribuicao"),
+    }
+    if c.get("is_proxy"):
+        row["isProxy"] = True
+        row["proxyRationale"] = c.get("proxy_rationale", "")
+    return row
+
+
 def main() -> None:
     import datetime as dt
 
@@ -86,16 +100,7 @@ def main() -> None:
                 "entryValidated": validation["entryValidated"],
                 "rationale": validation["rationale"],
                 "dominantIndicator": validation["dominantIndicator"],
-                "indicators": [
-                    {
-                        "id": c["id"],
-                        "name": c.get("nome", c["id"]),
-                        "value": c.get("valor"),
-                        "zScore": c.get("z_ajustado"),
-                        "contribution": c.get("contribuicao"),
-                    }
-                    for c in top_inds
-                ],
+                "indicators": [_indicator_export(c) for c in top_inds],
             }
 
         ativo_rows = conn.execute(
@@ -152,16 +157,7 @@ def main() -> None:
                 "entryValidated": validation["entryValidated"],
                 "rationale": validation["rationale"],
                 "dominantIndicator": validation["dominantIndicator"],
-                "indicators": [
-                    {
-                        "id": c["id"],
-                        "name": c.get("nome", c["id"]),
-                        "value": c.get("valor"),
-                        "zScore": c.get("z_ajustado"),
-                        "contribution": c.get("contribuicao"),
-                    }
-                    for c in top_inds
-                ],
+                "indicators": [_indicator_export(c) for c in top_inds],
             },
             )
 
@@ -184,6 +180,13 @@ def main() -> None:
 
     quality = check_snapshot_quality(snapshot)
     snapshot["quality"] = quality
+
+    try:
+        from motor.src.calculo.models import build_models_snapshot
+
+        snapshot["models"] = build_models_snapshot()
+    except Exception as e:
+        print(f"[export_dashboard] WARN: models block failed: {e}", file=sys.stderr)
 
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(json.dumps(snapshot, indent=2, ensure_ascii=False), encoding="utf-8")
