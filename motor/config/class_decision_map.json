@@ -1,0 +1,208 @@
+{
+  "version": 1,
+  "decisionTargetScore": 8,
+  "questions": {
+    "timing": {
+      "label": "Timing (when)",
+      "description": "Is this sleeve/security in a favorable entry window?"
+    },
+    "role": {
+      "label": "Role in portfolio",
+      "description": "What macro/valuation regime supports this allocation?"
+    },
+    "projection": {
+      "label": "Projection / trajectory",
+      "description": "Is the composite score and stage improving or deteriorating?"
+    },
+    "investability": {
+      "label": "Investability",
+      "description": "Does entry validation and liquidity support adding exposure?"
+    },
+    "forecast": {
+      "label": "Forecast tracker",
+      "description": "Forward view from motor rating, regime model, and analyst targets when available."
+    }
+  },
+  "classes": {
+    "cash_equivalents": {
+      "role": "Cash & ultra-short — preserve capital, real yield vs inflation.",
+      "indicators": {
+        "timing": ["yield_real_caixa", "spread_caixa_long"],
+        "role": ["dtb3", "yield_real_caixa"],
+        "projection": ["spread_caixa_long"],
+        "investability": ["yield_real_caixa"],
+        "forecast": ["yield_real_caixa", "spread_caixa_long"]
+      }
+    },
+    "fi_treasury": {
+      "role": "Sovereign duration — curve, real yields, positioning.",
+      "indicators": {
+        "timing": ["real_yield_curve", "fed_cut_probability", "t10y2y"],
+        "role": ["real_yield_curve", "yield_real_10y", "dff"],
+        "projection": ["cot_net_position", "t10y3m"],
+        "investability": ["yield_10y", "real_yield_curve"],
+        "forecast": ["fed_cut_probability", "real_yield_curve"]
+      }
+    },
+    "fi_ig": {
+      "role": "Investment grade credit spread vs Treasuries.",
+      "indicators": {
+        "timing": ["spread_ig_treasury", "ig_oas"],
+        "role": ["ig_aaa", "ig_bbb", "spread_ig_treasury"],
+        "projection": ["ig_oas"],
+        "investability": ["spread_ig_treasury"],
+        "forecast": ["spread_ig_treasury"]
+      }
+    },
+    "fi_hy": {
+      "role": "High yield — spread, distress proxy, loan officer.",
+      "indicators": {
+        "timing": ["hy_distress_proxy_score", "hy_oas"],
+        "role": ["hy_ccc", "hy_minus_ig", "loan_officer"],
+        "projection": ["hy_distress_proxy_score"],
+        "investability": ["hy_oas"],
+        "forecast": ["hy_distress_proxy_score", "bond_vol_proxy"]
+      }
+    },
+    "fi_tips": {
+      "role": "Inflation-linked — breakevens and real yields.",
+      "indicators": {
+        "timing": ["breakeven_5y5y", "t5yie"],
+        "role": ["dfii10", "dfii5", "cpi"],
+        "projection": ["breakeven_5y5y"],
+        "investability": ["dfii10"],
+        "forecast": ["breakeven_5y5y"]
+      }
+    },
+    "fi_preferred": {
+      "role": "Preferred equity — yield vs rates.",
+      "indicators": {
+        "timing": ["preferred_spread"],
+        "role": ["dividend_yield", "hy_context", "ig_context"],
+        "projection": ["preferred_spread"],
+        "investability": ["preferred_spread"],
+        "forecast": ["preferred_spread"]
+      }
+    },
+    "us_equity": {
+      "role": "US equity — valuation, sentiment, macro overlay.",
+      "indicators": {
+        "timing": ["earnings_revision_proxy", "vix", "put_call_ratio"],
+        "role": ["cape_shiller", "pe_ratio", "aaii_sentiment"],
+        "projection": ["naaim_exposure", "margin_debt"],
+        "investability": ["pe_ratio", "vix"],
+        "forecast": ["earnings_revision_proxy", "cape_shiller"]
+      }
+    },
+    "intl_equity": {
+      "role": "International equity — relative P/E, CAPE, FX.",
+      "indicators": {
+        "timing": ["pe_rel_intl_us", "vix"],
+        "role": ["cape_by_country", "dxy", "eurusd"],
+        "projection": ["pe_rel_intl_us"],
+        "investability": ["pe_rel_intl_us"],
+        "forecast": ["cape_by_country"]
+      }
+    },
+    "em_equity": {
+      "role": "Emerging markets — EMB spread, growth, USD.",
+      "indicators": {
+        "timing": ["embi_spread", "vix"],
+        "role": ["gdp_growth_em", "dxy", "pe_rel_em_us"],
+        "projection": ["embi_spread"],
+        "investability": ["embi_spread"],
+        "forecast": ["embi_spread", "gdp_growth_em"]
+      }
+    },
+    "real_estate": {
+      "role": "REITs — yield spread vs cap rates, valuation percentile.",
+      "indicators": {
+        "timing": ["reit_valuation_percentile", "nareit_yield_spread"],
+        "role": ["price_vnq", "yield_real_10y", "dgs10"],
+        "projection": ["nareit_yield_spread"],
+        "investability": ["reit_valuation_percentile"],
+        "forecast": ["reit_valuation_percentile"]
+      }
+    },
+    "commodities_precious": {
+      "role": "Gold/precious — real yields, USD, positioning.",
+      "indicators": {
+        "timing": ["cot_gold_net", "gold_price"],
+        "role": ["dfii10", "dxy", "cb_gold_buying"],
+        "projection": ["gld_holdings"],
+        "investability": ["gold_price"],
+        "forecast": ["cot_gold_net"]
+      }
+    },
+    "commodities_energy": {
+      "role": "Energy — crude stocks, WTI, positioning.",
+      "indicators": {
+        "timing": ["crude_oil_stocks", "cot_crude_net"],
+        "role": ["wti", "henry_hub"],
+        "projection": ["crude_oil_stocks"],
+        "investability": ["wti"],
+        "forecast": ["cot_crude_net"]
+      }
+    },
+    "energy_mlp": {
+      "role": "MLPs — distribution yield vs rates.",
+      "indicators": {
+        "timing": ["distribution_yield_spread"],
+        "role": ["wti", "distribution_yield_spread"],
+        "projection": ["distribution_yield_spread"],
+        "investability": ["distribution_yield_spread"],
+        "forecast": ["distribution_yield_spread"]
+      }
+    },
+    "healthcare_biotech": {
+      "role": "Biotech — pipeline proxy, revenue growth.",
+      "indicators": {
+        "timing": ["private_funding_proxy", "fda_calendar_density"],
+        "role": ["revenue_growth"],
+        "projection": ["private_funding_proxy"],
+        "investability": ["fda_calendar_density"],
+        "forecast": ["private_funding_proxy"]
+      }
+    },
+    "alt_bdc": {
+      "role": "BDC credit — NAV, non-accrual, spreads.",
+      "indicators": {
+        "timing": ["nav_premium_discount"],
+        "role": ["hy_context", "ig_context"],
+        "projection": ["nav_premium_discount"],
+        "investability": ["nav_premium_discount"],
+        "forecast": ["nav_premium_discount"]
+      }
+    },
+    "currencies": {
+      "role": "USD / FX — rate differential, risk reversal proxy.",
+      "indicators": {
+        "timing": ["risk_reversal_proxy", "rate_differential"],
+        "role": ["dxy", "dff"],
+        "projection": ["risk_reversal_proxy"],
+        "investability": ["rate_differential"],
+        "forecast": ["risk_reversal_proxy"]
+      }
+    },
+    "alt_infrastructure": {
+      "role": "Infrastructure — yield context, macro rates.",
+      "indicators": {
+        "timing": ["yield_10y", "spread_10y_2y"],
+        "role": ["price_igf", "dff"],
+        "projection": ["yield_10y"],
+        "investability": ["price_igf"],
+        "forecast": ["yield_10y"]
+      }
+    }
+  },
+  "tickerTechnicals": {
+    "role": "Security-level momentum, trend, volume, volatility.",
+    "indicators": {
+      "timing": ["preco_vs_mm50", "rsi_14", "volume_vs_media"],
+      "role": ["preco_vs_mm200", "vol_realizada"],
+      "projection": ["preco_vs_mm50", "preco_vs_mm200"],
+      "investability": ["volume_vs_media", "vol_realizada"],
+      "forecast": ["rsi_14", "vol_realizada"]
+    }
+  }
+}

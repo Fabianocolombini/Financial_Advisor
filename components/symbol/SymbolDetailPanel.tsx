@@ -24,9 +24,14 @@ import {
 } from "./MotorTechnicals";
 import { TechnicalIndicatorsTable } from "./TechnicalIndicatorsTable";
 import { AnalystForecastCard, MotorForecastCard } from "./SymbolForecast";
+import { SymbolReliabilityBanner } from "./SymbolReliabilityBanner";
+import { SymbolDataEquationPanel } from "./SymbolDataEquationPanel";
+import { SymbolModelsPanel } from "./SymbolModelsPanel";
+import { ClassMacroSection, TickerMotorSection } from "./SymbolMotorSections";
 
 const TABS = [
   { id: "overview", label: "Overview" },
+  { id: "motor", label: "Motor" },
   { id: "financials", label: "Financials" },
   { id: "technicals", label: "Technicals" },
   { id: "forecast", label: "Forecast" },
@@ -35,7 +40,12 @@ const TABS = [
 type TabId = (typeof TABS)[number]["id"];
 
 function parseTab(value: string | null): TabId {
-  if (value === "financials" || value === "technicals" || value === "forecast") {
+  if (
+    value === "motor" ||
+    value === "financials" ||
+    value === "technicals" ||
+    value === "forecast"
+  ) {
     return value;
   }
   return "overview";
@@ -50,6 +60,8 @@ export function SymbolDetailPanel({ detail }: { detail: SymbolDetailView }) {
 
   return (
     <div className="space-y-6">
+      <SymbolReliabilityBanner reliability={detail.reliability} />
+
       <header className="space-y-4">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex items-start gap-3">
@@ -82,7 +94,8 @@ export function SymbolDetailPanel({ detail }: { detail: SymbolDetailView }) {
               </div>
               {hasMotorData ? (
                 <p className="mt-1 text-xs text-zinc-500">
-                  Motor score {formatScore(motor.score)} · {motor.stageLabel}
+                  Ticker {formatScore(motor.score)} · Class {formatScore(motor.classScore)} ·{" "}
+                  {motor.stageLabel}
                 </p>
               ) : null}
             </div>
@@ -96,13 +109,13 @@ export function SymbolDetailPanel({ detail }: { detail: SymbolDetailView }) {
           </p>
         ) : null}
 
-        <nav className="flex gap-1 border-b border-zinc-800">
+        <nav className="flex gap-1 border-b border-zinc-800 overflow-x-auto">
           {TABS.map((t) => (
             <button
               key={t.id}
               type="button"
               onClick={() => setTab(t.id)}
-              className={`px-4 py-2 text-sm transition-colors ${
+              className={`px-4 py-2 text-sm transition-colors whitespace-nowrap ${
                 tab === t.id
                   ? "border-b-2 border-white text-white"
                   : "text-zinc-500 hover:text-zinc-300"
@@ -118,7 +131,29 @@ export function SymbolDetailPanel({ detail }: { detail: SymbolDetailView }) {
         <div className="space-y-6">
           <SymbolPriceChart bars={detail.bars} previousClose={quote.previousClose} />
           <SymbolPerfTiles horizons={detail.perfHorizons} />
+          <SymbolDataEquationPanel
+            equation={detail.dataEquation}
+            classLabel={detail.classLabel}
+          />
           <SymbolKeyStatsPreview quote={quote} symbol={detail.symbol} />
+        </div>
+      ) : null}
+
+      {tab === "motor" ? (
+        <div className="space-y-6">
+          <ClassMacroSection motor={motor} classLabel={detail.classLabel} />
+          <TickerMotorSection motor={motor} />
+          <SymbolModelsPanel models={detail.snapshot?.models} />
+          <MotorWhySection
+            stageLabel={motor.stageLabel}
+            entryValidated={motor.entryValidated}
+            hasMotorData={hasMotorData}
+            motorScope={motor.motorScope}
+            divergesFromClass={motor.divergesFromClass}
+            dominantIndicator={motor.dominantIndicator}
+            rationale={motor.rationale}
+            classLabel={detail.classLabel}
+          />
         </div>
       ) : null}
 
@@ -132,29 +167,37 @@ export function SymbolDetailPanel({ detail }: { detail: SymbolDetailView }) {
 
       {tab === "technicals" ? (
         <div className="space-y-6">
-          <MotorSignalSummary score={motor.score} indicators={motor.indicators} />
-          <MotorWhySection
-            stageLabel={motor.stageLabel}
-            entryValidated={motor.entryValidated}
-            hasMotorData={hasMotorData}
-            motorScope={motor.motorScope}
-            divergesFromClass={motor.divergesFromClass}
-            dominantIndicator={motor.dominantIndicator}
-            rationale={motor.rationale}
-            classLabel={detail.classLabel}
+          <p className="text-xs text-zinc-500">
+            Motor signal (nosso modelo) vs generic TA (Yahoo bars) — use Motor tab for sleeve
+            macro + full indicator list.
+          </p>
+          <MotorSignalSummary
+            score={motor.score}
+            indicators={[...motor.tickerIndicators, ...motor.classIndicators]}
           />
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium text-white">Motor indicators</h3>
-            <MotorIndicatorsTable indicators={motor.indicators} />
-          </div>
+          <MotorIndicatorsTable
+            indicators={motor.classIndicators}
+            title="Sleeve (class) — all indicators"
+          />
+          <MotorIndicatorsTable
+            indicators={motor.tickerIndicators}
+            title="Security — all indicators"
+          />
           <TechnicalIndicatorsTable rows={detail.technicalRows} />
         </div>
       ) : null}
 
       {tab === "forecast" ? (
         <div className="space-y-6">
-          <MotorForecastCard score={motor.score} indicators={motor.indicators} />
+          <MotorForecastCard
+            score={motor.score}
+            indicators={[...motor.tickerIndicators, ...motor.classIndicators]}
+          />
           <AnalystForecastCard quote={quote} bars={detail.bars} />
+          <p className="text-xs text-zinc-500">
+            Forecast tracker: motor rating atualiza com Motor Daily; targets de analistas via
+            Yahoo quando disponíveis. Histórico de score na aba Motor.
+          </p>
         </div>
       ) : null}
 

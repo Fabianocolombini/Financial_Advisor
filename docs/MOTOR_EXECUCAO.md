@@ -43,14 +43,17 @@ Guia de teste: [ETAPA_1A_TESTE.md](ETAPA_1A_TESTE.md).
 
 | Aba | Conteúdo |
 |-----|----------|
-| Overview | Chart 2Y (Yahoo + lightweight-charts), perf 1D/5D/1M/2Y, key stats preview |
-| Financials | Market cap, P/E, EPS, revenue, earnings, about (yahoo-finance2) |
-| Technicals | Motor gauge (Strong Buy…Strong Sell), rationale, indicadores motor + TA genérica |
-| Forecast | Rating motor + targets analistas Yahoo quando disponíveis |
+| Overview | Chart 2Y, perf tiles, **equação de dados**, auditoria 0–10 (target ≥8) |
+| **Motor** | Sleeve macro **completo** + security + **models** (regime/EWMA) + **score history** + FRED chart do driver |
+| Financials | Yahoo fundamentals + earnings |
+| Technicals | Todos indicadores class + ticker; TA genérica separada |
+| Forecast | Motor + analyst Yahoo + tracker note |
 
-APIs opcionais: `GET /api/market/[symbol]/chart`, `GET /api/market/[symbol]/quote`.
+APIs: `/api/market/[symbol]/chart|quote`, `/api/market/fred/[seriesId]`.
 
-**Backlog 1B:** histórico ao clicar indicador; export score history no snapshot.
+Snapshot export: `allIndicators`, `scoreHistory`, `decisionMap` (após Motor Daily).
+
+**Backlog 1B:** click em cada indicador → mini-chart; sparklines no snapshot para external-only series.
 
 ## Etapa 1 — Gestão de fontes (base)
 

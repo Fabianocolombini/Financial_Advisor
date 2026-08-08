@@ -1,5 +1,7 @@
 import { ASSET_CLASS_TABS } from "@/lib/catalog/asset-classes";
 import { CATALOG_INSTRUMENTS } from "@/lib/catalog/instruments";
+import { buildClassDataEquation } from "@/lib/motor/class-data-equation";
+import { computeDecisionReliability } from "@/lib/motor/reliability-audit";
 import { computeTechnicalSummary } from "@/lib/market/technical-summary";
 import { perfHorizonsFromBars } from "@/lib/market/perf-horizons";
 import { fetchYahooChartCloses } from "@/lib/market/yahoo";
@@ -26,19 +28,28 @@ function findCatalogSymbol(symbol: string) {
   return CATALOG_INSTRUMENTS.find((i) => i.symbol.toUpperCase() === sym);
 }
 
-function labelForClass(classId: string, snapshot: Awaited<ReturnType<typeof loadMotorDashboardSnapshot>>): string {
+function labelForClass(
+  classId: string,
+  snapshot: Awaited<ReturnType<typeof loadMotorDashboardSnapshot>>,
+): string {
   if (snapshot?.classes[classId]?.label) return snapshot.classes[classId].label;
   return CLASS_LABEL[classId] ?? classId;
 }
 
-function mergeIndicators(
-  tickerInds: MotorIndicatorSnapshot[],
+function pickAllIndicators(
+  snap: MotorClassSnapshot | MotorTickerSnapshot | null,
+): MotorIndicatorSnapshot[] {
+  if (!snap) return [];
+  return snap.allIndicators ?? snap.indicators ?? [];
+}
+
+function topDrivers(
   classInds: MotorIndicatorSnapshot[],
-  hasTickerMotor: boolean,
+  tickerInds: MotorIndicatorSnapshot[],
 ): MotorIndicatorSnapshot[] {
   const seen = new Set<string>();
   const merged: MotorIndicatorSnapshot[] = [];
-  for (const ind of [...tickerInds, ...(hasTickerMotor ? [] : classInds)]) {
+  for (const ind of [...tickerInds, ...classInds]) {
     if (seen.has(ind.id)) continue;
     seen.add(ind.id);
     merged.push(ind);
@@ -65,11 +76,9 @@ function buildMotorContext(
       ? "class"
       : "none";
 
-  const indicators = mergeIndicators(
-    tick?.indicators ?? [],
-    classSnap?.indicators ?? [],
-    hasTickerMotor,
-  );
+  const classIndicators = pickAllIndicators(classSnap);
+  const tickerIndicators = pickAllIndicators(tick);
+  const indicators = topDrivers(classIndicators, tickerIndicators);
 
   return {
     hasTickerMotor,
@@ -78,22 +87,31 @@ function buildMotorContext(
     ticker: tick,
     classSnap,
     score: tick?.score ?? classSnap?.score ?? null,
+    classScore: classSnap?.score ?? null,
     stageLabel: hasTickerMotor
       ? tick!.stageLabel ?? "Hold"
       : hasClassMotor
         ? classSnap!.stageLabel ?? "Hold"
         : "Analyzing",
+    classStageLabel: classSnap?.stageLabel ?? "Analyzing",
     stage: tick?.stage ?? classSnap?.stage ?? null,
     entryValidated: hasTickerMotor
       ? tick!.entryValidated ?? false
       : hasClassMotor
         ? classSnap!.entryValidated ?? false
         : false,
+    classEntryValidated: classSnap?.entryValidated ?? false,
     divergesFromClass: tick?.divergesFromClass ?? false,
     dominantIndicator:
       tick?.dominantIndicator ?? classSnap?.dominantIndicator ?? null,
+    classDominantIndicator: classSnap?.dominantIndicator ?? null,
     rationale: tick?.rationale ?? classSnap?.rationale ?? [],
+    classRationale: classSnap?.rationale ?? [],
     indicators,
+    classIndicators,
+    tickerIndicators,
+    classScoreHistory: classSnap?.scoreHistory ?? [],
+    tickerScoreHistory: tick?.scoreHistory ?? [],
     perf1dPct: tick?.perf1dPct ?? null,
     perf7dPct: tick?.perf7dPct ?? null,
     perf15dPct: tick?.perf15dPct ?? null,
@@ -117,7 +135,10 @@ export async function loadSymbolDetailView(
 
   const catalog = findCatalogSymbol(sym);
   const classId =
-    watchlistItem?.classId ?? catalog?.classId ?? snapshot?.tickers[sym]?.classId ?? "us_equity";
+    watchlistItem?.classId ??
+    catalog?.classId ??
+    snapshot?.tickers[sym]?.classId ??
+    "us_equity";
   const name = watchlistItem?.name ?? catalog?.name ?? sym;
   const exchange = watchlistItem?.exchange ?? catalog?.exchange ?? null;
   const kind = watchlistItem?.kind ?? catalog?.kind ?? null;
@@ -147,6 +168,20 @@ export async function loadSymbolDetailView(
   const perfHorizons = perfHorizonsFromBars(bars);
   const technicalRows = computeTechnicalSummary(bars);
 
+  const reliability = computeDecisionReliability({
+    motor,
+    snapshot,
+    quote,
+    classId,
+    yahooWarning,
+  });
+
+  const dataEquation = buildClassDataEquation(
+    classId,
+    motor.classIndicators,
+    motor.tickerIndicators,
+  );
+
   return {
     symbol: sym,
     name,
@@ -162,5 +197,7 @@ export async function loadSymbolDetailView(
     quote,
     technicalRows,
     yahooWarning,
+    reliability,
+    dataEquation,
   };
 }

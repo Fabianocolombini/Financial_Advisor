@@ -134,8 +134,10 @@ export function MotorWhySection({
 
 export function MotorIndicatorsTable({
   indicators,
+  title = "Motor indicators",
 }: {
   indicators: MotorIndicatorSnapshot[];
+  title?: string;
 }) {
   if (indicators.length === 0) {
     return (
@@ -144,43 +146,50 @@ export function MotorIndicatorsTable({
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-zinc-800">
-      <table className="w-full text-left text-sm">
-        <thead className="border-b border-zinc-800 bg-zinc-950 text-[11px] text-zinc-500">
-          <tr>
-            <th className="px-3 py-2">Name</th>
-            <th className="px-3 py-2">Value</th>
-            <th className="px-3 py-2">Action</th>
-            <th className="px-3 py-2">Contribution</th>
-            <th className="px-3 py-2">z-score</th>
-          </tr>
-        </thead>
-        <tbody>
-          {indicators.map((ind) => {
-            const action = indicatorActionFromContribution(ind.contribution);
-            return (
-              <tr key={ind.id} className="border-b border-zinc-800/80">
-                <td className="px-3 py-2 text-white">
-                  {ind.name}
-                  {ind.isProxy ? (
-                    <span className="ml-1 text-[10px] text-amber-400">proxy</span>
-                  ) : null}
-                </td>
-                <td className="px-3 py-2 tabular-nums text-zinc-300">
-                  {formatIndicatorValue(ind.value)}
-                </td>
-                <td className={`px-3 py-2 ${actionClass(action)}`}>{action}</td>
-                <td className="px-3 py-2 tabular-nums text-zinc-300">
-                  {ind.contribution != null ? ind.contribution.toFixed(3) : "—"}
-                </td>
-                <td className="px-3 py-2 tabular-nums text-zinc-300">
-                  {ind.zScore != null ? ind.zScore.toFixed(2) : "—"}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+    <div className="space-y-2">
+      <h4 className="text-xs font-medium text-zinc-400">{title}</h4>
+      <div className="overflow-x-auto rounded-lg border border-zinc-800">
+        <table className="w-full text-left text-sm">
+          <thead className="border-b border-zinc-800 bg-zinc-950 text-[11px] text-zinc-500">
+            <tr>
+              <th className="px-3 py-2">Name</th>
+              <th className="px-3 py-2">Value</th>
+              <th className="px-3 py-2">Action</th>
+              <th className="px-3 py-2">Contribution</th>
+              <th className="px-3 py-2">z-score</th>
+              <th className="px-3 py-2">Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            {indicators.map((ind) => {
+              const action = indicatorActionFromContribution(ind.contribution);
+              return (
+                <tr key={ind.id} className="border-b border-zinc-800/80">
+                  <td className="px-3 py-2 text-white">
+                    {ind.name}
+                    {ind.isProxy ? (
+                      <span className="ml-1 text-[10px] text-amber-400">proxy</span>
+                    ) : null}
+                  </td>
+                  <td className="px-3 py-2 tabular-nums text-zinc-300">
+                    {formatIndicatorValue(ind.value)}
+                  </td>
+                  <td className={`px-3 py-2 ${actionClass(action)}`}>{action}</td>
+                  <td className="px-3 py-2 tabular-nums text-zinc-300">
+                    {ind.contribution != null ? ind.contribution.toFixed(3) : "—"}
+                  </td>
+                  <td className="px-3 py-2 tabular-nums text-zinc-300">
+                    {ind.zScore != null ? ind.zScore.toFixed(2) : "—"}
+                  </td>
+                  <td className="max-w-[14rem] px-3 py-2 text-[10px] text-zinc-500">
+                    {ind.proxyRationale ?? "—"}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

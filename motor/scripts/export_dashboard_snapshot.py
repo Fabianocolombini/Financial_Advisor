@@ -119,7 +119,27 @@ def main() -> None:
                 "rationale": validation["rationale"],
                 "dominantIndicator": validation["dominantIndicator"],
                 "indicators": [_indicator_export(c) for c in top_inds],
+                "allIndicators": [
+                    _indicator_export(c)
+                    for c in sorted(
+                        componentes,
+                        key=lambda c: abs(c.get("contribuicao", 0)),
+                        reverse=True,
+                    )
+                ],
             }
+
+            hist_rows = conn.execute(
+                """
+                SELECT data, score_composto FROM scores_historico
+                WHERE aba_id = ? ORDER BY data DESC LIMIT 120
+                """,
+                (aba_id,),
+            ).fetchall()
+            snapshot["classes"][class_id]["scoreHistory"] = [
+                {"date": r["data"], "score": float(r["score_composto"])}
+                for r in reversed(hist_rows)
+            ]
 
         ativo_rows = conn.execute(
             """
@@ -162,7 +182,7 @@ def main() -> None:
                 diverge,
                 dominant,
             )
-            snapshot["tickers"][ticker] = enrich_ticker_performance(
+            tick_payload = enrich_ticker_performance(
                 {
                 "symbol": ticker,
                 "abaId": row["aba_id"],
@@ -176,8 +196,29 @@ def main() -> None:
                 "rationale": validation["rationale"],
                 "dominantIndicator": validation["dominantIndicator"],
                 "indicators": [_indicator_export(c) for c in top_inds],
+                "allIndicators": [
+                    _indicator_export(c)
+                    for c in sorted(
+                        componentes,
+                        key=lambda c: abs(c.get("contribuicao", 0)),
+                        reverse=True,
+                    )
+                ],
             },
             )
+            tick_hist = conn.execute(
+                """
+                SELECT data, score_composto FROM scores_ativo
+                WHERE aba_id = ? AND ticker = ?
+                ORDER BY data DESC LIMIT 120
+                """,
+                (row["aba_id"], ticker),
+            ).fetchall()
+            tick_payload["scoreHistory"] = [
+                {"date": r["data"], "score": float(r["score_composto"])}
+                for r in reversed(tick_hist)
+            ]
+            snapshot["tickers"][ticker] = tick_payload
 
     data_dates: list[dt.date] = []
     for cls in snapshot["classes"].values():
@@ -205,6 +246,10 @@ def main() -> None:
         snapshot["models"] = build_models_snapshot()
     except Exception as e:
         print(f"[export_dashboard] WARN: models block failed: {e}", file=sys.stderr)
+
+    decision_path = MOTOR_ROOT / "config" / "class_decision_map.json"
+    if decision_path.is_file():
+        snapshot["decisionMap"] = json.loads(decision_path.read_text(encoding="utf-8"))
 
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(json.dumps(snapshot, indent=2, ensure_ascii=False), encoding="utf-8")

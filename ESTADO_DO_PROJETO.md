@@ -45,7 +45,7 @@ npm run motor:verify-cloud-snapshot
 
 ## Próximo — Etapa 1B (em progresso)
 
-1. **Detalhe do papel** `/mercado/[symbol]` — Overview (chart 2Y, perf 1D/5D/1M/2Y), Financials (yfinance), Technicals (motor + TA genérica), Forecast (motor + analyst Yahoo)
+1. **Detalhe do papel** `/mercado/[symbol]` — Overview, **Motor** (sleeve + security + models), Financials, Technicals, Forecast; **auditoria 0–10** (target ≥8); equação de dados por classe; histórico de score; FRED charts para indicadores mapeados
 2. Gráficos ao clicar indicador (histórico `price_daily` / FRED) — backlog
 3. `energy_mlp` aba motor dedicada (opcional)
 4. Tab All com ranking global 90% (pesado)

@@ -21,6 +21,11 @@ export type MotorIndicatorSnapshot = {
   proxyRationale?: string;
 };
 
+export type MotorScoreHistoryPoint = {
+  date: string;
+  score: number;
+};
+
 export type MotorRegimeModelSnapshot = {
   regime_risk_probability: number;
   logit_z?: number;
@@ -56,6 +61,8 @@ export type MotorClassSnapshot = {
   rationale?: string[];
   dominantIndicator?: MotorDominantIndicator | null;
   indicators: MotorIndicatorSnapshot[];
+  allIndicators?: MotorIndicatorSnapshot[];
+  scoreHistory?: MotorScoreHistoryPoint[];
 };
 
 export type MotorTickerSnapshot = {
@@ -75,6 +82,8 @@ export type MotorTickerSnapshot = {
   perf15dPct?: number | null;
   perf1mPct?: number | null;
   indicators: MotorIndicatorSnapshot[];
+  allIndicators?: MotorIndicatorSnapshot[];
+  scoreHistory?: MotorScoreHistoryPoint[];
 };
 
 export type MotorSnapshotQuality = {
@@ -140,17 +149,42 @@ export type SymbolMotorContext = {
   ticker: MotorTickerSnapshot | null;
   classSnap: MotorClassSnapshot | null;
   score: number | null;
+  classScore: number | null;
   stageLabel: string;
+  classStageLabel: string;
   stage: string | null;
   entryValidated: boolean;
+  classEntryValidated: boolean;
   divergesFromClass: boolean;
   dominantIndicator: MotorDominantIndicator | null;
+  classDominantIndicator: MotorDominantIndicator | null;
   rationale: string[];
+  classRationale: string[];
+  /** Legacy merged list (top drivers) */
   indicators: MotorIndicatorSnapshot[];
+  classIndicators: MotorIndicatorSnapshot[];
+  tickerIndicators: MotorIndicatorSnapshot[];
+  classScoreHistory: MotorScoreHistoryPoint[];
+  tickerScoreHistory: MotorScoreHistoryPoint[];
   perf1dPct: number | null;
   perf7dPct: number | null;
   perf15dPct: number | null;
   perf1mPct: number | null;
+};
+
+export type DecisionReliabilitySummary = {
+  score: number;
+  meetsTarget: boolean;
+  target: number;
+  grade: "strong" | "adequate" | "weak" | "insufficient";
+  summary: string;
+  factors: Array<{
+    id: string;
+    label: string;
+    score: number;
+    max: number;
+    note: string;
+  }>;
 };
 
 export type SymbolDetailView = {
@@ -168,4 +202,6 @@ export type SymbolDetailView = {
   quote: YahooQuoteSummary;
   technicalRows: TechnicalIndicatorRow[];
   yahooWarning?: string;
+  reliability: DecisionReliabilitySummary;
+  dataEquation: import("@/lib/motor/class-data-equation").ClassDataEquation;
 };
