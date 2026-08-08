@@ -1,5 +1,5 @@
 import type { YahooQuoteSummary } from "@/lib/market/yahoo-quote";
-import { formatPerf, formatPrice, formatUsdCompact } from "@/lib/format-market";
+import { formatPrice } from "@/lib/format-market";
 import {
   countIndicatorActions,
   ratingBadgeClass,

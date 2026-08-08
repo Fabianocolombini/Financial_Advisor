@@ -128,7 +128,7 @@ export async function loadSymbolDetailView(
   const period1 = period2 - TWO_YEARS_SEC;
 
   let bars: Awaited<ReturnType<typeof fetchYahooChartCloses>> = [];
-  let quote = await fetchYahooQuoteSummaryCached(sym);
+  const quote = await fetchYahooQuoteSummaryCached(sym);
   let yahooWarning: string | undefined;
 
   try {
