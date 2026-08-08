@@ -7,7 +7,7 @@ type SymbolAvatarProps = {
   symbol: string;
   exchange: string;
   classId: string;
-  size?: "sm" | "md";
+  size?: "sm" | "md" | "lg";
 };
 
 export function SymbolAvatar({
@@ -18,8 +18,10 @@ export function SymbolAvatar({
 }: SymbolAvatarProps) {
   const [logoFailed, setLogoFailed] = useState(false);
   const country = inferCountryCode(symbol, exchange, classId);
-  const dim = size === "sm" ? "h-8 w-8" : "h-9 w-9";
-  const flagDim = size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4";
+  const dim =
+    size === "sm" ? "h-8 w-8" : size === "lg" ? "h-12 w-12" : "h-9 w-9";
+  const flagDim =
+    size === "sm" ? "h-3.5 w-3.5" : size === "lg" ? "h-5 w-5" : "h-4 w-4";
 
   return (
     <div className={`relative shrink-0 ${dim}`}>

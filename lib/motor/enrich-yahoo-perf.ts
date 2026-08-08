@@ -6,6 +6,13 @@ export type SymbolPerfPct = {
   perf15dPct: number | null;
 };
 
+export type SymbolMarketEnrichment = SymbolPerfPct & {
+  /** Average daily share volume over the last 20 sessions with volume > 0. */
+  avgVolumeShares: number | null;
+};
+
+const AVG_VOLUME_SESSIONS = 20;
+
 function perfFromCloses(bars: { value: number }[], lookback: number): number | null {
   if (bars.length < lookback + 1) return null;
   const latest = bars[bars.length - 1].value;
@@ -14,13 +21,26 @@ function perfFromCloses(bars: { value: number }[], lookback: number): number | n
   return ((latest - prior) / prior) * 100;
 }
 
+function avgVolumeShares(
+  bars: { volume: number }[],
+  sessions = AVG_VOLUME_SESSIONS,
+): number | null {
+  const withVol = bars.filter((b) => b.volume > 0);
+  if (withVol.length < 5) return null;
+  const slice = withVol.slice(-sessions);
+  if (slice.length < 5) return null;
+  const sum = slice.reduce((acc, b) => acc + b.volume, 0);
+  return sum / slice.length;
+}
+
 /**
- * EOD % changes from Yahoo chart bars (fallback when motor snapshot lacks perf).
- * Lookbacks are trading-day row counts (7D ≈ one week, 15D ≈ three weeks).
+ * EOD % changes + avg volume from Yahoo chart bars.
  */
-export async function fetchPerfPctMap(symbols: string[]): Promise<Map<string, SymbolPerfPct>> {
+export async function fetchMarketEnrichmentMap(
+  symbols: string[],
+): Promise<Map<string, SymbolMarketEnrichment>> {
   const unique = [...new Set(symbols.map((s) => s.toUpperCase()))];
-  const out = new Map<string, SymbolPerfPct>();
+  const out = new Map<string, SymbolMarketEnrichment>();
   if (unique.length === 0) return out;
 
   const period2 = Math.floor(Date.now() / 1000);
@@ -34,6 +54,7 @@ export async function fetchPerfPctMap(symbols: string[]): Promise<Map<string, Sy
           perf1dPct: perfFromCloses(bars, 1),
           perf7dPct: perfFromCloses(bars, 7),
           perf15dPct: perfFromCloses(bars, 15),
+          avgVolumeShares: avgVolumeShares(bars),
         });
       } catch {
         // skip failed symbol
@@ -41,6 +62,23 @@ export async function fetchPerfPctMap(symbols: string[]): Promise<Map<string, Sy
     }),
   );
 
+  return out;
+}
+
+/**
+ * EOD % changes from Yahoo chart bars (fallback when motor snapshot lacks perf).
+ * Lookbacks are trading-day row counts (7D ≈ one week, 15D ≈ three weeks).
+ */
+export async function fetchPerfPctMap(symbols: string[]): Promise<Map<string, SymbolPerfPct>> {
+  const full = await fetchMarketEnrichmentMap(symbols);
+  const out = new Map<string, SymbolPerfPct>();
+  for (const [sym, p] of full) {
+    out.set(sym, {
+      perf1dPct: p.perf1dPct,
+      perf7dPct: p.perf7dPct,
+      perf15dPct: p.perf15dPct,
+    });
+  }
   return out;
 }
 

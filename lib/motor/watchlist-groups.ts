@@ -5,7 +5,7 @@ import type {
   WatchlistClassGroup,
   WatchlistRow,
 } from "./snapshot-types";
-import type { SymbolPerfPct } from "./enrich-yahoo-perf";
+import type { SymbolMarketEnrichment } from "./enrich-yahoo-perf";
 
 const CLASS_LABEL: Record<string, string> = Object.fromEntries(
   ASSET_CLASS_TABS.filter((t) => t.id !== "all").map((t) => [t.id, t.label]),
@@ -45,7 +45,7 @@ function mergeIndicators(
 export function buildWatchlistGroups(
   items: WatchlistItem[],
   snapshot: MotorDashboardSnapshot | null,
-  yahooPerfBySymbol?: Map<string, SymbolPerfPct>,
+  yahooMarketBySymbol?: Map<string, SymbolMarketEnrichment>,
 ): WatchlistClassGroup[] {
   if (items.length === 0) return [];
 
@@ -75,7 +75,7 @@ export function buildWatchlistGroups(
         classSnap?.score != null && classSnap?.data,
       );
       const hasMotorData = hasTickerMotor || hasClassMotor;
-      const yahooPerf = yahooPerfBySymbol?.get(sym);
+      const yahooMarket = yahooMarketBySymbol?.get(sym);
 
       const indicators = mergeIndicators(
         tick?.indicators ?? [],
@@ -109,10 +109,11 @@ export function buildWatchlistGroups(
         dominantIndicator:
           tick?.dominantIndicator ?? classSnap?.dominantIndicator ?? null,
         rationale: tick?.rationale ?? classSnap?.rationale ?? [],
-        perf1dPct: tick?.perf1dPct ?? yahooPerf?.perf1dPct ?? null,
-        perf7dPct: tick?.perf7dPct ?? yahooPerf?.perf7dPct ?? null,
-        perf15dPct: tick?.perf15dPct ?? yahooPerf?.perf15dPct ?? null,
+        perf1dPct: tick?.perf1dPct ?? yahooMarket?.perf1dPct ?? null,
+        perf7dPct: tick?.perf7dPct ?? yahooMarket?.perf7dPct ?? null,
+        perf15dPct: tick?.perf15dPct ?? yahooMarket?.perf15dPct ?? null,
         perf1mPct: tick?.perf1mPct ?? null,
+        avgVolumeShares: yahooMarket?.avgVolumeShares ?? null,
         indicators,
         hasMotorData,
         motorScope: hasTickerMotor ? "ticker" : hasClassMotor ? "class" : "none",

@@ -1,19 +1,7 @@
-import { prisma } from "@/lib/prisma";
-import { fetchPerfPctMap } from "@/lib/motor/enrich-yahoo-perf";
+import { fetchMarketEnrichmentMap } from "@/lib/motor/enrich-yahoo-perf";
 import { loadMotorDashboardSnapshot } from "@/lib/motor/load-snapshot";
 import { buildWatchlistGroups } from "@/lib/motor/watchlist-groups";
-
-function needsYahooPerf(
-  snapshot: Awaited<ReturnType<typeof loadMotorDashboardSnapshot>>,
-  symbol: string,
-): boolean {
-  const tick = snapshot?.tickers[symbol.toUpperCase()];
-  return (
-    tick?.perf1dPct == null ||
-    tick?.perf7dPct == null ||
-    tick?.perf15dPct == null
-  );
-}
+import { prisma } from "@/lib/prisma";
 
 export async function loadWatchlistView(userId: string) {
   const [watchlist, snapshot] = await Promise.all([
@@ -33,16 +21,12 @@ export async function loadWatchlistView(userId: string) {
     kind: w.kind,
   }));
 
-  const symbolsNeedingYahoo = mapped
-    .filter((w) => needsYahooPerf(snapshot, w.symbol))
-    .map((w) => w.symbol);
-
-  const yahooPerfBySymbol =
-    symbolsNeedingYahoo.length > 0
-      ? await fetchPerfPctMap(symbolsNeedingYahoo)
+  const yahooMarketBySymbol =
+    mapped.length > 0
+      ? await fetchMarketEnrichmentMap(mapped.map((w) => w.symbol))
       : undefined;
 
-  const groups = buildWatchlistGroups(mapped, snapshot, yahooPerfBySymbol);
+  const groups = buildWatchlistGroups(mapped, snapshot, yahooMarketBySymbol);
 
   return { watchlist, snapshot, groups };
 }

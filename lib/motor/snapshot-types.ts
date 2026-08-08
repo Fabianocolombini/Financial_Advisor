@@ -1,5 +1,9 @@
 /** Motor dashboard snapshot types (from motor/data/dashboard-snapshot.json). */
 
+import type { YahooQuoteSummary } from "@/lib/market/yahoo-quote";
+import type { TechnicalIndicatorRow } from "@/lib/market/technical-summary";
+import type { PerfHorizons } from "@/lib/market/perf-horizons";
+
 export type MotorDominantIndicator = {
   id: string;
   name: string;
@@ -111,6 +115,8 @@ export type WatchlistRow = {
   perf7dPct: number | null;
   perf15dPct: number | null;
   perf1mPct: number | null;
+  /** Avg daily share volume (20 sessions), from Yahoo when not in snapshot. */
+  avgVolumeShares: number | null;
   indicators: MotorIndicatorSnapshot[];
   hasMotorData: boolean;
   motorScope?: "ticker" | "class" | "none";
@@ -125,4 +131,41 @@ export type WatchlistClassGroup = {
   classDominantIndicator: MotorDominantIndicator | null;
   classIndicators: MotorIndicatorSnapshot[];
   rows: WatchlistRow[];
+};
+
+export type SymbolMotorContext = {
+  hasTickerMotor: boolean;
+  hasClassMotor: boolean;
+  motorScope: "ticker" | "class" | "none";
+  ticker: MotorTickerSnapshot | null;
+  classSnap: MotorClassSnapshot | null;
+  score: number | null;
+  stageLabel: string;
+  stage: string | null;
+  entryValidated: boolean;
+  divergesFromClass: boolean;
+  dominantIndicator: MotorDominantIndicator | null;
+  rationale: string[];
+  indicators: MotorIndicatorSnapshot[];
+  perf1dPct: number | null;
+  perf7dPct: number | null;
+  perf15dPct: number | null;
+  perf1mPct: number | null;
+};
+
+export type SymbolDetailView = {
+  symbol: string;
+  name: string;
+  classId: string;
+  classLabel: string;
+  exchange: string | null;
+  kind: string | null;
+  inWatchlist: boolean;
+  snapshot: MotorDashboardSnapshot | null;
+  motor: SymbolMotorContext;
+  bars: Array<{ date: string; value: number }>;
+  perfHorizons: PerfHorizons;
+  quote: YahooQuoteSummary;
+  technicalRows: TechnicalIndicatorRow[];
+  yahooWarning?: string;
 };

@@ -43,11 +43,12 @@ npm run motor:verify-cloud-snapshot
 
 [docs/ETAPA_1A_TESTE.md](docs/ETAPA_1A_TESTE.md)
 
-## Próximo — Etapa 1B (não iniciar antes de 1A validada)
+## Próximo — Etapa 1B (em progresso)
 
-1. Gráficos ao clicar indicador (histórico `price_daily` / FRED)
-2. `energy_mlp` aba motor dedicada (opcional)
-3. Tab All com ranking global 90% (pesado)
+1. **Detalhe do papel** `/mercado/[symbol]` — Overview (chart 2Y, perf 1D/5D/1M/2Y), Financials (yfinance), Technicals (motor + TA genérica), Forecast (motor + analyst Yahoo)
+2. Gráficos ao clicar indicador (histórico `price_daily` / FRED) — backlog
+3. `energy_mlp` aba motor dedicada (opcional)
+4. Tab All com ranking global 90% (pesado)
 
 ## QI legado (pausado)
 

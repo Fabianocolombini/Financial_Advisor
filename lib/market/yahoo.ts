@@ -31,6 +31,7 @@ export async function fetchYahooChartCloses(
   symbol: string,
   period1Sec: number,
   period2Sec: number,
+  revalidateSec = 0,
 ): Promise<YahooBar[]> {
   const url = new URL(
     `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}`,
@@ -41,7 +42,7 @@ export async function fetchYahooChartCloses(
 
   const res = await fetch(url.toString(), {
     headers: { "User-Agent": YAHOO_UA, Accept: "application/json" },
-    next: { revalidate: 0 },
+    next: { revalidate: revalidateSec },
   });
 
   if (!res.ok) {

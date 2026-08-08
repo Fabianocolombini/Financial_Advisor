@@ -1,52 +1,16 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { SymbolAvatar } from "@/components/catalog/SymbolAvatar";
 import { WatchlistStarButton } from "@/components/home/WatchlistStarButton";
+import { formatShareVolumeCompact, formatPerf, perfClass } from "@/lib/format-market";
+import {
+  formatIndicatorValue,
+  formatScore,
+  stageBadgeClass,
+  entryBadgeClass,
+} from "@/lib/motor/format-scores";
 import type { WatchlistClassGroup, WatchlistRow } from "@/lib/motor/snapshot-types";
-
-function stageBadgeClass(stageLabel: string): string {
-  switch (stageLabel) {
-    case "Accumulate":
-      return "bg-emerald-500/15 text-emerald-400 ring-emerald-500/30";
-    case "Reduce":
-      return "bg-red-500/15 text-red-400 ring-red-500/30";
-    case "Hold":
-      return "bg-zinc-800 text-zinc-300 ring-zinc-700";
-    default:
-      return "bg-zinc-900 text-zinc-500 ring-zinc-800";
-  }
-}
-
-function entryBadgeClass(validated: boolean, hasMotorData: boolean): string {
-  if (!hasMotorData) return "bg-zinc-900 text-zinc-500 ring-zinc-800";
-  if (validated) return "bg-emerald-500/10 text-emerald-400 ring-emerald-500/25";
-  return "bg-zinc-800 text-zinc-400 ring-zinc-700";
-}
-
-function formatIndicatorValue(value: number | null | undefined): string {
-  if (value == null || Number.isNaN(value)) return "—";
-  if (Math.abs(value) >= 1000) return value.toFixed(0);
-  if (Math.abs(value) >= 10) return value.toFixed(2);
-  return value.toFixed(3);
-}
-
-function formatScore(score: number | null): string {
-  if (score == null) return "—";
-  return score.toFixed(3);
-}
-
-function formatPerf(pct: number | null): string {
-  if (pct == null || Number.isNaN(pct)) return "—";
-  const sign = pct > 0 ? "+" : "";
-  return `${sign}${pct.toFixed(2)}%`;
-}
-
-function perfClass(pct: number | null): string {
-  if (pct == null) return "text-zinc-500";
-  if (pct > 0) return "text-emerald-400";
-  if (pct < 0) return "text-red-400";
-  return "text-zinc-400";
-}
 
 function indicatorColumns(rows: WatchlistRow[]): { id: string; name: string }[] {
   const seen = new Map<string, string>();
@@ -65,6 +29,7 @@ function SecurityRow({
   row: WatchlistRow;
   columns: { id: string; name: string }[];
 }) {
+  const router = useRouter();
   const indMap = new Map(row.indicators.map((i) => [i.id, i]));
   const entryLabel = !row.hasMotorData
     ? "Analyzing"
@@ -77,27 +42,42 @@ function SecurityRow({
         : "Not validated";
 
   return (
-    <tr className="border-b border-zinc-800/80 hover:bg-zinc-950/50">
-      <td className="py-2 pl-2 pr-2">
+    <tr
+      className="border-b border-zinc-800/80 cursor-pointer hover:bg-zinc-950/50"
+      onClick={() => router.push(`/mercado/${row.symbol}`)}
+    >
+      <td
+        className="px-2 py-2 tabular-nums text-[11px] text-zinc-500 w-12"
+        title="Média diária de papéis negociados (20 sessões)"
+      >
+        {formatShareVolumeCompact(row.avgVolumeShares)}
+      </td>
+      <td className="py-2 pl-2 pr-2" onClick={(e) => e.stopPropagation()}>
         <div className="flex min-w-[13rem] items-center gap-2">
           <WatchlistStarButton symbol={row.symbol} />
-          <SymbolAvatar
-            symbol={row.symbol}
-            exchange={row.exchange ?? "NYSE"}
-            classId={row.classId}
-            size="sm"
-          />
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-xs text-white">
-                {row.symbol}
-              </span>
-              {row.divergesFromClass ? (
-                <span className="text-[10px] text-amber-400">≠ class</span>
-              ) : null}
+          <button
+            type="button"
+            className="flex min-w-0 flex-1 items-center gap-2 text-left"
+            onClick={() => router.push(`/mercado/${row.symbol}`)}
+          >
+            <SymbolAvatar
+              symbol={row.symbol}
+              exchange={row.exchange ?? "NYSE"}
+              classId={row.classId}
+              size="sm"
+            />
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-xs text-white">
+                  {row.symbol}
+                </span>
+                {row.divergesFromClass ? (
+                  <span className="text-[10px] text-amber-400">≠ class</span>
+                ) : null}
+              </div>
+              <p className="truncate text-xs text-zinc-500">{row.name}</p>
             </div>
-            <p className="truncate text-xs text-zinc-500">{row.name}</p>
-          </div>
+          </button>
         </div>
       </td>
       <td className="px-2 py-2 tabular-nums text-sm text-white">
@@ -169,6 +149,12 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
         <table className="w-full min-w-[48rem] text-left text-sm">
           <thead className="border-b border-zinc-800 bg-zinc-950/90 text-[11px] text-zinc-500">
             <tr>
+              <th
+                className="px-2 py-2 font-medium w-12"
+                title="Volume médio diário (papéis, 20D) — K mil, M milhão, B bilhão"
+              >
+                Vol
+              </th>
               <th className="px-3 py-2 font-medium">Symbol</th>
               <th className="px-2 py-2 font-medium">Score</th>
               <th className="px-2 py-2 font-medium">1D</th>

@@ -33,9 +33,24 @@ Snapshot passa a incluir `isProxy` / `proxyRationale` em indicadores e bloco `mo
 
 Guia de teste: [ETAPA_1A_TESTE.md](ETAPA_1A_TESTE.md).
 
-**Não é 1A (→ 1B):** gráfico histórico ao clicar linha; ranking global tab All.
+**Não é 1A (→ 1B):** ranking global tab All; gráfico ao clicar indicador individual.
 
 ---
+
+## Etapa 1B (em progresso)
+
+**Detalhe do papel:** `/mercado/[symbol]` — clique na linha da watchlist.
+
+| Aba | Conteúdo |
+|-----|----------|
+| Overview | Chart 2Y (Yahoo + lightweight-charts), perf 1D/5D/1M/2Y, key stats preview |
+| Financials | Market cap, P/E, EPS, revenue, earnings, about (yahoo-finance2) |
+| Technicals | Motor gauge (Strong Buy…Strong Sell), rationale, indicadores motor + TA genérica |
+| Forecast | Rating motor + targets analistas Yahoo quando disponíveis |
+
+APIs opcionais: `GET /api/market/[symbol]/chart`, `GET /api/market/[symbol]/quote`.
+
+**Backlog 1B:** histórico ao clicar indicador; export score history no snapshot.
 
 ## Etapa 1 — Gestão de fontes (base)
 
