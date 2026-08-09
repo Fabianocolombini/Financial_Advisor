@@ -8,7 +8,7 @@ from motor.src.calculo.score_composto import (
     persist_ativo_score,
 )
 from motor.src.config.aba_class_map import benchmark_for_class, class_id_for_aba
-from motor.src.config_loader import is_cash_aba, load_aba_config
+from motor.src.config_loader import is_cash_aba, is_treasury_aba, load_aba_config
 from motor.src.decisao.estagio import compute_estagio_aba, diverge_categoria, estagio_ativo
 from motor.src.decisao.validacao import dominant_component, validate_ticker_entry
 from motor.src.db.connection import init_db
@@ -37,7 +37,7 @@ def score_symbol_list(
     cat_score = aba_result["score_composto"]
     cat_estagio = (
         aba_result.get("estagio", estagio_info["estagio"])
-        if is_cash_aba(aba_id)
+        if is_cash_aba(aba_id) or is_treasury_aba(aba_id)
         else estagio_info["estagio"]
     )
 
@@ -69,13 +69,20 @@ def score_symbol_list(
             prepared,
             universe_tickers=universe_tickers,
         )
+    elif is_treasury_aba(aba_id) and prepared:
+        from motor.src.calculo.treasury_security_score import compute_treasury_security_batch
+
+        cash_batch = compute_treasury_security_batch(
+            prepared,
+            universe_tickers=universe_tickers,
+        )
 
     for ticker in prepared:
         meta = universo_map.get(ticker, {})
         bench = (meta.get("benchmark") or default_bench).upper()
         edgar_metric = meta.get("edgar_metric")
 
-        if is_cash_aba(aba_id):
+        if is_cash_aba(aba_id) or is_treasury_aba(aba_id):
             ativo = cash_batch[ticker]
             est = ativo.get("estagio") or estagio_ativo(ativo["score_composto"])
         else:

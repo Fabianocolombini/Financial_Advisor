@@ -58,6 +58,11 @@ Snapshot export: `allIndicators`, `scoreHistory`, `decisionMap` (após Motor Dai
 - Modelo 2 `SecurityScore` cross-sectional — sem RSI; liquidez + vol + |Δ50|
 - Config: `motor/config/models/cash_regime.json`, `indicadores_tecnicos_cash.json`
 
+**Treasuries (`fi_treasury`) — modelos dedicados (v1):**
+- Modelo 1 `TreasuryRegimeScore` — term premium + Fed bonus − bond vol; stress dual (quality vs inflation 2022)
+- Modelo 2 `SecurityScore` — tendência + RSI + volume − COT crowding
+- Config: `motor/config/models/treasury_regime.json`; term premium FRED `ACMTP10`
+
 **Backlog 1B:** click em cada indicador → mini-chart; sparklines no snapshot para external-only series.
 
 ## Etapa 1 — Gestão de fontes (base)

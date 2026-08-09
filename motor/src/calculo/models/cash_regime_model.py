@@ -72,6 +72,12 @@ def _max_action(action: str, floor: str) -> str:
     return _ACTION_ORDER[max(ai, fi)]
 
 
+def _min_action(action: str, ceiling: str) -> str:
+    ai = _ACTION_ORDER.index(action) if action in _ACTION_ORDER else 0
+    ci = _ACTION_ORDER.index(ceiling) if ceiling in _ACTION_ORDER else 0
+    return _ACTION_ORDER[min(ai, ci)]
+
+
 def regime_action_to_estagio(action: str) -> str:
     mapping = {
         "Overweight": "Ascendente",

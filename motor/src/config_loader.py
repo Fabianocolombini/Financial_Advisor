@@ -32,6 +32,7 @@ def load_fred_manifest() -> list[dict[str, str]]:
 
 
 _CASH_TECNICOS_ABAS = frozenset({"cash_equivalents"})
+_TREASURY_ABAS = frozenset({"fi_treasury"})
 
 
 def load_tecnicos_config(aba_id: str | None = None) -> dict[str, Any]:
@@ -45,6 +46,14 @@ def load_tecnicos_config(aba_id: str | None = None) -> dict[str, Any]:
 
 def is_cash_aba(aba_id: str) -> bool:
     return resolve_aba_config_id(aba_id) in _CASH_TECNICOS_ABAS
+
+
+def is_treasury_aba(aba_id: str) -> bool:
+    return resolve_aba_config_id(aba_id) in _TREASURY_ABAS
+
+
+def is_class_model_aba(aba_id: str) -> bool:
+    return is_cash_aba(aba_id) or is_treasury_aba(aba_id)
 
 
 def _formula_series(formula: str) -> set[str]:
@@ -66,6 +75,7 @@ def _formula_series(formula: str) -> set[str]:
         "risk_reversal_proxy": set(),
         "private_funding_proxy": set(),
         "earnings_revision_proxy": set(),
+        "delta_yield_real_20d": {"DFII10"},
     }
     if formula in named:
         return set(named[formula])

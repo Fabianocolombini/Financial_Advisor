@@ -6,7 +6,7 @@ import datetime as dt
 from pathlib import Path
 from typing import Any
 
-from motor.src.config_loader import is_cash_aba, load_aba_config
+from motor.src.config_loader import is_cash_aba, is_treasury_aba, load_aba_config
 from motor.src.decisao.estagio import compute_estagio_aba, diverge_categoria, estagio_ativo
 from motor.src.db.connection import get_connection
 from motor.src.paths import OUTPUT_DIR
@@ -79,9 +79,47 @@ def build_report_markdown(
             "RSI excluído — NAV monotônico distorce momentum em ETFs cash/CLO."
         )
         lines.append("")
+    if is_treasury_aba(aba_result["aba_id"]):
+        lines.append("## Modelo Treasuries — Regime (Modelo 1)")
+        lines.append("")
+        try:
+            from motor.src.calculo.models.treasury_regime_model import (
+                compute_treasury_regime,
+                sanity_check_inflation_shock_2022,
+            )
+
+            regime = compute_treasury_regime()
+            lines.append(
+                f"- TreasuryRegimeScore: **{_fmt(regime.get('treasury_regime_score'))}** "
+                f"→ ação **{regime.get('regime_action')}** (quanto duration)"
+            )
+            if regime.get("flight_to_quality_flag"):
+                lines.append("- Flight-to-quality override (piso Overweight).")
+            if regime.get("inflation_shock_flag"):
+                lines.append("- Inflation-shock cap (teto Reduce — padrão 2022).")
+            for note in regime.get("explanation", []):
+                lines.append(f"- {note.replace('**', '')}")
+            sanity = sanity_check_inflation_shock_2022()
+            if sanity.get("ok"):
+                lines.append(
+                    f"- Sanity 2022: inflation_shock em {sanity.get('inflation_shock_days')} dias "
+                    f"(passed={sanity.get('passed')})."
+                )
+            if not regime.get("calibrated"):
+                lines.append("- ⚠ Pesos não calibrados (`calibrated: false`).")
+        except Exception as e:
+            lines.append(f"- Erro regime treasury: {e}")
+        lines.append("")
+        lines.append("## Modelo Treasuries — Seleção (Modelo 2)")
+        lines.append("")
+        lines.append(
+            "- SecurityScore: tendência + RSI + volume − COT crowding. "
+            "RSI mantido — vol genuína em TLT/IEF/SHY."
+        )
+        lines.append("")
     lines.append("## Racional matemático")
     lines.append("")
-    if is_cash_aba(aba_result["aba_id"]):
+    if is_cash_aba(aba_result["aba_id"]) or is_treasury_aba(aba_result["aba_id"]):
         lines.append("| Indicador | Valor | Peso | Contribuição | Role |")
         lines.append("|-----------|-------|------|--------------|------|")
         for c in aba_result.get("componentes", []):

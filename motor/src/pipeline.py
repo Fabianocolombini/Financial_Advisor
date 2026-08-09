@@ -14,7 +14,7 @@ from motor.src.calculo.score_composto import (
     persist_aba_score,
     persist_ativo_score,
 )
-from motor.src.config_loader import is_cash_aba, load_aba_config
+from motor.src.config_loader import is_cash_aba, is_treasury_aba, load_aba_config
 from motor.src.decisao.estagio import (
     compute_estagio_aba,
     diverge_categoria,
@@ -62,7 +62,7 @@ def run_pipeline(
     persist_aba_score(aba_result, estagio=aba_result.get("estagio"))
 
     estagio_info = compute_estagio_aba(aba_id)
-    if is_cash_aba(aba_id):
+    if is_cash_aba(aba_id) or is_treasury_aba(aba_id):
         cat_estagio = aba_result.get("estagio", estagio_info["estagio"])
         estagio_info["estagio"] = cat_estagio
         estagio_info["regime_action"] = aba_result.get("regime_action")
@@ -88,6 +88,7 @@ def run_pipeline(
 
     if score_universe:
         universe_tickers = [item["ticker"].upper() for item in aba.get("universo", [])]
+        batch: dict[str, dict] = {}
         if is_cash_aba(aba_id):
             from motor.src.calculo.cash_security_score import compute_cash_security_batch
 
@@ -95,10 +96,17 @@ def run_pipeline(
                 universe_tickers,
                 universe_tickers=universe_tickers,
             )
+        elif is_treasury_aba(aba_id):
+            from motor.src.calculo.treasury_security_score import compute_treasury_security_batch
+
+            batch = compute_treasury_security_batch(
+                universe_tickers,
+                universe_tickers=universe_tickers,
+            )
         for item in aba.get("universo", []):
             ticker = item["ticker"].upper()
             bench = (item.get("benchmark") or "").upper()
-            if is_cash_aba(aba_id):
+            if is_cash_aba(aba_id) or is_treasury_aba(aba_id):
                 ativo = batch[ticker]
             else:
                 ativo = compute_ativo_score(

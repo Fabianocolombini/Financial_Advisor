@@ -46,13 +46,24 @@
       }
     },
     "fi_treasury": {
-      "role": "Sovereign duration — curve, real yields, positioning.",
+      "role": "Sovereign duration — term premium, Fed path, dual stress (quality vs inflation).",
       "indicators": {
-        "timing": ["real_yield_curve", "fed_cut_probability", "t10y2y"],
-        "role": ["real_yield_curve", "yield_real_10y", "dff"],
-        "projection": ["cot_net_position", "t10y3m"],
-        "investability": ["yield_10y", "real_yield_curve"],
-        "forecast": ["fed_cut_probability", "real_yield_curve"]
+        "timing": ["term_premium", "fed_cut_probability", "bond_vol_proxy"],
+        "role": ["term_premium", "yield_real_10y", "delta_yield_real_20d"],
+        "projection": ["cot_net_position", "bond_vol_proxy"],
+        "investability": ["term_premium", "fed_cut_probability"],
+        "forecast": ["fed_cut_probability", "term_premium", "bond_vol_proxy"]
+      },
+      "tickerIndicators": {
+        "timing": ["preco_vs_mm50", "rsi_14"],
+        "role": ["preco_vs_mm200", "cot_net_position"],
+        "projection": ["preco_vs_mm50", "rsi_14"],
+        "investability": ["volume_vs_media"],
+        "forecast": ["rsi_14", "cot_net_position"]
+      },
+      "models": {
+        "regime": "treasury_regime_v1 — TreasuryRegimeScore (quanto duration)",
+        "security": "treasury_security_v1 — SecurityScore + COT crowding"
       }
     },
     "fi_ig": {

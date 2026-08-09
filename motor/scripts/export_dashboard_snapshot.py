@@ -161,6 +161,27 @@ def main() -> None:
                 except Exception as e:
                     print(f"[export_dashboard] WARN: cash regime model: {e}", file=sys.stderr)
 
+            if class_id == "fi_treasury":
+                try:
+                    from motor.src.calculo.models.treasury_regime_model import compute_treasury_regime
+
+                    regime = compute_treasury_regime()
+                    snapshot["classes"][class_id]["regimeModel"] = {
+                        "model": regime.get("model"),
+                        "score": regime.get("treasury_regime_score"),
+                        "action": regime.get("regime_action"),
+                        "actionCalculated": regime.get("regime_action_calculated"),
+                        "stressFlag": regime.get("stress_flag"),
+                        "flightToQualityFlag": regime.get("flight_to_quality_flag"),
+                        "inflationShockFlag": regime.get("inflation_shock_flag"),
+                        "calibrated": regime.get("calibrated"),
+                        "calibrationNote": regime.get("calibration_note"),
+                        "explanation": regime.get("explanation"),
+                        "components": regime.get("componentes"),
+                    }
+                except Exception as e:
+                    print(f"[export_dashboard] WARN: treasury regime model: {e}", file=sys.stderr)
+
         ativo_rows = conn.execute(
             """
             SELECT sa.aba_id, sa.ticker, sa.data, sa.score_composto, sa.estagio,

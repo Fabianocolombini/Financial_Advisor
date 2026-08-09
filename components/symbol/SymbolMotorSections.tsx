@@ -2,7 +2,7 @@ import type { SymbolMotorContext } from "@/lib/motor/snapshot-types";
 import { formatScore } from "@/lib/motor/format-scores";
 import { stageBadgeClass, entryBadgeClass } from "@/lib/motor/format-scores";
 import { MotorIndicatorsTable } from "./MotorTechnicals";
-import { SymbolCashModelPanel } from "./SymbolCashModelPanel";
+import { SymbolClassRegimeModelPanel } from "./SymbolClassRegimeModelPanel";
 import { SymbolScoreHistoryChart } from "./SymbolScoreHistoryChart";
 import { IndicatorFredChart } from "./IndicatorFredChart";
 
@@ -56,7 +56,7 @@ export function ClassMacroSection({
           ))}
         </ul>
       ) : null}
-      <SymbolCashModelPanel
+      <SymbolClassRegimeModelPanel
         regimeModel={snap.regimeModel}
         classId={motor.classId ?? snap.classId}
       />
@@ -107,6 +107,11 @@ export function TickerMotorSection({ motor }: { motor: SymbolMotorContext }) {
         <p className="text-[10px] text-zinc-500">
           SecurityScore: percentis cross-sectional (liquidez + estabilidade + |Δ50|). Rankeia
           instrumentos cash no mesmo momento — não altera CashRegimeScore.
+        </p>
+      ) : motor.classId === "fi_treasury" ? (
+        <p className="text-[10px] text-zinc-500">
+          SecurityScore: tendência (MM50/MM200) + RSI + volume − crowding COT. RSI mantido —
+          vol genuína em duration ETFs.
         </p>
       ) : null}
       <SymbolScoreHistoryChart

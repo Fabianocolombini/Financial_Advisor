@@ -62,6 +62,8 @@ export type MotorClassRegimeModelSnapshot = {
   action?: string;
   actionCalculated?: string;
   stressFlag?: boolean;
+  flightToQualityFlag?: boolean;
+  inflationShockFlag?: boolean;
   calibrated?: boolean;
   calibrationNote?: string;
   explanation?: string[];
