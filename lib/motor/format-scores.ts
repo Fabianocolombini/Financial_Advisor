@@ -77,6 +77,8 @@ export function stageBadgeClass(stageLabel: string): string {
       return "bg-emerald-500/15 text-emerald-400 ring-emerald-500/30";
     case "Reduce":
       return "bg-red-500/15 text-red-400 ring-red-500/30";
+    case "Strong Reduce":
+      return "bg-red-600/20 text-red-300 ring-red-600/40";
     case "Hold":
       return "bg-zinc-800 text-zinc-300 ring-zinc-700";
     default:

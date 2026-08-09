@@ -56,8 +56,11 @@ export function buildClassDataEquation(
   for (const qId of questionIds) {
     const qMeta = decisionMapJson.questions[qId];
     const classIds = (classDef?.indicators?.[qId] as string[] | undefined) ?? [];
+    const perClassTicker = classDef as { tickerIndicators?: Record<string, string[]> } | undefined;
     const tickerIds =
-      (tickerDef?.indicators?.[qId] as string[] | undefined) ?? [];
+      (perClassTicker?.tickerIndicators?.[qId] as string[] | undefined) ??
+      (tickerDef?.indicators?.[qId] as string[] | undefined) ??
+      [];
     const ids = [...classIds, ...tickerIds];
 
     const indicators = ids.map((id) => {

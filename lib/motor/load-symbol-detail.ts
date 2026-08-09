@@ -81,6 +81,7 @@ function buildMotorContext(
   const indicators = topDrivers(classIndicators, tickerIndicators);
 
   return {
+    classId,
     hasTickerMotor,
     hasClassMotor,
     motorScope,

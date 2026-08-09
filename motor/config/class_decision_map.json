@@ -27,11 +27,22 @@
     "cash_equivalents": {
       "role": "Cash & ultra-short — preserve capital, real yield vs inflation.",
       "indicators": {
-        "timing": ["yield_real_caixa", "spread_caixa_long"],
-        "role": ["dtb3", "yield_real_caixa"],
-        "projection": ["spread_caixa_long"],
-        "investability": ["yield_real_caixa"],
-        "forecast": ["yield_real_caixa", "spread_caixa_long"]
+        "timing": ["yield_real_caixa", "spread_10y_2y", "fed_cut_probability"],
+        "role": ["yield_real_caixa", "spread_10y_2y", "vix", "hy_oas"],
+        "projection": ["yield_real_caixa"],
+        "investability": ["yield_real_caixa", "fed_cut_probability"],
+        "forecast": ["yield_real_caixa", "spread_10y_2y", "fed_cut_probability"]
+      },
+      "tickerIndicators": {
+        "timing": ["volume_vs_media"],
+        "role": ["vol_realizada"],
+        "projection": ["preco_vs_mm50_abs"],
+        "investability": ["volume_vs_media", "vol_realizada"],
+        "forecast": ["vol_realizada", "preco_vs_mm50_abs"]
+      },
+      "models": {
+        "regime": "cash_regime_v1 — CashRegimeScore (quanto alocar)",
+        "security": "cash_security_v1 — SecurityScore cross-sectional (qual símbolo)"
       }
     },
     "fi_treasury": {

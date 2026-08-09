@@ -57,7 +57,11 @@
       "indicadores": [
         { "id": "dtb3", "nome": "T-bill 3m yield", "fonte": "fred", "serie": "DTB3" },
         { "id": "yield_real_caixa", "nome": "Yield real caixa", "fonte": "calculado", "formula": "DTB3 - CPIAUCSL" },
-        { "id": "spread_caixa_long", "nome": "Spread caixa vs long", "fonte": "calculado", "formula": "DGS10 - DTB3" }
+        { "id": "spread_caixa_long", "nome": "Spread caixa vs long", "fonte": "calculado", "formula": "DGS10 - DTB3" },
+        { "id": "spread_10y_2y", "nome": "Spread 10y-2y", "fonte": "fred", "serie": "T10Y2Y" },
+        { "id": "fed_cut_probability", "nome": "Fed cut probability 6m", "fonte": "external", "source": "cme", "series_id": "fed_cut_probability" },
+        { "id": "vix", "nome": "VIX", "fonte": "fred", "serie": "VIXCLS" },
+        { "id": "hy_oas", "nome": "HY OAS", "fonte": "fred", "serie": "BAMLH0A0HYM2" }
       ]
     },
     {

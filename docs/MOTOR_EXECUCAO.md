@@ -53,6 +53,11 @@ APIs: `/api/market/[symbol]/chart|quote`, `/api/market/fred/[seriesId]`.
 
 Snapshot export: `allIndicators`, `scoreHistory`, `decisionMap` (após Motor Daily).
 
+**Cash (`cash_equivalents`) — modelos dedicados (v1):**
+- Modelo 1 `CashRegimeScore` → Overweight/Hold/Reduce/Strong Reduce (`calibrated: false`)
+- Modelo 2 `SecurityScore` cross-sectional — sem RSI; liquidez + vol + |Δ50|
+- Config: `motor/config/models/cash_regime.json`, `indicadores_tecnicos_cash.json`
+
 **Backlog 1B:** click em cada indicador → mini-chart; sparklines no snapshot para external-only series.
 
 ## Etapa 1 — Gestão de fontes (base)

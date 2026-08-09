@@ -31,9 +31,20 @@ def load_fred_manifest() -> list[dict[str, str]]:
     return json.loads(path.read_text())
 
 
-def load_tecnicos_config() -> dict[str, Any]:
+_CASH_TECNICOS_ABAS = frozenset({"cash_equivalents"})
+
+
+def load_tecnicos_config(aba_id: str | None = None) -> dict[str, Any]:
+    if aba_id and resolve_aba_config_id(aba_id) in _CASH_TECNICOS_ABAS:
+        cash_path = CONFIG_DIR / "indicadores_tecnicos_cash.json"
+        if cash_path.is_file():
+            return json.loads(cash_path.read_text())
     path = CONFIG_DIR / "indicadores_tecnicos.json"
     return json.loads(path.read_text())
+
+
+def is_cash_aba(aba_id: str) -> bool:
+    return resolve_aba_config_id(aba_id) in _CASH_TECNICOS_ABAS
 
 
 def _formula_series(formula: str) -> set[str]:

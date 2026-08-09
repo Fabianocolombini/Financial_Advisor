@@ -6,7 +6,7 @@ import datetime as dt
 from pathlib import Path
 from typing import Any
 
-from motor.src.config_loader import load_aba_config
+from motor.src.config_loader import is_cash_aba, load_aba_config
 from motor.src.decisao.estagio import compute_estagio_aba, diverge_categoria, estagio_ativo
 from motor.src.db.connection import get_connection
 from motor.src.paths import OUTPUT_DIR
@@ -50,15 +50,54 @@ def build_report_markdown(
             rationale = p.get("proxy_rationale", "")
             lines.append(f"- **{p['nome']}**: {rationale}")
         lines.append("")
+    if is_cash_aba(aba_result["aba_id"]):
+        lines.append("## Modelo Cash — Regime (Modelo 1)")
+        lines.append("")
+        try:
+            from motor.src.calculo.models.cash_regime_model import compute_cash_regime
+
+            regime = compute_cash_regime()
+            lines.append(
+                f"- CashRegimeScore: **{_fmt(regime.get('cash_regime_score'))}** "
+                f"→ ação **{regime.get('regime_action')}** (quanto alocar)"
+            )
+            if regime.get("stress_flag"):
+                lines.append(
+                    f"- Stress override (ação calculada: {regime.get('regime_action_calculated')})"
+                )
+            for note in regime.get("explanation", []):
+                lines.append(f"- {note.replace('**', '')}")
+            if not regime.get("calibrated"):
+                lines.append("- ⚠ Pesos não calibrados (`calibrated: false`).")
+        except Exception as e:
+            lines.append(f"- Erro regime cash: {e}")
+        lines.append("")
+        lines.append("## Modelo Cash — Seleção (Modelo 2)")
+        lines.append("")
+        lines.append(
+            "- SecurityScore: percentis cross-sectional (liquidez, σ20, |Δ50|). "
+            "RSI excluído — NAV monotônico distorce momentum em ETFs cash/CLO."
+        )
+        lines.append("")
     lines.append("## Racional matemático")
     lines.append("")
-    lines.append("| Indicador | Valor | z-score | Peso | Contribuição |")
-    lines.append("|-----------|-------|---------|------|--------------|")
-    for c in aba_result.get("componentes", []):
-        lines.append(
-            f"| {c['nome']} | {_fmt(c['valor'])} | {_fmt(c['z_score'])} | "
-            f"{_fmt(c['peso'], 2)} | {_fmt(c['contribuicao'])} |"
-        )
+    if is_cash_aba(aba_result["aba_id"]):
+        lines.append("| Indicador | Valor | Peso | Contribuição | Role |")
+        lines.append("|-----------|-------|------|--------------|------|")
+        for c in aba_result.get("componentes", []):
+            lines.append(
+                f"| {c['nome']} | {_fmt(c.get('valor'))} | "
+                f"{_fmt(c.get('peso'), 2)} | {_fmt(c.get('contribuicao'))} | "
+                f"{c.get('role', '')} |"
+            )
+    else:
+        lines.append("| Indicador | Valor | z-score | Peso | Contribuição |")
+        lines.append("|-----------|-------|---------|------|--------------|")
+        for c in aba_result.get("componentes", []):
+            lines.append(
+                f"| {c['nome']} | {_fmt(c['valor'])} | {_fmt(c['z_score'])} | "
+                f"{_fmt(c['peso'], 2)} | {_fmt(c['contribuicao'])} |"
+            )
     lines.append("")
     try:
         from motor.src.calculo.models import build_models_snapshot

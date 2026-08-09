@@ -46,6 +46,26 @@ export type MotorEwmaVolSnapshot = Record<
 export type MotorModelsSnapshot = {
   regime?: MotorRegimeModelSnapshot;
   ewma_vol?: MotorEwmaVolSnapshot;
+  cash_regime?: {
+    cash_regime_score?: number;
+    regime_action?: string;
+    stress_flag?: boolean;
+    calibrated?: boolean;
+    calibration_note?: string;
+    explanation?: string[];
+  };
+};
+
+export type MotorClassRegimeModelSnapshot = {
+  model?: string;
+  score?: number;
+  action?: string;
+  actionCalculated?: string;
+  stressFlag?: boolean;
+  calibrated?: boolean;
+  calibrationNote?: string;
+  explanation?: string[];
+  components?: Array<Record<string, unknown>>;
 };
 
 export type MotorClassSnapshot = {
@@ -63,6 +83,7 @@ export type MotorClassSnapshot = {
   indicators: MotorIndicatorSnapshot[];
   allIndicators?: MotorIndicatorSnapshot[];
   scoreHistory?: MotorScoreHistoryPoint[];
+  regimeModel?: MotorClassRegimeModelSnapshot;
 };
 
 export type MotorTickerSnapshot = {
@@ -143,6 +164,7 @@ export type WatchlistClassGroup = {
 };
 
 export type SymbolMotorContext = {
+  classId: string;
   hasTickerMotor: boolean;
   hasClassMotor: boolean;
   motorScope: "ticker" | "class" | "none";

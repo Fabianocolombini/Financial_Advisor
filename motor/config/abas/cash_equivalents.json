@@ -1,7 +1,12 @@
 {
   "id": "cash_equivalents",
   "nome": "Caixa e equivalentes",
-  "descricao": "T-bills e ultra-short — yield de caixa vs duration",
+  "descricao": "T-bills e ultra-short — regime CashRegimeScore + seleção SecurityScore",
+  "model": {
+    "regime": "cash_regime_v1",
+    "security": "cash_security_v1",
+    "calibrated": false
+  },
   "pesos_camada": {
     "macro": 0.35,
     "valuation": 0.45,
@@ -10,41 +15,63 @@
   },
   "indicadores": [
     {
-      "id": "dtb3",
-      "nome": "3-Month T-Bill yield",
+      "id": "yield_real_caixa",
+      "nome": "Yield real caixa",
       "camada": "valuation",
-      "fonte": "fred",
-      "serie": "DTB3",
-      "peso": 0.50,
+      "fonte": "calculado",
+      "formula": "DTB3 - CPIAUCSL",
+      "peso": 0.5,
       "zscore_window": 252,
       "direcao": "positiva"
     },
     {
-      "id": "yield_real_10y",
-      "nome": "Yield real 10y",
+      "id": "spread_10y_2y",
+      "nome": "Spread 10y-2y",
       "camada": "macro",
-      "fonte": "calculado",
-      "formula": "DGS10 - T10YIE",
-      "peso": 0.30,
+      "fonte": "fred",
+      "serie": "T10Y2Y",
+      "peso": 0.3,
       "zscore_window": 252,
       "direcao": "negativa"
     },
     {
-      "id": "spread_10y_3m",
-      "nome": "Spread 10y-3m",
+      "id": "fed_cut_probability",
+      "nome": "Fed cut probability 6m",
       "camada": "macro",
-      "fonte": "fred",
-      "serie": "T10Y3M",
-      "peso": 0.20,
+      "fonte": "external",
+      "source": "cme",
+      "series_id": "fed_cut_probability",
+      "peso": 0.2,
       "zscore_window": 252,
-      "direcao": "positiva"
+      "direcao": "negativa"
     }
   ],
   "universo": [
     {"ticker": "SHV", "nome": "iShares Short Treasury Bond", "benchmark": "AGG"},
-    {"ticker": "SGOV", "nome": "iShares 0-3 Month Treasury Bond", "benchmark": "AGG"},
     {"ticker": "BIL", "nome": "SPDR Bloomberg 1-3 Month T-Bill", "benchmark": "AGG"},
-    {"ticker": "SHY", "nome": "iShares 1-3 Year Treasury Bond", "benchmark": "AGG"}
+    {"ticker": "SGOV", "nome": "iShares 0-3 Month Treasury Bond", "benchmark": "AGG"},
+    {"ticker": "GBIL", "nome": "Goldman Sachs Access Treasury 0-1 Year", "benchmark": "AGG"},
+    {"ticker": "TFLO", "nome": "iShares Treasury Floating Rate Bond", "benchmark": "AGG"},
+    {"ticker": "USFR", "nome": "WisdomTree Floating Rate Treasury", "benchmark": "AGG"},
+    {"ticker": "MINT", "nome": "PIMCO Enhanced Short Maturity Active", "benchmark": "AGG"},
+    {"ticker": "NEAR", "nome": "iShares Short Maturity Bond", "benchmark": "AGG"},
+    {"ticker": "JPST", "nome": "JPMorgan Ultra-Short Income", "benchmark": "AGG"},
+    {"ticker": "ICSH", "nome": "iShares Ultra Short-Term Bond", "benchmark": "AGG"},
+    {"ticker": "FLOT", "nome": "iShares Floating Rate Bond", "benchmark": "AGG"},
+    {"ticker": "SPSB", "nome": "SPDR Portfolio Short Term Corporate Bond", "benchmark": "AGG"},
+    {"ticker": "TBIL", "nome": "US Treasury 3 Month Bill", "benchmark": "AGG"},
+    {"ticker": "FLRN", "nome": "SPDR Bloomberg IG Floating Rate", "benchmark": "AGG"},
+    {"ticker": "GSY", "nome": "Invesco Ultra Short Duration", "benchmark": "AGG"},
+    {"ticker": "FTSL", "nome": "First Trust Senior Loan Fund", "benchmark": "AGG"},
+    {"ticker": "BILS", "nome": "SPDR Bloomberg 3-12 Month T-Bill", "benchmark": "AGG"},
+    {"ticker": "CLOA", "nome": "iShares AAA CLO Active", "benchmark": "AGG"},
+    {"ticker": "CLOZ", "nome": "Panagram AAA CLO", "benchmark": "AGG"},
+    {"ticker": "SHYD", "nome": "VanEck Short High Yield Muni", "benchmark": "AGG"},
+    {"ticker": "VMOT", "nome": "Vanguard Ultra-Short-Term Bond", "benchmark": "AGG"},
+    {"ticker": "ULST", "nome": "SPDR SSgA Ultra Short Term Bond", "benchmark": "AGG"},
+    {"ticker": "CSHI", "nome": "Neuberger Berman Short Duration Income", "benchmark": "AGG"},
+    {"ticker": "JAAA", "nome": "Janus Henderson AAA CLO", "benchmark": "AGG"},
+    {"ticker": "BSCQ", "nome": "Invesco BulletShares 2026 Corporate Bond", "benchmark": "AGG"}
   ],
   "estagio": {
     "regressao_dias": 90,

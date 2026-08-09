@@ -1,0 +1,31 @@
+{
+  "calibrated": false,
+  "note": "Pesos w1/w2/w3 e wa/wb/wc definidos por julgamento — não calibrados contra histórico (mesmo padrão regime_logit.json).",
+  "regime_weights": {
+    "w1": 0.5,
+    "w2": 0.3,
+    "w3": 0.2
+  },
+  "security_weights": {
+    "wa": 0.4,
+    "wb": 0.35,
+    "wc": 0.25
+  },
+  "thresholds": {
+    "overweight": 0.65,
+    "hold": 0.45,
+    "reduce": 0.25
+  },
+  "stress_percentile": 0.8,
+  "percentile_window_days": 1260,
+  "curve_signal": {
+    "invert_offset": 2,
+    "invert_scale": 4
+  },
+  "action_labels": {
+    "overweight": "Overweight",
+    "hold": "Hold",
+    "reduce": "Reduce",
+    "strong_reduce": "Strong Reduce"
+  }
+}

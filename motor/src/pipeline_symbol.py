@@ -10,6 +10,7 @@ from motor.src.calculo.score_composto import (
     persist_ativo_score,
 )
 from motor.src.config.aba_class_map import benchmark_for_class, resolve_aba_id
+from motor.src.config_loader import is_cash_aba, load_aba_config
 from motor.src.decisao.estagio import (
     compute_estagio_aba,
     diverge_categoria,
@@ -40,13 +41,18 @@ def run_symbol_pipeline(
 
     price_rows = ingest_ticker(ticker, start)
     bench_rows = ingest_ticker(benchmark, start) if benchmark else 0
-    tec_rows = persist_tecnicos(ticker, benchmark)
+    tec_rows = persist_tecnicos(ticker, benchmark, aba_id=aba_id)
 
     ingest_for_aba(aba_id, start)
     aba_result = compute_aba_score(aba_id)
-    persist_aba_score(aba_result)
+    persist_aba_score(aba_result, estagio=aba_result.get("estagio"))
 
     estagio_info = compute_estagio_aba(aba_id)
+    cat_estagio = (
+        aba_result.get("estagio", estagio_info["estagio"])
+        if is_cash_aba(aba_id)
+        else estagio_info["estagio"]
+    )
     with get_connection() as conn:
         conn.execute(
             """
@@ -54,7 +60,7 @@ def run_symbol_pipeline(
             WHERE aba_id = ? AND data = ?
             """,
             (
-                estagio_info["estagio"],
+                cat_estagio,
                 estagio_info["slope"],
                 aba_id,
                 aba_result["data"],
@@ -62,11 +68,21 @@ def run_symbol_pipeline(
         )
         conn.commit()
 
-    cat_estagio = estagio_info["estagio"]
     cat_score = aba_result["score_composto"]
 
-    ativo = compute_ativo_score(aba_id, ticker, benchmark)
-    est = estagio_ativo(ativo["score_composto"])
+    if is_cash_aba(aba_id):
+        aba = load_aba_config(aba_id)
+        universe_tickers = [item["ticker"].upper() for item in aba.get("universo", [])]
+        from motor.src.calculo.cash_security_score import compute_cash_security_batch
+
+        ativo = compute_cash_security_batch(
+            [ticker],
+            universe_tickers=universe_tickers,
+        )[ticker]
+        est = ativo.get("estagio") or estagio_ativo(ativo["score_composto"])
+    else:
+        ativo = compute_ativo_score(aba_id, ticker, benchmark)
+        est = estagio_ativo(ativo["score_composto"])
     div = diverge_categoria(cat_estagio, est, cat_score, ativo["score_composto"])
     validation = validate_ticker_entry(
         cat_estagio,

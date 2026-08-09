@@ -2,6 +2,7 @@ import type { SymbolMotorContext } from "@/lib/motor/snapshot-types";
 import { formatScore } from "@/lib/motor/format-scores";
 import { stageBadgeClass, entryBadgeClass } from "@/lib/motor/format-scores";
 import { MotorIndicatorsTable } from "./MotorTechnicals";
+import { SymbolCashModelPanel } from "./SymbolCashModelPanel";
 import { SymbolScoreHistoryChart } from "./SymbolScoreHistoryChart";
 import { IndicatorFredChart } from "./IndicatorFredChart";
 
@@ -55,6 +56,10 @@ export function ClassMacroSection({
           ))}
         </ul>
       ) : null}
+      <SymbolCashModelPanel
+        regimeModel={snap.regimeModel}
+        classId={motor.classId ?? snap.classId}
+      />
       <MotorIndicatorsTable indicators={motor.classIndicators} title="All class indicators" />
       <SymbolScoreHistoryChart
         title="Class composite score (historico)"
@@ -97,7 +102,13 @@ export function TickerMotorSection({ motor }: { motor: SymbolMotorContext }) {
           <span className="text-[10px] text-amber-400">Diverges from class</span>
         ) : null}
       </div>
-      <MotorIndicatorsTable indicators={motor.tickerIndicators} title="All ticker indicators" />
+      <MotorIndicatorsTable indicators={motor.tickerIndicators} title="SecurityScore drivers (no RSI)" />
+      {motor.classId === "cash_equivalents" ? (
+        <p className="text-[10px] text-zinc-500">
+          SecurityScore: percentis cross-sectional (liquidez + estabilidade + |Δ50|). Rankeia
+          instrumentos cash no mesmo momento — não altera CashRegimeScore.
+        </p>
+      ) : null}
       <SymbolScoreHistoryChart
         title="Ticker composite score (historico)"
         points={motor.tickerScoreHistory}

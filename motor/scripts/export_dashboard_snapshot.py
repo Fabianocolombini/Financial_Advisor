@@ -16,6 +16,7 @@ def stage_en(estagio: str | None) -> str:
         "Ascendente": "Accumulate",
         "Maduro": "Hold",
         "Descendente": "Reduce",
+        "ForteDescendente": "Strong Reduce",
     }
     return mapping.get(estagio or "", "Hold")
 
@@ -140,6 +141,25 @@ def main() -> None:
                 {"date": r["data"], "score": float(r["score_composto"])}
                 for r in reversed(hist_rows)
             ]
+
+            if class_id == "cash_equivalents":
+                try:
+                    from motor.src.calculo.models.cash_regime_model import compute_cash_regime
+
+                    regime = compute_cash_regime()
+                    snapshot["classes"][class_id]["regimeModel"] = {
+                        "model": regime.get("model"),
+                        "score": regime.get("cash_regime_score"),
+                        "action": regime.get("regime_action"),
+                        "actionCalculated": regime.get("regime_action_calculated"),
+                        "stressFlag": regime.get("stress_flag"),
+                        "calibrated": regime.get("calibrated"),
+                        "calibrationNote": regime.get("calibration_note"),
+                        "explanation": regime.get("explanation"),
+                        "components": regime.get("componentes"),
+                    }
+                except Exception as e:
+                    print(f"[export_dashboard] WARN: cash regime model: {e}", file=sys.stderr)
 
         ativo_rows = conn.execute(
             """

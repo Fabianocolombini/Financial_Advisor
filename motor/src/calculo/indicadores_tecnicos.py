@@ -33,6 +33,7 @@ def compute_for_ticker(ticker: str, benchmark: str, cfg: dict) -> dict[str, pd.S
     mm200 = prices.rolling(200).mean()
     out["preco_vs_mm50"] = prices / mm50 - 1.0
     out["preco_vs_mm200"] = prices / mm200 - 1.0
+    out["preco_vs_mm50_abs"] = out["preco_vs_mm50"].abs()
     out["rsi_14"] = _rsi(prices, cfg.get("rsi_period", 14))
     vol = prices.pct_change().rolling(cfg.get("vol_window", 20)).std()
     out["vol_realizada"] = vol
@@ -62,12 +63,18 @@ def compute_for_ticker(ticker: str, benchmark: str, cfg: dict) -> dict[str, pd.S
     return out
 
 
-def persist_tecnicos(ticker: str, benchmark: str) -> int:
-    cfg = load_tecnicos_config()
+def persist_tecnicos(ticker: str, benchmark: str, aba_id: str | None = None) -> int:
+    cfg = load_tecnicos_config(aba_id)
     computed = compute_for_ticker(ticker, benchmark, cfg)
+    allowed = {i["id"] for i in cfg.get("indicadores", [])}
+    exclude = set(cfg.get("exclude_indicators", []))
     n = 0
     with get_connection() as conn:
         for ind_id, series in computed.items():
+            if ind_id in exclude:
+                continue
+            if allowed and ind_id not in allowed:
+                continue
             for date_idx, val in series.dropna().items():
                 if not np.isfinite(val):
                     continue
@@ -91,7 +98,7 @@ def compute_aba_tecnicos(aba_id: str) -> dict[str, int]:
     for item in aba.get("universo", []):
         t = item["ticker"].upper()
         b = (item.get("benchmark") or "").upper()
-        counts[t] = persist_tecnicos(t, b)
+        counts[t] = persist_tecnicos(t, b, aba_id=aba_id)
     return counts
 
 
