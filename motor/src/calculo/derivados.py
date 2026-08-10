@@ -53,6 +53,20 @@ def compute_formula(formula: str) -> pd.Series:
         if not ext.empty:
             return ext
         return _dividend_yield_minus_dgs10("VNQ")
+    if formula == "delta_ig_spread_20d":
+        s = _series_from_db("BAMLC0A0CM")
+        return s - s.shift(20) if not s.empty else pd.Series(dtype=float)
+    if formula == "delta_hy_spread_20d":
+        s = _series_from_db("BAMLH0A0HYM2")
+        return s - s.shift(20) if not s.empty else pd.Series(dtype=float)
+    if formula == "hy_quality_ratio":
+        cc = _series_from_db("BAMLH0A3HYC")
+        h = _series_from_db("BAMLH0A0HYM2")
+        if cc.empty or h.empty:
+            return pd.Series(dtype=float)
+        combined = pd.concat([cc, h], axis=1, join="inner")
+        combined.columns = ["cc", "h"]
+        return (combined["cc"] / combined["h"].replace(0, pd.NA)).dropna()
     if " - " in formula:
         left, right = formula.split(" - ", 1)
         a = _series_from_db(left.strip())

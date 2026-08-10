@@ -33,6 +33,8 @@ def load_fred_manifest() -> list[dict[str, str]]:
 
 _CASH_TECNICOS_ABAS = frozenset({"cash_equivalents"})
 _TREASURY_ABAS = frozenset({"fi_treasury"})
+_IG_ABAS = frozenset({"fi_ig"})
+_HY_ABAS = frozenset({"fi_hy"})
 
 
 def load_tecnicos_config(aba_id: str | None = None) -> dict[str, Any]:
@@ -52,8 +54,21 @@ def is_treasury_aba(aba_id: str) -> bool:
     return resolve_aba_config_id(aba_id) in _TREASURY_ABAS
 
 
+def is_ig_aba(aba_id: str) -> bool:
+    return resolve_aba_config_id(aba_id) in _IG_ABAS
+
+
+def is_hy_aba(aba_id: str) -> bool:
+    return resolve_aba_config_id(aba_id) in _HY_ABAS
+
+
 def is_class_model_aba(aba_id: str) -> bool:
-    return is_cash_aba(aba_id) or is_treasury_aba(aba_id)
+    return (
+        is_cash_aba(aba_id)
+        or is_treasury_aba(aba_id)
+        or is_ig_aba(aba_id)
+        or is_hy_aba(aba_id)
+    )
 
 
 def _formula_series(formula: str) -> set[str]:
@@ -76,6 +91,9 @@ def _formula_series(formula: str) -> set[str]:
         "private_funding_proxy": set(),
         "earnings_revision_proxy": set(),
         "delta_yield_real_20d": {"DFII10"},
+        "delta_ig_spread_20d": {"BAMLC0A0CM"},
+        "delta_hy_spread_20d": {"BAMLH0A0HYM2"},
+        "hy_quality_ratio": {"BAMLH0A3HYC", "BAMLH0A0HYM2"},
     }
     if formula in named:
         return set(named[formula])

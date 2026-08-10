@@ -16,6 +16,18 @@ const CLASS_META: Record<
     securityNote:
       "SecurityScore: tendência + RSI + volume − COT crowding. Rankeia ponto da curva.",
   },
+  fi_ig: {
+    title: "Modelo IG Bonds — duas camadas",
+    scoreLabel: "IGRegimeScore",
+    securityNote:
+      "SecurityScore: tendência + RSI + volume + duration fit vs term premium.",
+  },
+  fi_hy: {
+    title: "Modelo High Yield — duas camadas",
+    scoreLabel: "HYRegimeScore",
+    securityNote:
+      "SecurityScore: tendência + RSI + volume − vol penalty (σ20). Sem fed cut prob.",
+  },
 };
 
 export function SymbolClassRegimeModelPanel({
@@ -35,13 +47,23 @@ export function SymbolClassRegimeModelPanel({
       className={`space-y-3 rounded-lg border p-4 ${
         classId === "fi_treasury"
           ? "border-violet-900/50 bg-violet-950/20"
-          : "border-sky-900/50 bg-sky-950/20"
+          : classId === "fi_ig"
+            ? "border-emerald-900/50 bg-emerald-950/20"
+            : classId === "fi_hy"
+              ? "border-orange-900/50 bg-orange-950/20"
+              : "border-sky-900/50 bg-sky-950/20"
       }`}
     >
       <div className="flex flex-wrap items-center gap-2">
         <h3
           className={`text-sm font-medium ${
-            classId === "fi_treasury" ? "text-violet-100" : "text-sky-100"
+            classId === "fi_treasury"
+              ? "text-violet-100"
+              : classId === "fi_ig"
+                ? "text-emerald-100"
+                : classId === "fi_hy"
+                  ? "text-orange-100"
+                  : "text-sky-100"
           }`}
         >
           {meta.title}
@@ -73,9 +95,17 @@ export function SymbolClassRegimeModelPanel({
           {regimeModel.inflationShockFlag ? (
             <p className="text-[10px] text-red-400">Inflation-shock cap (Reduce)</p>
           ) : null}
+          {regimeModel.creditEventFlag ? (
+            <p className="text-[10px] text-amber-400">Credit event cap (Reduce)</p>
+          ) : null}
+          {regimeModel.hyStressFlag ? (
+            <p className="text-[10px] text-red-400">HY stress cap (Strong Reduce)</p>
+          ) : null}
           {regimeModel.stressFlag &&
           !regimeModel.flightToQualityFlag &&
-          !regimeModel.inflationShockFlag ? (
+          !regimeModel.inflationShockFlag &&
+          !regimeModel.creditEventFlag &&
+          !regimeModel.hyStressFlag ? (
             <p className="text-[10px] text-amber-400">Stress override</p>
           ) : null}
         </div>

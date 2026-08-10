@@ -64,6 +64,8 @@ export type MotorClassRegimeModelSnapshot = {
   stressFlag?: boolean;
   flightToQualityFlag?: boolean;
   inflationShockFlag?: boolean;
+  creditEventFlag?: boolean;
+  hyStressFlag?: boolean;
   calibrated?: boolean;
   calibrationNote?: string;
   explanation?: string[];

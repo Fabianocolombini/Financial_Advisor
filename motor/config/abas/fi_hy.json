@@ -1,7 +1,12 @@
 {
   "id": "fi_hy",
   "nome": "High Yield Corporativo",
-  "descricao": "HY spreads e ETFs high yield",
+  "descricao": "HY spreads — HYRegimeScore + SecurityScore (vol penalty)",
+  "model": {
+    "regime": "hy_regime_v1",
+    "security": "hy_security_v1",
+    "calibrated": false
+  },
   "pesos_camada": {
     "macro": 0.60,
     "valuation": 0.25,
@@ -10,44 +15,46 @@
   },
   "indicadores": [
     {
-      "id": "hy_spread",
-      "nome": "Spread OAS HY agregado",
+      "id": "hy_oas",
+      "nome": "Spread OAS HY (H)",
       "camada": "macro",
       "fonte": "fred",
       "serie": "BAMLH0A0HYM2",
-      "peso": 0.40,
+      "peso": 0.35,
       "zscore_window": 252,
       "direcao": "positiva"
     },
     {
-      "id": "hy_minus_ig",
-      "nome": "Diferencial HY - IG",
+      "id": "delta_hy_spread_20d",
+      "nome": "Δ spread HY 20d",
       "camada": "macro",
       "fonte": "calculado",
-      "formula": "BAMLH0A0HYM2 - BAMLC0A0CM",
+      "formula": "delta_hy_spread_20d",
       "peso": 0.30,
       "zscore_window": 252,
-      "direcao": "positiva"
+      "direcao": "negativa"
     },
     {
-      "id": "hy_bb_spread",
-      "nome": "Spread HY BB",
+      "id": "hy_quality_ratio",
+      "nome": "CCC/HY quality ratio (R)",
       "camada": "macro",
-      "fonte": "fred",
-      "serie": "BAMLH0A1HYBB",
-      "peso": 0.15,
+      "fonte": "calculado",
+      "formula": "hy_quality_ratio",
+      "peso": 0.20,
       "zscore_window": 252,
-      "direcao": "positiva"
+      "direcao": "negativa"
     },
     {
-      "id": "hy_b_spread",
-      "nome": "Spread HY B",
+      "id": "hy_distress_proxy_score",
+      "nome": "HY distress proxy (D)",
       "camada": "macro",
-      "fonte": "fred",
-      "serie": "BAMLH0A2HYB",
+      "fonte": "calculado",
+      "formula": "hy_distress_proxy_score",
       "peso": 0.15,
       "zscore_window": 252,
-      "direcao": "positiva"
+      "direcao": "negativa",
+      "is_proxy": true,
+      "proxy_rationale": "Percentil 5y de CCC OAS + vol realizada HYG"
     }
   ],
   "universo": [

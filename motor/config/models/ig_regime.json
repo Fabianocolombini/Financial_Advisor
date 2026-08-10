@@ -1,0 +1,35 @@
+{
+  "calibrated": false,
+  "note": "Pesos w1–w5 e wa–wd definidos por julgamento — não calibrados (`calibrated: false`).",
+  "regime_weights": {
+    "w1": 0.30,
+    "w2": 0.20,
+    "w3": 0.15,
+    "w4": 0.25,
+    "w5": 0.10
+  },
+  "security_weights": {
+    "wa": 0.30,
+    "wb": 0.20,
+    "wc": 0.15,
+    "wd": 0.35
+  },
+  "thresholds": {
+    "overweight": 0.65,
+    "hold": 0.45,
+    "reduce": 0.25
+  },
+  "percentile_window_days": 1260,
+  "delta_spread_days": 20,
+  "credit_event_z_threshold": 2.0,
+  "term_premium_fred": "THREEFYTP10",
+  "ig_spread_fred": "BAMLC0A0CM",
+  "ig_aaa_fred": "BAMLC0A1CAAA",
+  "ig_bbb_fred": "BAMLC0A4CBBB",
+  "action_labels": {
+    "overweight": "Overweight",
+    "hold": "Hold",
+    "reduce": "Reduce",
+    "strong_reduce": "Strong Reduce"
+  }
+}

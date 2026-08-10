@@ -182,6 +182,46 @@ def main() -> None:
                 except Exception as e:
                     print(f"[export_dashboard] WARN: treasury regime model: {e}", file=sys.stderr)
 
+            if class_id == "fi_ig":
+                try:
+                    from motor.src.calculo.models.ig_regime_model import compute_ig_regime
+
+                    regime = compute_ig_regime()
+                    snapshot["classes"][class_id]["regimeModel"] = {
+                        "model": regime.get("model"),
+                        "score": regime.get("ig_regime_score"),
+                        "action": regime.get("regime_action"),
+                        "actionCalculated": regime.get("regime_action_calculated"),
+                        "stressFlag": regime.get("stress_flag"),
+                        "creditEventFlag": regime.get("credit_event_flag"),
+                        "calibrated": regime.get("calibrated"),
+                        "calibrationNote": regime.get("calibration_note"),
+                        "explanation": regime.get("explanation"),
+                        "components": regime.get("componentes"),
+                    }
+                except Exception as e:
+                    print(f"[export_dashboard] WARN: ig regime model: {e}", file=sys.stderr)
+
+            if class_id == "fi_hy":
+                try:
+                    from motor.src.calculo.models.hy_regime_model import compute_hy_regime
+
+                    regime = compute_hy_regime()
+                    snapshot["classes"][class_id]["regimeModel"] = {
+                        "model": regime.get("model"),
+                        "score": regime.get("hy_regime_score"),
+                        "action": regime.get("regime_action"),
+                        "actionCalculated": regime.get("regime_action_calculated"),
+                        "stressFlag": regime.get("stress_flag"),
+                        "hyStressFlag": regime.get("hy_stress_flag"),
+                        "calibrated": regime.get("calibrated"),
+                        "calibrationNote": regime.get("calibration_note"),
+                        "explanation": regime.get("explanation"),
+                        "components": regime.get("componentes"),
+                    }
+                except Exception as e:
+                    print(f"[export_dashboard] WARN: hy regime model: {e}", file=sys.stderr)
+
         ativo_rows = conn.execute(
             """
             SELECT sa.aba_id, sa.ticker, sa.data, sa.score_composto, sa.estagio,

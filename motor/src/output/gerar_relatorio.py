@@ -6,7 +6,14 @@ import datetime as dt
 from pathlib import Path
 from typing import Any
 
-from motor.src.config_loader import is_cash_aba, is_treasury_aba, load_aba_config
+from motor.src.config_loader import (
+    is_cash_aba,
+    is_class_model_aba,
+    is_hy_aba,
+    is_ig_aba,
+    is_treasury_aba,
+    load_aba_config,
+)
 from motor.src.decisao.estagio import compute_estagio_aba, diverge_categoria, estagio_ativo
 from motor.src.db.connection import get_connection
 from motor.src.paths import OUTPUT_DIR
@@ -117,9 +124,92 @@ def build_report_markdown(
             "RSI mantido — vol genuína em TLT/IEF/SHY."
         )
         lines.append("")
+    if is_ig_aba(aba_result["aba_id"]):
+        lines.append("## Modelo IG — Regime (Modelo 1)")
+        lines.append("")
+        try:
+            from motor.src.calculo.models.ig_regime_model import (
+                compute_ig_regime,
+                sanity_check_credit_event_march_2020,
+            )
+
+            regime = compute_ig_regime()
+            lines.append(
+                f"- IGRegimeScore: **{_fmt(regime.get('ig_regime_score'))}** "
+                f"→ ação **{regime.get('regime_action')}** (quanto IG)"
+            )
+            if regime.get("credit_event_flag"):
+                lines.append(
+                    f"- Credit event override (ação calculada: "
+                    f"{regime.get('regime_action_calculated')})."
+                )
+            for note in regime.get("explanation", []):
+                lines.append(f"- {note.replace('**', '')}")
+            sanity = sanity_check_credit_event_march_2020()
+            if sanity.get("ok"):
+                lines.append(
+                    f"- Sanity Mar/2020: credit_event em {sanity.get('credit_event_days')} dias "
+                    f"(passed={sanity.get('passed')})."
+                )
+            if not regime.get("calibrated"):
+                lines.append("- ⚠ Pesos não calibrados (`calibrated: false`).")
+        except Exception as e:
+            lines.append(f"- Erro regime IG: {e}")
+        lines.append("")
+        lines.append("## Modelo IG — Seleção (Modelo 2)")
+        lines.append("")
+        lines.append(
+            "- SecurityScore: tendência + RSI + volume + duration fit vs term premium."
+        )
+        lines.append("")
+    if is_hy_aba(aba_result["aba_id"]):
+        lines.append("## Modelo HY — Regime (Modelo 1)")
+        lines.append("")
+        try:
+            from motor.src.calculo.models.hy_regime_model import (
+                compute_hy_regime,
+                sanity_check_hy_stress_h2_2008,
+                sanity_check_hy_stress_march_2020,
+            )
+
+            regime = compute_hy_regime()
+            lines.append(
+                f"- HYRegimeScore: **{_fmt(regime.get('hy_regime_score'))}** "
+                f"→ ação **{regime.get('regime_action')}** (quanto HY)"
+            )
+            if regime.get("hy_stress_flag"):
+                lines.append(
+                    f"- HY stress override (ação calculada: "
+                    f"{regime.get('regime_action_calculated')})."
+                )
+            for note in regime.get("explanation", []):
+                lines.append(f"- {note.replace('**', '')}")
+            sanity_2020 = sanity_check_hy_stress_march_2020()
+            if sanity_2020.get("ok"):
+                lines.append(
+                    f"- Sanity Mar/2020: hy_stress em {sanity_2020.get('hy_stress_days')} dias "
+                    f"(passed={sanity_2020.get('passed')})."
+                )
+            sanity_2008 = sanity_check_hy_stress_h2_2008()
+            if sanity_2008.get("ok"):
+                lines.append(
+                    f"- Sanity H2/2008: hy_stress em {sanity_2008.get('hy_stress_days')} dias "
+                    f"(passed={sanity_2008.get('passed')})."
+                )
+            if not regime.get("calibrated"):
+                lines.append("- ⚠ Pesos não calibrados (`calibrated: false`).")
+        except Exception as e:
+            lines.append(f"- Erro regime HY: {e}")
+        lines.append("")
+        lines.append("## Modelo HY — Seleção (Modelo 2)")
+        lines.append("")
+        lines.append(
+            "- SecurityScore: tendência + RSI + volume − vol penalty (σ20). Sem fed cut prob."
+        )
+        lines.append("")
     lines.append("## Racional matemático")
     lines.append("")
-    if is_cash_aba(aba_result["aba_id"]) or is_treasury_aba(aba_result["aba_id"]):
+    if is_class_model_aba(aba_result["aba_id"]):
         lines.append("| Indicador | Valor | Peso | Contribuição | Role |")
         lines.append("|-----------|-------|------|--------------|------|")
         for c in aba_result.get("componentes", []):

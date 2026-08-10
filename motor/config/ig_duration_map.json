@@ -1,0 +1,17 @@
+{
+  "note": "Effective duration (years) — static approximations; yfinance does not expose cleanly.",
+  "default": 6.0,
+  "tickers": {
+    "LQD": 8.4,
+    "VCIT": 6.2,
+    "VCSH": 2.7,
+    "IGSB": 2.5,
+    "USIG": 7.8,
+    "AGG": 6.1,
+    "BND": 6.0,
+    "SPSB": 1.8,
+    "IGIB": 5.5,
+    "IGLB": 12.0,
+    "CORP": 6.8
+  }
+}
