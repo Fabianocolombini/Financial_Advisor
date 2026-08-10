@@ -1,10 +1,15 @@
 {
   "id": "intl_equity",
   "nome": "Developed ex-US Equity",
-  "descricao": "International developed — valuation relativa vs US e macro",
+  "descricao": "IntlEquityRegimeScore + hedge_fit",
+  "model": {
+    "regime": "intl_equity_regime_v1",
+    "security": "intl_equity_security_v1",
+    "calibrated": false
+  },
   "pesos_camada": {
     "macro": 0.45,
-    "valuation": 0.40,
+    "valuation": 0.4,
     "tecnico": 0.15,
     "fundamental": 0.0
   },
@@ -25,7 +30,7 @@
       "camada": "macro",
       "fonte": "fred",
       "serie": "VIXCLS",
-      "peso": 0.30,
+      "peso": 0.3,
       "zscore_window": 252,
       "direcao": "positiva"
     },
@@ -45,18 +50,42 @@
       "camada": "macro",
       "fonte": "fred",
       "serie": "DTWEXBGS",
-      "peso": 0.20,
+      "peso": 0.2,
       "zscore_window": 252,
       "direcao": "negativa"
     }
   ],
   "universo": [
-    {"ticker": "EFA", "nome": "iShares MSCI EAFE ETF", "benchmark": "SPY"},
-    {"ticker": "VEA", "nome": "Vanguard FTSE Developed Markets ETF", "benchmark": "SPY"},
-    {"ticker": "IEFA", "nome": "iShares Core MSCI EAFE IMI Index ETF", "benchmark": "SPY"},
-    {"ticker": "VXUS", "nome": "Vanguard Total International Stock ETF", "benchmark": "SPY"},
-    {"ticker": "SCHF", "nome": "Schwab International Equity ETF", "benchmark": "SPY"},
-    {"ticker": "VEU", "nome": "Vanguard FTSE All-World ex-US ETF", "benchmark": "SPY"}
+    {
+      "ticker": "EFA",
+      "nome": "iShares MSCI EAFE ETF",
+      "benchmark": "SPY"
+    },
+    {
+      "ticker": "VEA",
+      "nome": "Vanguard FTSE Developed Markets ETF",
+      "benchmark": "SPY"
+    },
+    {
+      "ticker": "IEFA",
+      "nome": "iShares Core MSCI EAFE IMI Index ETF",
+      "benchmark": "SPY"
+    },
+    {
+      "ticker": "VXUS",
+      "nome": "Vanguard Total International Stock ETF",
+      "benchmark": "SPY"
+    },
+    {
+      "ticker": "SCHF",
+      "nome": "Schwab International Equity ETF",
+      "benchmark": "SPY"
+    },
+    {
+      "ticker": "VEU",
+      "nome": "Vanguard FTSE All-World ex-US ETF",
+      "benchmark": "SPY"
+    }
   ],
   "estagio": {
     "regressao_dias": 90,

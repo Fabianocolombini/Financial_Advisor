@@ -1,0 +1,27 @@
+{
+  "calibrated": false,
+  "note": "Pesos definidos por julgamento — não calibrados (`calibrated: false`).",
+  "regime_weights": {
+    "w1": 0.5,
+    "w2": 0.3,
+    "w3": 0.2
+  },
+  "thresholds": {
+    "accelerate": 0.65,
+    "base": 0.45,
+    "decelerate": 0.25
+  },
+  "percentile_window_days": 1260,
+  "action_labels": {
+    "accelerate": "Acelerar",
+    "base": "Ritmo base",
+    "decelerate": "Desacelerar",
+    "pause": "Pausar"
+  },
+  "security_weights": {
+    "wa": 0.5,
+    "wb": 0.3,
+    "wc": 0.2
+  },
+  "output_type": "pace"
+}

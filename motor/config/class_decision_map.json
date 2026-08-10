@@ -158,6 +158,10 @@
         "projection": ["naaim_exposure", "margin_debt"],
         "investability": ["pe_ratio", "vix"],
         "forecast": ["earnings_revision_proxy", "cape_shiller"]
+      },
+      "models": {
+        "regime": "us_equity_regime_v1 — USEquityRegimeScore (quanto US equity)",
+        "security": "us_equity_security_v1 — trend + RSI + volume − vol"
       }
     },
     "intl_equity": {
@@ -168,6 +172,10 @@
         "projection": ["pe_rel_intl_us"],
         "investability": ["pe_rel_intl_us"],
         "forecast": ["cape_by_country"]
+      },
+      "models": {
+        "regime": "intl_equity_regime_v1 — IntlEquityRegimeScore",
+        "security": "intl_equity_security_v1 — trend + RSI + vol_inv + hedge_fit"
       }
     },
     "em_equity": {
@@ -178,6 +186,10 @@
         "projection": ["embi_spread"],
         "investability": ["embi_spread"],
         "forecast": ["embi_spread", "gdp_growth_em"]
+      },
+      "models": {
+        "regime": "em_equity_regime_v1 — EMEquityRegimeScore",
+        "security": "em_equity_security_v1 — trend + RSI + volume + china_fit"
       }
     },
     "real_estate": {
@@ -188,6 +200,10 @@
         "projection": ["nareit_yield_spread"],
         "investability": ["reit_valuation_percentile"],
         "forecast": ["reit_valuation_percentile"]
+      },
+      "models": {
+        "regime": "reits_regime_v1 — REITsRegimeScore",
+        "security": "reits_security_v1 — trend + yield + volume − vol"
       }
     },
     "commodities_precious": {
@@ -198,6 +214,10 @@
         "projection": ["gld_holdings"],
         "investability": ["gold_price"],
         "forecast": ["cot_gold_net"]
+      },
+      "models": {
+        "regime": "commodities_precious_regime_v1 — PreciousRegimeScore",
+        "security": "commodities_precious_security_v1 — trend + RSI + volume − ER"
       }
     },
     "commodities_energy": {
@@ -208,6 +228,10 @@
         "projection": ["crude_oil_stocks"],
         "investability": ["wti"],
         "forecast": ["cot_crude_net"]
+      },
+      "models": {
+        "regime": "commodities_energy_regime_v1 — EnergyRegimeScore",
+        "security": "commodities_energy_security_v1 — trend + RSI + volume + beta_fit"
       }
     },
     "energy_mlp": {
@@ -218,6 +242,10 @@
         "projection": ["distribution_yield_spread"],
         "investability": ["distribution_yield_spread"],
         "forecast": ["distribution_yield_spread"]
+      },
+      "models": {
+        "regime": "energy_mlp_regime_v1 — MLPRegimeScore",
+        "security": "energy_mlp_security_v1 — trend + yield + volume − vol"
       }
     },
     "healthcare_biotech": {
@@ -228,6 +256,10 @@
         "projection": ["private_funding_proxy"],
         "investability": ["fda_calendar_density"],
         "forecast": ["private_funding_proxy"]
+      },
+      "models": {
+        "regime": "healthcare_biotech_regime_v1 — BiotechRegimeScore",
+        "security": "healthcare_biotech_security_v1 — trend + RSI + volume + catalyst"
       }
     },
     "alt_bdc": {
@@ -238,6 +270,10 @@
         "projection": ["nav_premium_discount"],
         "investability": ["nav_premium_discount"],
         "forecast": ["nav_premium_discount"]
+      },
+      "models": {
+        "regime": "bdc_regime_v1 — BDCRegimeScore",
+        "security": "bdc_security_v1 — trend + NAV discount + yield − vol"
       }
     },
     "currencies": {
@@ -248,6 +284,10 @@
         "projection": ["risk_reversal_proxy"],
         "investability": ["rate_differential"],
         "forecast": ["risk_reversal_proxy"]
+      },
+      "models": {
+        "regime": "fx_regime_v1 — ConversionPaceScore (pace, não allocation)",
+        "security": "fx_security_v1 — custo + liquidez + adequação fiscal"
       }
     },
     "alt_infrastructure": {
@@ -258,6 +298,10 @@
         "projection": ["yield_10y"],
         "investability": ["price_igf"],
         "forecast": ["yield_10y"]
+      },
+      "models": {
+        "regime": "alt_infrastructure_regime_v1 — InfraRegimeScore",
+        "security": "alt_infrastructure_security_v1 — trend + yield + vol_inv + volume"
       }
     }
   },

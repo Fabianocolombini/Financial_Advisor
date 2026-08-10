@@ -1,11 +1,16 @@
 {
   "id": "currencies",
   "nome": "FX / moedas",
-  "descricao": "Dollar index e Fed — macro FX",
+  "descricao": "ConversionPaceScore (pace)",
+  "model": {
+    "regime": "fx_regime_v1",
+    "security": "fx_security_v1",
+    "calibrated": false
+  },
   "pesos_camada": {
-    "macro": 0.70,
-    "valuation": 0.20,
-    "tecnico": 0.10,
+    "macro": 0.7,
+    "valuation": 0.2,
+    "tecnico": 0.1,
     "fundamental": 0.0
   },
   "indicadores": [
@@ -35,16 +40,32 @@
       "camada": "macro",
       "fonte": "fred",
       "serie": "DFF",
-      "peso": 0.30,
+      "peso": 0.3,
       "zscore_window": 252,
       "direcao": "positiva"
     }
   ],
   "universo": [
-    {"ticker": "UUP", "nome": "Invesco DB US Dollar Index Bullish Fund", "benchmark": "AGG"},
-    {"ticker": "FXE", "nome": "Invesco CurrencyShares Euro Trust", "benchmark": "AGG"},
-    {"ticker": "FXY", "nome": "Invesco CurrencyShares Japanese Yen Trust", "benchmark": "AGG"},
-    {"ticker": "CEW", "nome": "WisdomTree Emerging Currency Strategy Fund", "benchmark": "AGG"}
+    {
+      "ticker": "UUP",
+      "nome": "Invesco DB US Dollar Index Bullish Fund",
+      "benchmark": "AGG"
+    },
+    {
+      "ticker": "FXE",
+      "nome": "Invesco CurrencyShares Euro Trust",
+      "benchmark": "AGG"
+    },
+    {
+      "ticker": "FXY",
+      "nome": "Invesco CurrencyShares Japanese Yen Trust",
+      "benchmark": "AGG"
+    },
+    {
+      "ticker": "CEW",
+      "nome": "WisdomTree Emerging Currency Strategy Fund",
+      "benchmark": "AGG"
+    }
   ],
   "estagio": {
     "regressao_dias": 90,

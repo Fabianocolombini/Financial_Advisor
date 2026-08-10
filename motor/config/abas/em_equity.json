@@ -1,9 +1,14 @@
 {
   "id": "em_equity",
   "nome": "Emerging Market Equity",
-  "descricao": "Emerging markets — valuation relativa e crescimento macro",
+  "descricao": "EMEquityRegimeScore + china_fit",
+  "model": {
+    "regime": "em_equity_regime_v1",
+    "security": "em_equity_security_v1",
+    "calibrated": false
+  },
   "pesos_camada": {
-    "macro": 0.50,
+    "macro": 0.5,
     "valuation": 0.35,
     "tecnico": 0.15,
     "fundamental": 0.0
@@ -15,7 +20,7 @@
       "camada": "valuation",
       "fonte": "calculado",
       "formula": "pe_EEM_div_SPY",
-      "peso": 0.50,
+      "peso": 0.5,
       "zscore_window": 252,
       "direcao": "positiva"
     },
@@ -25,7 +30,7 @@
       "camada": "macro",
       "fonte": "calculado",
       "formula": "em_gdp_growth",
-      "peso": 0.30,
+      "peso": 0.3,
       "zscore_window": 252,
       "direcao": "positiva"
     },
@@ -51,12 +56,36 @@
     }
   ],
   "universo": [
-    {"ticker": "EEM", "nome": "iShares MSCI Emerging Markets ETF", "benchmark": "SPY"},
-    {"ticker": "VWO", "nome": "Vanguard FTSE Emerging Markets ETF", "benchmark": "SPY"},
-    {"ticker": "IEMG", "nome": "iShares Core MSCI Emerging Markets IMI Index ETF", "benchmark": "SPY"},
-    {"ticker": "SCHE", "nome": "Schwab Emerging Markets Equity ETF", "benchmark": "SPY"},
-    {"ticker": "SPEM", "nome": "SPDR Portfolio Emerging Markets ETF", "benchmark": "SPY"},
-    {"ticker": "EMXC", "nome": "iShares MSCI Emerging Markets ex China ETF", "benchmark": "SPY"}
+    {
+      "ticker": "EEM",
+      "nome": "iShares MSCI Emerging Markets ETF",
+      "benchmark": "SPY"
+    },
+    {
+      "ticker": "VWO",
+      "nome": "Vanguard FTSE Emerging Markets ETF",
+      "benchmark": "SPY"
+    },
+    {
+      "ticker": "IEMG",
+      "nome": "iShares Core MSCI Emerging Markets IMI Index ETF",
+      "benchmark": "SPY"
+    },
+    {
+      "ticker": "SCHE",
+      "nome": "Schwab Emerging Markets Equity ETF",
+      "benchmark": "SPY"
+    },
+    {
+      "ticker": "SPEM",
+      "nome": "SPDR Portfolio Emerging Markets ETF",
+      "benchmark": "SPY"
+    },
+    {
+      "ticker": "EMXC",
+      "nome": "iShares MSCI Emerging Markets ex China ETF",
+      "benchmark": "SPY"
+    }
   ],
   "estagio": {
     "regressao_dias": 90,

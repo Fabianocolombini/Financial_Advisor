@@ -8,6 +8,44 @@ from typing import Any
 from motor.src.paths import aba_config_path, CONFIG_DIR
 from motor.src.config.aba_class_map import ABA_LEGACY_ALIASES
 
+_CASH_TECNICOS_ABAS = frozenset({"cash_equivalents"})
+_TREASURY_ABAS = frozenset({"fi_treasury"})
+_IG_ABAS = frozenset({"fi_ig"})
+_HY_ABAS = frozenset({"fi_hy"})
+_TIPS_ABAS = frozenset({"fi_tips"})
+_PREFERRED_ABAS = frozenset({"fi_preferred"})
+_US_EQUITY_ABAS = frozenset({"us_equity"})
+_INTL_EQUITY_ABAS = frozenset({"intl_equity"})
+_EM_EQUITY_ABAS = frozenset({"em_equity"})
+_REITS_ABAS = frozenset({"reits"})
+_COMMODITIES_PRECIOUS_ABAS = frozenset({"commodities_precious"})
+_COMMODITIES_ENERGY_ABAS = frozenset({"commodities_energy"})
+_ENERGY_MLP_ABAS = frozenset({"energy_mlp"})
+_HEALTHCARE_BIOTECH_ABAS = frozenset({"healthcare_biotech"})
+_BDC_ABAS = frozenset({"credito_alternativo"})
+_ALT_INFRASTRUCTURE_ABAS = frozenset({"alt_infrastructure"})
+_FX_ABAS = frozenset({"currencies"})
+
+_CLASS_MODEL_ABAS = (
+    _CASH_TECNICOS_ABAS
+    | _TREASURY_ABAS
+    | _IG_ABAS
+    | _HY_ABAS
+    | _TIPS_ABAS
+    | _PREFERRED_ABAS
+    | _US_EQUITY_ABAS
+    | _INTL_EQUITY_ABAS
+    | _EM_EQUITY_ABAS
+    | _REITS_ABAS
+    | _COMMODITIES_PRECIOUS_ABAS
+    | _COMMODITIES_ENERGY_ABAS
+    | _ENERGY_MLP_ABAS
+    | _HEALTHCARE_BIOTECH_ABAS
+    | _BDC_ABAS
+    | _ALT_INFRASTRUCTURE_ABAS
+    | _FX_ABAS
+)
+
 
 def resolve_aba_config_id(aba_id: str) -> str:
     if aba_config_path(aba_id).is_file():
@@ -31,14 +69,6 @@ def load_fred_manifest() -> list[dict[str, str]]:
     return json.loads(path.read_text())
 
 
-_CASH_TECNICOS_ABAS = frozenset({"cash_equivalents"})
-_TREASURY_ABAS = frozenset({"fi_treasury"})
-_IG_ABAS = frozenset({"fi_ig"})
-_HY_ABAS = frozenset({"fi_hy"})
-_TIPS_ABAS = frozenset({"fi_tips"})
-_PREFERRED_ABAS = frozenset({"fi_preferred"})
-
-
 def load_tecnicos_config(aba_id: str | None = None) -> dict[str, Any]:
     if aba_id and resolve_aba_config_id(aba_id) in _CASH_TECNICOS_ABAS:
         cash_path = CONFIG_DIR / "indicadores_tecnicos_cash.json"
@@ -48,39 +78,84 @@ def load_tecnicos_config(aba_id: str | None = None) -> dict[str, Any]:
     return json.loads(path.read_text())
 
 
+def _is_aba(aba_id: str, group: frozenset[str]) -> bool:
+    return resolve_aba_config_id(aba_id) in group
+
+
 def is_cash_aba(aba_id: str) -> bool:
-    return resolve_aba_config_id(aba_id) in _CASH_TECNICOS_ABAS
+    return _is_aba(aba_id, _CASH_TECNICOS_ABAS)
 
 
 def is_treasury_aba(aba_id: str) -> bool:
-    return resolve_aba_config_id(aba_id) in _TREASURY_ABAS
+    return _is_aba(aba_id, _TREASURY_ABAS)
 
 
 def is_ig_aba(aba_id: str) -> bool:
-    return resolve_aba_config_id(aba_id) in _IG_ABAS
+    return _is_aba(aba_id, _IG_ABAS)
 
 
 def is_hy_aba(aba_id: str) -> bool:
-    return resolve_aba_config_id(aba_id) in _HY_ABAS
+    return _is_aba(aba_id, _HY_ABAS)
 
 
 def is_tips_aba(aba_id: str) -> bool:
-    return resolve_aba_config_id(aba_id) in _TIPS_ABAS
+    return _is_aba(aba_id, _TIPS_ABAS)
 
 
 def is_preferred_aba(aba_id: str) -> bool:
-    return resolve_aba_config_id(aba_id) in _PREFERRED_ABAS
+    return _is_aba(aba_id, _PREFERRED_ABAS)
+
+
+def is_us_equity_aba(aba_id: str) -> bool:
+    return _is_aba(aba_id, _US_EQUITY_ABAS)
+
+
+def is_intl_equity_aba(aba_id: str) -> bool:
+    return _is_aba(aba_id, _INTL_EQUITY_ABAS)
+
+
+def is_em_equity_aba(aba_id: str) -> bool:
+    return _is_aba(aba_id, _EM_EQUITY_ABAS)
+
+
+def is_reits_aba(aba_id: str) -> bool:
+    return _is_aba(aba_id, _REITS_ABAS)
+
+
+def is_commodities_precious_aba(aba_id: str) -> bool:
+    return _is_aba(aba_id, _COMMODITIES_PRECIOUS_ABAS)
+
+
+def is_commodities_energy_aba(aba_id: str) -> bool:
+    return _is_aba(aba_id, _COMMODITIES_ENERGY_ABAS)
+
+
+def is_energy_mlp_aba(aba_id: str) -> bool:
+    return _is_aba(aba_id, _ENERGY_MLP_ABAS)
+
+
+def is_healthcare_biotech_aba(aba_id: str) -> bool:
+    return _is_aba(aba_id, _HEALTHCARE_BIOTECH_ABAS)
+
+
+def is_bdc_aba(aba_id: str) -> bool:
+    return _is_aba(aba_id, _BDC_ABAS)
+
+
+def is_alt_infrastructure_aba(aba_id: str) -> bool:
+    return _is_aba(aba_id, _ALT_INFRASTRUCTURE_ABAS)
+
+
+def is_currencies_aba(aba_id: str) -> bool:
+    return _is_aba(aba_id, _FX_ABAS)
+
+
+def is_fx_aba(aba_id: str) -> bool:
+    return is_currencies_aba(aba_id)
 
 
 def is_class_model_aba(aba_id: str) -> bool:
-    return (
-        is_cash_aba(aba_id)
-        or is_treasury_aba(aba_id)
-        or is_ig_aba(aba_id)
-        or is_hy_aba(aba_id)
-        or is_tips_aba(aba_id)
-        or is_preferred_aba(aba_id)
-    )
+    return resolve_aba_config_id(aba_id) in _CLASS_MODEL_ABAS
 
 
 def _formula_series(formula: str) -> set[str]:
@@ -120,7 +195,6 @@ def _formula_series(formula: str) -> set[str]:
         return {left.strip(), right.strip()}
     if " + " in formula:
         return {p.strip() for p in formula.split(" + ")}
-    # Bare FRED series id (e.g. DGS10) — uppercase tokens only
     if formula and formula.isupper() and formula.replace("_", "").isalnum():
         return {formula}
     return set()

@@ -1,11 +1,16 @@
 {
   "id": "healthcare_biotech",
   "nome": "Biotech e saúde",
-  "descricao": "Biotechnology ETFs — VIX, curva e yields",
+  "descricao": "BiotechRegimeScore + catalyst",
+  "model": {
+    "regime": "healthcare_biotech_regime_v1",
+    "security": "healthcare_biotech_security_v1",
+    "calibrated": false
+  },
   "pesos_camada": {
     "macro": 0.45,
     "valuation": 0.35,
-    "tecnico": 0.10,
+    "tecnico": 0.1,
     "fundamental": 0.0
   },
   "indicadores": [
@@ -35,7 +40,7 @@
       "camada": "macro",
       "fonte": "fred",
       "serie": "DFF",
-      "peso": 0.20,
+      "peso": 0.2,
       "zscore_window": 252,
       "direcao": "negativa"
     },
@@ -45,19 +50,47 @@
       "camada": "valuation",
       "fonte": "fred",
       "serie": "DGS10",
-      "peso": 0.40,
+      "peso": 0.4,
       "zscore_window": 252,
       "direcao": "negativa"
     }
   ],
   "universo": [
-    {"ticker": "IBB", "nome": "iShares Biotechnology ETF", "benchmark": "SPY"},
-    {"ticker": "XBI", "nome": "SPDR S&P Biotech ETF", "benchmark": "SPY"},
-    {"ticker": "BBH", "nome": "VanEck Biotech ETF", "benchmark": "SPY"},
-    {"ticker": "PBE", "nome": "Invesco Biotechnology & Genome ETF", "benchmark": "SPY"},
-    {"ticker": "FBT", "nome": "First Trust NYSE Arca Biotechnology Index Fund", "benchmark": "SPY"},
-    {"ticker": "SBIO", "nome": "ALPS Medical Breakthroughs ETF", "benchmark": "SPY"},
-    {"ticker": "ARKG", "nome": "ARK Genomic Revolution ETF", "benchmark": "SPY"}
+    {
+      "ticker": "IBB",
+      "nome": "iShares Biotechnology ETF",
+      "benchmark": "SPY"
+    },
+    {
+      "ticker": "XBI",
+      "nome": "SPDR S&P Biotech ETF",
+      "benchmark": "SPY"
+    },
+    {
+      "ticker": "BBH",
+      "nome": "VanEck Biotech ETF",
+      "benchmark": "SPY"
+    },
+    {
+      "ticker": "PBE",
+      "nome": "Invesco Biotechnology & Genome ETF",
+      "benchmark": "SPY"
+    },
+    {
+      "ticker": "FBT",
+      "nome": "First Trust NYSE Arca Biotechnology Index Fund",
+      "benchmark": "SPY"
+    },
+    {
+      "ticker": "SBIO",
+      "nome": "ALPS Medical Breakthroughs ETF",
+      "benchmark": "SPY"
+    },
+    {
+      "ticker": "ARKG",
+      "nome": "ARK Genomic Revolution ETF",
+      "benchmark": "SPY"
+    }
   ],
   "estagio": {
     "regressao_dias": 90,

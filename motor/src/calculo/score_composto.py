@@ -12,16 +12,7 @@ from motor.src.calculo.series_sources import indicator_series
 from motor.src.config.manifest_indicators import scoring_indicators_for_aba
 from motor.src.calculo.indicadores_tecnicos import get_tecnico_series
 from motor.src.calculo.zscore import apply_direction, zscore_latest
-from motor.src.config_loader import (
-    is_cash_aba,
-    is_hy_aba,
-    is_ig_aba,
-    is_preferred_aba,
-    is_tips_aba,
-    is_treasury_aba,
-    load_aba_config,
-    load_tecnicos_config,
-)
+from motor.src.config_loader import is_class_model_aba, load_aba_config, load_tecnicos_config
 from motor.src.dates import motor_as_of_date
 from motor.src.db.connection import get_connection, init_db
 from motor.src.ingestao.edgar_client import get_edgar_metric
@@ -78,35 +69,10 @@ def _score_indicator(
 
 
 def compute_aba_score(aba_id: str, as_of: dt.date | None = None) -> dict[str, Any]:
-    if is_cash_aba(aba_id):
-        from motor.src.calculo.models.cash_regime_model import cash_regime_aba_result
+    if is_class_model_aba(aba_id):
+        from motor.src.calculo.class_model_registry import regime_aba_result
 
-        return cash_regime_aba_result(aba_id, as_of)
-
-    if is_treasury_aba(aba_id):
-        from motor.src.calculo.models.treasury_regime_model import treasury_regime_aba_result
-
-        return treasury_regime_aba_result(aba_id, as_of)
-
-    if is_ig_aba(aba_id):
-        from motor.src.calculo.models.ig_regime_model import ig_regime_aba_result
-
-        return ig_regime_aba_result(aba_id, as_of)
-
-    if is_hy_aba(aba_id):
-        from motor.src.calculo.models.hy_regime_model import hy_regime_aba_result
-
-        return hy_regime_aba_result(aba_id, as_of)
-
-    if is_tips_aba(aba_id):
-        from motor.src.calculo.models.tips_regime_model import tips_regime_aba_result
-
-        return tips_regime_aba_result(aba_id, as_of)
-
-    if is_preferred_aba(aba_id):
-        from motor.src.calculo.models.preferred_regime_model import preferred_regime_aba_result
-
-        return preferred_regime_aba_result(aba_id, as_of)
+        return regime_aba_result(aba_id, as_of)
 
     init_db()
     aba = load_aba_config(aba_id)
@@ -145,60 +111,11 @@ def compute_ativo_score(
     as_of: dt.date | None = None,
     universe_tickers: list[str] | None = None,
 ) -> dict[str, Any]:
-    if is_cash_aba(aba_id):
-        from motor.src.calculo.cash_security_score import compute_cash_security_batch
+    if is_class_model_aba(aba_id):
+        from motor.src.calculo.class_model_registry import compute_security_batch
 
-        batch = compute_cash_security_batch(
-            [ticker.upper()],
-            universe_tickers=universe_tickers,
-            as_of=as_of,
-        )
-        return batch[ticker.upper()]
-
-    if is_treasury_aba(aba_id):
-        from motor.src.calculo.treasury_security_score import compute_treasury_security_batch
-
-        batch = compute_treasury_security_batch(
-            [ticker.upper()],
-            universe_tickers=universe_tickers,
-            as_of=as_of,
-        )
-        return batch[ticker.upper()]
-
-    if is_ig_aba(aba_id):
-        from motor.src.calculo.ig_security_score import compute_ig_security_batch
-
-        batch = compute_ig_security_batch(
-            [ticker.upper()],
-            universe_tickers=universe_tickers,
-            as_of=as_of,
-        )
-        return batch[ticker.upper()]
-
-    if is_hy_aba(aba_id):
-        from motor.src.calculo.hy_security_score import compute_hy_security_batch
-
-        batch = compute_hy_security_batch(
-            [ticker.upper()],
-            universe_tickers=universe_tickers,
-            as_of=as_of,
-        )
-        return batch[ticker.upper()]
-
-    if is_tips_aba(aba_id):
-        from motor.src.calculo.tips_security_score import compute_tips_security_batch
-
-        batch = compute_tips_security_batch(
-            [ticker.upper()],
-            universe_tickers=universe_tickers,
-            as_of=as_of,
-        )
-        return batch[ticker.upper()]
-
-    if is_preferred_aba(aba_id):
-        from motor.src.calculo.preferred_security_score import compute_preferred_security_batch
-
-        batch = compute_preferred_security_batch(
+        batch = compute_security_batch(
+            aba_id,
             [ticker.upper()],
             universe_tickers=universe_tickers,
             as_of=as_of,
@@ -269,35 +186,10 @@ def compute_ativo_score(
 
 def backfill_aba_scores(aba_id: str, days: int = 120) -> int:
     """Persist daily composite scores for regression / estágio."""
-    if is_cash_aba(aba_id):
-        from motor.src.calculo.models.cash_regime_model import backfill_cash_regime_scores
+    if is_class_model_aba(aba_id):
+        from motor.src.calculo.class_model_registry import backfill_class_regime_scores
 
-        return backfill_cash_regime_scores(days)
-
-    if is_treasury_aba(aba_id):
-        from motor.src.calculo.models.treasury_regime_model import backfill_treasury_regime_scores
-
-        return backfill_treasury_regime_scores(days)
-
-    if is_ig_aba(aba_id):
-        from motor.src.calculo.models.ig_regime_model import backfill_ig_regime_scores
-
-        return backfill_ig_regime_scores(days)
-
-    if is_hy_aba(aba_id):
-        from motor.src.calculo.models.hy_regime_model import backfill_hy_regime_scores
-
-        return backfill_hy_regime_scores(days)
-
-    if is_tips_aba(aba_id):
-        from motor.src.calculo.models.tips_regime_model import backfill_tips_regime_scores
-
-        return backfill_tips_regime_scores(days)
-
-    if is_preferred_aba(aba_id):
-        from motor.src.calculo.models.preferred_regime_model import backfill_preferred_regime_scores
-
-        return backfill_preferred_regime_scores(days)
+        return backfill_class_regime_scores(aba_id, days)
 
     init_db()
     aba = load_aba_config(aba_id)

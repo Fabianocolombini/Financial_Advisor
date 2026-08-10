@@ -1,0 +1,28 @@
+{
+  "calibrated": false,
+  "note": "Pesos definidos por julgamento — não calibrados (`calibrated: false`).",
+  "regime_weights": {
+    "w1": 0.35,
+    "w2": 0.2,
+    "w3": 0.25,
+    "w4": 0.2
+  },
+  "thresholds": {
+    "overweight": 0.65,
+    "hold": 0.45,
+    "reduce": 0.25
+  },
+  "percentile_window_days": 1260,
+  "action_labels": {
+    "overweight": "Overweight",
+    "hold": "Hold",
+    "reduce": "Reduce",
+    "strong_reduce": "Strong Reduce"
+  },
+  "security_weights": {
+    "wa": 0.35,
+    "wb": 0.25,
+    "wc": 0.2,
+    "wd": 0.2
+  }
+}

@@ -7,7 +7,7 @@ import datetime as dt
 import pandas as pd
 
 from motor.src.calculo.external_series_source import get_external_series
-from motor.src.calculo.zscore import percentile_latest
+from motor.src.calculo.zscore import percentile_latest_detail
 from motor.src.db.external_series_store import upsert_point
 from motor.src.ingestao.edgar_client import EDGAR_HEADERS, ticker_to_cik
 
@@ -63,8 +63,8 @@ def _hy_distress_proxy() -> pd.Series:
         tail_vol = combined.iloc[: i + 1, 1]
         if len(tail_ccc) < 30:
             continue
-        p1, _, _ = percentile_latest(tail_ccc, window=min(1260, len(tail_ccc)))
-        p2, _, _ = percentile_latest(tail_vol, window=min(1260, len(tail_vol)))
+        p1, _, _ = percentile_latest_detail(tail_ccc, window=min(1260, len(tail_ccc)))
+        p2, _, _ = percentile_latest_detail(tail_vol, window=min(1260, len(tail_vol)))
         out_idx.append(combined.index[i])
         out_vals.append(0.5 * p1 + 0.5 * p2)
     return pd.Series(out_vals, index=out_idx)
@@ -97,7 +97,7 @@ def _reit_valuation_percentile() -> pd.Series:
         tail = spread.iloc[: i + 1]
         if len(tail) < 24:
             continue
-        pct, _, _ = percentile_latest(tail, window=min(2520, len(tail)))
+        pct, _, _ = percentile_latest_detail(tail, window=min(2520, len(tail)))
         out_idx.append(spread.index[i])
         out_vals.append(pct)
     return pd.Series(out_vals, index=out_idx)

@@ -74,15 +74,15 @@ def test_security_estagio_thresholds():
 
 def test_fed_penalty_formula():
     assert _clip((0.3 - 0.5) * 2, 0, 1) == 0.0
-    assert _clip((0.8 - 0.5) * 2, 0, 1) == 0.6
+    assert abs(_clip((0.8 - 0.5) * 2, 0, 1) - 0.6) < 1e-9
     assert _clip((1.0 - 0.5) * 2, 0, 1) == 1.0
 
 
 def test_percentile_monotonic_series():
-    from motor.src.calculo.zscore import percentile_latest
+    from motor.src.calculo.zscore import percentile_latest_detail
 
     idx = pd.date_range("2020-01-01", periods=300, freq="B")
     series = pd.Series(range(300), index=idx)
-    pct, latest, _ = percentile_latest(series, window=252)
+    pct, latest, _ = percentile_latest_detail(series, window=252)
     assert pct > 90
     assert latest == 299.0

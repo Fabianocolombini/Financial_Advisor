@@ -1,10 +1,15 @@
 {
   "id": "energy_mlp",
   "nome": "Energy MLP",
-  "descricao": "MLP e infra de energia — macro petróleo/gás + valuation AMLP",
+  "descricao": "MLPRegimeScore",
+  "model": {
+    "regime": "energy_mlp_regime_v1",
+    "security": "energy_mlp_security_v1",
+    "calibrated": false
+  },
   "pesos_camada": {
     "macro": 0.55,
-    "valuation": 0.30,
+    "valuation": 0.3,
     "tecnico": 0.15,
     "fundamental": 0.0
   },
@@ -15,7 +20,7 @@
       "camada": "macro",
       "fonte": "fred",
       "serie": "DCOILWTICO",
-      "peso": 0.40,
+      "peso": 0.4,
       "zscore_window": 252,
       "direcao": "positiva"
     },
@@ -51,14 +56,46 @@
     }
   ],
   "universo": [
-    {"ticker": "AMLP", "nome": "Alerian MLP ETF", "benchmark": "AMLP"},
-    {"ticker": "MLPX", "nome": "Global X MLP & Energy Infrastructure ETF", "benchmark": "AMLP"},
-    {"ticker": "ENFR", "nome": "Alerian Energy Infrastructure ETF", "benchmark": "AMLP"},
-    {"ticker": "MLPA", "nome": "Global X MLP ETF", "benchmark": "AMLP"},
-    {"ticker": "EMLP", "nome": "First Trust North American Energy Infrastructure Fund", "benchmark": "AMLP"},
-    {"ticker": "TPYP", "nome": "Tortoise North American Pipeline Fund", "benchmark": "AMLP"},
-    {"ticker": "AMZA", "nome": "InfraCap MLP ETF", "benchmark": "AMLP"},
-    {"ticker": "PYPE", "nome": "EIP Carbon Impact MLP & Energy Transition ETF", "benchmark": "AMLP"}
+    {
+      "ticker": "AMLP",
+      "nome": "Alerian MLP ETF",
+      "benchmark": "AMLP"
+    },
+    {
+      "ticker": "MLPX",
+      "nome": "Global X MLP & Energy Infrastructure ETF",
+      "benchmark": "AMLP"
+    },
+    {
+      "ticker": "ENFR",
+      "nome": "Alerian Energy Infrastructure ETF",
+      "benchmark": "AMLP"
+    },
+    {
+      "ticker": "MLPA",
+      "nome": "Global X MLP ETF",
+      "benchmark": "AMLP"
+    },
+    {
+      "ticker": "EMLP",
+      "nome": "First Trust North American Energy Infrastructure Fund",
+      "benchmark": "AMLP"
+    },
+    {
+      "ticker": "TPYP",
+      "nome": "Tortoise North American Pipeline Fund",
+      "benchmark": "AMLP"
+    },
+    {
+      "ticker": "AMZA",
+      "nome": "InfraCap MLP ETF",
+      "benchmark": "AMLP"
+    },
+    {
+      "ticker": "PYPE",
+      "nome": "EIP Carbon Impact MLP & Energy Transition ETF",
+      "benchmark": "AMLP"
+    }
   ],
   "estagio": {
     "regressao_dias": 90,

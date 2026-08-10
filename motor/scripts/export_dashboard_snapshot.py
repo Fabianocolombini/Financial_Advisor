@@ -142,126 +142,16 @@ def main() -> None:
                 for r in reversed(hist_rows)
             ]
 
-            if class_id == "cash_equivalents":
+            from motor.src.config_loader import is_class_model_aba
+            from motor.src.calculo.class_model_registry import export_regime_model_snapshot
+
+            if is_class_model_aba(aba_id):
                 try:
-                    from motor.src.calculo.models.cash_regime_model import compute_cash_regime
-
-                    regime = compute_cash_regime()
-                    snapshot["classes"][class_id]["regimeModel"] = {
-                        "model": regime.get("model"),
-                        "score": regime.get("cash_regime_score"),
-                        "action": regime.get("regime_action"),
-                        "actionCalculated": regime.get("regime_action_calculated"),
-                        "stressFlag": regime.get("stress_flag"),
-                        "calibrated": regime.get("calibrated"),
-                        "calibrationNote": regime.get("calibration_note"),
-                        "explanation": regime.get("explanation"),
-                        "components": regime.get("componentes"),
-                    }
+                    regime_model = export_regime_model_snapshot(aba_id)
+                    if regime_model:
+                        snapshot["classes"][class_id]["regimeModel"] = regime_model
                 except Exception as e:
-                    print(f"[export_dashboard] WARN: cash regime model: {e}", file=sys.stderr)
-
-            if class_id == "fi_treasury":
-                try:
-                    from motor.src.calculo.models.treasury_regime_model import compute_treasury_regime
-
-                    regime = compute_treasury_regime()
-                    snapshot["classes"][class_id]["regimeModel"] = {
-                        "model": regime.get("model"),
-                        "score": regime.get("treasury_regime_score"),
-                        "action": regime.get("regime_action"),
-                        "actionCalculated": regime.get("regime_action_calculated"),
-                        "stressFlag": regime.get("stress_flag"),
-                        "flightToQualityFlag": regime.get("flight_to_quality_flag"),
-                        "inflationShockFlag": regime.get("inflation_shock_flag"),
-                        "calibrated": regime.get("calibrated"),
-                        "calibrationNote": regime.get("calibration_note"),
-                        "explanation": regime.get("explanation"),
-                        "components": regime.get("componentes"),
-                    }
-                except Exception as e:
-                    print(f"[export_dashboard] WARN: treasury regime model: {e}", file=sys.stderr)
-
-            if class_id == "fi_ig":
-                try:
-                    from motor.src.calculo.models.ig_regime_model import compute_ig_regime
-
-                    regime = compute_ig_regime()
-                    snapshot["classes"][class_id]["regimeModel"] = {
-                        "model": regime.get("model"),
-                        "score": regime.get("ig_regime_score"),
-                        "action": regime.get("regime_action"),
-                        "actionCalculated": regime.get("regime_action_calculated"),
-                        "stressFlag": regime.get("stress_flag"),
-                        "creditEventFlag": regime.get("credit_event_flag"),
-                        "calibrated": regime.get("calibrated"),
-                        "calibrationNote": regime.get("calibration_note"),
-                        "explanation": regime.get("explanation"),
-                        "components": regime.get("componentes"),
-                    }
-                except Exception as e:
-                    print(f"[export_dashboard] WARN: ig regime model: {e}", file=sys.stderr)
-
-            if class_id == "fi_hy":
-                try:
-                    from motor.src.calculo.models.hy_regime_model import compute_hy_regime
-
-                    regime = compute_hy_regime()
-                    snapshot["classes"][class_id]["regimeModel"] = {
-                        "model": regime.get("model"),
-                        "score": regime.get("hy_regime_score"),
-                        "action": regime.get("regime_action"),
-                        "actionCalculated": regime.get("regime_action_calculated"),
-                        "stressFlag": regime.get("stress_flag"),
-                        "hyStressFlag": regime.get("hy_stress_flag"),
-                        "calibrated": regime.get("calibrated"),
-                        "calibrationNote": regime.get("calibration_note"),
-                        "explanation": regime.get("explanation"),
-                        "components": regime.get("componentes"),
-                    }
-                except Exception as e:
-                    print(f"[export_dashboard] WARN: hy regime model: {e}", file=sys.stderr)
-
-            if class_id == "fi_tips":
-                try:
-                    from motor.src.calculo.models.tips_regime_model import compute_tips_regime
-
-                    regime = compute_tips_regime()
-                    snapshot["classes"][class_id]["regimeModel"] = {
-                        "model": regime.get("model"),
-                        "score": regime.get("tips_regime_score"),
-                        "action": regime.get("regime_action"),
-                        "actionCalculated": regime.get("regime_action_calculated"),
-                        "stressFlag": regime.get("stress_flag"),
-                        "tipsLiquidityFlag": regime.get("tips_liquidity_flag"),
-                        "calibrated": regime.get("calibrated"),
-                        "calibrationNote": regime.get("calibration_note"),
-                        "explanation": regime.get("explanation"),
-                        "components": regime.get("componentes"),
-                    }
-                except Exception as e:
-                    print(f"[export_dashboard] WARN: tips regime model: {e}", file=sys.stderr)
-
-            if class_id == "fi_preferred":
-                try:
-                    from motor.src.calculo.models.preferred_regime_model import compute_preferred_regime
-
-                    regime = compute_preferred_regime()
-                    snapshot["classes"][class_id]["regimeModel"] = {
-                        "model": regime.get("model"),
-                        "score": regime.get("preferred_regime_score"),
-                        "action": regime.get("regime_action"),
-                        "actionCalculated": regime.get("regime_action_calculated"),
-                        "stressFlag": regime.get("stress_flag"),
-                        "bankStressFlag": regime.get("bank_stress_flag"),
-                        "sloosReferenceDate": regime.get("sloos_reference_date"),
-                        "calibrated": regime.get("calibrated"),
-                        "calibrationNote": regime.get("calibration_note"),
-                        "explanation": regime.get("explanation"),
-                        "components": regime.get("componentes"),
-                    }
-                except Exception as e:
-                    print(f"[export_dashboard] WARN: preferred regime model: {e}", file=sys.stderr)
+                    print(f"[export_dashboard] WARN: regime model {aba_id}: {e}", file=sys.stderr)
 
         ativo_rows = conn.execute(
             """

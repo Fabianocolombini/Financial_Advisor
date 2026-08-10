@@ -10,16 +10,7 @@ from motor.src.calculo.score_composto import (
     persist_ativo_score,
 )
 from motor.src.config.aba_class_map import benchmark_for_class, resolve_aba_id
-from motor.src.config_loader import (
-    is_cash_aba,
-    is_class_model_aba,
-    is_hy_aba,
-    is_ig_aba,
-    is_preferred_aba,
-    is_tips_aba,
-    is_treasury_aba,
-    load_aba_config,
-)
+from motor.src.config_loader import is_class_model_aba, load_aba_config
 from motor.src.decisao.estagio import (
     compute_estagio_aba,
     diverge_categoria,
@@ -79,62 +70,13 @@ def run_symbol_pipeline(
 
     cat_score = aba_result["score_composto"]
 
-    if is_cash_aba(aba_id):
+    if is_class_model_aba(aba_id):
         aba = load_aba_config(aba_id)
         universe_tickers = [item["ticker"].upper() for item in aba.get("universo", [])]
-        from motor.src.calculo.cash_security_score import compute_cash_security_batch
+        from motor.src.calculo.class_model_registry import compute_security_batch
 
-        ativo = compute_cash_security_batch(
-            [ticker],
-            universe_tickers=universe_tickers,
-        )[ticker]
-        est = ativo.get("estagio") or estagio_ativo(ativo["score_composto"])
-    elif is_treasury_aba(aba_id):
-        aba = load_aba_config(aba_id)
-        universe_tickers = [item["ticker"].upper() for item in aba.get("universo", [])]
-        from motor.src.calculo.treasury_security_score import compute_treasury_security_batch
-
-        ativo = compute_treasury_security_batch(
-            [ticker],
-            universe_tickers=universe_tickers,
-        )[ticker]
-        est = ativo.get("estagio") or estagio_ativo(ativo["score_composto"])
-    elif is_ig_aba(aba_id):
-        aba = load_aba_config(aba_id)
-        universe_tickers = [item["ticker"].upper() for item in aba.get("universo", [])]
-        from motor.src.calculo.ig_security_score import compute_ig_security_batch
-
-        ativo = compute_ig_security_batch(
-            [ticker],
-            universe_tickers=universe_tickers,
-        )[ticker]
-        est = ativo.get("estagio") or estagio_ativo(ativo["score_composto"])
-    elif is_hy_aba(aba_id):
-        aba = load_aba_config(aba_id)
-        universe_tickers = [item["ticker"].upper() for item in aba.get("universo", [])]
-        from motor.src.calculo.hy_security_score import compute_hy_security_batch
-
-        ativo = compute_hy_security_batch(
-            [ticker],
-            universe_tickers=universe_tickers,
-        )[ticker]
-        est = ativo.get("estagio") or estagio_ativo(ativo["score_composto"])
-    elif is_tips_aba(aba_id):
-        aba = load_aba_config(aba_id)
-        universe_tickers = [item["ticker"].upper() for item in aba.get("universo", [])]
-        from motor.src.calculo.tips_security_score import compute_tips_security_batch
-
-        ativo = compute_tips_security_batch(
-            [ticker],
-            universe_tickers=universe_tickers,
-        )[ticker]
-        est = ativo.get("estagio") or estagio_ativo(ativo["score_composto"])
-    elif is_preferred_aba(aba_id):
-        aba = load_aba_config(aba_id)
-        universe_tickers = [item["ticker"].upper() for item in aba.get("universo", [])]
-        from motor.src.calculo.preferred_security_score import compute_preferred_security_batch
-
-        ativo = compute_preferred_security_batch(
+        ativo = compute_security_batch(
+            aba_id,
             [ticker],
             universe_tickers=universe_tickers,
         )[ticker]

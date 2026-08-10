@@ -68,6 +68,10 @@ export type MotorClassRegimeModelSnapshot = {
   hyStressFlag?: boolean;
   tipsLiquidityFlag?: boolean;
   bankStressFlag?: boolean;
+  recessionWarningFlag?: boolean;
+  emStressFlag?: boolean;
+  navStressFlag?: boolean;
+  outputType?: "allocation" | "pace";
   sloosReferenceDate?: string;
   calibrated?: boolean;
   calibrationNote?: string;

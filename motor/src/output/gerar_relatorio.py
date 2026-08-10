@@ -289,6 +289,51 @@ def build_report_markdown(
             "- SecurityScore: tendência + RSI + yield − vol penalty (σ20). Sem volume."
         )
         lines.append("")
+    _LEGACY_CLASS_REPORTS = {
+        is_cash_aba,
+        is_treasury_aba,
+        is_ig_aba,
+        is_hy_aba,
+        is_tips_aba,
+        is_preferred_aba,
+    }
+    if is_class_model_aba(aba_result["aba_id"]) and not any(
+        fn(aba_result["aba_id"]) for fn in _LEGACY_CLASS_REPORTS
+    ):
+        try:
+            from motor.src.calculo.class_model_registry import get_class_model_entry
+
+            entry = get_class_model_entry(aba_result["aba_id"])
+            if entry:
+                regime = entry["compute_regime"]()
+                score_key = entry["score_key"]
+                action_label = (
+                    "ritmo de conversão"
+                    if regime.get("output_type") == "pace"
+                    else "quanto alocar"
+                )
+                lines.append(f"## Modelo {aba_result.get('nome', aba_result['aba_id'])} — Regime (Modelo 1)")
+                lines.append("")
+                lines.append(
+                    f"- {score_key}: **{_fmt(regime.get(score_key))}** "
+                    f"→ ação **{regime.get('regime_action')}** ({action_label})"
+                )
+                if regime.get("stress_flag"):
+                    lines.append(
+                        f"- Stress override (ação calculada: {regime.get('regime_action_calculated')})."
+                    )
+                for note in regime.get("explanation", []):
+                    lines.append(f"- {note.replace('**', '')}")
+                if not regime.get("calibrated"):
+                    lines.append("- ⚠ Pesos não calibrados (`calibrated: false`).")
+                lines.append("")
+                lines.append("## Seleção (Modelo 2)")
+                lines.append("")
+                lines.append("- SecurityScore: ranking cross-sectional do universo da aba.")
+                lines.append("")
+        except Exception as e:
+            lines.append(f"- Erro regime class model: {e}")
+            lines.append("")
     lines.append("## Racional matemático")
     lines.append("")
     if is_class_model_aba(aba_result["aba_id"]):

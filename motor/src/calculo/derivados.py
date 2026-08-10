@@ -54,18 +54,15 @@ def compute_formula(formula: str) -> pd.Series:
     if formula == "tips_liquidity_proxy":
         return tips_liquidity_proxy_series()
     if formula == "embi_spread":
-        return _dividend_yield_minus_dgs10("EMB")
+        return embi_spread_series()
     if formula == "distribution_yield_spread":
-        return _dividend_yield_minus_dgs10("AMLP")
+        return distribution_yield_spread_series()
     if formula == "rate_differential":
         return _rate_differential()
     if formula == "real_yield_curve":
         return _real_yield_curve()
     if formula == "nareit_yield_spread":
-        ext = _external_series("nareit", "nareit_yield_spread")
-        if not ext.empty:
-            return ext
-        return _dividend_yield_minus_dgs10("VNQ")
+        return nareit_yield_spread_series()
     if formula == "delta_ig_spread_20d":
         s = _series_from_db("BAMLC0A0CM")
         return s - s.shift(20) if not s.empty else pd.Series(dtype=float)
@@ -224,6 +221,24 @@ def _cpi_breakeven_gap_series() -> pd.Series:
 def preferred_spread_series() -> pd.Series:
     """Preferred spread proxy: PFF dividend yield − DGS10."""
     return _dividend_yield_minus_dgs10("PFF")
+
+
+def distribution_yield_spread_series() -> pd.Series:
+    """MLP distribution yield spread: AMLP dividend yield − DGS10."""
+    return _dividend_yield_minus_dgs10("AMLP")
+
+
+def nareit_yield_spread_series() -> pd.Series:
+    """REIT yield spread — Nareit external or VNQ yield − DGS10."""
+    ext = _external_series("nareit", "nareit_yield_spread")
+    if not ext.empty:
+        return ext
+    return _dividend_yield_minus_dgs10("VNQ")
+
+
+def embi_spread_series() -> pd.Series:
+    """EM sovereign spread proxy: EMB dividend yield − DGS10."""
+    return _dividend_yield_minus_dgs10("EMB")
 
 
 def kre_vs_spy_60d_series() -> pd.Series:

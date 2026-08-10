@@ -1,11 +1,16 @@
 {
   "id": "commodities_precious",
   "nome": "Commodities — metais preciosos",
-  "descricao": "Gold/silver macro — real yields, DXY, CPI",
+  "descricao": "PreciousRegimeScore",
+  "model": {
+    "regime": "commodities_precious_regime_v1",
+    "security": "commodities_precious_security_v1",
+    "calibrated": false
+  },
   "pesos_camada": {
     "macro": 0.55,
     "valuation": 0.35,
-    "tecnico": 0.10,
+    "tecnico": 0.1,
     "fundamental": 0.0
   },
   "indicadores": [
@@ -51,10 +56,26 @@
     }
   ],
   "universo": [
-    {"ticker": "GLD", "nome": "SPDR Gold Shares", "benchmark": "AGG"},
-    {"ticker": "IAU", "nome": "iShares Gold Trust", "benchmark": "AGG"},
-    {"ticker": "SLV", "nome": "iShares Silver Trust", "benchmark": "AGG"},
-    {"ticker": "GDX", "nome": "VanEck Gold Miners ETF", "benchmark": "SPY"}
+    {
+      "ticker": "GLD",
+      "nome": "SPDR Gold Shares",
+      "benchmark": "AGG"
+    },
+    {
+      "ticker": "IAU",
+      "nome": "iShares Gold Trust",
+      "benchmark": "AGG"
+    },
+    {
+      "ticker": "SLV",
+      "nome": "iShares Silver Trust",
+      "benchmark": "AGG"
+    },
+    {
+      "ticker": "GDX",
+      "nome": "VanEck Gold Miners ETF",
+      "benchmark": "SPY"
+    }
   ],
   "estagio": {
     "regressao_dias": 90,

@@ -40,6 +40,72 @@ const CLASS_META: Record<
     securityNote:
       "SecurityScore: tendência + RSI + yield − vol penalty (σ20). Sem volume.",
   },
+  us_equity: {
+    title: "Modelo US Equity — duas camadas",
+    scoreLabel: "USEquityRegimeScore",
+    securityNote:
+      "SecurityScore: tendência + RSI + volume − vol penalty (σ20).",
+  },
+  intl_equity: {
+    title: "Modelo International — duas camadas",
+    scoreLabel: "IntlEquityRegimeScore",
+    securityNote:
+      "SecurityScore: tendência + RSI + vol inversa + hedge fit (UUP).",
+  },
+  em_equity: {
+    title: "Modelo Emerging Markets — duas camadas",
+    scoreLabel: "EMEquityRegimeScore",
+    securityNote:
+      "SecurityScore: tendência + RSI + volume + china fit (FXI beta).",
+  },
+  real_estate: {
+    title: "Modelo REITs — duas camadas",
+    scoreLabel: "REITsRegimeScore",
+    securityNote:
+      "SecurityScore: tendência + yield + volume − vol (sem RSI).",
+  },
+  commodities_precious: {
+    title: "Modelo Metais Preciosos — duas camadas",
+    scoreLabel: "PreciousRegimeScore",
+    securityNote:
+      "SecurityScore: tendência + RSI + volume − expense ratio.",
+  },
+  commodities_energy: {
+    title: "Modelo Energia — duas camadas",
+    scoreLabel: "EnergyRegimeScore",
+    securityNote:
+      "SecurityScore: tendência + RSI + volume + beta fit vs USO.",
+  },
+  energy_mlp: {
+    title: "Modelo MLP — duas camadas",
+    scoreLabel: "MLPRegimeScore",
+    securityNote:
+      "SecurityScore: tendência + yield + volume − vol penalty.",
+  },
+  healthcare_biotech: {
+    title: "Modelo Biotech — duas camadas",
+    scoreLabel: "BiotechRegimeScore",
+    securityNote:
+      "SecurityScore: tendência + RSI + volume + catalyst density (FDA).",
+  },
+  alt_bdc: {
+    title: "Modelo BDC — duas camadas",
+    scoreLabel: "BDCRegimeScore",
+    securityNote:
+      "SecurityScore: tendência + NAV discount + yield − vol penalty.",
+  },
+  alt_infrastructure: {
+    title: "Modelo Infraestrutura — duas camadas",
+    scoreLabel: "InfraRegimeScore",
+    securityNote:
+      "SecurityScore: tendência + yield + vol inversa + volume.",
+  },
+  currencies: {
+    title: "Modelo FX — ritmo de conversão",
+    scoreLabel: "ConversionPaceScore",
+    securityNote:
+      "SecurityScore: custo efetivo + liquidez + adequação fiscal (carry).",
+  },
 };
 
 export function SymbolClassRegimeModelPanel({
@@ -95,9 +161,12 @@ export function SymbolClassRegimeModelPanel({
         ) : null}
       </div>
       <p className="text-xs text-zinc-400">
-        <strong className="text-zinc-300">Modelo 1 (regime)</strong> define quanto alocar no
-        sleeve. <strong className="text-zinc-300">Modelo 2 (security)</strong> rankeia qual
-        instrumento / ponto da curva — scores não se misturam.
+        <strong className="text-zinc-300">Modelo 1 (regime)</strong> define{" "}
+        {regimeModel.outputType === "pace"
+          ? "o ritmo de conversão FX"
+          : "quanto alocar no sleeve"}
+        . <strong className="text-zinc-300">Modelo 2 (security)</strong> rankeia qual
+        instrumento — scores não se misturam.
       </p>
       <div className="grid gap-2 sm:grid-cols-3">
         <div className="rounded border border-zinc-800 bg-black/40 p-3">
@@ -107,7 +176,9 @@ export function SymbolClassRegimeModelPanel({
           </p>
         </div>
         <div className="rounded border border-zinc-800 bg-black/40 p-3">
-          <p className="text-[10px] uppercase tracking-wide text-zinc-500">Ação sleeve</p>
+          <p className="text-[10px] uppercase tracking-wide text-zinc-500">
+            {regimeModel.outputType === "pace" ? "Ritmo conversão" : "Ação sleeve"}
+          </p>
           <p className="text-lg font-semibold text-emerald-300">{regimeModel.action ?? "—"}</p>
           {regimeModel.flightToQualityFlag ? (
             <p className="text-[10px] text-emerald-400">Flight-to-quality override</p>
@@ -124,6 +195,15 @@ export function SymbolClassRegimeModelPanel({
           {regimeModel.tipsLiquidityFlag ? (
             <p className="text-[10px] text-amber-400">TIPS liquidity cap (Hold)</p>
           ) : null}
+          {regimeModel.recessionWarningFlag ? (
+            <p className="text-[10px] text-amber-400">Recession warning cap (Reduce)</p>
+          ) : null}
+          {regimeModel.emStressFlag ? (
+            <p className="text-[10px] text-red-400">EM stress cap (Strong Reduce)</p>
+          ) : null}
+          {regimeModel.navStressFlag ? (
+            <p className="text-[10px] text-amber-400">NAV/NA stress cap (Reduce)</p>
+          ) : null}
           {regimeModel.bankStressFlag ? (
             <p className="text-[10px] text-red-400">Bank stress cap (Strong Reduce)</p>
           ) : null}
@@ -133,7 +213,10 @@ export function SymbolClassRegimeModelPanel({
           !regimeModel.creditEventFlag &&
           !regimeModel.hyStressFlag &&
           !regimeModel.tipsLiquidityFlag &&
-          !regimeModel.bankStressFlag ? (
+          !regimeModel.bankStressFlag &&
+          !regimeModel.recessionWarningFlag &&
+          !regimeModel.emStressFlag &&
+          !regimeModel.navStressFlag ? (
             <p className="text-[10px] text-amber-400">Stress override</p>
           ) : null}
         </div>

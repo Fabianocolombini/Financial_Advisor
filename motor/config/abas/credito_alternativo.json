@@ -1,12 +1,17 @@
 {
   "id": "credito_alternativo",
   "nome": "Crédito Alternativo / High Yield",
-  "descricao": "HY spreads, BDCs, preferreds — apetite a risco e qualidade de crédito",
+  "descricao": "BDCRegimeScore + NAV discount",
+  "model": {
+    "regime": "bdc_regime_v1",
+    "security": "bdc_security_v1",
+    "calibrated": false
+  },
   "pesos_camada": {
     "macro": 0.45,
-    "valuation": 0.20,
+    "valuation": 0.2,
     "tecnico": 0.15,
-    "fundamental": 0.40
+    "fundamental": 0.4
   },
   "indicadores": [
     {
@@ -35,7 +40,7 @@
       "camada": "macro",
       "fonte": "fred",
       "serie": "BAMLH0A1HYBB",
-      "peso": 0.20,
+      "peso": 0.2,
       "zscore_window": 252,
       "direcao": "positiva"
     },
@@ -45,7 +50,7 @@
       "camada": "macro",
       "fonte": "fred",
       "serie": "BAMLH0A2HYB",
-      "peso": 0.20,
+      "peso": 0.2,
       "zscore_window": 252,
       "direcao": "positiva"
     },
@@ -55,43 +60,197 @@
       "camada": "fundamental",
       "fonte": "fred",
       "serie": "DRALACBS",
-      "peso": 0.30,
+      "peso": 0.3,
       "zscore_window": 252,
       "direcao": "negativa"
     }
   ],
   "universo": [
-    {"ticker": "ARCC", "nome": "Ares Capital Corp", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "MAIN", "nome": "Main Street Capital", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "OBDC", "nome": "Blue Owl Capital Corp", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "BXSL", "nome": "Blackstone Secured Lending Fund", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "FSK", "nome": "FS KKR Capital Corp.", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "HTGC", "nome": "Hercules Capital Inc.", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "GBDC", "nome": "Golub Capital BDC Inc.", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "OCSL", "nome": "Oaktree Specialty Lending Corporation", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "TSLX", "nome": "Sixth Street Specialty Lending Inc.", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "NMFC", "nome": "New Mountain Finance Corporation", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "MFIC", "nome": "MidCap Financial Investment Corporation", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "CSWC", "nome": "Capital Southwest Corporation", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "TRIN", "nome": "Trinity Capital Inc.", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "PFLT", "nome": "PennantPark Floating Rate Capital Ltd.", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "TCPC", "nome": "BlackRock TCP Capital Corp.", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "SLRC", "nome": "SLR Investment Corp.", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "FDUS", "nome": "Fidus Investment Corporation", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "GSBD", "nome": "Goldman Sachs BDC Inc.", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "BBDC", "nome": "Barings BDC Inc.", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "CGBD", "nome": "Carlyle Secured Lending Inc.", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "BCSF", "nome": "Bain Capital Specialty Finance Inc.", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "PNNT", "nome": "PennantPark Investment Corporation", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "SCM", "nome": "Stellus Capital Investment Corporation", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "WHF", "nome": "WhiteHorse Finance Inc.", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "HRZN", "nome": "Horizon Technology Finance Corporation", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "ORCC", "nome": "Owl Rock Capital Corporation", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "GAIN", "nome": "Gladstone Investment Corporation", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "GLAD", "nome": "Gladstone Capital Corporation", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "TPVG", "nome": "TriplePoint Venture Growth BDC Corp.", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "NEWT", "nome": "NewtekOne Inc.", "benchmark": "HYG", "edgar_metric": "non_accrual_rate"},
-    {"ticker": "HYG", "nome": "iShares High Yield Corporate Bond", "benchmark": "AGG"}
+    {
+      "ticker": "ARCC",
+      "nome": "Ares Capital Corp",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "MAIN",
+      "nome": "Main Street Capital",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "OBDC",
+      "nome": "Blue Owl Capital Corp",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "BXSL",
+      "nome": "Blackstone Secured Lending Fund",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "FSK",
+      "nome": "FS KKR Capital Corp.",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "HTGC",
+      "nome": "Hercules Capital Inc.",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "GBDC",
+      "nome": "Golub Capital BDC Inc.",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "OCSL",
+      "nome": "Oaktree Specialty Lending Corporation",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "TSLX",
+      "nome": "Sixth Street Specialty Lending Inc.",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "NMFC",
+      "nome": "New Mountain Finance Corporation",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "MFIC",
+      "nome": "MidCap Financial Investment Corporation",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "CSWC",
+      "nome": "Capital Southwest Corporation",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "TRIN",
+      "nome": "Trinity Capital Inc.",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "PFLT",
+      "nome": "PennantPark Floating Rate Capital Ltd.",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "TCPC",
+      "nome": "BlackRock TCP Capital Corp.",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "SLRC",
+      "nome": "SLR Investment Corp.",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "FDUS",
+      "nome": "Fidus Investment Corporation",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "GSBD",
+      "nome": "Goldman Sachs BDC Inc.",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "BBDC",
+      "nome": "Barings BDC Inc.",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "CGBD",
+      "nome": "Carlyle Secured Lending Inc.",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "BCSF",
+      "nome": "Bain Capital Specialty Finance Inc.",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "PNNT",
+      "nome": "PennantPark Investment Corporation",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "SCM",
+      "nome": "Stellus Capital Investment Corporation",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "WHF",
+      "nome": "WhiteHorse Finance Inc.",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "HRZN",
+      "nome": "Horizon Technology Finance Corporation",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "ORCC",
+      "nome": "Owl Rock Capital Corporation",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "GAIN",
+      "nome": "Gladstone Investment Corporation",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "GLAD",
+      "nome": "Gladstone Capital Corporation",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "TPVG",
+      "nome": "TriplePoint Venture Growth BDC Corp.",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "NEWT",
+      "nome": "NewtekOne Inc.",
+      "benchmark": "HYG",
+      "edgar_metric": "non_accrual_rate"
+    },
+    {
+      "ticker": "HYG",
+      "nome": "iShares High Yield Corporate Bond",
+      "benchmark": "AGG"
+    }
   ],
   "estagio": {
     "regressao_dias": 90,

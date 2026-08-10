@@ -10,7 +10,7 @@ import pandas as pd
 
 from motor.src.calculo.derivados import compute_formula, get_fred_series
 from motor.src.calculo.external_series_source import get_external_series
-from motor.src.calculo.zscore import percentile_latest
+from motor.src.calculo.zscore import percentile_latest_detail
 from motor.src.dates import motor_as_of_date
 from motor.src.paths import CONFIG_DIR
 
@@ -52,7 +52,7 @@ def _percentile_0_1(series: pd.Series, as_of: dt.date, window: int) -> tuple[flo
     truncated = series.loc[pd.DatetimeIndex(pd.to_datetime(series.index)) <= cap]
     if truncated.empty:
         return 0.5, None
-    pct_100, latest, _ = percentile_latest(truncated, window=window)
+    pct_100, latest, _ = percentile_latest_detail(truncated, window=window)
     return pct_100 / 100.0, latest
 
 

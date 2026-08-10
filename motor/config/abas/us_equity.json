@@ -1,11 +1,16 @@
 {
   "id": "us_equity",
   "nome": "Mercado Amplo US",
-  "descricao": "US broad market — VIX, curva e momentum",
+  "descricao": "USEquityRegimeScore + SecurityScore",
+  "model": {
+    "regime": "us_equity_regime_v1",
+    "security": "us_equity_security_v1",
+    "calibrated": false
+  },
   "pesos_camada": {
     "macro": 0.45,
     "valuation": 0.25,
-    "tecnico": 0.20,
+    "tecnico": 0.2,
     "fundamental": 0.0
   },
   "indicadores": [
@@ -35,7 +40,7 @@
       "camada": "macro",
       "fonte": "fred",
       "serie": "DFF",
-      "peso": 0.20,
+      "peso": 0.2,
       "zscore_window": 252,
       "direcao": "negativa"
     },
@@ -45,16 +50,32 @@
       "camada": "valuation",
       "fonte": "fred",
       "serie": "DGS10",
-      "peso": 0.20,
+      "peso": 0.2,
       "zscore_window": 252,
       "direcao": "negativa"
     }
   ],
   "universo": [
-    {"ticker": "SPY", "nome": "SPDR S&P 500 ETF Trust", "benchmark": "AGG"},
-    {"ticker": "QQQ", "nome": "Invesco QQQ Trust", "benchmark": "SPY"},
-    {"ticker": "IWM", "nome": "iShares Russell 2000 ETF", "benchmark": "SPY"},
-    {"ticker": "VOO", "nome": "Vanguard S&P 500 ETF", "benchmark": "AGG"}
+    {
+      "ticker": "SPY",
+      "nome": "SPDR S&P 500 ETF Trust",
+      "benchmark": "AGG"
+    },
+    {
+      "ticker": "QQQ",
+      "nome": "Invesco QQQ Trust",
+      "benchmark": "SPY"
+    },
+    {
+      "ticker": "IWM",
+      "nome": "iShares Russell 2000 ETF",
+      "benchmark": "SPY"
+    },
+    {
+      "ticker": "VOO",
+      "nome": "Vanguard S&P 500 ETF",
+      "benchmark": "AGG"
+    }
   ],
   "estagio": {
     "regressao_dias": 90,

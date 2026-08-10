@@ -19,7 +19,7 @@ from motor.src.calculo.models.cash_regime_model import (
     regime_action_to_estagio,
 )
 from motor.src.calculo.models.treasury_regime_model import _term_premium_series
-from motor.src.calculo.zscore import zscore_latest
+from motor.src.calculo.zscore import zscore_latest_detail
 from motor.src.dates import motor_as_of_date
 from motor.src.paths import CONFIG_DIR
 
@@ -70,7 +70,7 @@ def _z_at(series: pd.Series, as_of: dt.date, window: int) -> tuple[float, float 
     truncated = series.loc[pd.DatetimeIndex(pd.to_datetime(series.index)) <= cap]
     if truncated.empty:
         return 0.0, None
-    z, latest, _ = zscore_latest(truncated, window=min(window, len(truncated)))
+    z, latest, _ = zscore_latest_detail(truncated, window=min(window, len(truncated)))
     return z, latest
 
 
