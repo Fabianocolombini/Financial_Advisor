@@ -9,11 +9,15 @@ import sqlite3
 from dataclasses import dataclass
 from typing import Any
 
+import logging
+
 import httpx
 
 from motor.src.config_loader import load_aba_config, load_fred_manifest, series_for_aba
 from motor.src.db.connection import get_connection, init_db
 from motor.src.paths import fred_api_key
+
+log = logging.getLogger(__name__)
 
 _FRED_OBS = "https://api.stlouisfed.org/fred/series/observations"
 _DEFAULT_START = "2019-01-01"
@@ -90,8 +94,15 @@ def _ingest_series_with_conn(
 ) -> dict[str, int]:
     counts: dict[str, int] = {}
     for sid in sorted(series_ids):
-        obs = fetch_fred_observations(api_key, sid, start)
-        counts[sid] = upsert_raw_series(conn, sid, obs)
+        try:
+            obs = fetch_fred_observations(api_key, sid, start)
+            counts[sid] = upsert_raw_series(conn, sid, obs)
+        except httpx.HTTPStatusError as e:
+            log.warning("FRED skip %s: %s", sid, e)
+            counts[sid] = 0
+        except Exception as e:
+            log.warning("FRED skip %s: %s", sid, e)
+            counts[sid] = 0
     if commit:
         conn.commit()
     return counts

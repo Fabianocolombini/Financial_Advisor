@@ -19,7 +19,7 @@
       "nome": "Term premium 10y (ACM)",
       "camada": "valuation",
       "fonte": "fred",
-      "serie": "ACMTP10",
+      "serie": "THREEFYTP10",
       "peso": 0.45,
       "zscore_window": 252,
       "direcao": "positiva"

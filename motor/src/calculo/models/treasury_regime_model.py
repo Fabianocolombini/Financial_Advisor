@@ -35,7 +35,7 @@ def _load_config() -> dict[str, Any]:
             "stress_percentile": 0.8,
             "percentile_window_days": 1260,
             "delta_yield_days": 20,
-            "term_premium_fred": "ACMTP10",
+            "term_premium_fred": "THREEFYTP10",
         }
     return json.loads(_CONFIG_PATH.read_text(encoding="utf-8"))
 
@@ -104,7 +104,7 @@ def compute_treasury_regime(as_of: dt.date | None = None) -> dict[str, Any]:
             "percentile_0_1": tp_pct,
             "peso": w1,
             "contribuicao": w1 * tp_pct,
-            "role": "compensação por risco de duration — ACM/NY Fed",
+            "role": "compensação por risco de duration — FRED THREEFYTP10 (Kim-Wright)",
         },
         {
             "id": "fed_cut_probability",

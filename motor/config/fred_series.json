@@ -8,7 +8,7 @@
   {"id": "T10YIE", "title": "10-Year Breakeven Inflation"},
   {"id": "T5YIE", "title": "5-Year Breakeven Inflation"},
   {"id": "DFII10", "title": "10-Year TIPS Yield"},
-  {"id": "ACMTP10", "title": "10-Year Treasury Term Premium (NY Fed ACM)"},
+  {"id": "THREEFYTP10", "title": "10-Year Treasury Term Premium (Kim-Wright / FRED)"},
   {"id": "DFII5", "title": "5-Year TIPS Yield"},
   {"id": "DFII30", "title": "30-Year TIPS Yield"},
   {"id": "T5YIFR", "title": "5-Year 5-Year Forward Inflation Expectation"},

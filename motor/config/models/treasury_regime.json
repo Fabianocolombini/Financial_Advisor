@@ -20,7 +20,8 @@
   "stress_percentile": 0.8,
   "percentile_window_days": 1260,
   "delta_yield_days": 20,
-  "term_premium_fred": "ACMTP10",
+  "term_premium_fred": "THREEFYTP10",
+  "term_premium_note": "FRED THREEFYTP10 (Kim-Wright). NY Fed ACM não disponível via API FRED — ingest xls futuro.",
   "action_labels": {
     "overweight": "Overweight",
     "hold": "Hold",
