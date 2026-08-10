@@ -1,0 +1,33 @@
+{
+  "calibrated": false,
+  "note": "Pesos w1–w4 e wa–wd definidos por julgamento — não calibrados (`calibrated: false`). LIQ proxy = σ20 TIP.",
+  "regime_weights": {
+    "w1": 0.35,
+    "w2": 0.30,
+    "w3": 0.20,
+    "w4": 0.15
+  },
+  "security_weights": {
+    "wa": 0.30,
+    "wb": 0.20,
+    "wc": 0.15,
+    "wd": 0.35
+  },
+  "thresholds": {
+    "overweight": 0.65,
+    "hold": 0.45,
+    "reduce": 0.25
+  },
+  "liquidity_percentile": 0.85,
+  "percentile_window_days": 1260,
+  "real_yield_fred": "DFII10",
+  "breakeven_5y5y_fred": "T5YIFR",
+  "cpi_core_fred": "CPILFESL",
+  "tips_liquidity_ticker": "TIP",
+  "action_labels": {
+    "overweight": "Overweight",
+    "hold": "Hold",
+    "reduce": "Reduce",
+    "strong_reduce": "Strong Reduce"
+  }
+}

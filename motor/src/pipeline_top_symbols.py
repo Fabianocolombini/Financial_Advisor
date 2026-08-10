@@ -13,6 +13,8 @@ from motor.src.config_loader import (
     is_class_model_aba,
     is_hy_aba,
     is_ig_aba,
+    is_preferred_aba,
+    is_tips_aba,
     is_treasury_aba,
     load_aba_config,
 )
@@ -94,6 +96,20 @@ def score_symbol_list(
         from motor.src.calculo.hy_security_score import compute_hy_security_batch
 
         security_batch = compute_hy_security_batch(
+            prepared,
+            universe_tickers=universe_tickers,
+        )
+    elif is_tips_aba(aba_id) and prepared:
+        from motor.src.calculo.tips_security_score import compute_tips_security_batch
+
+        security_batch = compute_tips_security_batch(
+            prepared,
+            universe_tickers=universe_tickers,
+        )
+    elif is_preferred_aba(aba_id) and prepared:
+        from motor.src.calculo.preferred_security_score import compute_preferred_security_batch
+
+        security_batch = compute_preferred_security_batch(
             prepared,
             universe_tickers=universe_tickers,
         )

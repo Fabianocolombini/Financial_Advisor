@@ -35,6 +35,8 @@ _CASH_TECNICOS_ABAS = frozenset({"cash_equivalents"})
 _TREASURY_ABAS = frozenset({"fi_treasury"})
 _IG_ABAS = frozenset({"fi_ig"})
 _HY_ABAS = frozenset({"fi_hy"})
+_TIPS_ABAS = frozenset({"fi_tips"})
+_PREFERRED_ABAS = frozenset({"fi_preferred"})
 
 
 def load_tecnicos_config(aba_id: str | None = None) -> dict[str, Any]:
@@ -62,12 +64,22 @@ def is_hy_aba(aba_id: str) -> bool:
     return resolve_aba_config_id(aba_id) in _HY_ABAS
 
 
+def is_tips_aba(aba_id: str) -> bool:
+    return resolve_aba_config_id(aba_id) in _TIPS_ABAS
+
+
+def is_preferred_aba(aba_id: str) -> bool:
+    return resolve_aba_config_id(aba_id) in _PREFERRED_ABAS
+
+
 def is_class_model_aba(aba_id: str) -> bool:
     return (
         is_cash_aba(aba_id)
         or is_treasury_aba(aba_id)
         or is_ig_aba(aba_id)
         or is_hy_aba(aba_id)
+        or is_tips_aba(aba_id)
+        or is_preferred_aba(aba_id)
     )
 
 
@@ -79,6 +91,12 @@ def _formula_series(formula: str) -> set[str]:
         "pe_EEM_div_SPY": set(),
         "em_gdp_growth": set(),
         "preferred_spread": {"DGS10"},
+        "breakeven_spot": {"DGS10", "DFII10"},
+        "cpi_core_momentum_3m": {"CPILFESL"},
+        "cpi_breakeven_gap": {"CPILFESL", "DGS10", "DFII10"},
+        "kre_vs_spy_60d": set(),
+        "delta_preferred_spread_20d": {"DGS10"},
+        "tips_liquidity_proxy": set(),
         "embi_spread": {"DGS10"},
         "distribution_yield_spread": {"DGS10"},
         "rate_differential": {"DFF"},

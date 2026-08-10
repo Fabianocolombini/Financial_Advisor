@@ -15,6 +15,7 @@
   {"id": "WCESTUS1", "title": "Weekly U.S. Ending Stocks excluding SPR of Crude Oil"},
   {"id": "DTB3", "title": "3-Month Treasury Bill"},
   {"id": "CPIAUCSL", "title": "CPI All Urban Consumers"},
+  {"id": "CPILFESL", "title": "Core CPI (Less Food and Energy)"},
   {"id": "VIXCLS", "title": "VIX"},
   {"id": "BAMLH0A0HYM2", "title": "US High Yield OAS"},
   {"id": "BAMLH0A1HYBB", "title": "HY BB OAS"},
@@ -29,5 +30,6 @@
   {"id": "DTWEXBGS", "title": "Trade Weighted US Dollar Index"},
   {"id": "DCOILWTICO", "title": "WTI Crude Oil"},
   {"id": "DHHNGSP", "title": "Henry Hub Natural Gas"},
-  {"id": "DRALACBS", "title": "Loan Officer Survey - C&I Loans"}
+  {"id": "DRALACBS", "title": "Loan Officer Survey - C&I Loans"},
+  {"id": "DRTSCILM", "title": "SLOOS - Net % Tightening C&I Loan Standards"}
 ]

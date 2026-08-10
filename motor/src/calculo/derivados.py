@@ -39,7 +39,20 @@ def compute_formula(formula: str) -> pd.Series:
     if formula == "em_gdp_growth":
         return _world_bank_series("NY.GDP.MKTP.KD.ZG", "EM")
     if formula == "preferred_spread":
-        return _dividend_yield_minus_dgs10("PFF")
+        return preferred_spread_series()
+    if formula == "breakeven_spot":
+        return breakeven_spot_series()
+    if formula == "cpi_core_momentum_3m":
+        return cpi_core_momentum_3m_series()
+    if formula == "cpi_breakeven_gap":
+        return _cpi_breakeven_gap_series()
+    if formula == "kre_vs_spy_60d":
+        return kre_vs_spy_60d_series()
+    if formula == "delta_preferred_spread_20d":
+        ps = preferred_spread_series()
+        return ps - ps.shift(20) if not ps.empty else pd.Series(dtype=float)
+    if formula == "tips_liquidity_proxy":
+        return tips_liquidity_proxy_series()
     if formula == "embi_spread":
         return _dividend_yield_minus_dgs10("EMB")
     if formula == "distribution_yield_spread":
@@ -177,6 +190,77 @@ def _real_yield_curve() -> pd.Series:
         return pd.Series(dtype=float)
     combined = pd.concat(parts, axis=1, join="inner")
     return combined.mean(axis=1)
+
+
+def breakeven_spot_series() -> pd.Series:
+    """Spot breakeven inflation: DGS10 − DFII10."""
+    dgs = _series_from_db("DGS10")
+    dfii = _series_from_db("DFII10")
+    if dgs.empty or dfii.empty:
+        return pd.Series(dtype=float)
+    combined = pd.concat([dgs, dfii], axis=1, join="inner")
+    return combined.iloc[:, 0] - combined.iloc[:, 1]
+
+
+def cpi_core_momentum_3m_series() -> pd.Series:
+    """3-month annualized core CPI momentum from CPILFESL."""
+    cpi = _series_from_db("CPILFESL")
+    if cpi.empty or len(cpi) < 4:
+        return pd.Series(dtype=float)
+    ratio = cpi / cpi.shift(3)
+    return ratio.pow(4) - 1.0
+
+
+def _cpi_breakeven_gap_series() -> pd.Series:
+    cpi_m = cpi_core_momentum_3m_series()
+    be = breakeven_spot_series()
+    if cpi_m.empty or be.empty:
+        return pd.Series(dtype=float)
+    combined = pd.concat([cpi_m, be], axis=1, join="inner")
+    combined.columns = ["cpi_m", "be"]
+    return (combined["cpi_m"] - combined["be"]).dropna()
+
+
+def preferred_spread_series() -> pd.Series:
+    """Preferred spread proxy: PFF dividend yield − DGS10."""
+    return _dividend_yield_minus_dgs10("PFF")
+
+
+def kre_vs_spy_60d_series() -> pd.Series:
+    """KRE vs SPY 60-day relative return."""
+    from motor.src.ingestao.yfinance_client import get_price_series
+
+    kre = get_price_series("KRE")
+    spy = get_price_series("SPY")
+    if kre.empty or spy.empty:
+        return pd.Series(dtype=float)
+    combined = pd.concat([kre, spy], axis=1, join="inner")
+    combined.columns = ["kre", "spy"]
+    kre_ret = combined["kre"] / combined["kre"].shift(60) - 1.0
+    spy_ret = combined["spy"] / combined["spy"].shift(60) - 1.0
+    return (kre_ret - spy_ret).dropna()
+
+
+def sloos_forward_fill_series(fred_id: str = "DRTSCILM") -> pd.Series:
+    """SLOOS quarterly series forward-filled to daily frequency."""
+    raw = _series_from_db(fred_id)
+    if raw.empty:
+        return pd.Series(dtype=float)
+    idx = pd.date_range(raw.index.min(), raw.index.max(), freq="D")
+    daily = raw.copy()
+    daily.index = pd.DatetimeIndex(pd.to_datetime(daily.index))
+    return daily.reindex(idx, method="ffill").dropna()
+
+
+def dividend_yield_series(ticker: str) -> pd.Series:
+    return _yfinance_field_series(ticker, "dividend_yield")
+
+
+def tips_liquidity_proxy_series(ticker: str = "TIP") -> pd.Series:
+    """σ20 of TIP ETF as liquidity stress proxy (is_proxy: true)."""
+    from motor.src.calculo.indicadores_tecnicos import get_tecnico_series
+
+    return get_tecnico_series(ticker.upper(), "vol_realizada")
 
 
 def latest_raw_value(serie: str) -> float | None:

@@ -1,0 +1,36 @@
+{
+  "calibrated": false,
+  "note": "Pesos w1–w6 e wa–wd definidos por julgamento — não calibrados (`calibrated: false`). SLOOS trimestral com forward-fill.",
+  "regime_weights": {
+    "w1": 0.25,
+    "w2": 0.20,
+    "w3": 0.10,
+    "w4": 0.15,
+    "w5": 0.20,
+    "w6": 0.10
+  },
+  "security_weights": {
+    "wa": 0.30,
+    "wb": 0.20,
+    "wc": 0.25,
+    "wd": 0.25
+  },
+  "thresholds": {
+    "overweight": 0.65,
+    "hold": 0.45,
+    "reduce": 0.25
+  },
+  "percentile_window_days": 1260,
+  "bank_z_window_days": 504,
+  "delta_spread_days": 20,
+  "bank_stress_z_threshold": -2.0,
+  "fed_cut_cap": 0.6,
+  "yield_10y_fred": "DGS10",
+  "sloos_fred": "DRTSCILM",
+  "action_labels": {
+    "overweight": "Overweight",
+    "hold": "Hold",
+    "reduce": "Reduce",
+    "strong_reduce": "Strong Reduce"
+  }
+}

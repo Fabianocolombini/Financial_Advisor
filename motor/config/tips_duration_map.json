@@ -1,0 +1,12 @@
+{
+  "note": "Effective duration (years) — static approximations for TIPS ETFs.",
+  "default": 6.5,
+  "tickers": {
+    "TIP": 7.2,
+    "SCHP": 7.0,
+    "VTIP": 2.4,
+    "STIP": 2.3,
+    "LTPZ": 15.5,
+    "SPIP": 6.8
+  }
+}

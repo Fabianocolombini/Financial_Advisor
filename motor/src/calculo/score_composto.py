@@ -16,6 +16,8 @@ from motor.src.config_loader import (
     is_cash_aba,
     is_hy_aba,
     is_ig_aba,
+    is_preferred_aba,
+    is_tips_aba,
     is_treasury_aba,
     load_aba_config,
     load_tecnicos_config,
@@ -96,6 +98,16 @@ def compute_aba_score(aba_id: str, as_of: dt.date | None = None) -> dict[str, An
 
         return hy_regime_aba_result(aba_id, as_of)
 
+    if is_tips_aba(aba_id):
+        from motor.src.calculo.models.tips_regime_model import tips_regime_aba_result
+
+        return tips_regime_aba_result(aba_id, as_of)
+
+    if is_preferred_aba(aba_id):
+        from motor.src.calculo.models.preferred_regime_model import preferred_regime_aba_result
+
+        return preferred_regime_aba_result(aba_id, as_of)
+
     init_db()
     aba = load_aba_config(aba_id)
     as_of = as_of or motor_as_of_date()
@@ -167,6 +179,26 @@ def compute_ativo_score(
         from motor.src.calculo.hy_security_score import compute_hy_security_batch
 
         batch = compute_hy_security_batch(
+            [ticker.upper()],
+            universe_tickers=universe_tickers,
+            as_of=as_of,
+        )
+        return batch[ticker.upper()]
+
+    if is_tips_aba(aba_id):
+        from motor.src.calculo.tips_security_score import compute_tips_security_batch
+
+        batch = compute_tips_security_batch(
+            [ticker.upper()],
+            universe_tickers=universe_tickers,
+            as_of=as_of,
+        )
+        return batch[ticker.upper()]
+
+    if is_preferred_aba(aba_id):
+        from motor.src.calculo.preferred_security_score import compute_preferred_security_batch
+
+        batch = compute_preferred_security_batch(
             [ticker.upper()],
             universe_tickers=universe_tickers,
             as_of=as_of,
@@ -256,6 +288,16 @@ def backfill_aba_scores(aba_id: str, days: int = 120) -> int:
         from motor.src.calculo.models.hy_regime_model import backfill_hy_regime_scores
 
         return backfill_hy_regime_scores(days)
+
+    if is_tips_aba(aba_id):
+        from motor.src.calculo.models.tips_regime_model import backfill_tips_regime_scores
+
+        return backfill_tips_regime_scores(days)
+
+    if is_preferred_aba(aba_id):
+        from motor.src.calculo.models.preferred_regime_model import backfill_preferred_regime_scores
+
+        return backfill_preferred_regime_scores(days)
 
     init_db()
     aba = load_aba_config(aba_id)

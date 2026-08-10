@@ -1,7 +1,12 @@
 {
   "id": "fi_tips",
   "nome": "TIPS e inflação",
-  "descricao": "Treasury inflation-protected — breakevens, yield real e curva",
+  "descricao": "TIPSRegimeScore + SecurityScore (duration fit vs yield real)",
+  "model": {
+    "regime": "tips_regime_v1",
+    "security": "tips_security_v1",
+    "calibrated": false
+  },
   "pesos_camada": {
     "macro": 0.50,
     "valuation": 0.40,
@@ -10,64 +15,66 @@
   },
   "indicadores": [
     {
-      "id": "t10yie",
-      "nome": "Breakeven 10y",
-      "camada": "macro",
+      "id": "real_yield_10y",
+      "nome": "Yield real 10y (RY)",
+      "camada": "valuation",
       "fonte": "fred",
-      "serie": "T10YIE",
+      "serie": "DFII10",
       "peso": 0.35,
       "zscore_window": 252,
       "direcao": "positiva"
     },
     {
-      "id": "t5yie",
-      "nome": "Breakeven 5y",
+      "id": "breakeven_5y5y",
+      "nome": "Breakeven 5y5y (BE5)",
       "camada": "macro",
       "fonte": "fred",
-      "serie": "T5YIE",
-      "peso": 0.25,
-      "zscore_window": 252,
-      "direcao": "positiva"
-    },
-    {
-      "id": "dfii10",
-      "nome": "Yield real 10y TIPS",
-      "camada": "valuation",
-      "fonte": "fred",
-      "serie": "DFII10",
-      "peso": 0.40,
-      "zscore_window": 252,
-      "direcao": "positiva"
-    },
-    {
-      "id": "cpi",
-      "nome": "CPI headline",
-      "camada": "macro",
-      "fonte": "fred",
-      "serie": "CPIAUCSL",
-      "peso": 0.20,
+      "serie": "T5YIFR",
+      "peso": 0.30,
       "zscore_window": 252,
       "direcao": "negativa"
     },
     {
-      "id": "yield_10y",
-      "nome": "Yield nominal 10y",
-      "camada": "valuation",
-      "fonte": "fred",
-      "serie": "DGS10",
+      "id": "cpi_breakeven_gap",
+      "nome": "CPI momentum − breakeven spot",
+      "camada": "macro",
+      "fonte": "calculado",
+      "formula": "cpi_breakeven_gap",
       "peso": 0.20,
       "zscore_window": 252,
       "direcao": "positiva"
+    },
+    {
+      "id": "fed_cut_probability",
+      "nome": "Fed cut probability 6m (F)",
+      "camada": "macro",
+      "fonte": "external",
+      "source": "cme",
+      "series_id": "fed_cut_probability",
+      "peso": 0.15,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "tips_liquidity_proxy",
+      "nome": "Liquidez proxy σ20 TIP (LIQ)",
+      "camada": "tecnico",
+      "fonte": "calculado",
+      "formula": "tips_liquidity_proxy",
+      "peso": 0.0,
+      "zscore_window": 252,
+      "direcao": "negativa",
+      "is_proxy": true,
+      "proxy_rationale": "Vol realizada 20d do ETF TIP — override com VIX, não entra no score"
     }
   ],
   "universo": [
     {"ticker": "TIP", "nome": "iShares TIPS Bond ETF", "benchmark": "AGG"},
     {"ticker": "SCHP", "nome": "Schwab U.S. TIPS ETF", "benchmark": "AGG"},
-    {"ticker": "STIP", "nome": "iShares 0-5 Year TIPS Bond ETF", "benchmark": "AGG"},
     {"ticker": "VTIP", "nome": "Vanguard Short-Term Inflation-Protected Securities ETF", "benchmark": "AGG"},
-    {"ticker": "TIPX", "nome": "SPDR Bloomberg 1-10 Year TIPS ETF", "benchmark": "AGG"},
-    {"ticker": "SPIP", "nome": "SPDR Portfolio TIPS ETF", "benchmark": "AGG"},
-    {"ticker": "LTPZ", "nome": "PIMCO 15+ Year U.S. TIPS Index ETF", "benchmark": "AGG"}
+    {"ticker": "STIP", "nome": "iShares 0-5 Year TIPS Bond ETF", "benchmark": "AGG"},
+    {"ticker": "LTPZ", "nome": "PIMCO 15+ Year U.S. TIPS Index ETF", "benchmark": "AGG"},
+    {"ticker": "SPIP", "nome": "SPDR Portfolio TIPS ETF", "benchmark": "AGG"}
   ],
   "estagio": {
     "regressao_dias": 90,

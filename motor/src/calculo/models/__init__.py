@@ -6,6 +6,8 @@ from motor.src.calculo.models.cash_regime_model import compute_cash_regime
 from motor.src.calculo.models.treasury_regime_model import compute_treasury_regime
 from motor.src.calculo.models.ig_regime_model import compute_ig_regime
 from motor.src.calculo.models.hy_regime_model import compute_hy_regime
+from motor.src.calculo.models.tips_regime_model import compute_tips_regime
+from motor.src.calculo.models.preferred_regime_model import compute_preferred_regime
 from motor.src.calculo.models.ewma_vol import compute_ewma_vol_forecasts
 from motor.src.calculo.models.regime_model import compute_regime_risk
 
@@ -17,6 +19,8 @@ def build_models_snapshot() -> dict:
     treasury_regime = compute_treasury_regime()
     ig_regime = compute_ig_regime()
     hy_regime = compute_hy_regime()
+    tips_regime = compute_tips_regime()
+    preferred_regime = compute_preferred_regime()
     return {
         "regime": regime,
         "ewma_vol": ewma,
@@ -52,5 +56,22 @@ def build_models_snapshot() -> dict:
             "calibrated": hy_regime.get("calibrated"),
             "calibration_note": hy_regime.get("calibration_note"),
             "explanation": hy_regime.get("explanation"),
+        },
+        "tips_regime": {
+            "tips_regime_score": tips_regime.get("tips_regime_score"),
+            "regime_action": tips_regime.get("regime_action"),
+            "tips_liquidity_flag": tips_regime.get("tips_liquidity_flag"),
+            "calibrated": tips_regime.get("calibrated"),
+            "calibration_note": tips_regime.get("calibration_note"),
+            "explanation": tips_regime.get("explanation"),
+        },
+        "preferred_regime": {
+            "preferred_regime_score": preferred_regime.get("preferred_regime_score"),
+            "regime_action": preferred_regime.get("regime_action"),
+            "bank_stress_flag": preferred_regime.get("bank_stress_flag"),
+            "sloos_reference_date": preferred_regime.get("sloos_reference_date"),
+            "calibrated": preferred_regime.get("calibrated"),
+            "calibration_note": preferred_regime.get("calibration_note"),
+            "explanation": preferred_regime.get("explanation"),
         },
     }

@@ -1,7 +1,12 @@
 {
   "id": "fi_preferred",
   "nome": "Preferred Securities",
-  "descricao": "Preferred ETFs — spreads HY/IG e contexto de taxas",
+  "descricao": "PreferredRegimeScore + SecurityScore (yield − vol penalty)",
+  "model": {
+    "regime": "preferred_regime_v1",
+    "security": "preferred_security_v1",
+    "calibrated": false
+  },
   "pesos_camada": {
     "macro": 0.50,
     "valuation": 0.35,
@@ -10,63 +15,74 @@
   },
   "indicadores": [
     {
-      "id": "hy_spread",
-      "nome": "Spread OAS HY agregado",
-      "camada": "macro",
-      "fonte": "fred",
-      "serie": "BAMLH0A0HYM2",
-      "peso": 0.40,
-      "zscore_window": 252,
-      "direcao": "positiva"
-    },
-    {
-      "id": "ig_spread",
-      "nome": "Spread OAS IG agregado",
-      "camada": "macro",
-      "fonte": "fred",
-      "serie": "BAMLC0A0CM",
+      "id": "preferred_spread",
+      "nome": "Preferred spread proxy (PS)",
+      "camada": "valuation",
+      "fonte": "calculado",
+      "formula": "preferred_spread",
       "peso": 0.25,
       "zscore_window": 252,
       "direcao": "positiva"
     },
     {
-      "id": "hy_minus_ig",
-      "nome": "Diferencial HY - IG",
+      "id": "yield_10y",
+      "nome": "Yield nominal 10y (Y10)",
+      "camada": "valuation",
+      "fonte": "fred",
+      "serie": "DGS10",
+      "peso": 0.20,
+      "zscore_window": 252,
+      "direcao": "negativa"
+    },
+    {
+      "id": "fed_cut_probability",
+      "nome": "Fed cut probability 6m (F)",
+      "camada": "macro",
+      "fonte": "external",
+      "source": "cme",
+      "series_id": "fed_cut_probability",
+      "peso": 0.10,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "delta_preferred_spread_20d",
+      "nome": "Δ preferred spread 20d",
       "camada": "macro",
       "fonte": "calculado",
-      "formula": "BAMLH0A0HYM2 - BAMLC0A0CM",
+      "formula": "delta_preferred_spread_20d",
+      "peso": 0.15,
+      "zscore_window": 252,
+      "direcao": "negativa"
+    },
+    {
+      "id": "kre_vs_spy_60d",
+      "nome": "KRE vs SPY 60d (BANK)",
+      "camada": "macro",
+      "fonte": "calculado",
+      "formula": "kre_vs_spy_60d",
       "peso": 0.20,
       "zscore_window": 252,
       "direcao": "positiva"
     },
     {
-      "id": "yield_10y",
-      "nome": "Yield nominal 10y",
-      "camada": "valuation",
+      "id": "sloos",
+      "nome": "SLOOS tightening",
+      "camada": "macro",
       "fonte": "fred",
-      "serie": "DGS10",
-      "peso": 0.50,
-      "zscore_window": 252,
-      "direcao": "negativa"
-    },
-    {
-      "id": "dtb3",
-      "nome": "T-bill 3m yield",
-      "camada": "valuation",
-      "fonte": "fred",
-      "serie": "DTB3",
-      "peso": 0.30,
+      "serie": "DRTSCILM",
+      "peso": 0.10,
       "zscore_window": 252,
       "direcao": "negativa"
     }
   ],
   "universo": [
     {"ticker": "PFF", "nome": "iShares Preferred and Income Securities ETF", "benchmark": "AGG"},
-    {"ticker": "FPE", "nome": "First Trust Preferred Securities & Income ETF", "benchmark": "AGG"},
     {"ticker": "PGX", "nome": "Invesco Preferred ETF", "benchmark": "AGG"},
     {"ticker": "PFFD", "nome": "Global X U.S. Preferred ETF", "benchmark": "AGG"},
     {"ticker": "PSK", "nome": "SPDR ICE Preferred Securities ETF", "benchmark": "AGG"},
-    {"ticker": "PFXF", "nome": "VanEck Preferred Securities ex Financials ETF", "benchmark": "AGG"}
+    {"ticker": "FPE", "nome": "First Trust Preferred Securities & Income ETF", "benchmark": "AGG"},
+    {"ticker": "PFFA", "nome": "Virtus InfraCap U.S. Preferred Stock ETF", "benchmark": "AGG"}
   ],
   "estagio": {
     "regressao_dias": 90,

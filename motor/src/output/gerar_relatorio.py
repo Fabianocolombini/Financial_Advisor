@@ -11,6 +11,8 @@ from motor.src.config_loader import (
     is_class_model_aba,
     is_hy_aba,
     is_ig_aba,
+    is_preferred_aba,
+    is_tips_aba,
     is_treasury_aba,
     load_aba_config,
 )
@@ -205,6 +207,86 @@ def build_report_markdown(
         lines.append("")
         lines.append(
             "- SecurityScore: tendência + RSI + volume − vol penalty (σ20). Sem fed cut prob."
+        )
+        lines.append("")
+    if is_tips_aba(aba_result["aba_id"]):
+        lines.append("## Modelo TIPS — Regime (Modelo 1)")
+        lines.append("")
+        try:
+            from motor.src.calculo.models.tips_regime_model import (
+                compute_tips_regime,
+                sanity_check_tips_liquidity_march_2020,
+            )
+
+            regime = compute_tips_regime()
+            lines.append(
+                f"- TIPSRegimeScore: **{_fmt(regime.get('tips_regime_score'))}** "
+                f"→ ação **{regime.get('regime_action')}** (quanto TIPS)"
+            )
+            if regime.get("tips_liquidity_flag"):
+                lines.append(
+                    f"- Tips liquidity override (ação calculada: "
+                    f"{regime.get('regime_action_calculated')})."
+                )
+            for note in regime.get("explanation", []):
+                lines.append(f"- {note.replace('**', '')}")
+            sanity = sanity_check_tips_liquidity_march_2020()
+            if sanity.get("ok"):
+                lines.append(
+                    f"- Sanity Mar/2020: tips_liquidity em {sanity.get('tips_liquidity_days')} dias "
+                    f"(passed={sanity.get('passed')})."
+                )
+            if not regime.get("calibrated"):
+                lines.append("- ⚠ Pesos não calibrados (`calibrated: false`).")
+        except Exception as e:
+            lines.append(f"- Erro regime TIPS: {e}")
+        lines.append("")
+        lines.append("## Modelo TIPS — Seleção (Modelo 2)")
+        lines.append("")
+        lines.append(
+            "- SecurityScore: tendência + RSI + volume + duration fit vs yield real (RY_pct)."
+        )
+        lines.append("")
+    if is_preferred_aba(aba_result["aba_id"]):
+        lines.append("## Modelo Preferred — Regime (Modelo 1)")
+        lines.append("")
+        try:
+            from motor.src.calculo.models.preferred_regime_model import (
+                compute_preferred_regime,
+                sanity_check_bank_stress_march_2023,
+            )
+
+            regime = compute_preferred_regime()
+            lines.append(
+                f"- PreferredRegimeScore: **{_fmt(regime.get('preferred_regime_score'))}** "
+                f"→ ação **{regime.get('regime_action')}** (quanto preferred)"
+            )
+            if regime.get("bank_stress_flag"):
+                lines.append(
+                    f"- Bank stress override (ação calculada: "
+                    f"{regime.get('regime_action_calculated')})."
+                )
+            if regime.get("sloos_reference_date"):
+                lines.append(
+                    f"- SLOOS ref trimestral: {regime.get('sloos_reference_date')}."
+                )
+            for note in regime.get("explanation", []):
+                lines.append(f"- {note.replace('**', '')}")
+            sanity = sanity_check_bank_stress_march_2023()
+            if sanity.get("ok"):
+                lines.append(
+                    f"- Sanity Mar/2023: bank_stress em {sanity.get('bank_stress_days')} dias "
+                    f"(passed={sanity.get('passed')})."
+                )
+            if not regime.get("calibrated"):
+                lines.append("- ⚠ Pesos não calibrados (`calibrated: false`).")
+        except Exception as e:
+            lines.append(f"- Erro regime Preferred: {e}")
+        lines.append("")
+        lines.append("## Modelo Preferred — Seleção (Modelo 2)")
+        lines.append("")
+        lines.append(
+            "- SecurityScore: tendência + RSI + yield − vol penalty (σ20). Sem volume."
         )
         lines.append("")
     lines.append("## Racional matemático")

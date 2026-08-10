@@ -15,6 +15,8 @@ from motor.src.config_loader import (
     is_class_model_aba,
     is_hy_aba,
     is_ig_aba,
+    is_preferred_aba,
+    is_tips_aba,
     is_treasury_aba,
     load_aba_config,
 )
@@ -113,6 +115,26 @@ def run_symbol_pipeline(
         from motor.src.calculo.hy_security_score import compute_hy_security_batch
 
         ativo = compute_hy_security_batch(
+            [ticker],
+            universe_tickers=universe_tickers,
+        )[ticker]
+        est = ativo.get("estagio") or estagio_ativo(ativo["score_composto"])
+    elif is_tips_aba(aba_id):
+        aba = load_aba_config(aba_id)
+        universe_tickers = [item["ticker"].upper() for item in aba.get("universo", [])]
+        from motor.src.calculo.tips_security_score import compute_tips_security_batch
+
+        ativo = compute_tips_security_batch(
+            [ticker],
+            universe_tickers=universe_tickers,
+        )[ticker]
+        est = ativo.get("estagio") or estagio_ativo(ativo["score_composto"])
+    elif is_preferred_aba(aba_id):
+        aba = load_aba_config(aba_id)
+        universe_tickers = [item["ticker"].upper() for item in aba.get("universo", [])]
+        from motor.src.calculo.preferred_security_score import compute_preferred_security_batch
+
+        ativo = compute_preferred_security_batch(
             [ticker],
             universe_tickers=universe_tickers,
         )[ticker]

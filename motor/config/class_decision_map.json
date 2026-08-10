@@ -111,21 +111,43 @@
     "fi_tips": {
       "role": "Inflation-linked — breakevens and real yields.",
       "indicators": {
-        "timing": ["breakeven_5y5y", "t5yie"],
-        "role": ["dfii10", "dfii5", "cpi"],
-        "projection": ["breakeven_5y5y"],
-        "investability": ["dfii10"],
-        "forecast": ["breakeven_5y5y"]
+        "timing": ["breakeven_5y5y", "cpi_breakeven_gap", "fed_cut_probability"],
+        "role": ["real_yield_10y", "breakeven_5y5y", "cpi_breakeven_gap"],
+        "projection": ["cpi_breakeven_gap", "breakeven_5y5y"],
+        "investability": ["real_yield_10y", "tips_liquidity_proxy"],
+        "forecast": ["breakeven_5y5y", "fed_cut_probability"]
+      },
+      "tickerIndicators": {
+        "timing": ["preco_vs_mm50", "rsi_14"],
+        "role": ["duration_efetiva", "preco_vs_mm200"],
+        "projection": ["preco_vs_mm50", "volume_vs_media"],
+        "investability": ["volume_vs_media", "duration_efetiva"],
+        "forecast": ["rsi_14", "duration_efetiva"]
+      },
+      "models": {
+        "regime": "tips_regime_v1 — TIPSRegimeScore (quanto TIPS)",
+        "security": "tips_security_v1 — SecurityScore + duration fit vs RY"
       }
     },
     "fi_preferred": {
       "role": "Preferred equity — yield vs rates.",
       "indicators": {
-        "timing": ["preferred_spread"],
-        "role": ["dividend_yield", "hy_context", "ig_context"],
-        "projection": ["preferred_spread"],
-        "investability": ["preferred_spread"],
-        "forecast": ["preferred_spread"]
+        "timing": ["preferred_spread", "delta_preferred_spread_20d", "kre_vs_spy_60d"],
+        "role": ["preferred_spread", "yield_10y", "sloos"],
+        "projection": ["preferred_spread", "kre_vs_spy_60d"],
+        "investability": ["preferred_spread", "fed_cut_probability"],
+        "forecast": ["preferred_spread", "sloos"]
+      },
+      "tickerIndicators": {
+        "timing": ["preco_vs_mm50", "rsi_14"],
+        "role": ["dividend_yield", "vol_realizada"],
+        "projection": ["preco_vs_mm50", "vol_realizada"],
+        "investability": ["dividend_yield"],
+        "forecast": ["rsi_14", "dividend_yield"]
+      },
+      "models": {
+        "regime": "preferred_regime_v1 — PreferredRegimeScore (quanto preferred)",
+        "security": "preferred_security_v1 — SecurityScore + yield − vol penalty"
       }
     },
     "us_equity": {

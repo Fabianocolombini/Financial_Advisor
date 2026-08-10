@@ -66,6 +66,9 @@ export type MotorClassRegimeModelSnapshot = {
   inflationShockFlag?: boolean;
   creditEventFlag?: boolean;
   hyStressFlag?: boolean;
+  tipsLiquidityFlag?: boolean;
+  bankStressFlag?: boolean;
+  sloosReferenceDate?: string;
   calibrated?: boolean;
   calibrationNote?: string;
   explanation?: string[];
