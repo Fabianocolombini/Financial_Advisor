@@ -38,6 +38,7 @@ def _formula_deps(formula: str) -> set[str]:
         "em_gdp_growth",
         "preferred_spread",
         "embi_spread",
+        "kre_vs_spy_60d",
         "distribution_yield_spread",
         "rate_differential",
         "real_yield_curve",

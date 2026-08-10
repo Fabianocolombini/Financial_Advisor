@@ -255,9 +255,17 @@ def sanity_check_hy_stress_march_2020() -> dict[str, Any]:
     hits: list[dict[str, str]] = []
     start = dt.date(2020, 3, 1)
     end = dt.date(2020, 3, 31)
-    ref = get_fred_series(_load_config().get("hy_oas_fred", "BAMLH0A0HYM2"))
+    hy_fred = _load_config().get("hy_oas_fred", "BAMLH0A0HYM2")
+    ref = get_fred_series(hy_fred)
     if ref.empty:
         return {"ok": False, "error": "no HY OAS history"}
+    earliest = pd.Timestamp(ref.index.min()).date()
+    if earliest > start:
+        return {
+            "ok": False,
+            "error": f"HY OAS desde {earliest}, precisa {start} (FRED ICE/BofA: janela ~3y)",
+            "history_start": earliest.isoformat(),
+        }
     for d in ref.index:
         d_date = d.date() if hasattr(d, "date") else pd.Timestamp(d).date()
         if d_date < start or d_date > end:

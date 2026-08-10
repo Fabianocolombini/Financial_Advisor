@@ -18,6 +18,16 @@ def test_dual_stress_actions():
     assert _min_action("Overweight", "Reduce") == "Reduce"
 
 
+def test_inflation_shock_2022_sanity():
+    from motor.src.calculo.models.treasury_regime_model import sanity_check_inflation_shock_2022
+
+    sanity = sanity_check_inflation_shock_2022()
+    if not sanity.get("ok"):
+        return
+    assert sanity.get("flight_to_quality_days", 0) == 0
+    assert sanity.get("inflation_shock_days", 0) > 0
+
+
 def test_treasury_regime_returns_model_fields():
     result = compute_treasury_regime()
     assert result["model"] == "treasury_regime_v1"

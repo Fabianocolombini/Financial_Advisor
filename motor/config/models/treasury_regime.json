@@ -20,6 +20,9 @@
   "stress_percentile": 0.8,
   "percentile_window_days": 1260,
   "delta_yield_days": 20,
+  "delta_yield_days_60": 60,
+  "delta_yield_days_90": 90,
+  "delta_yield_note": "inflation_shock se ΔY20/60/90>0; flight_to_quality exige ΔY20<0 e ΔY60/90≤0 (prevalece em 2022)",
   "term_premium_fred": "THREEFYTP10",
   "term_premium_note": "FRED THREEFYTP10 (Kim-Wright). NY Fed ACM não disponível via API FRED — ingest xls futuro.",
   "action_labels": {

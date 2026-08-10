@@ -55,11 +55,59 @@ def _delta_yield_real_series(days: int) -> pd.Series:
     return dfii - dfii.shift(days)
 
 
+def _sustained_inflation_shock(
+    v_pct: float,
+    stress_thr: float,
+    delta_y_20d: float | None,
+    delta_y_60d: float | None,
+    delta_y_90d: float | None = None,
+) -> bool:
+    """VIX stress with upward real-yield trend (20d, 60d, or 90d).
+
+    2022 had intermittent 20d yield drops (Ukraine shock, late-year rally)
+    while longer windows stayed positive — inflation_shock should dominate.
+    """
+    if v_pct <= stress_thr:
+        return False
+    for delta in (delta_y_20d, delta_y_60d, delta_y_90d):
+        if delta is not None and delta > 0:
+            return True
+    return False
+
+
+def _flight_to_quality(
+    v_pct: float,
+    stress_thr: float,
+    delta_y_20d: float | None,
+    delta_y_60d: float | None,
+    delta_y_90d: float | None = None,
+) -> bool:
+    """VIX stress with falling real yields — only when NOT in sustained inflation shock.
+
+    Requires 20d decline and non-positive 60d/90d trends to avoid misclassifying
+    2022 stress windows where short-term yield dips masked the inflation regime.
+    """
+    if v_pct <= stress_thr:
+        return False
+    if _sustained_inflation_shock(
+        v_pct, stress_thr, delta_y_20d, delta_y_60d, delta_y_90d
+    ):
+        return False
+    return (
+        delta_y_20d is not None
+        and delta_y_20d < 0
+        and (delta_y_60d is None or delta_y_60d <= 0)
+        and (delta_y_90d is None or delta_y_90d <= 0)
+    )
+
+
 def compute_treasury_regime(as_of: dt.date | None = None) -> dict[str, Any]:
     cfg = _load_config()
     as_of = as_of or motor_as_of_date()
     window = int(cfg.get("percentile_window_days", 1260))
     delta_days = int(cfg.get("delta_yield_days", 20))
+    delta_days_60 = int(cfg.get("delta_yield_days_60", 60))
+    delta_days_90 = int(cfg.get("delta_yield_days_90", 90))
     weights = cfg.get("regime_weights", {})
     w1 = float(weights.get("w1", 0.45))
     w2 = float(weights.get("w2", 0.35))
@@ -74,6 +122,8 @@ def compute_treasury_regime(as_of: dt.date | None = None) -> dict[str, Any]:
     bv_series = compute_proxy_series("bond_vol_proxy")
     v_series = get_fred_series("VIXCLS")
     dy_series = _delta_yield_real_series(delta_days)
+    dy60_series = _delta_yield_real_series(delta_days_60)
+    dy90_series = _delta_yield_real_series(delta_days_90)
 
     tp_pct, tp_val = _percentile_0_1(tp_series, as_of, window)
     f_val = _scalar_at(f_series, as_of)
@@ -83,11 +133,17 @@ def compute_treasury_regime(as_of: dt.date | None = None) -> dict[str, Any]:
     bv_pct, bv_val = _percentile_0_1(bv_series, as_of, window)
     v_pct, v_val = _percentile_0_1(v_series, as_of, window)
     delta_y = _scalar_at(dy_series, as_of)
+    delta_y_60 = _scalar_at(dy60_series, as_of)
+    delta_y_90 = _scalar_at(dy90_series, as_of)
 
     treasury_regime_score = w1 * tp_pct + w2 * f_bonus - w3 * bv_pct
 
-    flight_to_quality = v_pct > stress_thr and delta_y is not None and delta_y < 0
-    inflation_shock = v_pct > stress_thr and delta_y is not None and delta_y > 0
+    inflation_shock = _sustained_inflation_shock(
+        v_pct, stress_thr, delta_y, delta_y_60, delta_y_90
+    )
+    flight_to_quality = _flight_to_quality(
+        v_pct, stress_thr, delta_y, delta_y_60, delta_y_90
+    )
 
     action_calc = _action_from_score(treasury_regime_score, thresholds, labels)
     regime_action = action_calc
@@ -141,6 +197,22 @@ def compute_treasury_regime(as_of: dt.date | None = None) -> dict[str, Any]:
             "contribuicao": 0.0,
             "role": "diferencia fuga à qualidade vs choque inflação (2022)",
         },
+        {
+            "id": "delta_yield_real_60d",
+            "nome": f"Δ yield real 10y ({delta_days_60}d)",
+            "valor": delta_y_60,
+            "peso": 0.0,
+            "contribuicao": 0.0,
+            "role": "tendência 60d — inflation_shock prevalece se ΔY_60d > 0",
+        },
+        {
+            "id": "delta_yield_real_90d",
+            "nome": f"Δ yield real 10y ({delta_days_90}d)",
+            "valor": delta_y_90,
+            "peso": 0.0,
+            "contribuicao": 0.0,
+            "role": "tendência 90d — captura regime inflacionário sustentado (2022)",
+        },
     ]
 
     dominant = max(
@@ -162,6 +234,8 @@ def compute_treasury_regime(as_of: dt.date | None = None) -> dict[str, Any]:
         bv_pct=bv_pct,
         v_pct=v_pct,
         delta_y=delta_y,
+        delta_y_60=delta_y_60,
+        delta_y_90=delta_y_90,
         calibrated=bool(cfg.get("calibrated", False)),
     )
 
@@ -200,6 +274,8 @@ def _build_explanation(
     bv_pct: float,
     v_pct: float,
     delta_y: float | None,
+    delta_y_60: float | None,
+    delta_y_90: float | None,
     calibrated: bool,
 ) -> list[str]:
     lines = [
@@ -220,14 +296,18 @@ def _build_explanation(
     ]
     if delta_y is not None:
         lines.append(f"Δ yield real 20d (DFII10): {delta_y:.3f}.")
+    if delta_y_60 is not None:
+        lines.append(f"Δ yield real 60d (DFII10): {delta_y_60:.3f}.")
+    if delta_y_90 is not None:
+        lines.append(f"Δ yield real 90d (DFII10): {delta_y_90:.3f}.")
     if flight_to_quality:
         lines.append(
-            f"Flight-to-quality ON (V pct {v_pct:.0%}, ΔY<0) → "
+            f"Flight-to-quality ON (V pct {v_pct:.0%}, ΔY20<0 e ΔY60/90≤0) → "
             f"piso Overweight (calculada: {action_calc})."
         )
     elif inflation_shock:
         lines.append(
-            f"Inflation-shock ON (V pct {v_pct:.0%}, ΔY>0) → "
+            f"Inflation-shock ON (V pct {v_pct:.0%}, ΔY20/60/90>0) → "
             f"teto Reduce (padrão 2022; calculada: {action_calc})."
         )
     else:
@@ -267,8 +347,9 @@ def treasury_regime_aba_result(aba_id: str, as_of: dt.date | None = None) -> dic
 
 
 def sanity_check_inflation_shock_2022() -> dict[str, Any]:
-    """Cheap validation: did inflation_shock fire during 2022 stress window?"""
-    hits: list[dict[str, str]] = []
+    """Cheap validation: inflation_shock fires in 2022; flight_to_quality must NOT."""
+    inflation_hits: list[dict[str, str]] = []
+    ftq_hits: list[dict[str, str]] = []
     start = dt.date(2022, 1, 1)
     end = dt.date(2022, 12, 31)
     ref = get_fred_series("DFII10")
@@ -280,11 +361,14 @@ def sanity_check_inflation_shock_2022() -> dict[str, Any]:
             continue
         r = compute_treasury_regime(d_date)
         if r.get("inflation_shock_flag"):
-            hits.append({"date": d_date.isoformat(), "action": r.get("regime_action")})
+            inflation_hits.append({"date": d_date.isoformat(), "action": r.get("regime_action")})
+        if r.get("flight_to_quality_flag"):
+            ftq_hits.append({"date": d_date.isoformat(), "action": r.get("regime_action")})
     return {
         "ok": True,
         "period": "2022",
-        "inflation_shock_days": len(hits),
-        "sample": hits[:5],
-        "passed": len(hits) > 0,
+        "inflation_shock_days": len(inflation_hits),
+        "flight_to_quality_days": len(ftq_hits),
+        "sample": inflation_hits[:5],
+        "passed": len(inflation_hits) > 0 and len(ftq_hits) == 0,
     }
