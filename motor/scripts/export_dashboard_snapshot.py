@@ -21,18 +21,57 @@ def stage_en(estagio: str | None) -> str:
     return mapping.get(estagio or "", "Hold")
 
 
+def _indicator_numeric_value(c: dict) -> float | None:
+    for key in (
+        "valor",
+        "value",
+        "percentile_cs",
+        "percentile_0_1",
+        "signal_0_1",
+        "penalty_0_1",
+        "z_score",
+        "z_ajustado",
+        "hedge_fit",
+        "cape_cheap",
+        "er_contrib_0_1",
+        "pc_contra",
+        "aaii_contra",
+        "naaim_contra",
+    ):
+        v = c.get(key)
+        if v is not None:
+            try:
+                return float(v)
+            except (TypeError, ValueError):
+                continue
+    return None
+
+
 def _indicator_export(c: dict) -> dict:
     row = {
         "id": c["id"],
-        "name": c.get("nome", c["id"]),
-        "value": c.get("valor"),
-        "zScore": c.get("z_ajustado"),
+        "name": c.get("nome", c.get("name", c["id"])),
+        "value": _indicator_numeric_value(c),
+        "zScore": c.get("z_ajustado") if c.get("z_ajustado") is not None else c.get("z_score"),
         "contribution": c.get("contribuicao"),
     }
     if c.get("is_proxy"):
         row["isProxy"] = True
         row["proxyRationale"] = c.get("proxy_rationale", "")
     return row
+
+
+def _merge_indicator_exports(existing: list[dict], extra: list[dict]) -> list[dict]:
+    by_id: dict[str, dict] = {row["id"]: row for row in existing}
+    for row in extra:
+        prev = by_id.get(row["id"])
+        if prev is None or (prev.get("value") is None and row.get("value") is not None):
+            by_id[row["id"]] = row
+    return sorted(
+        by_id.values(),
+        key=lambda r: abs(r.get("contribution") or 0),
+        reverse=True,
+    )
 
 
 def main() -> None:
@@ -150,6 +189,18 @@ def main() -> None:
                     regime_model = export_regime_model_snapshot(aba_id)
                     if regime_model:
                         snapshot["classes"][class_id]["regimeModel"] = regime_model
+                        regime_inds = [
+                            _indicator_export(c)
+                            for c in (regime_model.get("components") or [])
+                            if isinstance(c, dict) and c.get("id")
+                        ]
+                        if regime_inds:
+                            cls_entry = snapshot["classes"][class_id]
+                            cls_entry["allIndicators"] = _merge_indicator_exports(
+                                cls_entry.get("allIndicators", []),
+                                regime_inds,
+                            )
+                            cls_entry["indicators"] = cls_entry["allIndicators"][:5]
                 except Exception as e:
                     print(f"[export_dashboard] WARN: regime model {aba_id}: {e}", file=sys.stderr)
 

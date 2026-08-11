@@ -1,6 +1,10 @@
 import { ASSET_CLASS_TABS } from "@/lib/catalog/asset-classes";
 import { CATALOG_INSTRUMENTS } from "@/lib/catalog/instruments";
-import { buildClassDataEquation } from "@/lib/motor/class-data-equation";
+import {
+  mergeIndicatorPools,
+  normalizeIndicatorSnapshot,
+  regimeComponentsToIndicators,
+} from "@/lib/motor/normalize-indicators";
 import { computeDecisionReliability } from "@/lib/motor/reliability-audit";
 import { computeTechnicalSummary } from "@/lib/market/technical-summary";
 import { perfHorizonsFromBars } from "@/lib/market/perf-horizons";
@@ -76,8 +80,13 @@ function buildMotorContext(
       ? "class"
       : "none";
 
-  const classIndicators = pickAllIndicators(classSnap);
-  const tickerIndicators = pickAllIndicators(tick);
+  const classIndicators = mergeIndicatorPools([
+    pickAllIndicators(classSnap).map((i) => normalizeIndicatorSnapshot(i)),
+    regimeComponentsToIndicators(classSnap?.regimeModel?.components),
+  ]);
+  const tickerIndicators = pickAllIndicators(tick).map((i) =>
+    normalizeIndicatorSnapshot(i),
+  );
   const indicators = topDrivers(classIndicators, tickerIndicators);
 
   return {

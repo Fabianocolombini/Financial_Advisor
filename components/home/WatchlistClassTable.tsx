@@ -81,7 +81,12 @@ function SecurityRow({
         </div>
       </td>
       <td className="px-2 py-2 tabular-nums text-sm text-white">
-        {formatScore(row.score)}
+        <span>{formatScore(row.score)}</span>
+        {row.volumeSharePct != null ? (
+          <span className="ml-1 text-[10px] text-zinc-500" title="Volume share within this asset class (20D avg)">
+            · {row.volumeSharePct.toFixed(0)}% vol
+          </span>
+        ) : null}
       </td>
       <td className={`px-2 py-2 tabular-nums text-sm ${perfClass(row.perf1dPct)}`}>
         {formatPerf(row.perf1dPct)}

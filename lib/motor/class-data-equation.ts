@@ -1,4 +1,8 @@
 import type { MotorIndicatorSnapshot } from "./snapshot-types";
+import {
+  normalizeIndicatorSnapshot,
+  resolveIndicatorValue,
+} from "./normalize-indicators";
 import decisionMapJson from "../../motor/config/class_decision_map.json";
 
 export type DecisionQuestionId =
@@ -74,18 +78,19 @@ export function buildClassDataEquation(
           status: "missing" as const,
         };
       }
-      const status: "ok" | "missing" | "proxy" = ind.isProxy
+      const norm = normalizeIndicatorSnapshot(ind as MotorIndicatorSnapshot & Record<string, unknown>);
+      const status: "ok" | "missing" | "proxy" = norm.isProxy
         ? "proxy"
-        : ind.value != null
+        : resolveIndicatorValue(norm as MotorIndicatorSnapshot & Record<string, unknown>) != null
           ? "ok"
           : "missing";
       return {
-        id: ind.id,
-        name: ind.name,
-        value: ind.value,
-        contribution: ind.contribution,
-        isProxy: ind.isProxy,
-        proxyRationale: ind.proxyRationale,
+        id: norm.id,
+        name: norm.name,
+        value: norm.value,
+        contribution: norm.contribution,
+        isProxy: norm.isProxy,
+        proxyRationale: norm.proxyRationale,
         status,
       };
     });

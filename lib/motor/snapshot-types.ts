@@ -158,6 +158,8 @@ export type WatchlistRow = {
   perf1mPct: number | null;
   /** Avg daily share volume (20 sessions), from Yahoo when not in snapshot. */
   avgVolumeShares: number | null;
+  /** Share of class avg volume (0–100), for liquidity relevance within sleeve. */
+  volumeSharePct: number | null;
   indicators: MotorIndicatorSnapshot[];
   hasMotorData: boolean;
   motorScope?: "ticker" | "class" | "none";

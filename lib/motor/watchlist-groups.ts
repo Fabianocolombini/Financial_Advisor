@@ -114,6 +114,7 @@ export function buildWatchlistGroups(
         perf15dPct: tick?.perf15dPct ?? yahooMarket?.perf15dPct ?? null,
         perf1mPct: tick?.perf1mPct ?? null,
         avgVolumeShares: yahooMarket?.avgVolumeShares ?? null,
+        volumeSharePct: null,
         indicators,
         hasMotorData,
         motorScope: hasTickerMotor ? "ticker" : hasClassMotor ? "class" : "none",
@@ -125,6 +126,19 @@ export function buildWatchlistGroups(
       const sb = b.score ?? -999;
       return sb - sa;
     });
+
+    const totalClassVolume = rows.reduce(
+      (sum, row) => sum + (row.avgVolumeShares ?? 0),
+      0,
+    );
+    if (totalClassVolume > 0) {
+      for (const row of rows) {
+        row.volumeSharePct =
+          row.avgVolumeShares != null
+            ? (row.avgVolumeShares / totalClassVolume) * 100
+            : null;
+      }
+    }
 
     groups.push({
       classId,

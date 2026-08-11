@@ -49,8 +49,8 @@
       "role": "Sovereign duration — term premium, Fed path, dual stress (quality vs inflation).",
       "indicators": {
         "timing": ["term_premium", "fed_cut_probability", "bond_vol_proxy"],
-        "role": ["term_premium", "yield_real_10y", "delta_yield_real_20d"],
-        "projection": ["cot_net_position", "bond_vol_proxy"],
+        "role": ["term_premium", "delta_yield_real_20d", "delta_yield_real_60d"],
+        "projection": ["bond_vol_proxy", "delta_yield_real_20d"],
         "investability": ["term_premium", "fed_cut_probability"],
         "forecast": ["fed_cut_probability", "term_premium", "bond_vol_proxy"]
       },
@@ -153,11 +153,18 @@
     "us_equity": {
       "role": "US equity — valuation, sentiment, macro overlay.",
       "indicators": {
-        "timing": ["earnings_revision_proxy", "vix", "put_call_ratio"],
-        "role": ["cape_shiller", "pe_ratio", "aaii_sentiment"],
-        "projection": ["naaim_exposure", "margin_debt"],
-        "investability": ["pe_ratio", "vix"],
-        "forecast": ["earnings_revision_proxy", "cape_shiller"]
+        "timing": ["earnings_revision", "put_call_contra", "margin_debt"],
+        "role": ["cape_cheap", "earnings_revision", "naaim_contra"],
+        "projection": ["margin_debt", "aaii_contra"],
+        "investability": ["cape_cheap", "put_call_contra"],
+        "forecast": ["earnings_revision", "cape_cheap"]
+      },
+      "tickerIndicators": {
+        "timing": ["trend", "rsi_14"],
+        "role": ["vol_realizada", "trend"],
+        "projection": ["trend", "volume_vs_media"],
+        "investability": ["volume_vs_media", "vol_realizada"],
+        "forecast": ["rsi_14", "vol_realizada"]
       },
       "models": {
         "regime": "us_equity_regime_v1 — USEquityRegimeScore (quanto US equity)",
@@ -165,13 +172,20 @@
       }
     },
     "intl_equity": {
-      "role": "International equity — relative P/E, CAPE, FX.",
+      "role": "International equity — relative valuation, FX, OECD growth.",
       "indicators": {
-        "timing": ["pe_rel_intl_us", "vix"],
-        "role": ["cape_by_country", "dxy", "eurusd"],
-        "projection": ["pe_rel_intl_us"],
-        "investability": ["pe_rel_intl_us"],
-        "forecast": ["cape_by_country"]
+        "timing": ["oecd_z", "cape_gap"],
+        "role": ["cape_gap", "usd_weak", "rate_diff_narrow"],
+        "projection": ["oecd_z", "usd_weak"],
+        "investability": ["cape_gap", "rate_diff_narrow"],
+        "forecast": ["cape_gap", "usd_weak"]
+      },
+      "tickerIndicators": {
+        "timing": ["trend", "rsi_14"],
+        "role": ["vol_penalty_inv", "hedge_fit"],
+        "projection": ["trend", "rsi_14"],
+        "investability": ["hedge_fit", "vol_penalty_inv"],
+        "forecast": ["rsi_14", "trend"]
       },
       "models": {
         "regime": "intl_equity_regime_v1 — IntlEquityRegimeScore",
@@ -179,13 +193,20 @@
       }
     },
     "em_equity": {
-      "role": "Emerging markets — EMB spread, growth, USD.",
+      "role": "Emerging markets — USD, EMBI spread, commodities, China.",
       "indicators": {
-        "timing": ["embi_spread", "vix"],
-        "role": ["gdp_growth_em", "dxy", "pe_rel_em_us"],
-        "projection": ["embi_spread"],
-        "investability": ["embi_spread"],
-        "forecast": ["embi_spread", "gdp_growth_em"]
+        "timing": ["embi_cheap", "commodity_z"],
+        "role": ["usd_weak", "embi_cheap", "china_z"],
+        "projection": ["commodity_z", "china_z"],
+        "investability": ["embi_cheap", "usd_weak"],
+        "forecast": ["embi_cheap", "china_z"]
+      },
+      "tickerIndicators": {
+        "timing": ["trend", "rsi_14"],
+        "role": ["china_fit", "volume_vs_media"],
+        "projection": ["trend", "volume_vs_media"],
+        "investability": ["volume_vs_media", "china_fit"],
+        "forecast": ["rsi_14", "china_fit"]
       },
       "models": {
         "regime": "em_equity_regime_v1 — EMEquityRegimeScore",
@@ -193,13 +214,20 @@
       }
     },
     "real_estate": {
-      "role": "REITs — yield spread vs cap rates, valuation percentile.",
+      "role": "REITs — yield spread, real rates, refinancing stress.",
       "indicators": {
-        "timing": ["reit_valuation_percentile", "nareit_yield_spread"],
-        "role": ["price_vnq", "yield_real_10y", "dgs10"],
-        "projection": ["nareit_yield_spread"],
-        "investability": ["reit_valuation_percentile"],
-        "forecast": ["reit_valuation_percentile"]
+        "timing": ["nareit_spread", "delta_ry_spread"],
+        "role": ["nareit_spread", "real_yield_low", "reit_valuation"],
+        "projection": ["delta_ry_spread", "refi_stress"],
+        "investability": ["reit_valuation", "nareit_spread"],
+        "forecast": ["reit_valuation", "nareit_spread"]
+      },
+      "tickerIndicators": {
+        "timing": ["trend", "volume_vs_media"],
+        "role": ["dividend_yield", "vol_realizada"],
+        "projection": ["trend", "dividend_yield"],
+        "investability": ["volume_vs_media", "dividend_yield"],
+        "forecast": ["dividend_yield", "vol_realizada"]
       },
       "models": {
         "regime": "reits_regime_v1 — REITsRegimeScore",
@@ -207,13 +235,20 @@
       }
     },
     "commodities_precious": {
-      "role": "Gold/precious — real yields, USD, positioning.",
+      "role": "Gold/precious — real yields, USD, central bank demand.",
       "indicators": {
-        "timing": ["cot_gold_net", "gold_price"],
-        "role": ["dfii10", "dxy", "cb_gold_buying"],
-        "projection": ["gld_holdings"],
-        "investability": ["gold_price"],
-        "forecast": ["cot_gold_net"]
+        "timing": ["crowding", "etf_holdings"],
+        "role": ["real_yield_low", "usd_weak", "cb_gold_buying"],
+        "projection": ["etf_holdings", "cb_gold_buying"],
+        "investability": ["real_yield_low", "usd_weak"],
+        "forecast": ["crowding", "cb_gold_buying"]
+      },
+      "tickerIndicators": {
+        "timing": ["trend", "rsi_14"],
+        "role": ["vol_realizada", "volume_vs_media"],
+        "projection": ["trend", "volume_vs_media"],
+        "investability": ["volume_vs_media", "expense_ratio"],
+        "forecast": ["rsi_14", "expense_ratio"]
       },
       "models": {
         "regime": "commodities_precious_regime_v1 — PreciousRegimeScore",
@@ -221,13 +256,20 @@
       }
     },
     "commodities_energy": {
-      "role": "Energy — crude stocks, WTI, positioning.",
+      "role": "Energy — curve, inventories, capital discipline.",
       "indicators": {
-        "timing": ["crude_oil_stocks", "cot_crude_net"],
-        "role": ["wti", "henry_hub"],
-        "projection": ["crude_oil_stocks"],
-        "investability": ["wti"],
-        "forecast": ["cot_crude_net"]
+        "timing": ["curve_backwardation", "inventory_tight"],
+        "role": ["curve_backwardation", "rig_discount", "spot_wti"],
+        "projection": ["inventory_tight", "spot_wti"],
+        "investability": ["spot_wti", "curve_backwardation"],
+        "forecast": ["crowding", "curve_backwardation"]
+      },
+      "tickerIndicators": {
+        "timing": ["trend", "rsi_14"],
+        "role": ["beta_fit", "volume_vs_media"],
+        "projection": ["trend", "volume_vs_media"],
+        "investability": ["volume_vs_media", "beta_fit"],
+        "forecast": ["rsi_14", "beta_fit"]
       },
       "models": {
         "regime": "commodities_energy_regime_v1 — EnergyRegimeScore",
@@ -235,13 +277,20 @@
       }
     },
     "energy_mlp": {
-      "role": "MLPs — distribution yield vs rates.",
+      "role": "MLPs — distribution spread, throughput, rates.",
       "indicators": {
-        "timing": ["distribution_yield_spread"],
-        "role": ["wti", "distribution_yield_spread"],
-        "projection": ["distribution_yield_spread"],
-        "investability": ["distribution_yield_spread"],
-        "forecast": ["distribution_yield_spread"]
+        "timing": ["distribution_yield_spread", "delta_dys"],
+        "role": ["distribution_yield_spread", "yield_10y_low", "amlp_vol_z"],
+        "projection": ["delta_dys", "wti_spot"],
+        "investability": ["distribution_yield_spread", "yield_10y_low"],
+        "forecast": ["distribution_yield_spread", "delta_dys"]
+      },
+      "tickerIndicators": {
+        "timing": ["trend", "volume_vs_media"],
+        "role": ["dividend_yield", "vol_realizada"],
+        "projection": ["trend", "dividend_yield"],
+        "investability": ["volume_vs_media", "dividend_yield"],
+        "forecast": ["dividend_yield", "vol_realizada"]
       },
       "models": {
         "regime": "energy_mlp_regime_v1 — MLPRegimeScore",
@@ -249,13 +298,20 @@
       }
     },
     "healthcare_biotech": {
-      "role": "Biotech — pipeline proxy, revenue growth.",
+      "role": "Biotech — rates, risk appetite, funding, catalysts.",
       "indicators": {
-        "timing": ["private_funding_proxy", "fda_calendar_density"],
-        "role": ["revenue_growth"],
-        "projection": ["private_funding_proxy"],
-        "investability": ["fda_calendar_density"],
-        "forecast": ["private_funding_proxy"]
+        "timing": ["biotech_rs_z", "delta_yield_10y"],
+        "role": ["yield_10y_low", "risk_appetite", "private_funding"],
+        "projection": ["private_funding", "biotech_rs_z"],
+        "investability": ["private_funding", "risk_appetite"],
+        "forecast": ["private_funding", "yield_10y_low"]
+      },
+      "tickerIndicators": {
+        "timing": ["trend", "rsi_14"],
+        "role": ["catalyst_density", "volume_vs_media"],
+        "projection": ["catalyst_density", "trend"],
+        "investability": ["volume_vs_media", "catalyst_density"],
+        "forecast": ["rsi_14", "catalyst_density"]
       },
       "models": {
         "regime": "healthcare_biotech_regime_v1 — BiotechRegimeScore",
@@ -263,13 +319,20 @@
       }
     },
     "alt_bdc": {
-      "role": "BDC credit — NAV, non-accrual, spreads.",
+      "role": "BDC credit — SOFR, NAV discount, credit cycle.",
       "indicators": {
-        "timing": ["nav_premium_discount"],
-        "role": ["hy_context", "ig_context"],
-        "projection": ["nav_premium_discount"],
-        "investability": ["nav_premium_discount"],
-        "forecast": ["nav_premium_discount"]
+        "timing": ["nav_cheap", "non_accrual"],
+        "role": ["sofr_proxy", "nav_cheap", "hy_spread_penalty"],
+        "projection": ["nav_persist_penalty", "hy_spread_penalty"],
+        "investability": ["nav_cheap", "sofr_proxy"],
+        "forecast": ["non_accrual", "nav_cheap"]
+      },
+      "tickerIndicators": {
+        "timing": ["trend", "nav_discount"],
+        "role": ["nav_discount", "dividend_yield"],
+        "projection": ["trend", "nav_discount"],
+        "investability": ["dividend_yield", "vol_realizada"],
+        "forecast": ["nav_discount", "dividend_yield"]
       },
       "models": {
         "regime": "bdc_regime_v1 — BDCRegimeScore",
@@ -277,13 +340,20 @@
       }
     },
     "currencies": {
-      "role": "USD / FX — rate differential, risk reversal proxy.",
+      "role": "FX — REER valuation, carry, positioning (pace model).",
       "indicators": {
-        "timing": ["risk_reversal_proxy", "rate_differential"],
-        "role": ["dxy", "dff"],
-        "projection": ["risk_reversal_proxy"],
-        "investability": ["rate_differential"],
-        "forecast": ["risk_reversal_proxy"]
+        "timing": ["reer_cheap", "carry_penalty"],
+        "role": ["reer_cheap", "crowding_penalty"],
+        "projection": ["carry_penalty", "crowding_penalty"],
+        "investability": ["reer_cheap", "carry_penalty"],
+        "forecast": ["reer_cheap", "crowding_penalty"]
+      },
+      "tickerIndicators": {
+        "timing": ["custo_efetivo_inv", "liquidez"],
+        "role": ["custo_efetivo_inv", "adequacao_fiscal"],
+        "projection": ["liquidez", "adequacao_fiscal"],
+        "investability": ["custo_efetivo_inv", "liquidez"],
+        "forecast": ["adequacao_fiscal", "custo_efetivo_inv"]
       },
       "models": {
         "regime": "fx_regime_v1 — ConversionPaceScore (pace, não allocation)",
@@ -291,13 +361,20 @@
       }
     },
     "alt_infrastructure": {
-      "role": "Infrastructure — yield context, macro rates.",
+      "role": "Infrastructure — real yield, breakeven lag, utilities momentum.",
       "indicators": {
-        "timing": ["yield_10y", "spread_10y_2y"],
-        "role": ["price_igf", "dff"],
-        "projection": ["yield_10y"],
-        "investability": ["price_igf"],
-        "forecast": ["yield_10y"]
+        "timing": ["real_yield_low", "breakeven_lagged"],
+        "role": ["real_yield_low", "infra_gov_z", "utilities_z"],
+        "projection": ["breakeven_lagged", "infra_gov_z"],
+        "investability": ["utilities_z", "real_yield_low"],
+        "forecast": ["breakeven_lagged", "infra_gov_z"]
+      },
+      "tickerIndicators": {
+        "timing": ["trend", "volume_vs_media"],
+        "role": ["dividend_yield", "vol_penalty_inv"],
+        "projection": ["trend", "dividend_yield"],
+        "investability": ["volume_vs_media", "dividend_yield"],
+        "forecast": ["dividend_yield", "vol_penalty_inv"]
       },
       "models": {
         "regime": "alt_infrastructure_regime_v1 — InfraRegimeScore",
@@ -308,11 +385,11 @@
   "tickerTechnicals": {
     "role": "Security-level momentum, trend, volume, volatility.",
     "indicators": {
-      "timing": ["preco_vs_mm50", "rsi_14", "volume_vs_media"],
-      "role": ["preco_vs_mm200", "vol_realizada"],
-      "projection": ["preco_vs_mm50", "preco_vs_mm200"],
+      "timing": ["trend", "preco_vs_mm50", "rsi_14", "volume_vs_media"],
+      "role": ["preco_vs_mm200", "vol_realizada", "trend"],
+      "projection": ["trend", "preco_vs_mm50", "preco_vs_mm200"],
       "investability": ["volume_vs_media", "vol_realizada"],
-      "forecast": ["rsi_14", "vol_realizada"]
+      "forecast": ["rsi_14", "vol_realizada", "trend"]
     }
   }
 }
