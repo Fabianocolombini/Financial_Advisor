@@ -1,4 +1,4 @@
-import yahooFinance from "yahoo-finance2";
+import { yahooFinance } from "@/lib/market/yahoo-client";
 
 const REVALIDATE_SEC = 300;
 

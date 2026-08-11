@@ -145,6 +145,9 @@ export function computeTechnicalSummary(bars: YahooBar[]): TechnicalIndicatorRow
     [10, "10"],
     [20, "20"],
     [30, "30"],
+    [50, "50"],
+    [100, "100"],
+    [200, "200"],
   ] as const) {
     const smaVal = sma(values, period);
     rows.push({

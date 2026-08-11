@@ -1,0 +1,23 @@
+{
+  "model_confidence": "O quanto o modelo confia nesta leitura, com base na cobertura e consistência dos dados de origem. Não é probabilidade de acerto.",
+  "class_composition_score": "Como este ativo se compara aos demais da mesma classe de ativo no snapshot do motor.",
+  "fred_10y_spread": "Diferença entre juros de longo e curto prazo (curva de juros). Quando negativo (inversão), sinaliza maior risco de recessão.",
+  "security_score": "Score quantitativo do papel individual (security layer), combinando indicadores específicos do ticker no modelo do motor.",
+  "global_motor_models": "Score do ativo comparado à média ou benchmark da sua classe de ativo no motor.",
+  "entry_validated": "Indica se preço, volume e momentum confirmam um ponto de entrada técnico, independentemente da recomendação do motor.",
+  "entry_not_validated": "As condições técnicas ainda não confirmam entrada — aguardar confirmação mesmo com sinal favorável do motor.",
+  "strong_reduce": "O motor recomenda reduzir a posição com alta convicção; não implica venda total automática.",
+  "stochastic_rsi": "Oscilador que combina RSI com estocástico. Acima de 80 tende a overbought; abaixo de 20, oversold.",
+  "cci": "Commodity Channel Index mede desvio do preço em relação à média. Valores altos sugerem sobrecompra; baixos, sobrevenda.",
+  "macd_level": "Diferença entre médias móveis exponenciais — momentum e direção de tendência. Positivo favorece compra; negativo, venda.",
+  "stochastic_fast": "Compara o fechamento ao range recente. Acima de 80 overbought; abaixo de 20 oversold.",
+  "williams_r": "Oscilador de momentum invertido (-100 a 0). Próximo de 0 overbought; próximo de -100 oversold.",
+  "bull_bear_power": "Força compradora vs vendedora em relação à média. Positivo favorece touros; negativo, ursos.",
+  "bollinger_bands": "Faixa de volatilidade ao redor do preço. Compressão indica baixa volatilidade (possível breakout); expansão, alta volatilidade.",
+  "moving_averages": "Médias móveis suavizam o preço para identificar tendência. Preço acima da média tende a sinal de força.",
+  "oscillators": "Indicadores de momentum e reversão de curto prazo — medem se o ativo está esticado para cima ou para baixo.",
+  "motor_signal": "Leitura quantitativa do motor de decisão por classe e papel, combinando macro, regime e indicadores do sleeve.",
+  "macro_risk": "Bloco macro e de risco sistêmico (curva de juros, spreads, volatilidade) que contextualiza o score do ativo.",
+  "convergence": "Comparação entre o sinal do motor (quantitativo) e o sinal técnico (preço/momentum) para evitar leituras contraditórias sem explicação.",
+  "technical_rating": "Resumo visual do score combinado do motor em escala de -1 (Strong Sell) a +1 (Strong Buy)."
+}

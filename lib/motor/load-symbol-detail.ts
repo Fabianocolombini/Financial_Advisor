@@ -11,6 +11,7 @@ import { computeTechnicalSummary } from "@/lib/market/technical-summary";
 import { perfHorizonsFromBars } from "@/lib/market/perf-horizons";
 import { fetchYahooChartCloses } from "@/lib/market/yahoo";
 import { fetchYahooQuoteSummaryCached } from "@/lib/market/yahoo-quote";
+import { loadSymbolFinancialsCached } from "@/lib/market/load-symbol-financials";
 import { loadMotorDashboardSnapshot } from "@/lib/motor/load-snapshot";
 import type {
   MotorClassSnapshot,
@@ -160,7 +161,10 @@ export async function loadSymbolDetailView(
   const period1 = period2 - TWO_YEARS_SEC;
 
   let bars: Awaited<ReturnType<typeof fetchYahooChartCloses>> = [];
-  const quote = await fetchYahooQuoteSummaryCached(sym);
+  const [quote, financials] = await Promise.all([
+    fetchYahooQuoteSummaryCached(sym),
+    loadSymbolFinancialsCached(sym),
+  ]);
   let yahooWarning: string | undefined;
 
   try {
@@ -174,6 +178,11 @@ export async function loadSymbolDetailView(
     yahooWarning = yahooWarning
       ? `${yahooWarning}; ${quote.error}`
       : quote.error;
+  }
+
+  if (financials.warnings.length) {
+    const finWarn = financials.warnings.join("; ");
+    yahooWarning = yahooWarning ? `${yahooWarning}; ${finWarn}` : finWarn;
   }
 
   const perfHorizons = perfHorizonsFromBars(bars);
@@ -203,9 +212,10 @@ export async function loadSymbolDetailView(
     inWatchlist: Boolean(watchlistItem),
     snapshot,
     motor,
-    bars: bars.map((b) => ({ date: b.date, value: b.value })),
+    bars: bars.map((b) => ({ date: b.date, value: b.value, volume: b.volume })),
     perfHorizons,
     quote,
+    financials,
     technicalRows,
     yahooWarning,
     reliability,

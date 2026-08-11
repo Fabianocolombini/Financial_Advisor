@@ -3,6 +3,7 @@
 import type { YahooQuoteSummary } from "@/lib/market/yahoo-quote";
 import type { TechnicalIndicatorRow } from "@/lib/market/technical-summary";
 import type { PerfHorizons } from "@/lib/market/perf-horizons";
+import type { SymbolFinancials } from "@/lib/market/financials-types";
 
 export type MotorDominantIndicator = {
   id: string;
@@ -232,9 +233,10 @@ export type SymbolDetailView = {
   inWatchlist: boolean;
   snapshot: MotorDashboardSnapshot | null;
   motor: SymbolMotorContext;
-  bars: Array<{ date: string; value: number }>;
+  bars: Array<{ date: string; value: number; volume?: number }>;
   perfHorizons: PerfHorizons;
   quote: YahooQuoteSummary;
+  financials: SymbolFinancials;
   technicalRows: TechnicalIndicatorRow[];
   yahooWarning?: string;
   reliability: DecisionReliabilitySummary;

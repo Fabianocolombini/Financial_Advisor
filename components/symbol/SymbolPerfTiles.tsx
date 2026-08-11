@@ -1,21 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import type { PerfHorizonId } from "@/lib/market/perf-horizons";
+import type { PerfHorizonId, PerfHorizons } from "@/lib/market/perf-horizons";
 import { PERF_HORIZON_LABELS } from "@/lib/market/perf-horizons";
 import { formatPerf, perfClass } from "@/lib/format-market";
 
-const ORDER: PerfHorizonId[] = ["1d", "5d", "1m", "2y"];
+const ORDER: PerfHorizonId[] = ["1d", "5d", "15d", "1m", "2y"];
 
 export function SymbolPerfTiles({
   horizons,
+  active,
+  onSelect,
 }: {
-  horizons: Record<PerfHorizonId, number | null>;
+  horizons: PerfHorizons;
+  active?: PerfHorizonId;
+  onSelect?: (id: PerfHorizonId) => void;
 }) {
-  const [active, setActive] = useState<PerfHorizonId>("1d");
-
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+    <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
       {ORDER.map((id) => {
         const pct = horizons[id];
         const isActive = active === id;
@@ -23,7 +24,7 @@ export function SymbolPerfTiles({
           <button
             key={id}
             type="button"
-            onClick={() => setActive(id)}
+            onClick={() => onSelect?.(id)}
             className={`rounded-lg border px-3 py-2 text-left transition-colors ${
               isActive
                 ? "border-zinc-600 bg-zinc-900"

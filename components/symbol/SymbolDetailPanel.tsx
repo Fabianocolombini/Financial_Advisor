@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import type { SymbolDetailView } from "@/lib/motor/snapshot-types";
+import type { PerfHorizonId } from "@/lib/market/perf-horizons";
 import { SymbolAvatar } from "@/components/catalog/SymbolAvatar";
 import { MotorDataFreshness } from "@/components/home/MotorDataFreshness";
 import {
@@ -14,38 +15,30 @@ import {
 import { formatScore } from "@/lib/motor/format-scores";
 import { SymbolPriceChart } from "./SymbolPriceChart";
 import { SymbolPerfTiles } from "./SymbolPerfTiles";
-import { SymbolKeyStatsPreview, SymbolKeyStats } from "./SymbolKeyStats";
-import { SymbolLatestEarnings } from "./SymbolLatestEarnings";
+import { SymbolOverviewStats } from "./SymbolOverviewStats";
+import { SymbolKeyStatsPreview } from "./SymbolKeyStats";
 import { SymbolAbout } from "./SymbolAbout";
-import {
-  MotorIndicatorsTable,
-  MotorSignalSummary,
-  MotorWhySection,
-} from "./MotorTechnicals";
-import { TechnicalIndicatorsTable } from "./TechnicalIndicatorsTable";
+import { MotorTechnicalsTab } from "./MotorTechnicalsTab";
 import { AnalystForecastCard, MotorForecastCard } from "./SymbolForecast";
 import { SymbolReliabilityBanner } from "./SymbolReliabilityBanner";
 import { SymbolDataEquationPanel } from "./SymbolDataEquationPanel";
-import { SymbolModelsPanel } from "./SymbolModelsPanel";
-import { ClassMacroSection, TickerMotorSection } from "./SymbolMotorSections";
+import {
+  SymbolEarningsPanel,
+  SymbolFinancialsPanel,
+} from "./SymbolFinancialsPanel";
 
 const TABS = [
   { id: "overview", label: "Overview" },
-  { id: "motor", label: "Motor" },
   { id: "financials", label: "Financials" },
-  { id: "technicals", label: "Technicals" },
+  { id: "motor", label: "Motor & Technicals" },
   { id: "forecast", label: "Forecast" },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
 
 function parseTab(value: string | null): TabId {
-  if (
-    value === "motor" ||
-    value === "financials" ||
-    value === "technicals" ||
-    value === "forecast"
-  ) {
+  if (value === "technicals") return "motor";
+  if (value === "motor" || value === "financials" || value === "forecast") {
     return value;
   }
   return "overview";
@@ -54,6 +47,7 @@ function parseTab(value: string | null): TabId {
 export function SymbolDetailPanel({ detail }: { detail: SymbolDetailView }) {
   const searchParams = useSearchParams();
   const [tab, setTab] = useState<TabId>(() => parseTab(searchParams.get("tab")));
+  const [chartHorizon, setChartHorizon] = useState<PerfHorizonId>("1m");
   const quote = detail.quote;
   const motor = detail.motor;
   const hasMotorData = motor.motorScope !== "none";
@@ -129,61 +123,40 @@ export function SymbolDetailPanel({ detail }: { detail: SymbolDetailView }) {
 
       {tab === "overview" ? (
         <div className="space-y-6">
-          <SymbolPriceChart bars={detail.bars} previousClose={quote.previousClose} />
-          <SymbolPerfTiles horizons={detail.perfHorizons} />
+          <SymbolPriceChart
+            bars={detail.bars}
+            previousClose={quote.previousClose}
+            horizon={chartHorizon}
+            onHorizonChange={setChartHorizon}
+          />
+          <SymbolPerfTiles
+            horizons={detail.perfHorizons}
+            active={chartHorizon}
+            onSelect={setChartHorizon}
+          />
+          <SymbolOverviewStats
+            bars={detail.bars}
+            horizons={detail.perfHorizons}
+            quote={quote}
+          />
           <SymbolDataEquationPanel
             equation={detail.dataEquation}
             classLabel={detail.classLabel}
           />
-          <SymbolKeyStatsPreview quote={quote} symbol={detail.symbol} />
-        </div>
-      ) : null}
-
-      {tab === "motor" ? (
-        <div className="space-y-6">
-          <ClassMacroSection motor={motor} classLabel={detail.classLabel} />
-          <TickerMotorSection motor={motor} />
-          <SymbolModelsPanel models={detail.snapshot?.models} />
-          <MotorWhySection
-            stageLabel={motor.stageLabel}
-            entryValidated={motor.entryValidated}
-            hasMotorData={hasMotorData}
-            motorScope={motor.motorScope}
-            divergesFromClass={motor.divergesFromClass}
-            dominantIndicator={motor.dominantIndicator}
-            rationale={motor.rationale}
-            classLabel={detail.classLabel}
+          <SymbolKeyStatsPreview
+            financials={detail.financials}
+            symbol={detail.symbol}
           />
         </div>
       ) : null}
+
+      {tab === "motor" ? <MotorTechnicalsTab detail={detail} /> : null}
 
       {tab === "financials" ? (
         <div id="financials" className="space-y-8">
-          <SymbolKeyStats quote={quote} />
-          <SymbolLatestEarnings quote={quote} />
-          <SymbolAbout summary={quote.longBusinessSummary} />
-        </div>
-      ) : null}
-
-      {tab === "technicals" ? (
-        <div className="space-y-6">
-          <p className="text-xs text-zinc-500">
-            Motor signal (nosso modelo) vs generic TA (Yahoo bars) — use Motor tab for sleeve
-            macro + full indicator list.
-          </p>
-          <MotorSignalSummary
-            score={motor.score}
-            indicators={[...motor.tickerIndicators, ...motor.classIndicators]}
-          />
-          <MotorIndicatorsTable
-            indicators={motor.classIndicators}
-            title="Sleeve (class) — all indicators"
-          />
-          <MotorIndicatorsTable
-            indicators={motor.tickerIndicators}
-            title="Security — all indicators"
-          />
-          <TechnicalIndicatorsTable rows={detail.technicalRows} />
+          <SymbolFinancialsPanel financials={detail.financials} />
+          <SymbolEarningsPanel financials={detail.financials} />
+          <SymbolAbout summary={detail.financials.longBusinessSummary} />
         </div>
       ) : null}
 
@@ -196,7 +169,7 @@ export function SymbolDetailPanel({ detail }: { detail: SymbolDetailView }) {
           <AnalystForecastCard quote={quote} bars={detail.bars} />
           <p className="text-xs text-zinc-500">
             Forecast tracker: motor rating atualiza com Motor Daily; targets de analistas via
-            Yahoo quando disponíveis. Histórico de score na aba Motor.
+            Yahoo quando disponíveis. Resumo completo na aba Motor & Technicals.
           </p>
         </div>
       ) : null}

@@ -70,6 +70,7 @@ describe("perfHorizonsFromBars", () => {
     }));
     const h = perfHorizonsFromBars(bars);
     expect(h["1d"]).not.toBeNull();
+    expect(h["15d"]).not.toBeNull();
     expect(h["2y"]).not.toBeNull();
   });
 });
