@@ -162,6 +162,12 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
               </th>
               <th className="px-3 py-2 font-medium">Symbol</th>
               <th className="px-2 py-2 font-medium">Score</th>
+              <th
+                className="px-2 py-2 font-medium"
+                title="Participação do volume médio (20D) no total da classe"
+              >
+                % Vol
+              </th>
               <th className="px-2 py-2 font-medium">1D</th>
               <th className="px-2 py-2 font-medium">7D</th>
               <th className="px-2 py-2 font-medium">15D</th>

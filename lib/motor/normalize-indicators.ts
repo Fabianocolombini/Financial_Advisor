@@ -8,6 +8,7 @@ export function resolveIndicatorValue(raw: RawIndicator): number | null {
     return Number(raw.value);
   }
   for (const key of [
+    "valor",
     "percentile_cs",
     "percentile_0_1",
     "signal_0_1",
