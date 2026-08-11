@@ -26,5 +26,14 @@
   "forecast_range": "Faixa provável de preço projetada a partir da volatilidade recente, não uma previsão pontual. A cobertura histórica indica quantas vezes a faixa acertou no passado.",
   "forecast_coverage": "Percentual de vezes em que o preço realizado ficou dentro da faixa projetada em testes walk-forward. Perto do nível nominal (68% ou 95%) indica faixa bem calibrada.",
   "fibonacci": "Níveis de retração e extensão calculados sobre um swing confirmado. Servem como zonas de referência, não como alvos garantidos.",
-  "support_resistance": "Preços onde o ativo reverteu no passado recente, detectados por pivôs de swing confirmados dos dois lados."
+  "support_resistance": "Preços onde o ativo reverteu no passado recente, detectados por pivôs de swing confirmados dos dois lados.",
+  "rsi": "Índice de Força Relativa: compara a média dos ganhos com a das perdas em 14 pregões, numa escala de 0 a 100. Acima de 70 o papel está esticado para cima; abaixo de 30, para baixo.",
+  "adx": "Mede a força da tendência, não a direção. Acima de 20 indica tendência definida; a direção vem das linhas +DI e −DI.",
+  "awesome_oscillator": "Diferença entre médias de 5 e 34 períodos do preço médio da barra. Cruzar o zero sinaliza mudança de momentum de curto contra médio prazo.",
+  "momentum": "Diferença bruta entre o preço atual e o de 10 pregões atrás. Mede aceleração, então o sinal vem de estar subindo ou caindo, não do valor em si.",
+  "ultimate_oscillator": "Combina three janelas (7, 14 e 28) para reduzir os falsos sinais típicos de osciladores de uma só janela.",
+  "ichimoku": "Sistema japonês com linha de conversão, linha base e nuvem projetada à frente. O sinal exige concordância entre preço, linhas e nuvem.",
+  "vwma": "Média móvel ponderada pelo volume: dá mais peso aos pregões de maior negociação, aproximando a média do preço onde houve dinheiro de verdade.",
+  "hull_ma": "Média móvel de Hull: reduz o atraso típico das médias, reagindo mais rápido a viradas ao custo de mais ruído.",
+  "pivot_points": "Níveis calculados sobre máxima, mínima e fechamento do período anterior. P é o equilíbrio, R1–R3 são resistências e S1–S3 suportes. Como ficam fixos até o período fechar, funcionam como alvos definidos de antemão."
 }

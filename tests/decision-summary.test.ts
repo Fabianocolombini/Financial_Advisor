@@ -14,7 +14,10 @@ import {
   gaugeBandForValue,
   needleDegreesForScale,
 } from "@/lib/motor/gauge-zones";
-import { applicableTechnicalRows } from "@/lib/market/indicator-applicability";
+import {
+  applicableTechnicalRows,
+  pivotsApplicable,
+} from "@/lib/market/indicator-applicability";
 import { scoreToSignal, technicalConvergenceSignal } from "@/lib/motor/motor-technicals-summary";
 import type { SymbolMotorContext } from "@/lib/motor/snapshot-types";
 import type { TechnicalIndicatorRow } from "@/lib/market/technical-summary";
@@ -142,11 +145,22 @@ describe("indicator applicability", () => {
     { id: "sma_200", name: "MM200", value: 98, action: "Buy", group: "moving_average" },
   ];
 
-  it("drops momentum oscillators and the 200 period average for cash", () => {
+  it("drops every price indicator for cash", () => {
+    // Oscillators have nothing to measure on a monotonic NAV, and the monthly
+    // distribution drop keeps price under its own averages by construction.
     const result = applicableTechnicalRows(rows, "cash_equivalents");
-    expect(result.rows.map((r) => r.id)).toEqual(["sma_50"]);
-    expect(result.excluded).toHaveLength(3);
+    expect(result.rows).toHaveLength(0);
+    expect(result.excluded).toHaveLength(4);
     expect(result.note).toContain("monotônico");
+    expect(
+      result.excluded.find((e) => e.row.group === "moving_average")?.reason,
+    ).toContain("distribuição mensal");
+  });
+
+  it("does not project pivots for cash", () => {
+    expect(pivotsApplicable("cash_equivalents").applicable).toBe(false);
+    expect(pivotsApplicable("cash_equivalents").reason).toContain("centavo");
+    expect(pivotsApplicable("us_equity").applicable).toBe(true);
   });
 
   it("keeps every indicator for directional classes", () => {

@@ -23,10 +23,10 @@ export type IndicatorApplicability = {
 };
 
 const NAV_MONOTONIC_REASON =
-  "Osciladores de momentum não se aplicam a caixa: o NAV é quase monotônico e as distribuições periódicas criam quedas artificiais.";
+  "Osciladores não se aplicam a caixa: o NAV é quase monotônico, então momentum e força de tendência não têm o que medir, e as distribuições periódicas criam quedas artificiais.";
 
-const LONG_MA_REASON =
-  "Média de 200 períodos excluída pelo motor para caixa — a série de NAV não produz sinal de tendência longa útil.";
+const DISTRIBUTION_SAWTOOTH_REASON =
+  "Médias móveis não se aplicam a caixa: o NAV sobe alguns centavos por dia e cai de uma vez na distribuição mensal, então o preço fica quase sempre abaixo das próprias médias e o sinal seria vendedor por construção.";
 
 function exclusionReason(
   row: TechnicalIndicatorRow,
@@ -34,8 +34,7 @@ function exclusionReason(
 ): string | null {
   if (!stabilityFocused) return null;
   if (row.group === "oscillator") return NAV_MONOTONIC_REASON;
-  if (row.id === "sma_200" || row.id === "ema_200") return LONG_MA_REASON;
-  return null;
+  return DISTRIBUTION_SAWTOOTH_REASON;
 }
 
 export function applicableTechnicalRows(
@@ -57,6 +56,24 @@ export function applicableTechnicalRows(
     rows: applicable,
     excluded,
     note: excluded.length > 0 ? NAV_MONOTONIC_REASON : null,
+  };
+}
+
+/**
+ * Pivots need a meaningful previous-period range to project from. For cash the
+ * daily range is a fraction of a cent, so every method collapses onto the same
+ * price and the levels carry no information.
+ */
+export function pivotsApplicable(classId: string | null | undefined): {
+  applicable: boolean;
+  reason: string | null;
+} {
+  const { stabilityFocused } = classScoreProfile(classId);
+  if (!stabilityFocused) return { applicable: true, reason: null };
+  return {
+    applicable: false,
+    reason:
+      "Pivôs não se aplicam a caixa: a amplitude de um pregão é de frações de centavo, então todos os métodos colapsam sobre o mesmo preço e não projetam alvo algum.",
   };
 }
 

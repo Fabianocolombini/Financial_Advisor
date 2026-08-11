@@ -1,5 +1,22 @@
-import type { YahooBar } from "./yahoo";
+/**
+ * Buy / Sell / Neutral ratings for the technical summary table.
+ *
+ * The rating rules follow the conventions used by mainstream charting platforms,
+ * which are deliberately stricter than "value above/below a threshold": most
+ * oscillators only signal when an extreme is being *left* (a reversal), not while
+ * price is merely extended. That is why a strongly trending symbol shows many
+ * Neutral oscillators alongside unanimous moving averages.
+ */
+
 import type { IndicatorAction } from "@/lib/motor/format-scores";
+import {
+  MA_PERIODS,
+  computeIndicatorSeries,
+  emaSeriesOf,
+  ichimokuCloudAt,
+  type IndicatorBar,
+  type IndicatorSeries,
+} from "./technical-indicators";
 
 export type TechnicalIndicatorRow = {
   id: string;
@@ -9,165 +26,240 @@ export type TechnicalIndicatorRow = {
   group: "oscillator" | "moving_average";
 };
 
-function closes(bars: YahooBar[]): number[] {
-  return bars.map((b) => b.value);
+const NEUTRAL: IndicatorAction = "Neutral";
+
+/** Last non-null value of a series, plus the `back`-th previous one. */
+function at(series: Array<number | null> | undefined, back = 0): number | null {
+  if (!series) return null;
+  const index = series.length - 1 - back;
+  if (index < 0) return null;
+  const v = series[index];
+  return v != null && Number.isFinite(v) ? v : null;
 }
 
-function sma(values: number[], period: number): number | null {
-  if (values.length < period) return null;
-  const slice = values.slice(-period);
-  return slice.reduce((a, b) => a + b, 0) / period;
+/**
+ * Direction of the last step. A flat reading is deliberately neither rising nor
+ * falling: an oscillator pinned at its ceiling has stopped confirming the move,
+ * but it has not turned either, so it must not produce a reversal signal.
+ */
+function slope(series: Array<number | null> | undefined): "up" | "down" | "flat" | null {
+  const now = at(series, 0);
+  const prev = at(series, 1);
+  if (now == null || prev == null) return null;
+  if (now > prev) return "up";
+  if (now < prev) return "down";
+  return "flat";
 }
 
-function ema(values: number[], period: number): number | null {
-  if (values.length < period) return null;
-  const k = 2 / (period + 1);
-  let emaVal = values.slice(0, period).reduce((a, b) => a + b, 0) / period;
-  for (let i = period; i < values.length; i++) {
-    emaVal = values[i] * k + emaVal * (1 - k);
+function lineOf(series: IndicatorSeries, id: string): Array<number | null> | undefined {
+  return series.lines.find((l) => l.id === id)?.values;
+}
+
+// ---------------------------------------------------------------------------
+// Rating rules
+// ---------------------------------------------------------------------------
+
+function ratingRsi(series: IndicatorSeries): IndicatorAction {
+  const v = at(series.values);
+  const dir = slope(series.values);
+  if (v == null || dir == null) return NEUTRAL;
+  if (v < 30 && dir === "up") return "Buy";
+  if (v > 70 && dir === "down") return "Sell";
+  return NEUTRAL;
+}
+
+function ratingStochastic(series: IndicatorSeries, dId: string): IndicatorAction {
+  const k = at(series.values);
+  const d = at(lineOf(series, dId));
+  if (k == null || d == null) return NEUTRAL;
+  if (k < 20 && d < 20 && k > d) return "Buy";
+  if (k > 80 && d > 80 && k < d) return "Sell";
+  return NEUTRAL;
+}
+
+function ratingCci(series: IndicatorSeries): IndicatorAction {
+  const v = at(series.values);
+  const dir = slope(series.values);
+  if (v == null || dir == null) return NEUTRAL;
+  if (v < -100 && dir === "up") return "Buy";
+  if (v > 100 && dir === "down") return "Sell";
+  return NEUTRAL;
+}
+
+/**
+ * ADX measures trend strength, not direction, so the rating comes from a fresh
+ * ±DI crossover while the trend is strong enough to be meaningful. A symbol deep
+ * into an established trend reads Neutral: the signal already happened.
+ */
+function ratingAdx(series: IndicatorSeries): IndicatorAction {
+  const adx = at(series.values);
+  if (adx == null || adx <= 20) return NEUTRAL;
+  const plus = lineOf(series, "di_plus");
+  const minus = lineOf(series, "di_minus");
+  const p0 = at(plus, 0);
+  const m0 = at(minus, 0);
+  const p1 = at(plus, 1);
+  const m1 = at(minus, 1);
+  if (p0 == null || m0 == null || p1 == null || m1 == null) return NEUTRAL;
+  if (p0 > m0 && p1 < m1) return "Buy";
+  if (p0 < m0 && p1 > m1) return "Sell";
+  return NEUTRAL;
+}
+
+/** Zero-line cross or a saucer (two-bar turn on the same side of zero). */
+function ratingAwesome(series: IndicatorSeries): IndicatorAction {
+  const v0 = at(series.values, 0);
+  const v1 = at(series.values, 1);
+  const v2 = at(series.values, 2);
+  if (v0 == null || v1 == null || v2 == null) return NEUTRAL;
+  if (v0 > 0 && v1 <= 0) return "Buy";
+  if (v0 < 0 && v1 >= 0) return "Sell";
+  if (v0 > 0 && v1 > 0 && v0 > v1 && v1 < v2) return "Buy";
+  if (v0 < 0 && v1 < 0 && v0 < v1 && v1 > v2) return "Sell";
+  return NEUTRAL;
+}
+
+function ratingMomentum(series: IndicatorSeries): IndicatorAction {
+  const dir = slope(series.values);
+  if (dir === "up") return "Buy";
+  if (dir === "down") return "Sell";
+  return NEUTRAL;
+}
+
+function ratingMacd(series: IndicatorSeries): IndicatorAction {
+  const macd = at(series.values);
+  const signal = at(lineOf(series, "macd_signal"));
+  if (macd == null || signal == null) return NEUTRAL;
+  if (macd > signal) return "Buy";
+  if (macd < signal) return "Sell";
+  return NEUTRAL;
+}
+
+function ratingStochRsi(series: IndicatorSeries): IndicatorAction {
+  const k = at(series.values);
+  const d = at(lineOf(series, "stoch_rsi_d"));
+  if (k == null || d == null) return NEUTRAL;
+  if (k < 20 && k > d) return "Buy";
+  if (k > 80 && k < d) return "Sell";
+  return NEUTRAL;
+}
+
+function ratingWilliams(series: IndicatorSeries): IndicatorAction {
+  const v = at(series.values);
+  const dir = slope(series.values);
+  if (v == null || dir == null) return NEUTRAL;
+  if (v < -80 && dir === "up") return "Buy";
+  if (v > -20 && dir === "down") return "Sell";
+  return NEUTRAL;
+}
+
+/** Elder: enter with the trend when the opposing power is exhausting itself. */
+function ratingBullBearPower(
+  series: IndicatorSeries,
+  emaDirection: "up" | "down" | "flat" | null,
+): IndicatorAction {
+  const bull = lineOf(series, "bull_power");
+  const bear = lineOf(series, "bear_power");
+  const bull0 = at(bull, 0);
+  const bull1 = at(bull, 1);
+  const bear0 = at(bear, 0);
+  const bear1 = at(bear, 1);
+  if (emaDirection == null || bull0 == null || bull1 == null || bear0 == null || bear1 == null) {
+    return NEUTRAL;
   }
-  return emaVal;
+  if (emaDirection === "up" && bear0 < 0 && bear0 > bear1) return "Buy";
+  if (emaDirection === "down" && bull0 > 0 && bull0 < bull1) return "Sell";
+  return NEUTRAL;
 }
 
-function rsi(values: number[], period = 14): number | null {
-  if (values.length < period + 1) return null;
-  let gains = 0;
-  let losses = 0;
-  for (let i = values.length - period; i < values.length; i++) {
-    const diff = values[i] - values[i - 1];
-    if (diff >= 0) gains += diff;
-    else losses -= diff;
+function ratingUltimate(series: IndicatorSeries): IndicatorAction {
+  const v = at(series.values);
+  if (v == null) return NEUTRAL;
+  if (v > 70) return "Buy";
+  if (v < 30) return "Sell";
+  return NEUTRAL;
+}
+
+function ratingPriceVsMa(price: number | null, ma: number | null): IndicatorAction {
+  if (price == null || ma == null) return NEUTRAL;
+  if (price > ma) return "Buy";
+  if (price < ma) return "Sell";
+  return NEUTRAL;
+}
+
+function ratingIchimoku(
+  series: IndicatorSeries,
+  close: number | null,
+  spanA: number | null,
+  spanB: number | null,
+): IndicatorAction {
+  const base = at(series.values);
+  const conversion = at(lineOf(series, "ichimoku_conversion"));
+  if (close == null || base == null || conversion == null || spanA == null || spanB == null) {
+    return NEUTRAL;
   }
-  if (losses === 0) return 100;
-  const rs = gains / losses;
-  return 100 - 100 / (1 + rs);
+  if (spanA > spanB && close > spanA && close < conversion && conversion > base) return "Buy";
+  if (spanA < spanB && close < spanB && close > conversion && conversion < base) return "Sell";
+  return NEUTRAL;
 }
 
-function stochasticK(values: number[], period = 14): number | null {
-  if (values.length < period) return null;
-  const slice = values.slice(-period);
-  const low = Math.min(...slice);
-  const high = Math.max(...slice);
-  const close = slice[slice.length - 1];
-  if (high === low) return 50;
-  return ((close - low) / (high - low)) * 100;
+// ---------------------------------------------------------------------------
+// Public API
+// ---------------------------------------------------------------------------
+
+export type TechnicalAnalysis = {
+  rows: TechnicalIndicatorRow[];
+  series: IndicatorSeries[];
+};
+
+const MIN_BARS = 30;
+
+export function computeTechnicalAnalysis(bars: IndicatorBar[]): TechnicalAnalysis {
+  if (bars.length < MIN_BARS) return { rows: [], series: [] };
+
+  const series = computeIndicatorSeries(bars);
+  const byId = new Map(series.map((s) => [s.id, s]));
+  const price = bars[bars.length - 1]?.value ?? null;
+
+  const rate = (id: string, fn: (s: IndicatorSeries) => IndicatorAction): IndicatorAction => {
+    const s = byId.get(id);
+    return s ? fn(s) : NEUTRAL;
+  };
+
+  // Elder's rule keys off the direction of the 13-period EMA the powers are measured against.
+  const emaDirection = slope(emaSeriesOf(bars.map((b) => b.value), 13));
+
+  const cloud = ichimokuCloudAt(bars, bars.length - 1);
+
+  const actions: Record<string, IndicatorAction> = {
+    rsi_14: rate("rsi_14", ratingRsi),
+    stoch_k: rate("stoch_k", (s) => ratingStochastic(s, "stoch_d")),
+    cci_20: rate("cci_20", ratingCci),
+    adx_14: rate("adx_14", ratingAdx),
+    awesome: rate("awesome", ratingAwesome),
+    momentum_10: rate("momentum_10", ratingMomentum),
+    macd: rate("macd", ratingMacd),
+    stoch_rsi: rate("stoch_rsi", ratingStochRsi),
+    williams_r: rate("williams_r", ratingWilliams),
+    bull_bear_power: rate("bull_bear_power", (s) => ratingBullBearPower(s, emaDirection)),
+    ultimate: rate("ultimate", ratingUltimate),
+    ichimoku_base: rate("ichimoku_base", (s) =>
+      ratingIchimoku(s, price, cloud.spanA, cloud.spanB),
+    ),
+  };
+
+  const rows: TechnicalIndicatorRow[] = series.map((s) => {
+    const value = at(s.values);
+    const action =
+      actions[s.id] ?? (s.group === "moving_average" ? ratingPriceVsMa(price, value) : NEUTRAL);
+    return { id: s.id, name: s.name, value, action, group: s.group };
+  });
+
+  return { rows, series };
 }
 
-function macdLevel(values: number[]): number | null {
-  const e12 = ema(values, 12);
-  const e26 = ema(values, 26);
-  if (e12 == null || e26 == null) return null;
-  return e12 - e26;
-}
-
-function momentum(values: number[], period = 10): number | null {
-  if (values.length < period + 1) return null;
-  return values[values.length - 1] - values[values.length - 1 - period];
-}
-
-function priceVsMaAction(price: number, ma: number | null): IndicatorAction {
-  if (ma == null) return "Neutral";
-  if (price > ma * 1.001) return "Buy";
-  if (price < ma * 0.999) return "Sell";
-  return "Neutral";
-}
-
-function rsiAction(rsiVal: number | null): IndicatorAction {
-  if (rsiVal == null) return "Neutral";
-  if (rsiVal < 30) return "Buy";
-  if (rsiVal > 70) return "Sell";
-  return "Neutral";
-}
-
-function stochasticAction(k: number | null): IndicatorAction {
-  if (k == null) return "Neutral";
-  if (k < 20) return "Buy";
-  if (k > 80) return "Sell";
-  return "Neutral";
-}
-
-function macdAction(macd: number | null): IndicatorAction {
-  if (macd == null) return "Neutral";
-  if (macd > 0) return "Buy";
-  if (macd < 0) return "Sell";
-  return "Neutral";
-}
-
-function momentumAction(m: number | null): IndicatorAction {
-  if (m == null) return "Neutral";
-  if (m > 0) return "Buy";
-  if (m < 0) return "Sell";
-  return "Neutral";
-}
-
-export function computeTechnicalSummary(bars: YahooBar[]): TechnicalIndicatorRow[] {
-  if (bars.length < 30) return [];
-  const values = closes(bars);
-  const price = values[values.length - 1];
-
-  const rsiVal = rsi(values, 14);
-  const stoch = stochasticK(values, 14);
-  const macd = macdLevel(values);
-  const mom = momentum(values, 10);
-
-  const rows: TechnicalIndicatorRow[] = [
-    {
-      id: "rsi_14",
-      name: "Relative Strength Index (14)",
-      value: rsiVal,
-      action: rsiAction(rsiVal),
-      group: "oscillator",
-    },
-    {
-      id: "stoch_k",
-      name: "Stochastic %K (14)",
-      value: stoch,
-      action: stochasticAction(stoch),
-      group: "oscillator",
-    },
-    {
-      id: "macd",
-      name: "MACD Level (12, 26)",
-      value: macd,
-      action: macdAction(macd),
-      group: "oscillator",
-    },
-    {
-      id: "momentum_10",
-      name: "Momentum (10)",
-      value: mom,
-      action: momentumAction(mom),
-      group: "oscillator",
-    },
-  ];
-
-  for (const [period, label] of [
-    [10, "10"],
-    [20, "20"],
-    [30, "30"],
-    [50, "50"],
-    [100, "100"],
-    [200, "200"],
-  ] as const) {
-    const smaVal = sma(values, period);
-    rows.push({
-      id: `sma_${period}`,
-      name: `Simple Moving Average (${label})`,
-      value: smaVal,
-      action: priceVsMaAction(price, smaVal),
-      group: "moving_average",
-    });
-    const emaVal = ema(values, period);
-    rows.push({
-      id: `ema_${period}`,
-      name: `Exponential Moving Average (${label})`,
-      value: emaVal,
-      action: priceVsMaAction(price, emaVal),
-      group: "moving_average",
-    });
-  }
-
-  return rows;
+export function computeTechnicalSummary(bars: IndicatorBar[]): TechnicalIndicatorRow[] {
+  return computeTechnicalAnalysis(bars).rows;
 }
 
 export function countTaActions(rows: TechnicalIndicatorRow[]): {
@@ -186,11 +278,13 @@ export function countTaActions(rows: TechnicalIndicatorRow[]): {
   return { buy, neutral, sell };
 }
 
+export { MA_PERIODS };
+
 /** % change between latest and lookback trading-day rows. */
-export function perfFromBars(bars: YahooBar[], lookback: number): number | null {
+export function perfFromBars(bars: IndicatorBar[], lookback: number): number | null {
   if (bars.length < lookback + 1) return null;
-  const latest = bars[bars.length - 1].value;
-  const prior = bars[bars.length - 1 - lookback].value;
+  const latest = bars[bars.length - 1]!.value;
+  const prior = bars[bars.length - 1 - lookback]!.value;
   if (!prior) return null;
   return ((latest - prior) / prior) * 100;
 }

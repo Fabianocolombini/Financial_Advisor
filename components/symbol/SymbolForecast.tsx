@@ -8,6 +8,11 @@ import type {
   PriceForecast,
 } from "@/lib/market/forecast-model";
 import type { ChartBar } from "@/lib/market/chart-overlays";
+import {
+  buildPivotTable,
+  pivotTargets,
+  type PivotSourceBar,
+} from "@/lib/market/pivot-points";
 import { SymbolPriceChart, type ChartPriceLine } from "./SymbolPriceChart";
 import { InfoTooltip } from "./InfoTooltip";
 
@@ -93,7 +98,66 @@ function LevelRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function ForecastLevelsCard({ forecast }: { forecast: PriceForecast }) {
+/**
+ * Pivots of the previous session, as forward-looking targets.
+ *
+ * Swing pivots are fitted to past price; these are fixed in advance from the last
+ * completed period, which makes them usable as a target rather than a description.
+ */
+function PivotTargetsBlock({
+  bars,
+  price,
+  enabled,
+}: {
+  bars: PivotSourceBar[];
+  price: number | null;
+  enabled: boolean;
+}) {
+  const table = useMemo(() => buildPivotTable(bars, "daily"), [bars]);
+  const targets = useMemo(
+    () => (table && price != null ? pivotTargets(table, price) : null),
+    [table, price],
+  );
+  if (!enabled) return null;
+  if (!table || !targets || (!targets.resistance && !targets.support)) return null;
+
+  return (
+    <div className="mt-4 border-t border-zinc-800 pt-3">
+      <div className="flex items-center gap-1.5">
+        <p className="text-[11px] uppercase tracking-wide text-zinc-600">
+          Alvos por pivô (pregão anterior)
+        </p>
+        <InfoTooltip term="pivot_points" />
+      </div>
+      <div className="mt-2 space-y-1">
+        {targets.resistance ? (
+          <LevelRow
+            label={`Alvo de alta ${targets.resistance.level} (${targets.resistance.distancePct >= 0 ? "+" : ""}${targets.resistance.distancePct.toFixed(2)}%)`}
+            value={formatPrice(targets.resistance.price)}
+          />
+        ) : null}
+        {targets.support ? (
+          <LevelRow
+            label={`Suporte ${targets.support.level} (${targets.support.distancePct.toFixed(2)}%)`}
+            value={formatPrice(targets.support.price)}
+          />
+        ) : null}
+      </div>
+      <p className="mt-2 text-[11px] text-zinc-500">
+        Média dos métodos Clássico, Fibonacci, Camarilla, Woodie e DeMark. A tabela
+        completa fica na aba Motor &amp; Técnica.
+      </p>
+    </div>
+  );
+}
+
+function ForecastLevelsCard({
+  forecast,
+  bars,
+}: {
+  forecast: PriceForecast;
+  bars: PivotSourceBar[];
+}) {
   const { levels } = forecast;
   const hasLevels =
     levels.supports.length > 0 ||
@@ -181,6 +245,12 @@ function ForecastLevelsCard({ forecast }: { forecast: PriceForecast }) {
           </div>
         </div>
       ) : null}
+
+      <PivotTargetsBlock
+        bars={bars}
+        price={forecast.current}
+        enabled={forecast.methodology !== "cash_stability"}
+      />
     </section>
   );
 }
@@ -340,7 +410,7 @@ export function PriceForecastPanel({
       ) : null}
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <ForecastLevelsCard forecast={forecast} />
+        <ForecastLevelsCard forecast={forecast} bars={bars} />
         <ForecastMethodCard forecast={forecast} />
       </div>
     </div>

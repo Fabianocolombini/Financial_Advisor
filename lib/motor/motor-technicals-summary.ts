@@ -134,13 +134,22 @@ export function detectMaCross(rows: TechnicalIndicatorRow[]): "golden" | "death"
 
 export function glossaryTermForIndicator(id: string): string | null {
   const map: Record<string, string> = {
-    rsi_14: "stochastic_rsi",
+    rsi_14: "rsi",
     stoch_k: "stochastic_fast",
+    cci_20: "cci",
+    adx_14: "adx",
+    awesome: "awesome_oscillator",
+    momentum_10: "momentum",
     macd: "macd_level",
-    sma_20: "moving_averages",
-    sma_50: "moving_averages",
-    sma_100: "moving_averages",
-    sma_200: "moving_averages",
+    stoch_rsi: "stochastic_rsi",
+    williams_r: "williams_r",
+    bull_bear_power: "bull_bear_power",
+    ultimate: "ultimate_oscillator",
+    ichimoku_base: "ichimoku",
+    vwma_20: "vwma",
+    hull_ma_9: "hull_ma",
   };
-  return map[id] ?? null;
+  if (map[id]) return map[id]!;
+  if (id.startsWith("sma_") || id.startsWith("ema_")) return "moving_averages";
+  return null;
 }
