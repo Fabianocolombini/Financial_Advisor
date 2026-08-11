@@ -5,6 +5,7 @@ import {
   normalizeIndicatorSnapshot,
   regimeComponentsToIndicators,
 } from "@/lib/motor/normalize-indicators";
+import { buildClassDataEquation } from "@/lib/motor/class-data-equation";
 import { computeDecisionReliability } from "@/lib/motor/reliability-audit";
 import { computeTechnicalSummary } from "@/lib/market/technical-summary";
 import { perfHorizonsFromBars } from "@/lib/market/perf-horizons";
