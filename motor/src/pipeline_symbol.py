@@ -92,6 +92,8 @@ def run_symbol_pipeline(
         ativo["score_composto"],
         div,
         dominant_component(ativo["componentes"]),
+        aba_id=aba_id,
+        regime_action=aba_result.get("regime_action"),
     )
     persist_ativo_score(aba_id, ativo, est, div)
 
@@ -108,6 +110,9 @@ def run_symbol_pipeline(
         "score": ativo["score_composto"],
         "stage": est,
         "entryValidated": validation["entryValidated"],
+        "entryTiming": validation["entryTiming"],
+        "instrumentQuality": validation["instrumentQuality"],
+        "allocationAction": validation["allocationAction"],
         "classScore": cat_score,
         "classStage": cat_estagio,
     }

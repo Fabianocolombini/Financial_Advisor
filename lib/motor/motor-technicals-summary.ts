@@ -6,27 +6,55 @@ import type {
   MotorIndicatorSnapshot,
   SymbolMotorContext,
 } from "@/lib/motor/snapshot-types";
+import { classScoreProfile } from "@/lib/motor/score-domain";
 
-export type ConvergenceSignal = "positive" | "negative";
+export type ConvergenceSignal = "positive" | "neutral" | "negative";
 
-export function scoreToSignal(score: number | null | undefined): IndicatorAction {
+/**
+ * Maps a motor score to a Buy/Neutral/Sell reading using the thresholds of the
+ * class's own score domain. A cash rank of 0.4 is *below* its peer median, so it
+ * must not read as "Buy" just because it is above zero.
+ */
+export function scoreToSignal(
+  score: number | null | undefined,
+  classId?: string | null,
+): IndicatorAction {
   if (score == null || !Number.isFinite(score)) return "Neutral";
+  const { domain, security } = classScoreProfile(classId);
+  if (domain === "unit") {
+    if (score >= security.strong) return "Buy";
+    if (score < security.weak) return "Sell";
+    return "Neutral";
+  }
   if (score > 0.1) return "Buy";
   if (score < -0.1) return "Sell";
   return "Neutral";
 }
 
-export function scoreToConvergence(score: number | null | undefined): ConvergenceSignal {
-  if (score == null || !Number.isFinite(score)) return "negative";
-  return score >= 0 ? "positive" : "negative";
+export function scoreToConvergence(
+  score: number | null | undefined,
+  classId?: string | null,
+): ConvergenceSignal {
+  if (score == null || !Number.isFinite(score)) return "neutral";
+  const signal = scoreToSignal(score, classId);
+  if (signal === "Buy") return "positive";
+  if (signal === "Sell") return "negative";
+  return "neutral";
 }
 
-export function technicalConvergenceSignal(rows: TechnicalIndicatorRow[]): ConvergenceSignal {
-  if (rows.length === 0) return "negative";
+/**
+ * A tie between buy and sell counts is genuinely neutral. Forcing it to negative
+ * is what made flat-NAV instruments report "técnica negativa" without any
+ * underlying weakness.
+ */
+export function technicalConvergenceSignal(
+  rows: TechnicalIndicatorRow[],
+): ConvergenceSignal {
+  if (rows.length === 0) return "neutral";
   const { buy, sell } = countTaActions(rows);
   if (buy > sell) return "positive";
   if (sell > buy) return "negative";
-  return "negative";
+  return "neutral";
 }
 
 export function buildConvergenceSummary(
@@ -34,6 +62,21 @@ export function buildConvergenceSummary(
   technicalSignal: ConvergenceSignal,
   entryValidated: boolean,
 ): string {
+  if (motorSignal === "neutral" && technicalSignal === "neutral") {
+    return "Motor e técnica neutros — nenhum dos dois lados pede ação agora.";
+  }
+  if (technicalSignal === "neutral") {
+    return motorSignal === "positive"
+      ? "O motor está positivo e a técnica está neutra — sem gatilho de preço, entradas podem ser graduais."
+      : motorSignal === "negative"
+        ? "O motor está negativo e a técnica está neutra — o preço ainda não confirma fraqueza, mas o contexto pede cautela."
+        : "Leitura neutra dos dois lados.";
+  }
+  if (motorSignal === "neutral") {
+    return technicalSignal === "positive"
+      ? "A técnica melhora enquanto o motor permanece neutro — movimento de preço sem suporte quantitativo."
+      : "A técnica piora enquanto o motor permanece neutro — atenção a deterioração de preço.";
+  }
   if (motorSignal === "negative" && technicalSignal === "negative") {
     return "O motor está negativo e a técnica confirma fraqueza — priorize redução de risco.";
   }
@@ -54,7 +97,7 @@ export function motorLayerCounts(motor: SymbolMotorContext): {
 } {
   const pool = [...motor.tickerIndicators, ...motor.classIndicators];
   return {
-    motor: scoreToSignal(motor.score),
+    motor: scoreToSignal(motor.score, motor.classId),
     motorCounts: countIndicatorActions(pool),
   };
 }
@@ -64,10 +107,11 @@ export function macroLayerSignal(motor: SymbolMotorContext): IndicatorAction {
   const regimeAction = motor.classSnap?.regimeModel?.action;
   if (regimeAction) {
     const a = regimeAction.toLowerCase();
-    if (a.includes("buy") || a.includes("accum")) return "Buy";
+    if (a.includes("buy") || a.includes("accum") || a.includes("overweight")) return "Buy";
     if (a.includes("sell") || a.includes("reduce")) return "Sell";
+    if (a.includes("hold")) return "Neutral";
   }
-  return scoreToSignal(classScore);
+  return scoreToSignal(classScore, motor.classId);
 }
 
 export function macroIndicators(

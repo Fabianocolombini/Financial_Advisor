@@ -80,13 +80,29 @@ export type MotorClassRegimeModelSnapshot = {
   components?: Array<Record<string, unknown>>;
 };
 
-export type MotorClassSnapshot = {
+/**
+ * Explicit decision fields exported by the motor so the app never has to infer
+ * allocation, instrument quality or entry timing from a bare score.
+ */
+export type MotorDecisionExport = {
+  scoreDomain?: "unit" | "signed";
+  allocationAction?: string;
+  instrumentQuality?: string;
+  entryTiming?: string;
+  entryReasons?: string[];
+  peerMedian?: number;
+};
+
+export type MotorClassSnapshot = MotorDecisionExport & {
   abaId: string;
   classId: string;
   label: string;
   nome?: string;
   data: string;
+  /** Persisted daily series, used for history and estágio. */
   score: number;
+  /** Live regime-model score the allocation action was derived from. */
+  allocationScore?: number;
   stage: string | null;
   stageLabel: string;
   entryValidated?: boolean;
@@ -98,7 +114,7 @@ export type MotorClassSnapshot = {
   regimeModel?: MotorClassRegimeModelSnapshot;
 };
 
-export type MotorTickerSnapshot = {
+export type MotorTickerSnapshot = MotorDecisionExport & {
   symbol: string;
   abaId: string;
   classId: string;
@@ -202,6 +218,8 @@ export type SymbolMotorContext = {
   tickerIndicators: MotorIndicatorSnapshot[];
   classScoreHistory: MotorScoreHistoryPoint[];
   tickerScoreHistory: MotorScoreHistoryPoint[];
+  /** Explicit decision fields from the motor snapshot, when present. */
+  decision: MotorDecisionExport;
   perf1dPct: number | null;
   perf7dPct: number | null;
   perf15dPct: number | null;
@@ -233,11 +251,21 @@ export type SymbolDetailView = {
   inWatchlist: boolean;
   snapshot: MotorDashboardSnapshot | null;
   motor: SymbolMotorContext;
-  bars: Array<{ date: string; value: number; volume?: number }>;
+  bars: Array<{
+    date: string;
+    value: number;
+    volume?: number;
+    high?: number;
+    low?: number;
+    adjClose?: number;
+  }>;
+  /** Distribuições (dividendos/juros) no período, usadas para leitura de total return. */
+  distributions: Array<{ date: string; amount: number }>;
   perfHorizons: PerfHorizons;
   quote: YahooQuoteSummary;
   financials: SymbolFinancials;
   technicalRows: TechnicalIndicatorRow[];
+  forecast: import("@/lib/market/forecast-model").PriceForecast;
   yahooWarning?: string;
   reliability: DecisionReliabilitySummary;
   dataEquation: import("@/lib/motor/class-data-equation").ClassDataEquation;

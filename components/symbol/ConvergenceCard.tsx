@@ -6,65 +6,95 @@ import { InfoTooltip } from "./InfoTooltip";
 export type { ConvergenceSignal };
 
 type ConvergenceRow = {
-  motor: ConvergenceSignal;
-  technical: ConvergenceSignal;
   icon: string;
   reading: string;
   explanation: string;
 };
 
-const ROWS: ConvergenceRow[] = [
-  {
-    motor: "positive",
-    technical: "positive",
+const SIGNAL_LABELS: Record<ConvergenceSignal, string> = {
+  positive: "Positivo",
+  neutral: "Neutro",
+  negative: "Negativo",
+};
+
+const MATRIX: Record<string, ConvergenceRow> = {
+  "positive|positive": {
     icon: "✅",
     reading: "Sinal forte",
-    explanation: "Motor e técnica alinhados positivamente — contexto favorável para manter ou aumentar exposição.",
+    explanation:
+      "Motor e técnica alinhados positivamente — contexto favorável para manter ou aumentar exposição.",
   },
-  {
-    motor: "positive",
-    technical: "negative",
+  "positive|neutral": {
+    icon: "🟡",
+    reading: "Motor positivo sem gatilho de preço",
+    explanation:
+      "O motor favorece o papel, mas o preço não está nem esticado nem descontado. Não há contradição: simplesmente não existe gatilho técnico agora.",
+  },
+  "positive|negative": {
     icon: "⏳",
     reading: "Esperar confirmação",
-    explanation: "O motor está positivo, mas a técnica ainda não confirma — aguardar melhor ponto de entrada.",
+    explanation:
+      "O motor está positivo, mas a técnica ainda não confirma — aguardar melhor ponto de entrada.",
   },
-  {
-    motor: "negative",
-    technical: "positive",
+  "neutral|positive": {
+    icon: "🟡",
+    reading: "Preço melhora sem suporte do motor",
+    explanation:
+      "A técnica melhora enquanto o motor permanece neutro — movimento de preço ainda sem confirmação quantitativa.",
+  },
+  "neutral|neutral": {
+    icon: "⚪",
+    reading: "Sem sinal dos dois lados",
+    explanation:
+      "Motor e técnica neutros. Nenhum dos dois lados pede ação — nem compra nem venda.",
+  },
+  "neutral|negative": {
+    icon: "🟠",
+    reading: "Deterioração de preço sem sinal do motor",
+    explanation:
+      "A técnica piora enquanto o motor permanece neutro — acompanhe, mas ainda não é sinal de redução.",
+  },
+  "negative|positive": {
     icon: "⚠️",
     reading: "Possível rebound — cautela",
-    explanation: "Técnica melhora enquanto o motor permanece negativo — possível repique, mas com risco elevado.",
+    explanation:
+      "Técnica melhora enquanto o motor permanece negativo — possível repique, mas com risco elevado.",
   },
-  {
-    motor: "negative",
-    technical: "negative",
+  "negative|neutral": {
+    icon: "🟠",
+    reading: "Motor negativo, preço ainda sem confirmar",
+    explanation:
+      "O motor está negativo e o preço ainda não confirmou fraqueza. Evite aumentar exposição.",
+  },
+  "negative|negative": {
     icon: "🔻",
     reading: "Reduzir / evitar",
-    explanation: "Motor e técnica negativos — priorizar redução de risco ou evitar novas entradas.",
+    explanation:
+      "Motor e técnica negativos — priorizar redução de risco ou evitar novas entradas.",
   },
-];
+};
 
 function findRow(motor: ConvergenceSignal, technical: ConvergenceSignal): ConvergenceRow {
-  return (
-    ROWS.find((r) => r.motor === motor && r.technical === technical) ?? ROWS[3]!
-  );
+  return MATRIX[`${motor}|${technical}`] ?? MATRIX["neutral|neutral"]!;
 }
 
 export function signalFromScore(score: number | null | undefined): ConvergenceSignal {
-  if (score == null || !Number.isFinite(score)) return "negative";
+  if (score == null || !Number.isFinite(score)) return "neutral";
   return score >= 0 ? "positive" : "negative";
 }
 
 export function ConvergenceCard({
   motorSignal,
   technicalSignal,
+  motorCaption,
+  technicalCaption,
 }: {
   motorSignal: ConvergenceSignal;
   technicalSignal: ConvergenceSignal;
+  motorCaption?: string;
+  technicalCaption?: string;
 }) {
   const row = findRow(motorSignal, technicalSignal);
-  const motorLabel = motorSignal === "positive" ? "Positivo" : "Negativo";
-  const technicalLabel = technicalSignal === "positive" ? "Positivo" : "Negativo";
 
   return (
     <section className="rounded-lg border border-zinc-800 bg-zinc-950 p-4">
@@ -78,17 +108,21 @@ export function ConvergenceCard({
           {row.icon}
         </span>
         <div>
-          <p className="text-sm font-medium text-white">
-            {row.reading}
-          </p>
+          <p className="text-sm font-medium text-white">{row.reading}</p>
           <p className="mt-0.5 text-xs text-zinc-500">
-            Motor: <span className="text-zinc-300">{motorLabel}</span>
+            Motor: <span className="text-zinc-300">{SIGNAL_LABELS[motorSignal]}</span>
             {" · "}
-            Técnica: <span className="text-zinc-300">{technicalLabel}</span>
+            Técnica: <span className="text-zinc-300">{SIGNAL_LABELS[technicalSignal]}</span>
           </p>
         </div>
       </div>
       <p className="mt-3 text-sm text-zinc-400">{row.explanation}</p>
+      {motorCaption || technicalCaption ? (
+        <div className="mt-3 space-y-1 border-t border-zinc-800/80 pt-3 text-[11px] text-zinc-600">
+          {motorCaption ? <p>Motor: {motorCaption}</p> : null}
+          {technicalCaption ? <p>Técnica: {technicalCaption}</p> : null}
+        </div>
+      ) : null}
     </section>
   );
 }

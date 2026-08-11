@@ -23,7 +23,14 @@ import {
   scoreToConvergence,
   technicalConvergenceSignal,
 } from "@/lib/motor/motor-technicals-summary";
+import {
+  buildDecisionNarrative,
+  buildDecisionSummary,
+} from "@/lib/motor/decision-summary";
+import { gaugeScaleForClass } from "@/lib/motor/gauge-zones";
+import { applicableTechnicalRows } from "@/lib/market/indicator-applicability";
 import { ConvergenceCard } from "./ConvergenceCard";
+import { DecisionNarrative, DecisionSummaryCards } from "./DecisionSummaryCards";
 import { IndicatorTrend } from "./IndicatorTrend";
 import { InfoTooltip } from "./InfoTooltip";
 import type { GlossaryTerm } from "./InfoTooltip";
@@ -36,23 +43,55 @@ import { formatScore } from "@/lib/motor/format-scores";
 
 type ExpandId = "motor" | "oscillators" | "moving_averages" | "macro" | null;
 
+function ExcludedIndicatorsNote({
+  excluded,
+}: {
+  excluded: Array<{ row: TechnicalIndicatorRow; reason: string }>;
+}) {
+  if (excluded.length === 0) return null;
+  const reasons = [...new Set(excluded.map((e) => e.reason))];
+  return (
+    <div className="rounded border border-zinc-800 bg-black/40 px-3 py-2">
+      <p className="text-[11px] font-medium text-zinc-400">
+        Indicadores não aplicáveis a esta classe ({excluded.length})
+      </p>
+      <p className="mt-1 text-[11px] text-zinc-600">
+        {excluded.map((e) => e.row.name).join(", ")}
+      </p>
+      {reasons.map((reason) => (
+        <p key={reason} className="mt-1 text-[11px] text-zinc-500">
+          {reason}
+        </p>
+      ))}
+    </div>
+  );
+}
+
 function OscillatorsDetail({
   rows,
   bars,
+  excluded,
 }: {
   rows: TechnicalIndicatorRow[];
   bars: Array<{ date: string; value: number }>;
+  excluded: Array<{ row: TechnicalIndicatorRow; reason: string }>;
 }) {
   if (rows.length === 0) {
     return (
-      <p className="text-sm text-zinc-500">
-        Histórico insuficiente para osciladores técnicos.
-      </p>
+      <div className="space-y-3">
+        <p className="text-sm text-zinc-500">
+          {excluded.length > 0
+            ? "Nenhum oscilador de momentum se aplica a esta classe de ativo."
+            : "Histórico insuficiente para osciladores técnicos."}
+        </p>
+        <ExcludedIndicatorsNote excluded={excluded} />
+      </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-zinc-800">
+    <div className="space-y-3">
+      <div className="overflow-x-auto rounded-lg border border-zinc-800">
       <table className="w-full text-left text-sm">
         <thead className="border-b border-zinc-800 bg-zinc-950 text-[11px] text-zinc-500">
           <tr>
@@ -110,6 +149,8 @@ function OscillatorsDetail({
           })}
         </tbody>
       </table>
+      </div>
+      <ExcludedIndicatorsNote excluded={excluded} />
     </div>
   );
 }
@@ -117,16 +158,21 @@ function OscillatorsDetail({
 function MovingAveragesDetail({
   rows,
   price,
+  excluded,
 }: {
   rows: TechnicalIndicatorRow[];
   price: number | null;
+  excluded: Array<{ row: TechnicalIndicatorRow; reason: string }>;
 }) {
   const display = rows.filter((r) => r.id.startsWith("sma_"));
   const cross = detectMaCross(rows);
 
   if (display.length === 0) {
     return (
-      <p className="text-sm text-zinc-500">Médias móveis indisponíveis.</p>
+      <div className="space-y-3">
+        <p className="text-sm text-zinc-500">Médias móveis indisponíveis.</p>
+        <ExcludedIndicatorsNote excluded={excluded} />
+      </div>
     );
   }
 
@@ -186,6 +232,7 @@ function MovingAveragesDetail({
           </tbody>
         </table>
       </div>
+      <ExcludedIndicatorsNote excluded={excluded} />
     </div>
   );
 }
@@ -365,17 +412,38 @@ function AccordionPanel({
 
 export function MotorTechnicalsTab({ detail }: { detail: SymbolDetailView }) {
   const [expanded, setExpanded] = useState<ExpandId>(null);
-  const { motor, technicalRows, reliability, quote } = detail;
+  const { motor, technicalRows, reliability, quote, classId, classLabel } = detail;
 
-  const oscillators = technicalRows.filter((r) => r.group === "oscillator");
-  const movingAvgs = technicalRows.filter((r) => r.group === "moving_average");
+  const applicability = applicableTechnicalRows(technicalRows, classId);
+  const applicableRows = applicability.rows;
+  const oscillators = applicableRows.filter((r) => r.group === "oscillator");
+  const movingAvgs = applicableRows.filter((r) => r.group === "moving_average");
+  const excludedOscillators = applicability.excluded.filter(
+    (e) => e.row.group === "oscillator",
+  );
+  const excludedMovingAvgs = applicability.excluded.filter(
+    (e) => e.row.group === "moving_average",
+  );
   const oscCounts = countTaActions(oscillators);
   const maCounts = countTaActions(movingAvgs);
   const { motor: motorSignal } = motorLayerCounts(motor);
   const macroSignal = macroLayerSignal(motor);
 
-  const motorConv = scoreToConvergence(motor.score);
-  const techConv = technicalConvergenceSignal(technicalRows);
+  const decision = buildDecisionSummary({
+    motor,
+    classId,
+    bars: detail.bars,
+    price: quote.price ?? null,
+    technicalRows,
+  });
+  const narrative = buildDecisionNarrative(decision, {
+    classLabel,
+    symbol: detail.symbol,
+    entryValidated: motor.entryValidated,
+  });
+
+  const motorConv = scoreToConvergence(motor.score, classId);
+  const techConv = technicalConvergenceSignal(applicableRows);
   const summary = buildConvergenceSummary(
     motorConv,
     techConv,
@@ -386,6 +454,7 @@ export function MotorTechnicalsTab({ detail }: { detail: SymbolDetailView }) {
 
   const hasMotor = motor.motorScope !== "none";
   const confidence = reliability.score;
+  const gaugeScale = gaugeScaleForClass(classId);
 
   return (
     <div className="space-y-6">
@@ -396,13 +465,17 @@ export function MotorTechnicalsTab({ detail }: { detail: SymbolDetailView }) {
         </p>
       ) : null}
 
+      <DecisionSummaryCards decision={decision} classLabel={classLabel} />
+
       <TechnicalRatingGauge
-        value={motor.score ?? 0}
+        scale={gaugeScale}
+        value={decision.gauge.value}
         confidence={confidence}
-        label={motor.stageLabel}
-        entryValidated={motor.entryValidated}
+        caption={`Alocação da classe: ${decision.allocation.label} · Entrada: ${decision.entry.label}`}
         summary={summary}
       />
+
+      <DecisionNarrative sections={narrative} />
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <SignalCountCard
@@ -437,20 +510,41 @@ export function MotorTechnicalsTab({ detail }: { detail: SymbolDetailView }) {
         <MotorQuantDetail detail={detail} />
       </AccordionPanel>
       <AccordionPanel id="oscillators" title="Oscillators" expanded={expanded}>
-        <OscillatorsDetail rows={oscillators} bars={detail.bars} />
+        <OscillatorsDetail
+          rows={oscillators}
+          bars={detail.bars}
+          excluded={excludedOscillators}
+        />
       </AccordionPanel>
       <AccordionPanel
         id="moving_averages"
         title="Moving averages"
         expanded={expanded}
       >
-        <MovingAveragesDetail rows={movingAvgs} price={quote.price ?? null} />
+        <MovingAveragesDetail
+          rows={movingAvgs}
+          price={quote.price ?? null}
+          excluded={excludedMovingAvgs}
+        />
       </AccordionPanel>
       <AccordionPanel id="macro" title="Macro / Risco" expanded={expanded}>
         <MacroRiskDetail detail={detail} />
       </AccordionPanel>
 
-      <ConvergenceCard motorSignal={motorConv} technicalSignal={techConv} />
+      <ConvergenceCard
+        motorSignal={motorConv}
+        technicalSignal={techConv}
+        motorCaption={
+          decision.scoreDomain === "unit"
+            ? "Ranking do papel dentro da classe (percentil 0–1), comparado às faixas do próprio modelo."
+            : "Score composto direcional do motor."
+        }
+        technicalCaption={
+          applicability.excluded.length > 0
+            ? `Calculada apenas sobre os ${applicableRows.length} indicadores aplicáveis a esta classe.`
+            : `Calculada sobre ${applicableRows.length} indicadores de preço (informativo, fonte Yahoo).`
+        }
+      />
     </div>
   );
 }

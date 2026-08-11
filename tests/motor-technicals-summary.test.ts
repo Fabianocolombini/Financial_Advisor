@@ -33,6 +33,7 @@ function motorStub(overrides: Partial<SymbolMotorContext> = {}): SymbolMotorCont
     tickerIndicators: [],
     classScoreHistory: [],
     tickerScoreHistory: [],
+    decision: {},
     perf1dPct: null,
     perf7dPct: null,
     perf15dPct: null,

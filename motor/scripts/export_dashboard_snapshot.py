@@ -131,6 +131,10 @@ def main() -> None:
             if (row["data"], canonical) > (prev_row["data"], prev_canonical):
                 by_class[class_id] = row
 
+        from motor.src.config_loader import is_class_model_aba
+        from motor.src.calculo.class_model_registry import export_regime_model_snapshot
+
+        regime_models: dict[str, dict] = {}
         for row in by_class.values():
             aba_id = row["aba_id"]
             class_id = class_id_for_aba(aba_id)
@@ -141,10 +145,31 @@ def main() -> None:
                 reverse=True,
             )[:5]
             dominant = dominant_component(componentes)
+
+            regime_model = None
+            if is_class_model_aba(aba_id):
+                try:
+                    regime_model = export_regime_model_snapshot(aba_id)
+                except Exception as e:
+                    print(f"[export_dashboard] WARN: regime model {aba_id}: {e}", file=sys.stderr)
+            if regime_model:
+                regime_models[class_id] = regime_model
+
+            # `score` is the persisted daily series (used for history and estágio),
+            # while the regime model is recomputed live. Decide on the live score so
+            # the action can never contradict the number shown beside it.
+            model_score = (regime_model or {}).get("score")
+            allocation_score = (
+                float(model_score)
+                if isinstance(model_score, (int, float))
+                else float(row["score_composto"])
+            )
             validation = validate_class_entry(
                 row["estagio"] or "Maduro",
-                float(row["score_composto"]),
+                allocation_score,
                 dominant,
+                aba_id=aba_id,
+                regime_action=(regime_model or {}).get("action"),
             )
             snapshot["classes"][class_id] = {
                 "abaId": aba_id,
@@ -153,9 +178,12 @@ def main() -> None:
                 "nome": load_aba_config(aba_id).get("nome", aba_id),
                 "data": row["data"],
                 "score": float(row["score_composto"]),
+                "allocationScore": allocation_score,
                 "stage": row["estagio"],
                 "stageLabel": stage_en(row["estagio"]),
                 "entryValidated": validation["entryValidated"],
+                "scoreDomain": validation["scoreDomain"],
+                "allocationAction": validation["allocationAction"],
                 "rationale": validation["rationale"],
                 "dominantIndicator": validation["dominantIndicator"],
                 "indicators": [_indicator_export(c) for c in top_inds],
@@ -181,28 +209,20 @@ def main() -> None:
                 for r in reversed(hist_rows)
             ]
 
-            from motor.src.config_loader import is_class_model_aba
-            from motor.src.calculo.class_model_registry import export_regime_model_snapshot
-
-            if is_class_model_aba(aba_id):
-                try:
-                    regime_model = export_regime_model_snapshot(aba_id)
-                    if regime_model:
-                        snapshot["classes"][class_id]["regimeModel"] = regime_model
-                        regime_inds = [
-                            _indicator_export(c)
-                            for c in (regime_model.get("components") or [])
-                            if isinstance(c, dict) and c.get("id")
-                        ]
-                        if regime_inds:
-                            cls_entry = snapshot["classes"][class_id]
-                            cls_entry["allIndicators"] = _merge_indicator_exports(
-                                cls_entry.get("allIndicators", []),
-                                regime_inds,
-                            )
-                            cls_entry["indicators"] = cls_entry["allIndicators"][:5]
-                except Exception as e:
-                    print(f"[export_dashboard] WARN: regime model {aba_id}: {e}", file=sys.stderr)
+            if regime_model:
+                snapshot["classes"][class_id]["regimeModel"] = regime_model
+                regime_inds = [
+                    _indicator_export(c)
+                    for c in (regime_model.get("components") or [])
+                    if isinstance(c, dict) and c.get("id")
+                ]
+                if regime_inds:
+                    cls_entry = snapshot["classes"][class_id]
+                    cls_entry["allIndicators"] = _merge_indicator_exports(
+                        cls_entry.get("allIndicators", []),
+                        regime_inds,
+                    )
+                    cls_entry["indicators"] = cls_entry["allIndicators"][:5]
 
         ativo_rows = conn.execute(
             """
@@ -219,9 +239,14 @@ def main() -> None:
 
         class_scores: dict[str, float] = {}
         class_stages: dict[str, str] = {}
+        class_actions: dict[str, str | None] = {}
         for cls in snapshot["classes"].values():
-            class_scores[cls["classId"]] = cls["score"]
+            class_scores[cls["classId"]] = cls.get("allocationScore", cls["score"])
             class_stages[cls["classId"]] = cls.get("stage") or "Maduro"
+            class_actions[cls["classId"]] = (
+                regime_models.get(cls["classId"], {}).get("action")
+                or cls.get("allocationAction")
+            )
 
         for row in ativo_rows:
             ticker = row["ticker"].upper()
@@ -244,6 +269,8 @@ def main() -> None:
                 score_ativo,
                 diverge,
                 dominant,
+                aba_id=row["aba_id"],
+                regime_action=class_actions.get(class_id),
             )
             tick_payload = enrich_ticker_performance(
                 {
@@ -256,6 +283,12 @@ def main() -> None:
                 "stageLabel": stage_en(row["estagio"]),
                 "divergesFromClass": diverge,
                 "entryValidated": validation["entryValidated"],
+                "scoreDomain": validation["scoreDomain"],
+                "allocationAction": validation["allocationAction"],
+                "instrumentQuality": validation["instrumentQuality"],
+                "entryTiming": validation["entryTiming"],
+                "entryReasons": validation["entryReasons"],
+                "peerMedian": validation["peerMedian"],
                 "rationale": validation["rationale"],
                 "dominantIndicator": validation["dominantIndicator"],
                 "indicators": [_indicator_export(c) for c in top_inds],

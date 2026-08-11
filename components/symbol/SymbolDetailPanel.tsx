@@ -19,7 +19,7 @@ import { SymbolOverviewStats } from "./SymbolOverviewStats";
 import { SymbolKeyStatsPreview } from "./SymbolKeyStats";
 import { SymbolAbout } from "./SymbolAbout";
 import { MotorTechnicalsTab } from "./MotorTechnicalsTab";
-import { AnalystForecastCard, MotorForecastCard } from "./SymbolForecast";
+import { AnalystForecastCard, PriceForecastPanel } from "./SymbolForecast";
 import { SymbolReliabilityBanner } from "./SymbolReliabilityBanner";
 import { SymbolDataEquationPanel } from "./SymbolDataEquationPanel";
 import {
@@ -162,14 +162,11 @@ export function SymbolDetailPanel({ detail }: { detail: SymbolDetailView }) {
 
       {tab === "forecast" ? (
         <div className="space-y-6">
-          <MotorForecastCard
-            score={motor.score}
-            indicators={[...motor.tickerIndicators, ...motor.classIndicators]}
-          />
-          <AnalystForecastCard quote={quote} bars={detail.bars} />
+          <PriceForecastPanel forecast={detail.forecast} bars={detail.bars} />
+          <AnalystForecastCard quote={quote} />
           <p className="text-xs text-zinc-500">
-            Forecast tracker: motor rating atualiza com Motor Daily; targets de analistas via
-            Yahoo quando disponíveis. Resumo completo na aba Motor & Technicals.
+            A projeção é recalculada a cada carregamento a partir do histórico do Yahoo; a
+            leitura de alocação e entrada fica na aba Motor &amp; Technicals.
           </p>
         </div>
       ) : null}

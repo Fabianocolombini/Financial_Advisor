@@ -97,8 +97,11 @@ export function MotorWhySection({
         <span className="rounded-full bg-zinc-800 px-2 py-0.5 text-xs text-zinc-300">
           Stage: {stageLabel}
         </span>
-        <span className="rounded-full bg-zinc-800 px-2 py-0.5 text-xs text-zinc-300">
-          Entry: {entryLabel}
+        <span
+          className="rounded-full bg-zinc-800 px-2 py-0.5 text-xs text-zinc-300"
+          title="Elegibilidade do motor para aportes incrementais — não é confirmação técnica de que agora é o melhor momento de compra."
+        >
+          Elegibilidade: {entryLabel}
         </span>
         <span className="rounded-full bg-zinc-800 px-2 py-0.5 text-xs text-zinc-300">
           Class: {classLabel}

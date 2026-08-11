@@ -9,7 +9,8 @@ import { buildClassDataEquation } from "@/lib/motor/class-data-equation";
 import { computeDecisionReliability } from "@/lib/motor/reliability-audit";
 import { computeTechnicalSummary } from "@/lib/market/technical-summary";
 import { perfHorizonsFromBars } from "@/lib/market/perf-horizons";
-import { fetchYahooChartCloses } from "@/lib/market/yahoo";
+import { fetchYahooChart } from "@/lib/market/yahoo";
+import { buildPriceForecast } from "@/lib/market/forecast-model";
 import { fetchYahooQuoteSummaryCached } from "@/lib/market/yahoo-quote";
 import { loadSymbolFinancialsCached } from "@/lib/market/load-symbol-financials";
 import { loadMotorDashboardSnapshot } from "@/lib/motor/load-snapshot";
@@ -99,7 +100,9 @@ function buildMotorContext(
     ticker: tick,
     classSnap,
     score: tick?.score ?? classSnap?.score ?? null,
-    classScore: classSnap?.score ?? null,
+    // The allocation action is derived from the live regime score, so prefer it
+    // over the persisted series to keep the number consistent with the action.
+    classScore: classSnap?.allocationScore ?? classSnap?.score ?? null,
     stageLabel: hasTickerMotor
       ? tick!.stageLabel ?? "Hold"
       : hasClassMotor
@@ -124,6 +127,14 @@ function buildMotorContext(
     tickerIndicators,
     classScoreHistory: classSnap?.scoreHistory ?? [],
     tickerScoreHistory: tick?.scoreHistory ?? [],
+    decision: {
+      scoreDomain: tick?.scoreDomain ?? classSnap?.scoreDomain,
+      allocationAction: classSnap?.allocationAction ?? tick?.allocationAction,
+      instrumentQuality: tick?.instrumentQuality,
+      entryTiming: tick?.entryTiming,
+      entryReasons: tick?.entryReasons ?? [],
+      peerMedian: tick?.peerMedian,
+    },
     perf1dPct: tick?.perf1dPct ?? null,
     perf7dPct: tick?.perf7dPct ?? null,
     perf15dPct: tick?.perf15dPct ?? null,
@@ -160,7 +171,8 @@ export async function loadSymbolDetailView(
   const period2 = Math.floor(Date.now() / 1000);
   const period1 = period2 - TWO_YEARS_SEC;
 
-  let bars: Awaited<ReturnType<typeof fetchYahooChartCloses>> = [];
+  let bars: Awaited<ReturnType<typeof fetchYahooChart>>["bars"] = [];
+  let distributions: Awaited<ReturnType<typeof fetchYahooChart>>["distributions"] = [];
   const [quote, financials] = await Promise.all([
     fetchYahooQuoteSummaryCached(sym),
     loadSymbolFinancialsCached(sym),
@@ -168,7 +180,9 @@ export async function loadSymbolDetailView(
   let yahooWarning: string | undefined;
 
   try {
-    bars = await fetchYahooChartCloses(sym, period1, period2, CHART_REVALIDATE_SEC);
+    const chart = await fetchYahooChart(sym, period1, period2, CHART_REVALIDATE_SEC);
+    bars = chart.bars;
+    distributions = chart.distributions;
   } catch (err) {
     yahooWarning =
       err instanceof Error ? err.message : "Falha ao buscar histórico de preços.";
@@ -202,6 +216,16 @@ export async function loadSymbolDetailView(
     motor.tickerIndicators,
   );
 
+  const forecast = buildPriceForecast({
+    symbol: sym,
+    classId,
+    bars,
+    adjustedCloses: bars.map((b) => b.adjClose),
+    motorScore: motor.score,
+    classIndicators: motor.classIndicators,
+    reliabilityScore: reliability.score,
+  });
+
   return {
     symbol: sym,
     name,
@@ -212,11 +236,20 @@ export async function loadSymbolDetailView(
     inWatchlist: Boolean(watchlistItem),
     snapshot,
     motor,
-    bars: bars.map((b) => ({ date: b.date, value: b.value, volume: b.volume })),
+    bars: bars.map((b) => ({
+      date: b.date,
+      value: b.value,
+      volume: b.volume,
+      high: b.high,
+      low: b.low,
+      adjClose: b.adjClose,
+    })),
+    distributions,
     perfHorizons,
     quote,
     financials,
     technicalRows,
+    forecast,
     yahooWarning,
     reliability,
     dataEquation,

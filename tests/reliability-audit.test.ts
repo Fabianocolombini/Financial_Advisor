@@ -4,6 +4,7 @@ import { buildClassDataEquation } from "@/lib/motor/class-data-equation";
 import type { SymbolMotorContext } from "@/lib/motor/snapshot-types";
 
 const baseMotor: SymbolMotorContext = {
+  classId: "us_equity",
   hasTickerMotor: true,
   hasClassMotor: true,
   motorScope: "ticker",
@@ -58,6 +59,7 @@ const baseMotor: SymbolMotorContext = {
   tickerIndicators: [],
   classScoreHistory: [{ date: "2026-08-01", score: 0.3 }],
   tickerScoreHistory: [],
+  decision: {},
   perf1dPct: 1,
   perf7dPct: 2,
   perf15dPct: 3,

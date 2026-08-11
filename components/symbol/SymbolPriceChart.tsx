@@ -63,16 +63,26 @@ function toLineData(
   return out;
 }
 
+export type ChartPriceLine = {
+  price: number;
+  title: string;
+  color: string;
+  /** 0 = solid, 2 = dashed (lightweight-charts LineStyle). */
+  style?: 0 | 2;
+};
+
 export function SymbolPriceChart({
   bars,
   previousClose,
   horizon,
   onHorizonChange,
+  priceLines,
 }: {
   bars: ChartBar[];
   previousClose?: number | null;
   horizon?: PerfHorizonId;
   onHorizonChange?: (h: PerfHorizonId) => void;
+  priceLines?: ChartPriceLine[];
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -154,6 +164,18 @@ export function SymbolPriceChart({
         lineStyle: 2,
         axisLabelVisible: true,
         title: "Prev close",
+      });
+    }
+
+    for (const line of priceLines ?? []) {
+      if (!Number.isFinite(line.price)) continue;
+      priceSeries.createPriceLine({
+        price: line.price,
+        color: line.color,
+        lineWidth: 1,
+        lineStyle: line.style ?? 2,
+        axisLabelVisible: true,
+        title: line.title,
       });
     }
 
@@ -256,7 +278,7 @@ export function SymbolPriceChart({
       chartRef.current = null;
       void seriesToClean;
     };
-  }, [windowBars, previousClose, layers, closes]);
+  }, [windowBars, previousClose, layers, closes, priceLines]);
 
   if (bars.length < 2) {
     return (

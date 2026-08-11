@@ -118,6 +118,8 @@ def run_pipeline(
                 ativo["score_composto"],
                 div,
                 dominant_component(ativo["componentes"]),
+                aba_id=aba_id,
+                regime_action=estagio_info.get("regime_action"),
             )
             persist_ativo_score(aba_id, ativo, est, div)
             ativos_out.append(
@@ -127,6 +129,8 @@ def run_pipeline(
                     "diverge": div,
                     "score": ativo["score_composto"],
                     "entryValidated": validation["entryValidated"],
+                    "entryTiming": validation["entryTiming"],
+                    "instrumentQuality": validation["instrumentQuality"],
                 }
             )
 

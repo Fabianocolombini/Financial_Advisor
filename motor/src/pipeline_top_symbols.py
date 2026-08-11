@@ -90,6 +90,8 @@ def score_symbol_list(
             ativo["score_composto"],
             div,
             dominant_component(ativo["componentes"]),
+            aba_id=aba_id,
+            regime_action=aba_result.get("regime_action"),
         )
         persist_ativo_score(aba_id, ativo, est, div)
         scored.append(
@@ -98,6 +100,8 @@ def score_symbol_list(
                 "score": ativo["score_composto"],
                 "stage": est,
                 "entryValidated": validation["entryValidated"],
+                "entryTiming": validation["entryTiming"],
+                "instrumentQuality": validation["instrumentQuality"],
             }
         )
 

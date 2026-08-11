@@ -4,6 +4,7 @@ import type {
   SymbolMotorContext,
 } from "./snapshot-types";
 import type { YahooQuoteSummary } from "@/lib/market/yahoo-quote";
+import { classScoreProfile } from "./score-domain";
 import decisionMapJson from "../../motor/config/class_decision_map.json";
 
 export const DECISION_TARGET_SCORE = decisionMapJson.decisionTargetScore ?? 8;
@@ -84,16 +85,19 @@ export function computeDecisionReliability(input: {
   });
 
   // Security motor (0–2)
+  const minSecurityInds = classScoreProfile(classId).minSecurityIndicators;
   let securityPts = 0;
   if (motor.hasTickerMotor) securityPts += 1;
-  if (tickerCov.total >= 4 && tickerCov.withValue >= 4) securityPts += 1;
+  if (tickerCov.total >= minSecurityInds && tickerCov.withValue >= tickerCov.total) {
+    securityPts += 1;
+  }
   factors.push({
     id: "security_motor",
     label: "Security motor (ticker technicals)",
     score: securityPts,
     max: 2,
     note: motor.hasTickerMotor
-      ? `${tickerCov.withValue}/${tickerCov.total} ticker indicators`
+      ? `${tickerCov.withValue}/${tickerCov.total} ticker indicators (mínimo ${minSecurityInds} para esta classe)`
       : "Using class fallback only",
   });
 
@@ -127,22 +131,30 @@ export function computeDecisionReliability(input: {
       : "No snapshot date",
   });
 
-  // Models overlay (0–1)
-  const regime = snapshot?.models?.regime;
+  // Models overlay (0–1) — the class's own regime model, not the global logit
+  const classRegime = motor.classSnap?.regimeModel;
+  const globalRegime = snapshot?.models?.regime;
   let modelPts = 0;
-  if (regime) {
-    modelPts = regime.calibrated ? 1 : 0.5;
+  let modelNote: string;
+  if (classRegime) {
+    modelPts = classRegime.calibrated ? 1 : 0.5;
+    modelNote = classRegime.calibrated
+      ? `${classRegime.model ?? "Class regime"} calibrated`
+      : `${classRegime.model ?? "Class regime"} present but not calibrated`;
+  } else if (globalRegime) {
+    modelPts = globalRegime.calibrated ? 1 : 0.5;
+    modelNote = globalRegime.calibrated
+      ? "Global regime logit calibrated (no class model)"
+      : "Global regime present but not calibrated";
+  } else {
+    modelNote = "Models block missing";
   }
   factors.push({
     id: "models",
     label: "Regime / vol models",
     score: modelPts,
     max: 1,
-    note: regime
-      ? regime.calibrated
-        ? "Regime logit calibrated"
-        : "Regime present but not calibrated"
-      : "Models block missing",
+    note: modelNote,
   });
 
   // Market enrich (0–1)
@@ -194,7 +206,7 @@ export function computeDecisionReliability(input: {
   let summary: string;
   if (meetsTarget) {
     summary =
-      "Free data stack is sufficient for sleeve-aware decisions — motor macro + security signals aligned.";
+      "Cobertura de dados suficiente para decisão consciente do sleeve — macro do motor e security layer presentes.";
   } else if (grade === "adequate") {
     summary =
       "Usable but incomplete — review proxies, missing sleeve indicators, or stale snapshot before sizing.";

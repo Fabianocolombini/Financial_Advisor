@@ -1,6 +1,7 @@
 import type { MotorIndicatorSnapshot } from "./snapshot-types";
 
-type RawIndicator = MotorIndicatorSnapshot & Record<string, unknown>;
+/** Motor components arrive with pt-BR keys (nome, valor, contribuicao) and no `value`. */
+export type RawIndicator = Partial<MotorIndicatorSnapshot> & Record<string, unknown>;
 
 /** Resolve display value from motor component fields (valor, percentile_cs, z_score, …). */
 export function resolveIndicatorValue(raw: RawIndicator): number | null {
@@ -59,7 +60,7 @@ export function normalizeIndicatorSnapshot(
 }
 
 export function mergeIndicatorPools(
-  pools: Array<MotorIndicatorSnapshot[] | undefined | null>,
+  pools: Array<RawIndicator[] | undefined | null>,
 ): MotorIndicatorSnapshot[] {
   const byId = new Map<string, MotorIndicatorSnapshot>();
   for (const pool of pools) {

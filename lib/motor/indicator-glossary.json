@@ -19,5 +19,12 @@
   "motor_signal": "Leitura quantitativa do motor de decisão por classe e papel, combinando macro, regime e indicadores do sleeve.",
   "macro_risk": "Bloco macro e de risco sistêmico (curva de juros, spreads, volatilidade) que contextualiza o score do ativo.",
   "convergence": "Comparação entre o sinal do motor (quantitativo) e o sinal técnico (preço/momentum) para evitar leituras contraditórias sem explicação.",
-  "technical_rating": "Resumo visual do score combinado do motor em escala de -1 (Strong Sell) a +1 (Strong Buy)."
+  "technical_rating": "Resumo visual do score do motor. A escala muda por classe: percentil 0–1 vs pares nas classes com modelo de dois níveis, ou −1 a +1 direcional nas demais.",
+  "allocation_stance": "Quanto da classe de ativo carregar no agregado, segundo o modelo de regime (macro, carry, curva). Não diz se este papel específico é uma compra.",
+  "instrument_quality": "Como este papel se compara aos pares da mesma classe no mesmo dia. É ranking relativo, não direção de preço.",
+  "entry_timing": "Se o preço confirma entrada agora. Independe da recomendação de alocação: a classe pode estar favorecida sem que este seja um bom momento de compra.",
+  "forecast_range": "Faixa provável de preço projetada a partir da volatilidade recente, não uma previsão pontual. A cobertura histórica indica quantas vezes a faixa acertou no passado.",
+  "forecast_coverage": "Percentual de vezes em que o preço realizado ficou dentro da faixa projetada em testes walk-forward. Perto do nível nominal (68% ou 95%) indica faixa bem calibrada.",
+  "fibonacci": "Níveis de retração e extensão calculados sobre um swing confirmado. Servem como zonas de referência, não como alvos garantidos.",
+  "support_resistance": "Preços onde o ativo reverteu no passado recente, detectados por pivôs de swing confirmados dos dois lados."
 }
