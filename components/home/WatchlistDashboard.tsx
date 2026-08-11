@@ -1,4 +1,5 @@
 import { MotorDataFreshness } from "@/components/home/MotorDataFreshness";
+import { TableLegend } from "@/components/home/TableLegend";
 import { WatchlistClassTable } from "@/components/home/WatchlistClassTable";
 import type { MotorDashboardSnapshot } from "@/lib/motor/snapshot-types";
 import type { WatchlistClassGroup } from "@/lib/motor/snapshot-types";
@@ -34,11 +35,7 @@ export function WatchlistDashboard({
         </div>
       ) : (
         <div className="space-y-4">
-          <p className="text-[11px] text-zinc-600">
-            Ranked by composite score within each class (higher = more attractive to add).
-            Scores refresh daily for top-liquidity names (~90% of class volume); new ★ symbols
-            run on-demand — refresh after ~1–2 min.
-          </p>
+          <TableLegend />
           {groups.map((group) => (
             <WatchlistClassTable key={group.classId} group={group} />
           ))}

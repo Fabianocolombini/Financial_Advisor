@@ -4,13 +4,16 @@ import { useRouter } from "next/navigation";
 import { SymbolAvatar } from "@/components/catalog/SymbolAvatar";
 import { WatchlistStarButton } from "@/components/home/WatchlistStarButton";
 import { formatShareVolumeCompact, formatPerf, perfClass } from "@/lib/format-market";
+import { formatIndicatorValue, formatScore } from "@/lib/motor/format-scores";
 import {
-  formatIndicatorValue,
-  formatScore,
-  stageBadgeClass,
-  entryBadgeClass,
-} from "@/lib/motor/format-scores";
+  plainNewMoney,
+  plainQuality,
+  plainTrend,
+  toneBadgeClass,
+} from "@/lib/motor/plain-language";
+import { VOLUME_SESSIONS } from "@/lib/motor/enrich-yahoo-perf";
 import type { WatchlistClassGroup, WatchlistRow } from "@/lib/motor/snapshot-types";
+import { ClassScoreLegend } from "./ClassScoreLegend";
 
 function indicatorColumns(rows: WatchlistRow[]): { id: string; name: string }[] {
   const seen = new Map<string, string>();
@@ -31,27 +34,23 @@ function SecurityRow({
 }) {
   const router = useRouter();
   const indMap = new Map(row.indicators.map((i) => [i.id, i]));
-  const entryLabel = !row.hasMotorData
-    ? "Analyzing"
-    : row.motorScope === "class"
-      ? row.entryValidated
-        ? "Class validated"
-        : "Class macro"
-      : row.entryValidated
-        ? "Validated"
-        : "Not validated";
+  const trend = plainTrend(row.stageLabel);
+  const newMoney = plainNewMoney({
+    entryTiming: row.entryTiming,
+    entryValidated: row.entryValidated,
+    hasMotorData: row.hasMotorData,
+    motorScope: row.motorScope,
+  });
+  const quality = plainQuality({
+    instrumentQuality: row.instrumentQuality,
+    score: row.score,
+  });
 
   return (
     <tr
       className="border-b border-zinc-800/80 cursor-pointer hover:bg-zinc-950/50"
       onClick={() => router.push(`/mercado/${row.symbol}`)}
     >
-      <td
-        className="px-2 py-2 tabular-nums text-[11px] text-zinc-500 w-12"
-        title="Média diária de papéis negociados (20 sessões)"
-      >
-        {formatShareVolumeCompact(row.avgVolumeShares)}
-      </td>
       <td className="py-2 pl-2 pr-2" onClick={(e) => e.stopPropagation()}>
         <div className="flex min-w-[13rem] items-center gap-2">
           <WatchlistStarButton symbol={row.symbol} />
@@ -72,7 +71,12 @@ function SecurityRow({
                   {row.symbol}
                 </span>
                 {row.divergesFromClass ? (
-                  <span className="text-[10px] text-amber-400">≠ class</span>
+                  <span
+                    className="text-[10px] text-amber-400"
+                    title="Este papel está indo na direção contrária à da classe."
+                  >
+                    contraria a classe
+                  </span>
                 ) : null}
               </div>
               <p className="truncate text-xs text-zinc-500">{row.name}</p>
@@ -80,13 +84,22 @@ function SecurityRow({
           </button>
         </div>
       </td>
-      <td className="px-2 py-2 tabular-nums text-sm text-white">
-        <span>{formatScore(row.score)}</span>
-        {row.volumeSharePct != null ? (
-          <span className="ml-1 text-[10px] text-zinc-500" title="Volume share within this asset class (20D avg)">
-            · {row.volumeSharePct.toFixed(0)}% vol
-          </span>
-        ) : null}
+      <td className="px-2 py-2 text-sm text-white" title={quality.hint}>
+        <div className="tabular-nums">{formatScore(row.score)}</div>
+        <div className="text-[10px] text-zinc-500">{quality.label}</div>
+      </td>
+      <td
+        className="px-2 py-2 text-sm text-zinc-300"
+        title={`Média de papéis negociados por dia nas últimas ${VOLUME_SESSIONS} sessões, e quanto isso representa do volume da classe.`}
+      >
+        <div className="tabular-nums">
+          {formatShareVolumeCompact(row.avgVolumeShares)}
+        </div>
+        <div className="text-[10px] text-zinc-500">
+          {row.volumeSharePct != null
+            ? `${row.volumeSharePct.toFixed(0)}% da classe`
+            : "—"}
+        </div>
       </td>
       <td className={`px-2 py-2 tabular-nums text-sm ${perfClass(row.perf1dPct)}`}>
         {formatPerf(row.perf1dPct)}
@@ -99,23 +112,22 @@ function SecurityRow({
       </td>
       <td className="px-2 py-2">
         <span
-          className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset ${stageBadgeClass(
-            row.stageLabel,
+          className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset ${toneBadgeClass(
+            trend.tone,
           )}`}
-          title="Score trend: Accumulate (rising), Hold (flat), Reduce (falling)"
+          title={trend.hint}
         >
-          {row.stageLabel}
+          {trend.label}
         </span>
       </td>
       <td className="px-2 py-2">
         <span
-          className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset ${entryBadgeClass(
-            row.entryValidated,
-            row.hasMotorData,
+          className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset ${toneBadgeClass(
+            newMoney.tone,
           )}`}
-          title="Entry timing for adding exposure — not data quality. Validated = model supports considering a buy."
+          title={newMoney.hint}
         >
-          {entryLabel}
+          {newMoney.label}
         </span>
       </td>
       <td className="max-w-[8rem] truncate px-2 py-2 text-[11px] text-zinc-400">
@@ -132,21 +144,22 @@ function SecurityRow({
 
 export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
   const columns = indicatorColumns(group.rows);
+  const classTrend = plainTrend(group.classStageLabel);
 
   return (
     <section className="space-y-1.5">
       <div className="flex flex-wrap items-baseline justify-between gap-2 px-1">
         <h2 className="font-title text-base text-white">{group.label}</h2>
         {group.classStageLabel ? (
-          <p className="text-[11px] text-zinc-500">
-            Class: {group.classStageLabel}
-            {group.classScore != null ? ` · ${group.classScore.toFixed(2)}` : ""}
+          <p className="text-[11px] text-zinc-500" title={classTrend.hint}>
+            A classe inteira:{" "}
+            <span className="text-zinc-300">{classTrend.label}</span>
             {group.classDominantIndicator?.name
-              ? ` · ${group.classDominantIndicator.name}`
+              ? ` · puxada por ${group.classDominantIndicator.name}`
               : ""}
           </p>
         ) : (
-          <p className="text-[11px] text-zinc-600">Class macro pending</p>
+          <p className="text-[11px] text-zinc-600">Classe ainda não avaliada.</p>
         )}
       </div>
 
@@ -154,36 +167,40 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
         <table className="w-full min-w-[48rem] text-left text-sm">
           <thead className="border-b border-zinc-800 bg-zinc-950/90 text-[11px] text-zinc-500">
             <tr>
-              <th
-                className="px-2 py-2 font-medium w-12"
-                title="Volume médio diário (papéis, 20D) — K mil, M milhão, B bilhão"
-              >
-                Vol
-              </th>
-              <th className="px-3 py-2 font-medium">Symbol</th>
-              <th className="px-2 py-2 font-medium">Score</th>
+              <th className="px-3 py-2 font-medium">Ativo</th>
               <th
                 className="px-2 py-2 font-medium"
-                title="Participação do volume médio (20D) no total da classe"
+                title="Posição do papel no ranking da própria classe, de 0 a 1. Não compara classes diferentes."
               >
-                % Vol
+                Score
+              </th>
+              <th
+                className="px-2 py-2 font-medium"
+                title={`Média de papéis negociados por dia nas últimas ${VOLUME_SESSIONS} sessões — K mil, M milhão, B bilhão.`}
+              >
+                Volume {VOLUME_SESSIONS}d
               </th>
               <th className="px-2 py-2 font-medium">1D</th>
               <th className="px-2 py-2 font-medium">7D</th>
               <th className="px-2 py-2 font-medium">15D</th>
               <th
                 className="px-2 py-2 font-medium"
-                title="Score trend: Accumulate / Hold / Reduce"
+                title="Para onde a classe está indo: aumentar, manter ou reduzir."
               >
-                Stage
+                Tendência
               </th>
               <th
                 className="px-2 py-2 font-medium"
-                title="Timing to add exposure (not data validation)"
+                title="Se o modelo libera dinheiro novo neste papel agora."
               >
-                Entry
+                Dinheiro novo
               </th>
-              <th className="px-2 py-2 font-medium">Driver</th>
+              <th
+                className="px-2 py-2 font-medium"
+                title="O ingrediente que mais pesou no score deste papel hoje."
+              >
+                Principal fator
+              </th>
               {columns.map((col) => (
                 <th
                   key={col.id}
@@ -201,6 +218,8 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
           </tbody>
         </table>
       </div>
+
+      <ClassScoreLegend classId={group.classId} label={group.label} />
     </section>
   );
 }

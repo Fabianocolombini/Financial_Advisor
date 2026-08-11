@@ -7,11 +7,16 @@ export type SymbolPerfPct = {
 };
 
 export type SymbolMarketEnrichment = SymbolPerfPct & {
-  /** Average daily share volume over the last 20 sessions with volume > 0. */
+  /** Average daily share volume over the last `VOLUME_SESSIONS` sessions with volume > 0. */
   avgVolumeShares: number | null;
 };
 
-const AVG_VOLUME_SESSIONS = 20;
+/**
+ * Volume window, in sessions. Three trading weeks is short enough to reflect the
+ * mass actually being traded now, and long enough that one unusual session does
+ * not dominate the average.
+ */
+export const VOLUME_SESSIONS = 15;
 
 function perfFromCloses(bars: { value: number }[], lookback: number): number | null {
   if (bars.length < lookback + 1) return null;
@@ -23,7 +28,7 @@ function perfFromCloses(bars: { value: number }[], lookback: number): number | n
 
 function avgVolumeShares(
   bars: { volume: number }[],
-  sessions = AVG_VOLUME_SESSIONS,
+  sessions = VOLUME_SESSIONS,
 ): number | null {
   const withVol = bars.filter((b) => b.volume > 0);
   if (withVol.length < 5) return null;

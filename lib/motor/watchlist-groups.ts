@@ -106,6 +106,10 @@ export function buildWatchlistGroups(
         stageLabel,
         divergesFromClass: tick?.divergesFromClass ?? false,
         entryValidated,
+        entryTiming: hasTickerMotor
+          ? tick!.entryTiming ?? null
+          : (classSnap?.entryTiming ?? null),
+        instrumentQuality: hasTickerMotor ? tick!.instrumentQuality ?? null : null,
         dominantIndicator:
           tick?.dominantIndicator ?? classSnap?.dominantIndicator ?? null,
         rationale: tick?.rationale ?? classSnap?.rationale ?? [],

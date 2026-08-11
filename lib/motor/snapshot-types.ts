@@ -167,6 +167,10 @@ export type WatchlistRow = {
   stage: string | null;
   divergesFromClass: boolean;
   entryValidated: boolean;
+  /** Buy / Wait / Neutral / Avoid — richer than the boolean, absent on older snapshots. */
+  entryTiming?: string | null;
+  /** Preferred / Competitive / Weak — the instrument's band within its own class. */
+  instrumentQuality?: string | null;
   dominantIndicator: MotorDominantIndicator | null;
   rationale: string[];
   perf1dPct: number | null;
