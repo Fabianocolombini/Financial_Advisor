@@ -278,6 +278,20 @@ export function countTaActions(rows: TechnicalIndicatorRow[]): {
   return { buy, neutral, sell };
 }
 
+/**
+ * Maps a Buy/Sell/Neutral tally onto the −1…+1 gauge used by the clocks.
+ * Unanimous Buy is +1, unanimous Sell is −1, a tie (or all Neutral) is 0.
+ */
+export function countsToSignedGauge(counts: {
+  buy: number;
+  sell: number;
+  neutral: number;
+}): number | null {
+  const total = counts.buy + counts.sell + counts.neutral;
+  if (total === 0) return null;
+  return (counts.buy - counts.sell) / total;
+}
+
 export { MA_PERIODS };
 
 /** % change between latest and lookback trading-day rows. */

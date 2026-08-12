@@ -105,6 +105,11 @@ export function gaugeScaleForClass(classId: string | null | undefined): GaugeSca
     : SIGNED_DIRECTIONAL_SCALE;
 }
 
+/** Buy/Sell/Neutral tally mapped onto the same −1…+1 clock as the directional motor. */
+export function technicalSignalScale(title: string, caption: string): GaugeScale {
+  return { ...SIGNED_DIRECTIONAL_SCALE, title, caption };
+}
+
 export function clampToScale(scale: GaugeScale, value: number): number {
   if (!Number.isFinite(value)) {
     return (scale.domainMin + scale.domainMax) / 2;

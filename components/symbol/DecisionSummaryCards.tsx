@@ -153,7 +153,7 @@ export function DecisionSummaryCards({
 
 export function DecisionNarrative({ sections }: { sections: NarrativeSection[] }) {
   return (
-    <section className="rounded-lg border border-zinc-800 bg-black p-4">
+    <section className="h-full rounded-lg border border-zinc-800 bg-black p-4">
       <h3 className="text-sm font-medium text-white">Leitura qualitativa</h3>
       <div className="mt-3 space-y-3">
         {sections.map((section) => (

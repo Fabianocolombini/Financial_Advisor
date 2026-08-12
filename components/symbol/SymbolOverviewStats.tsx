@@ -1,7 +1,7 @@
 "use client";
 
-import type { PerfHorizonId, PerfHorizons } from "@/lib/market/perf-horizons";
-import { PERF_HORIZON_LABELS } from "@/lib/market/perf-horizons";
+import type { PerfHorizons } from "@/lib/market/perf-horizons";
+import { PERF_HORIZON_LABELS, PERF_HORIZON_ORDER } from "@/lib/market/perf-horizons";
 import {
   avgVolume,
   cumulativeReturnSparkline,
@@ -16,8 +16,6 @@ import {
 } from "@/lib/format-market";
 import type { YahooQuoteSummary } from "@/lib/market/yahoo-quote";
 import { IndicatorTrend } from "./IndicatorTrend";
-
-const RETURN_ORDER: PerfHorizonId[] = ["1d", "5d", "15d", "1m", "2y"];
 
 export function SymbolOverviewStats({
   bars,
@@ -76,7 +74,7 @@ export function SymbolOverviewStats({
         <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-3 sm:col-span-2">
           <p className="text-[11px] text-zinc-500">Retornos acumulados</p>
           <div className="mt-2 flex flex-wrap gap-3">
-            {RETURN_ORDER.map((id) => {
+            {PERF_HORIZON_ORDER.map((id) => {
               const pct = horizons[id];
               return (
                 <div key={id} className="min-w-[4rem]">

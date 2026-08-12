@@ -71,7 +71,22 @@ describe("perfHorizonsFromBars", () => {
     const h = perfHorizonsFromBars(bars);
     expect(h["1d"]).not.toBeNull();
     expect(h["15d"]).not.toBeNull();
+    expect(h["6m"]).toBeNull();
+    expect(h["1y"]).toBeNull();
     expect(h["2y"]).not.toBeNull();
+  });
+
+  it("computes 6M and 1A when the series is long enough", () => {
+    const bars = Array.from({ length: 260 }, (_, i) => ({
+      date: `2024-01-${String(i + 1).padStart(2, "0")}`,
+      value: 100 + i,
+      volume: 1000,
+      raw: { timestamp: i, close: 100 + i, volume: 1000 },
+    }));
+    const h = perfHorizonsFromBars(bars);
+    expect(h["6m"]).not.toBeNull();
+    expect(h["1y"]).not.toBeNull();
+    expect(h["6m"]!).toBeCloseTo(((259 - 133) / (100 + 133)) * 100, 5);
   });
 });
 

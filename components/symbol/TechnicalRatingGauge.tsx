@@ -24,13 +24,19 @@ export function TechnicalRatingGauge({
   confidence,
   caption,
   summary,
+  compact = false,
+  showConfidence = true,
+  emptyLabel = "Sem dado do motor",
 }: {
   scale: GaugeScale;
   value: number | null;
-  confidence: number | null;
+  confidence?: number | null;
   /** Extra context line under the reading (e.g. entry timing). */
   caption?: string;
   summary?: string;
+  compact?: boolean;
+  showConfidence?: boolean;
+  emptyLabel?: string;
 }) {
   const hasValue = value != null && Number.isFinite(value);
   const safeValue = hasValue ? value! : (scale.domainMin + scale.domainMax) / 2;
@@ -51,7 +57,11 @@ export function TechnicalRatingGauge({
       <p className="mt-1 text-[11px] text-zinc-600">{scale.caption}</p>
 
       <div className="mt-4 flex flex-col items-center">
-        <svg viewBox="0 0 240 130" className="h-32 w-full max-w-xs" aria-hidden>
+        <svg
+          viewBox="0 0 240 130"
+          className={`w-full ${compact ? "h-24 max-w-[14rem]" : "h-32 max-w-xs"}`}
+          aria-hidden
+        >
           {scale.bands.map((b) => {
             const start = 180 + scaleFraction(scale, b.min) * 180;
             const end = 180 + scaleFraction(scale, b.max) * 180;
@@ -77,12 +87,17 @@ export function TechnicalRatingGauge({
         </svg>
 
         <p className={`text-xl font-semibold ${hasValue ? band.textClass : "text-zinc-500"}`}>
-          {hasValue ? band.label : "Sem dado do motor"}
+          {hasValue ? band.label : emptyLabel}
         </p>
-        <p className="mt-1 text-center text-xs text-zinc-400">
-          Confiabilidade dos dados: {confidenceText}
-          <span className="text-zinc-600"> (qualidade da informação, não probabilidade de acerto)</span>
-        </p>
+        {showConfidence ? (
+          <p className="mt-1 text-center text-xs text-zinc-400">
+            Confiabilidade dos dados: {confidenceText}
+            <span className="text-zinc-600">
+              {" "}
+              (qualidade da informação, não probabilidade de acerto)
+            </span>
+          </p>
+        ) : null}
         {caption ? (
           <p className="mt-1 text-center text-xs text-zinc-300">{caption}</p>
         ) : null}

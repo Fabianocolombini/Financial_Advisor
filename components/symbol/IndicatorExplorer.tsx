@@ -129,8 +129,8 @@ export function IndicatorExplorer({
     <div className="space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <p className="text-xs text-zinc-500">
-          Selecione os indicadores que quer analisar — cada um abre um gráfico histórico
-          com suas faixas de referência.
+          Selecione os indicadores — os gráficos abrem dois por linha, com as faixas de
+          referência de cada um.
         </p>
         <div className="flex gap-1 rounded-md border border-zinc-800 bg-zinc-950 p-0.5">
           {LOOKBACKS.map((l) => (
@@ -170,7 +170,7 @@ export function IndicatorExplorer({
           histórico.
         </p>
       ) : (
-        <div className="space-y-4">
+        <div className="grid gap-4 lg:grid-cols-2">
           {selectedSeries.map((s) => {
             const row = rowById.get(s.id);
             return (
@@ -189,7 +189,7 @@ export function IndicatorExplorer({
                 <IndicatorChart
                   series={sliceSeries(s, count)}
                   bars={visibleBars}
-                  height={s.pane === "price" ? 220 : 170}
+                  height={s.pane === "price" ? 180 : 140}
                 />
               </div>
             );

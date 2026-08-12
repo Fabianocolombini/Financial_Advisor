@@ -1,10 +1,8 @@
 "use client";
 
 import type { PerfHorizonId, PerfHorizons } from "@/lib/market/perf-horizons";
-import { PERF_HORIZON_LABELS } from "@/lib/market/perf-horizons";
+import { PERF_HORIZON_LABELS, PERF_HORIZON_ORDER } from "@/lib/market/perf-horizons";
 import { formatPerf, perfClass } from "@/lib/format-market";
-
-const ORDER: PerfHorizonId[] = ["1d", "5d", "15d", "1m", "2y"];
 
 export function SymbolPerfTiles({
   horizons,
@@ -16,8 +14,8 @@ export function SymbolPerfTiles({
   onSelect?: (id: PerfHorizonId) => void;
 }) {
   return (
-    <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
-      {ORDER.map((id) => {
+    <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
+      {PERF_HORIZON_ORDER.map((id) => {
         const pct = horizons[id];
         const isActive = active === id;
         return (

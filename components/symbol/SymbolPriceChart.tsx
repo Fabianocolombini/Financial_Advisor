@@ -14,6 +14,7 @@ import {
 import type { PerfHorizonId } from "@/lib/market/perf-horizons";
 import {
   PERF_HORIZON_LABELS,
+  PERF_HORIZON_ORDER,
   sliceBarsForHorizon,
 } from "@/lib/market/perf-horizons";
 import {
@@ -22,17 +23,22 @@ import {
   smaSeries,
   type ChartBar,
 } from "@/lib/market/chart-overlays";
-
-const PERIODS: PerfHorizonId[] = ["1d", "5d", "15d", "1m", "2y"];
+import { rsiSeries } from "@/lib/market/technical-indicators";
 
 type LayerState = {
   volume: boolean;
   ma: boolean;
   bollinger: boolean;
+  rsi: boolean;
 };
 
 const LAYER_STORAGE_KEY = "fa.chart.layers";
-const DEFAULT_LAYERS: LayerState = { volume: true, ma: false, bollinger: false };
+const DEFAULT_LAYERS: LayerState = {
+  volume: true,
+  ma: false,
+  bollinger: false,
+  rsi: false,
+};
 
 function loadLayers(): LayerState {
   if (typeof window === "undefined") return DEFAULT_LAYERS;
@@ -44,6 +50,7 @@ function loadLayers(): LayerState {
       volume: parsed.volume ?? DEFAULT_LAYERS.volume,
       ma: parsed.ma ?? DEFAULT_LAYERS.ma,
       bollinger: parsed.bollinger ?? DEFAULT_LAYERS.bollinger,
+      rsi: parsed.rsi ?? DEFAULT_LAYERS.rsi,
     };
   } catch {
     return DEFAULT_LAYERS;
@@ -61,6 +68,101 @@ function toLineData(
     out.push({ time: bars[i]!.date as Time, value: v });
   }
   return out;
+}
+
+/**
+ * RSI lives on a 0–100 scale, so it cannot share the price axis. The pane is
+ * computed on the full history and then sliced, otherwise a 1M window would
+ * starve the 14-day warm-up and the line would be empty.
+ */
+function RsiPane({
+  bars,
+  windowBars,
+}: {
+  bars: ChartBar[];
+  windowBars: ChartBar[];
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const rsiWindow = useMemo(() => {
+    const full = rsiSeries(bars.map((b) => b.value), 14);
+    const offset = Math.max(0, bars.length - windowBars.length);
+    return full.slice(offset);
+  }, [bars, windowBars]);
+
+  useEffect(() => {
+    if (!containerRef.current || windowBars.length < 2) return;
+
+    const chart = createChart(containerRef.current, {
+      layout: {
+        background: { type: ColorType.Solid, color: "#000000" },
+        textColor: "#a1a1aa",
+      },
+      grid: {
+        vertLines: { color: "#18181b" },
+        horzLines: { color: "#18181b" },
+      },
+      rightPriceScale: {
+        borderColor: "#27272a",
+        scaleMargins: { top: 0.08, bottom: 0.08 },
+      },
+      timeScale: { borderColor: "#27272a", visible: true },
+      crosshair: {
+        vertLine: { color: "#52525b" },
+        horzLine: { color: "#52525b" },
+      },
+      width: containerRef.current.clientWidth,
+      height: 120,
+    });
+
+    const rsi = chart.addSeries(LineSeries, {
+      color: "#38bdf8",
+      lineWidth: 2,
+      priceLineVisible: false,
+    });
+    rsi.setData(toLineData(windowBars, rsiWindow));
+    rsi.createPriceLine({
+      price: 70,
+      color: "rgba(248, 113, 113, 0.7)",
+      lineWidth: 1,
+      lineStyle: 2,
+      axisLabelVisible: true,
+      title: "70",
+    });
+    rsi.createPriceLine({
+      price: 30,
+      color: "rgba(52, 211, 153, 0.7)",
+      lineWidth: 1,
+      lineStyle: 2,
+      axisLabelVisible: true,
+      title: "30",
+    });
+
+    chart.timeScale().fitContent();
+
+    const onResize = () => {
+      if (containerRef.current) {
+        chart.applyOptions({ width: containerRef.current.clientWidth });
+      }
+    };
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      chart.remove();
+    };
+  }, [windowBars, rsiWindow]);
+
+  return (
+    <div className="space-y-1">
+      <p className="text-[10px] text-zinc-600">
+        <span className="text-sky-400">━</span> RSI 14 · acima de 70 sobrecomprado · abaixo de
+        30 sobrevendido
+      </p>
+      <div
+        ref={containerRef}
+        className="w-full rounded-lg border border-zinc-800 bg-black"
+      />
+    </div>
+  );
 }
 
 export type ChartPriceLine = {
@@ -292,7 +394,7 @@ export function SymbolPriceChart({
     <div className="space-y-2">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex gap-1 rounded-md border border-zinc-800 bg-zinc-950 p-0.5">
-          {PERIODS.map((id) => (
+          {PERF_HORIZON_ORDER.map((id) => (
             <button
               key={id}
               type="button"
@@ -314,6 +416,7 @@ export function SymbolPriceChart({
               ["volume", "Volume"],
               ["ma", "MM"],
               ["bollinger", "Bollinger"],
+              ["rsi", "RSI"],
             ] as const
           ).map(([key, label]) => (
             <button
@@ -351,6 +454,8 @@ export function SymbolPriceChart({
           <span className="text-amber-400">━</span> MM50
         </p>
       ) : null}
+
+      {layers.rsi ? <RsiPane bars={bars} windowBars={windowBars} /> : null}
     </div>
   );
 }

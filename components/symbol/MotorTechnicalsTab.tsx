@@ -2,13 +2,11 @@
 
 import { useMemo, useState, type ReactNode } from "react";
 import type { SymbolDetailView } from "@/lib/motor/snapshot-types";
-import type { TechnicalIndicatorRow } from "@/lib/market/technical-summary";
-import { countTaActions } from "@/lib/market/technical-summary";
 import {
-  computeIndicatorSeries,
-  type IndicatorSeries,
-} from "@/lib/market/technical-indicators";
-import { trendFromSparkline } from "@/lib/market/technical-sparklines";
+  countTaActions,
+  countsToSignedGauge,
+} from "@/lib/market/technical-summary";
+import { computeIndicatorSeries } from "@/lib/market/technical-indicators";
 import {
   actionClass,
   formatIndicatorValue,
@@ -16,8 +14,6 @@ import {
 } from "@/lib/motor/format-scores";
 import {
   buildConvergenceSummary,
-  detectMaCross,
-  glossaryTermForIndicator,
   macroIndicators,
   macroLayerSignal,
   motorLayerCounts,
@@ -28,7 +24,10 @@ import {
   buildDecisionNarrative,
   buildDecisionSummary,
 } from "@/lib/motor/decision-summary";
-import { gaugeScaleForClass } from "@/lib/motor/gauge-zones";
+import {
+  gaugeScaleForClass,
+  technicalSignalScale,
+} from "@/lib/motor/gauge-zones";
 import {
   applicableTechnicalRows,
   pivotsApplicable,
@@ -36,235 +35,17 @@ import {
 import { ConvergenceCard } from "./ConvergenceCard";
 import { DecisionNarrative, DecisionSummaryCards } from "./DecisionSummaryCards";
 import { IndicatorExplorer } from "./IndicatorExplorer";
-import { IndicatorTrend } from "./IndicatorTrend";
 import { PivotPointsTable } from "./PivotPointsTable";
 import { InfoTooltip } from "./InfoTooltip";
-import type { GlossaryTerm } from "./InfoTooltip";
 import { MotorWhySection } from "./MotorTechnicals";
 import { SignalCountCard } from "./SignalCountCard";
 import { SymbolClassRegimeModelPanel } from "./SymbolClassRegimeModelPanel";
 import { SymbolModelsPanel } from "./SymbolModelsPanel";
+import { TechnicalIndicatorsTable } from "./TechnicalIndicatorsTable";
 import { TechnicalRatingGauge } from "./TechnicalRatingGauge";
 import { formatScore } from "@/lib/motor/format-scores";
 
-type ExpandId =
-  | "motor"
-  | "oscillators"
-  | "moving_averages"
-  | "macro"
-  | "pivots"
-  | "charts"
-  | null;
-
-/** Last points of an indicator series, for the inline trend sparkline. */
-function sparklineFromSeries(
-  series: IndicatorSeries | undefined,
-  points = 8,
-): number[] {
-  if (!series) return [];
-  const values = series.values.filter(
-    (v): v is number => v != null && Number.isFinite(v),
-  );
-  return values.slice(-points);
-}
-
-function ExcludedIndicatorsNote({
-  excluded,
-}: {
-  excluded: Array<{ row: TechnicalIndicatorRow; reason: string }>;
-}) {
-  if (excluded.length === 0) return null;
-  const reasons = [...new Set(excluded.map((e) => e.reason))];
-  return (
-    <div className="rounded border border-zinc-800 bg-black/40 px-3 py-2">
-      <p className="text-[11px] font-medium text-zinc-400">
-        Indicadores não aplicáveis a esta classe ({excluded.length})
-      </p>
-      <p className="mt-1 text-[11px] text-zinc-600">
-        {excluded.map((e) => e.row.name).join(", ")}
-      </p>
-      {reasons.map((reason) => (
-        <p key={reason} className="mt-1 text-[11px] text-zinc-500">
-          {reason}
-        </p>
-      ))}
-    </div>
-  );
-}
-
-function OscillatorsDetail({
-  rows,
-  seriesById,
-  excluded,
-}: {
-  rows: TechnicalIndicatorRow[];
-  seriesById: Map<string, IndicatorSeries>;
-  excluded: Array<{ row: TechnicalIndicatorRow; reason: string }>;
-}) {
-  if (rows.length === 0) {
-    return (
-      <div className="space-y-3">
-        <p className="text-sm text-zinc-500">
-          {excluded.length > 0
-            ? "Nenhum oscilador de momentum se aplica a esta classe de ativo."
-            : "Histórico insuficiente para osciladores técnicos."}
-        </p>
-        <ExcludedIndicatorsNote excluded={excluded} />
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-3">
-      <div className="overflow-x-auto rounded-lg border border-zinc-800">
-      <table className="w-full text-left text-sm">
-        <thead className="border-b border-zinc-800 bg-zinc-950 text-[11px] text-zinc-500">
-          <tr>
-            <th className="px-3 py-2">Indicador</th>
-            <th className="px-3 py-2">Valor</th>
-            <th className="px-3 py-2">Sinal</th>
-            <th className="px-3 py-2">Evolução</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => {
-            const spark = sparklineFromSeries(seriesById.get(row.id));
-            const trend = trendFromSparkline(spark);
-            const glossary = glossaryTermForIndicator(row.id) as GlossaryTerm | null;
-            const overbought =
-              row.action === "Sell" && row.group === "oscillator";
-            const oversold =
-              row.action === "Buy" && row.group === "oscillator";
-
-            return (
-              <tr
-                key={row.id}
-                className={`border-b border-zinc-800/80 ${
-                  overbought
-                    ? "border-l-2 border-l-red-500/60"
-                    : oversold
-                      ? "border-l-2 border-l-emerald-500/60"
-                      : ""
-                }`}
-              >
-                <td className="px-3 py-2 text-white">
-                  <span className="inline-flex items-center gap-1">
-                    {row.name}
-                    {glossary ? <InfoTooltip term={glossary} /> : null}
-                  </span>
-                </td>
-                <td className="px-3 py-2 tabular-nums text-zinc-300">
-                  {formatIndicatorValue(row.value)}
-                </td>
-                <td className={`px-3 py-2 ${actionClass(row.action)}`}>
-                  {row.action}
-                  {overbought ? " (overbought)" : oversold ? " (oversold)" : ""}
-                </td>
-                <td className="px-3 py-2">
-                  <IndicatorTrend
-                    sparklineData={spark}
-                    direction={trend.direction}
-                    delta={trend.delta}
-                    deltaPct={trend.deltaPct}
-                    compact
-                  />
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-      </div>
-      <ExcludedIndicatorsNote excluded={excluded} />
-    </div>
-  );
-}
-
-function MovingAveragesDetail({
-  rows,
-  price,
-  excluded,
-}: {
-  rows: TechnicalIndicatorRow[];
-  price: number | null;
-  excluded: Array<{ row: TechnicalIndicatorRow; reason: string }>;
-}) {
-  const display = rows;
-  const cross = detectMaCross(rows);
-
-  if (display.length === 0) {
-    return (
-      <div className="space-y-3">
-        <p className="text-sm text-zinc-500">
-          {excluded.length > 0
-            ? "Nenhuma média móvel se aplica a esta classe de ativo."
-            : "Histórico insuficiente para médias móveis."}
-        </p>
-        <ExcludedIndicatorsNote excluded={excluded} />
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-2">
-      {cross ? (
-        <p className="text-xs">
-          <span
-            className={`rounded px-2 py-0.5 ${
-              cross === "golden"
-                ? "bg-emerald-500/10 text-emerald-400"
-                : "bg-red-500/10 text-red-400"
-            }`}
-          >
-            {cross === "golden" ? "Golden cross" : "Death cross"} — MM50 vs MM200
-          </span>
-        </p>
-      ) : null}
-      <div className="overflow-x-auto rounded-lg border border-zinc-800">
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-zinc-800 bg-zinc-950 text-[11px] text-zinc-500">
-            <tr>
-              <th className="px-3 py-2">Média</th>
-              <th className="px-3 py-2">Valor</th>
-              <th className="px-3 py-2">Preço vs média</th>
-              <th className="px-3 py-2">Sinal</th>
-            </tr>
-          </thead>
-          <tbody>
-            {display.map((row) => {
-              const vs =
-                price != null && row.value != null
-                  ? price > row.value
-                    ? "acima"
-                    : price < row.value
-                      ? "abaixo"
-                      : "na média"
-                  : "—";
-              return (
-                <tr key={row.id} className="border-b border-zinc-800/80">
-                  <td className="px-3 py-2 text-white">
-                    <span className="inline-flex items-center gap-1">
-                      {row.name}
-                      <InfoTooltip term="moving_averages" />
-                    </span>
-                  </td>
-                  <td className="px-3 py-2 tabular-nums text-zinc-300">
-                    {formatIndicatorValue(row.value)}
-                  </td>
-                  <td className="px-3 py-2 text-zinc-400">{vs}</td>
-                  <td className={`px-3 py-2 ${actionClass(row.action)}`}>
-                    {row.action}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-      <ExcludedIndicatorsNote excluded={excluded} />
-    </div>
-  );
-}
+type ExpandId = "motor" | "macro" | "pivots" | "charts" | null;
 
 function MotorQuantDetail({
   detail,
@@ -446,10 +227,6 @@ export function MotorTechnicalsTab({ detail }: { detail: SymbolDetailView }) {
   // Recomputed from the bars already shipped to the client, so the charts and the
   // table read the same numbers without shipping 26 full series in the payload.
   const series = useMemo(() => computeIndicatorSeries(detail.bars), [detail.bars]);
-  const seriesById = useMemo(
-    () => new Map(series.map((s) => [s.id, s])),
-    [series],
-  );
 
   const applicability = applicableTechnicalRows(technicalRows, classId);
   const applicableRows = applicability.rows;
@@ -493,6 +270,8 @@ export function MotorTechnicalsTab({ detail }: { detail: SymbolDetailView }) {
   const hasMotor = motor.motorScope !== "none";
   const confidence = reliability.score;
   const gaugeScale = gaugeScaleForClass(classId);
+  const oscGauge = oscillators.length > 0 ? countsToSignedGauge(oscCounts) : null;
+  const maGauge = movingAvgs.length > 0 ? countsToSignedGauge(maCounts) : null;
 
   return (
     <div className="space-y-6">
@@ -505,35 +284,66 @@ export function MotorTechnicalsTab({ detail }: { detail: SymbolDetailView }) {
 
       <DecisionSummaryCards decision={decision} classLabel={classLabel} />
 
-      <TechnicalRatingGauge
-        scale={gaugeScale}
-        value={decision.gauge.value}
-        confidence={confidence}
-        caption={`Alocação da classe: ${decision.allocation.label} · Entrada: ${decision.entry.label}`}
-        summary={summary}
+      <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+        <div className="space-y-3">
+          <TechnicalRatingGauge
+            scale={gaugeScale}
+            value={decision.gauge.value}
+            confidence={confidence}
+            caption={`Alocação da classe: ${decision.allocation.label} · Entrada: ${decision.entry.label}`}
+            summary={summary}
+          />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <TechnicalRatingGauge
+              scale={technicalSignalScale(
+                "Osciladores",
+                "Relógio do consenso entre os osciladores. Não é o ranking do motor.",
+              )}
+              value={oscGauge}
+              compact
+              showConfidence={false}
+              emptyLabel="Não se aplica"
+              caption={
+                oscillators.length > 0
+                  ? `Sell ${oscCounts.sell} · Neutral ${oscCounts.neutral} · Buy ${oscCounts.buy}`
+                  : undefined
+              }
+            />
+            <TechnicalRatingGauge
+              scale={technicalSignalScale(
+                "Médias móveis",
+                "Relógio do consenso entre as médias. Preço acima da média = Buy.",
+              )}
+              value={maGauge}
+              compact
+              showConfidence={false}
+              emptyLabel="Não se aplica"
+              caption={
+                movingAvgs.length > 0
+                  ? `Sell ${maCounts.sell} · Neutral ${maCounts.neutral} · Buy ${maCounts.buy}`
+                  : undefined
+              }
+            />
+          </div>
+        </div>
+        <DecisionNarrative sections={narrative} />
+      </div>
+
+      <TechnicalIndicatorsTable
+        oscillators={oscillators}
+        movingAverages={movingAvgs}
+        excludedOscillators={excludedOscillators}
+        excludedMovingAverages={excludedMovingAvgs}
+        price={quote.price ?? null}
       />
 
-      <DecisionNarrative sections={narrative} />
-
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2">
         <SignalCountCard
           label="Motor"
           dominantSignal={motorSignal}
           weight="40%"
           expanded={expanded === "motor"}
           onExpand={() => toggle("motor")}
-        />
-        <SignalCountCard
-          label="Osciladores"
-          counts={oscCounts}
-          expanded={expanded === "oscillators"}
-          onExpand={() => toggle("oscillators")}
-        />
-        <SignalCountCard
-          label="Médias móveis"
-          counts={maCounts}
-          expanded={expanded === "moving_averages"}
-          onExpand={() => toggle("moving_averages")}
         />
         <SignalCountCard
           label="Macro/Risco"
@@ -546,20 +356,6 @@ export function MotorTechnicalsTab({ detail }: { detail: SymbolDetailView }) {
 
       <AccordionPanel id="motor" title="Motor quantitativo" expanded={expanded}>
         <MotorQuantDetail detail={detail} />
-      </AccordionPanel>
-      <AccordionPanel id="oscillators" title="Osciladores" expanded={expanded}>
-        <OscillatorsDetail
-          rows={oscillators}
-          seriesById={seriesById}
-          excluded={excludedOscillators}
-        />
-      </AccordionPanel>
-      <AccordionPanel id="moving_averages" title="Médias móveis" expanded={expanded}>
-        <MovingAveragesDetail
-          rows={movingAvgs}
-          price={quote.price ?? null}
-          excluded={excludedMovingAvgs}
-        />
       </AccordionPanel>
       <AccordionPanel id="macro" title="Macro / Risco" expanded={expanded}>
         <MacroRiskDetail detail={detail} />

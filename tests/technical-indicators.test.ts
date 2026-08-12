@@ -19,7 +19,7 @@ import {
   williamsRSeries,
   type IndicatorBar,
 } from "@/lib/market/technical-indicators";
-import { computeTechnicalAnalysis } from "@/lib/market/technical-summary";
+import { computeTechnicalAnalysis, countsToSignedGauge } from "@/lib/market/technical-summary";
 
 /** Deterministic OHLC series so the expectations never flake. */
 function makeBars(closes: number[]): IndicatorBar[] {
@@ -276,5 +276,20 @@ describe("technical summary", () => {
     }));
     const { rows } = computeTechnicalAnalysis(closeOnly);
     expect(rows.find((r) => r.id === "williams_r")!.value).not.toBeNull();
+  });
+});
+
+describe("countsToSignedGauge", () => {
+  it("maps unanimous Buy to +1 and unanimous Sell to -1", () => {
+    expect(countsToSignedGauge({ buy: 11, sell: 0, neutral: 0 })).toBe(1);
+    expect(countsToSignedGauge({ buy: 0, sell: 15, neutral: 0 })).toBe(-1);
+  });
+
+  it("sits at Neutral when Buy and Sell cancel, even with Neutral votes", () => {
+    expect(countsToSignedGauge({ buy: 2, sell: 2, neutral: 7 })).toBe(0);
+  });
+
+  it("returns null when there is nothing to tally", () => {
+    expect(countsToSignedGauge({ buy: 0, sell: 0, neutral: 0 })).toBeNull();
   });
 });
