@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import type { CatalogSearchResult } from "@/lib/catalog/types";
+import { formatPrice } from "@/lib/format-market";
 import { formatBandPrice, type SuggestedBands } from "@/lib/wallet/suggested-bands";
 
 export type HoldingDraft = {
@@ -29,6 +30,10 @@ const emptyDraft = (): HoldingDraft => ({
   targetMin: "",
   targetMax: "",
 });
+
+function fieldClass() {
+  return "mt-1 w-full rounded border border-zinc-800 bg-black px-2 py-1.5 text-sm text-white";
+}
 
 export function WalletHoldingForm({
   initial,
@@ -113,6 +118,15 @@ export function WalletHoldingForm({
     setHits([]);
   };
 
+  const qty = Number(draft.quantity);
+  const unit = Number(draft.costPrice);
+  const total =
+    Number.isFinite(qty) && qty > 0 && Number.isFinite(unit) && unit > 0
+      ? qty * unit
+      : null;
+
+  const resistances = useMemo(() => bands?.resistances ?? [], [bands]);
+
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -163,14 +177,15 @@ export function WalletHoldingForm({
   };
 
   return (
-    <form onSubmit={submit} className="space-y-2">
+    <form onSubmit={submit} className="space-y-3">
       {locked ? (
-        <p className="text-[11px] text-zinc-400">
-          <span className="font-mono text-white">{draft.symbol}</span> · {draft.name}
-        </p>
+        <div className="flex items-baseline gap-2 border-b border-zinc-800 pb-2">
+          <span className="font-mono text-base font-medium text-white">{draft.symbol}</span>
+          <span className="min-w-0 truncate text-[11px] text-zinc-400">{draft.name}</span>
+        </div>
       ) : (
         <>
-          <label className="block text-[11px] text-zinc-500">
+          <label className="block text-[11px] leading-4 text-zinc-400">
             Papel
             <input
               value={query}
@@ -180,7 +195,7 @@ export function WalletHoldingForm({
                 setBands(null);
               }}
               placeholder="SGOV, SPY…"
-              className="mt-1 w-full rounded border border-zinc-800 bg-black px-2 py-1.5 text-sm text-white"
+              className={fieldClass()}
             />
           </label>
           {hits.length > 0 ? (
@@ -199,76 +214,118 @@ export function WalletHoldingForm({
               ))}
             </ul>
           ) : null}
+          {draft.symbol ? (
+            <p className="font-mono text-sm text-white">
+              {draft.symbol}{" "}
+              <span className="font-sans text-[11px] text-zinc-400">{draft.name}</span>
+            </p>
+          ) : null}
         </>
       )}
 
       <div className="grid grid-cols-2 gap-2">
-        <label className="text-[11px] text-zinc-500">
+        <label className="block text-[11px] leading-4 text-zinc-400">
           Quantidade
           <input
             value={draft.quantity}
             onChange={(e) => setDraft((d) => ({ ...d, quantity: e.target.value }))}
             inputMode="decimal"
-            className="mt-1 w-full rounded border border-zinc-800 bg-black px-2 py-1.5 text-sm text-white"
+            className={fieldClass()}
           />
         </label>
-        <label className="text-[11px] text-zinc-500">
+        <label className="block text-[11px] leading-4 text-zinc-400">
           Preço de compra
           <input
             value={draft.costPrice}
             onChange={(e) => setDraft((d) => ({ ...d, costPrice: e.target.value }))}
             inputMode="decimal"
-            className="mt-1 w-full rounded border border-zinc-800 bg-black px-2 py-1.5 text-sm text-white"
+            className={fieldClass()}
           />
         </label>
-        <label className="text-[11px] text-zinc-500">
-          Data
-          <input
-            type="date"
-            value={draft.purchasedAt}
-            onChange={(e) => setDraft((d) => ({ ...d, purchasedAt: e.target.value }))}
-            className="mt-1 w-full rounded border border-zinc-800 bg-black px-2 py-1.5 text-sm text-white"
-          />
-        </label>
-        <span />
-        <label className="text-[11px] text-zinc-500">
+      </div>
+
+      {total != null ? (
+        <p className="rounded border border-zinc-800 bg-zinc-900/60 px-2 py-1.5 text-[11px] text-zinc-300">
+          Total da compra{" "}
+          <span className="font-medium tabular-nums text-white">{formatPrice(total)}</span>
+        </p>
+      ) : (
+        <p className="text-[11px] text-zinc-600">Informe a quantidade para ver o total.</p>
+      )}
+
+      <label className="block text-[11px] leading-4 text-zinc-400">
+        Data
+        <input
+          type="date"
+          value={draft.purchasedAt}
+          onChange={(e) => setDraft((d) => ({ ...d, purchasedAt: e.target.value }))}
+          className={fieldClass()}
+        />
+      </label>
+
+      <div className="grid grid-cols-2 gap-2">
+        <label className="block text-[11px] leading-4 text-zinc-400">
           Piso — próximo suporte
           <input
             value={draft.targetMin}
             onChange={(e) => setDraft((d) => ({ ...d, targetMin: e.target.value }))}
             inputMode="decimal"
             placeholder="próximo piso"
-            className="mt-1 w-full rounded border border-zinc-800 bg-black px-2 py-1.5 text-sm text-white"
+            className={fieldClass()}
           />
         </label>
-        <label className="text-[11px] text-zinc-500">
+        <label className="block text-[11px] leading-4 text-zinc-400">
           Teto — próxima resistência
           <input
             value={draft.targetMax}
             onChange={(e) => setDraft((d) => ({ ...d, targetMax: e.target.value }))}
             inputMode="decimal"
             placeholder="próximo teto"
-            className="mt-1 w-full rounded border border-zinc-800 bg-black px-2 py-1.5 text-sm text-white"
+            className={fieldClass()}
           />
         </label>
       </div>
+
+      {resistances.length > 0 ? (
+        <div className="rounded border border-zinc-800 px-2 py-1.5">
+          <p className="text-[10px] font-medium uppercase tracking-wide text-zinc-500">
+            3 resistências à frente
+          </p>
+          <ol className="mt-1 space-y-0.5">
+            {resistances.map((row, i) => (
+              <li
+                key={`${row.price}-${row.source}`}
+                className="flex items-baseline justify-between gap-2 text-[11px]"
+              >
+                <span className="text-zinc-500">R{i + 1}</span>
+                <button
+                  type="button"
+                  className="tabular-nums text-zinc-200 hover:text-white"
+                  onClick={() =>
+                    setDraft((d) => ({ ...d, targetMax: formatBandPrice(row.price) }))
+                  }
+                >
+                  {formatBandPrice(row.price)}
+                </button>
+                <span className="min-w-0 truncate text-right text-[10px] text-zinc-600">
+                  {row.source}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ) : null}
 
       {bands?.floor ? (
         <p className="text-[10px] text-zinc-500">
           Piso sugerido: {formatBandPrice(bands.floor.price)} · {bands.floor.source}
         </p>
       ) : null}
-      {bands?.ceiling ? (
-        <p className="text-[10px] text-zinc-500">
-          Teto sugerido: {formatBandPrice(bands.ceiling.price)} · {bands.ceiling.source}. O teto
-          pode subir com o preço.
-        </p>
-      ) : null}
-      {bands?.note ? <p className="text-[10px] text-zinc-500">{bands.note}</p> : null}
+      {bands?.note ? <p className="text-[10px] leading-4 text-zinc-500">{bands.note}</p> : null}
 
       {error ? <p className="text-[11px] text-red-400">{error}</p> : null}
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 pt-1">
         <button
           type="submit"
           disabled={saving}

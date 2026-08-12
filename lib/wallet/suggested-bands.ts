@@ -1,17 +1,22 @@
 /**
- * Next floor and next ceiling for a lot about to enter the wallet.
+ * Next floor, next ceiling, and the three resistances ahead of price.
  *
- * The floor is a single number: the nearest support still below the current
- * price, taken from the same map the Forecast tab already draws (structure,
- * Fibonacci, consensus of pivot methods). The ceiling is the nearest resistance
- * above — it is allowed to be revised upward as price grows, which is why the
- * dock can offer "atualizar teto" later.
+ * Levels come from the same map the Forecast tab already draws (structure,
+ * Fibonacci, consensus of pivot methods). Cash skips Fibonacci and pivots —
+ * the NAV barely swings — but still uses structure when the series has one.
  */
 
-import { buildPriceForecast } from "@/lib/market/forecast-model";
 import { classScoreProfile } from "@/lib/motor/score-domain";
-import { buildPivotTable, pivotTargets } from "@/lib/market/pivot-points";
-import type { StructureBar } from "@/lib/market/price-structure";
+import {
+  buildPivotTable,
+  PIVOT_LEVEL_ORDER,
+  type PivotLevelId,
+} from "@/lib/market/pivot-points";
+import {
+  fibonacciLevels,
+  supportResistance,
+  type StructureBar,
+} from "@/lib/market/price-structure";
 
 export type SuggestedBand = {
   price: number;
@@ -22,27 +27,52 @@ export type SuggestedBands = {
   last: number | null;
   floor: SuggestedBand | null;
   ceiling: SuggestedBand | null;
+  supports: SuggestedBand[];
+  resistances: SuggestedBand[];
   note: string | null;
 };
 
 type Candidate = SuggestedBand;
 
-function nearestBelow(price: number, candidates: Candidate[]): Candidate | null {
-  let best: Candidate | null = null;
-  for (const c of candidates) {
-    if (c.price >= price) continue;
-    if (!best || c.price > best.price) best = c;
+function clusterKeepNearest(items: Candidate[], tolerancePct = 0.2): Candidate[] {
+  const out: Candidate[] = [];
+  for (const item of items) {
+    const prev = out[out.length - 1];
+    if (
+      prev &&
+      prev.price !== 0 &&
+      (Math.abs(item.price - prev.price) / prev.price) * 100 < tolerancePct
+    ) {
+      continue;
+    }
+    out.push(item);
   }
-  return best;
+  return out;
 }
 
-function nearestAbove(price: number, candidates: Candidate[]): Candidate | null {
-  let best: Candidate | null = null;
-  for (const c of candidates) {
-    if (c.price <= price) continue;
-    if (!best || c.price < best.price) best = c;
-  }
-  return best;
+function nearestBelow(price: number, candidates: Candidate[], n: number): Candidate[] {
+  const ranked = candidates
+    .filter((c) => c.price < price && Number.isFinite(c.price))
+    .sort((a, b) => b.price - a.price);
+  return clusterKeepNearest(ranked).slice(0, n);
+}
+
+function nearestAbove(price: number, candidates: Candidate[], n: number): Candidate[] {
+  const ranked = candidates
+    .filter((c) => c.price > price && Number.isFinite(c.price))
+    .sort((a, b) => a.price - b.price);
+  return clusterKeepNearest(ranked).slice(0, n);
+}
+
+function pivotConsensusLevel(
+  table: NonNullable<ReturnType<typeof buildPivotTable>>,
+  level: PivotLevelId,
+): number | null {
+  const values = table.sets
+    .map((s) => s.levels[level])
+    .filter((v): v is number => v != null && Number.isFinite(v));
+  if (!values.length) return null;
+  return values.reduce((a, b) => a + b, 0) / values.length;
 }
 
 export function suggestWalletBands(
@@ -50,75 +80,76 @@ export function suggestWalletBands(
   classId: string,
   last: number | null,
 ): SuggestedBands {
-  const price = last ?? (bars.length ? bars[bars.length - 1]!.value : null);
-  if (price == null || !Number.isFinite(price) || bars.length < 30) {
-    return {
-      last: price,
-      floor: null,
-      ceiling: null,
-      note: "Histórico insuficiente para sugerir piso e teto.",
-    };
-  }
-
-  if (classScoreProfile(classId).stabilityFocused) {
-    return {
-      last: price,
-      floor: null,
-      ceiling: null,
-      note: "Caixa não usa Fibonacci nem pivôs: o NAV não tem piso/teto de preço. Deixe em branco ou informe o seu próprio plano.",
-    };
-  }
-
-  const forecast = buildPriceForecast({
-    symbol: "",
-    classId,
-    bars,
-    motorScore: null,
+  const empty = (note: string | null, price: number | null): SuggestedBands => ({
+    last: price,
+    floor: null,
+    ceiling: null,
+    supports: [],
+    resistances: [],
+    note,
   });
 
-  const floors: Candidate[] = [];
-  const ceilings: Candidate[] = [];
+  const price = last ?? (bars.length ? bars[bars.length - 1]!.value : null);
+  if (price == null || !Number.isFinite(price) || bars.length < 20) {
+    return empty("Histórico insuficiente para sugerir piso e teto.", price);
+  }
 
-  if (forecast.levels.nearestSupport != null) {
-    floors.push({
-      price: forecast.levels.nearestSupport,
-      source: "suporte da estrutura (forecast)",
-    });
-  }
-  if (forecast.levels.nearestResistance != null) {
-    ceilings.push({
-      price: forecast.levels.nearestResistance,
-      source: "resistência da estrutura (forecast)",
-    });
-  }
-  for (const fib of forecast.levels.fibonacci) {
-    const label = `Fibonacci ${fib.label}`;
-    if (fib.price < price) floors.push({ price: fib.price, source: label });
-    if (fib.price > price) ceilings.push({ price: fib.price, source: label });
+  const stability = classScoreProfile(classId).stabilityFocused;
+  const structure = supportResistance(bars, price, 180);
+
+  const floors: Candidate[] = structure.supports.map((value) => ({
+    price: value,
+    source: "suporte da estrutura",
+  }));
+  const ceilings: Candidate[] = structure.resistances.map((value) => ({
+    price: value,
+    source: "resistência da estrutura",
+  }));
+
+  if (!stability) {
+    const fib = fibonacciLevels(
+      structure.lastSwingLow?.price ?? null,
+      structure.lastSwingHigh?.price ?? null,
+    );
+    for (const level of fib) {
+      const label = `Fibonacci ${level.label}`;
+      if (level.price < price) floors.push({ price: level.price, source: label });
+      if (level.price > price) ceilings.push({ price: level.price, source: label });
+    }
   }
 
   const table = buildPivotTable(bars, "daily");
   if (table) {
-    const targets = pivotTargets(table, price);
-    if (targets.support) {
-      floors.push({
-        price: targets.support.price,
-        source: `pivô ${targets.support.level} (consenso)`,
-      });
+    for (const level of PIVOT_LEVEL_ORDER) {
+      const value = pivotConsensusLevel(table, level);
+      if (value == null) continue;
+      if (level.startsWith("S") && value < price) {
+        floors.push({ price: value, source: `pivô ${level} (consenso)` });
+      }
+      if (level.startsWith("R") && value > price) {
+        ceilings.push({ price: value, source: `pivô ${level} (consenso)` });
+      }
     }
-    if (targets.resistance) {
-      ceilings.push({
-        price: targets.resistance.price,
-        source: `pivô ${targets.resistance.level} (consenso)`,
-      });
-    }
+  }
+
+  const supports = nearestBelow(price, floors, 3);
+  const resistances = nearestAbove(price, ceilings, 3);
+
+  let note: string | null = null;
+  if (stability) {
+    note =
+      supports.length || resistances.length
+        ? "Caixa: piso, teto e resistências vêm da estrutura e dos pivôs do NAV (sem Fibonacci)."
+        : "Caixa: o NAV quase não oscila — sem piso/teto de estrutura. Informe o seu plano ou deixe em branco.";
   }
 
   return {
     last: price,
-    floor: nearestBelow(price, floors),
-    ceiling: nearestAbove(price, ceilings),
-    note: null,
+    floor: supports[0] ?? null,
+    ceiling: resistances[0] ?? null,
+    supports,
+    resistances,
+    note,
   };
 }
 

@@ -7,9 +7,9 @@ import { WalletPanel } from "./WalletPanel";
 /**
  * Right-hand wallet drawer.
  *
- * Closed: a thin edge tab. Open on desktop: a spacer in the layout so the page
- * shrinks instead of being painted over, plus a panel sitting in that strip.
- * Open on small screens: a sheet with a backdrop (no spare width to steal).
+ * Closed: a thin edge tab. Open on desktop: a column in the layout (not a
+ * fixed overlay), so the page shrinks and the site header cannot cover the
+ * form. Open on small screens: a sheet with a backdrop.
  */
 export function WalletDock() {
   const [open, setOpen] = useState(false);
@@ -45,7 +45,6 @@ export function WalletDock() {
 
   return (
     <>
-      <div className="hidden w-80 shrink-0 md:block" aria-hidden="true" />
       <button
         type="button"
         className="fixed inset-0 z-40 bg-black/60 md:hidden"
@@ -53,10 +52,10 @@ export function WalletDock() {
         onClick={close}
       />
       <aside
-        className="fixed inset-y-0 right-0 z-50 flex w-[min(20rem,90vw)] flex-col border-l border-zinc-800 bg-zinc-950 md:w-80"
+        className="fixed inset-y-0 right-0 z-50 flex h-screen w-[min(22rem,92vw)] flex-col border-l border-zinc-800 bg-zinc-950 md:sticky md:inset-y-auto md:right-auto md:top-0 md:z-auto md:w-[22rem] md:self-start"
         aria-label="My Wallet"
       >
-        <div className="flex items-center justify-between border-b border-zinc-800 px-3 py-2">
+        <div className="flex shrink-0 items-center justify-between border-b border-zinc-800 px-3 py-2.5">
           <h2 className="text-sm font-medium text-white">My Wallet</h2>
           <button
             type="button"
@@ -67,7 +66,7 @@ export function WalletDock() {
             ✕
           </button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
           <WalletPanel
             compact
             pendingBuy={pendingBuy}

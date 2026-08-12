@@ -140,6 +140,7 @@ export function WalletPanel({
         </div>
       ) : null}
 
+      {!(compact && showForm) ? (
       <div className="flex items-center justify-between px-3 py-2">
         <p className="text-[11px] text-zinc-500">
           {holdings.length === 0
@@ -161,9 +162,10 @@ export function WalletPanel({
           {showForm ? "Fechar" : "+ Comprar"}
         </button>
       </div>
+      ) : null}
 
       {showForm ? (
-        <div className="border-b border-zinc-800 px-3 pb-3">
+        <div className="border-b border-zinc-800 px-3 pb-4 pt-1">
           <WalletHoldingForm
             key={pendingBuy?.symbol ?? "manual"}
             initial={
@@ -260,7 +262,10 @@ export function WalletPanel({
               hasUserBands={active.status.band.hasUserBands}
             />
           </div>
-          {liveBands && (liveBands.floor || liveBands.ceiling) ? (
+          {liveBands &&
+          (liveBands.floor ||
+            liveBands.ceiling ||
+            (liveBands.resistances?.length ?? 0) > 0) ? (
             <div className="mt-2 space-y-1 text-[10px] text-zinc-500">
               {liveBands.floor ? (
                 <p>
@@ -268,37 +273,47 @@ export function WalletPanel({
                   {liveBands.floor.source}
                 </p>
               ) : null}
-              {liveBands.ceiling ? (
+              {(liveBands.resistances ?? []).length > 0 ? (
+                <div>
+                  <p className="font-medium text-zinc-400">3 resistências à frente</p>
+                  {(liveBands.resistances ?? []).map((row, i) => (
+                    <p key={`${row.price}-${row.source}`}>
+                      R{i + 1} {formatBandPrice(row.price)} · {row.source}
+                      {i === 0 &&
+                      active.targetMax != null &&
+                      row.price > active.targetMax + 1e-6 ? (
+                        <button
+                          type="button"
+                          className="ml-2 text-sky-400 hover:underline"
+                          onClick={() => {
+                            void fetch("/api/wallet", {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({
+                                symbol: active.symbol,
+                                classId: active.classId,
+                                name: active.name,
+                                exchange: active.exchange,
+                                kind: active.kind,
+                                quantity: active.quantity,
+                                costPrice: active.costPrice,
+                                purchasedAt: active.purchasedAt.slice(0, 10),
+                                targetMin: active.targetMin,
+                                targetMax: row.price,
+                              }),
+                            }).then(() => reload());
+                          }}
+                        >
+                          atualizar teto
+                        </button>
+                      ) : null}
+                    </p>
+                  ))}
+                </div>
+              ) : liveBands.ceiling ? (
                 <p>
                   Próximo teto agora: {formatBandPrice(liveBands.ceiling.price)} ·{" "}
                   {liveBands.ceiling.source}
-                  {active.targetMax != null &&
-                  liveBands.ceiling.price > active.targetMax + 1e-6 ? (
-                    <button
-                      type="button"
-                      className="ml-2 text-sky-400 hover:underline"
-                      onClick={() => {
-                        void fetch("/api/wallet", {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({
-                            symbol: active.symbol,
-                            classId: active.classId,
-                            name: active.name,
-                            exchange: active.exchange,
-                            kind: active.kind,
-                            quantity: active.quantity,
-                            costPrice: active.costPrice,
-                            purchasedAt: active.purchasedAt.slice(0, 10),
-                            targetMin: active.targetMin,
-                            targetMax: liveBands.ceiling!.price,
-                          }),
-                        }).then(() => reload());
-                      }}
-                    >
-                      atualizar teto
-                    </button>
-                  ) : null}
                 </p>
               ) : null}
             </div>
