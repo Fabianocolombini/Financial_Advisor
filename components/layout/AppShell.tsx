@@ -5,7 +5,6 @@ import { WalletDock } from "@/components/wallet/WalletDock";
 import { SignOutButton } from "./SignOutButton";
 
 const nav = [
-  { href: "/", label: "Home" },
   { href: "/mercado", label: "Markets" },
   { href: "/wallet", label: "My Wallet" },
   { href: "/orcamento", label: "Budget" },
@@ -33,10 +32,10 @@ export function AppShell({
         <header className="sticky top-0 z-[100] border-b border-zinc-800 bg-black backdrop-blur-md">
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-3 sm:px-6">
             <div className="flex flex-wrap items-center gap-3">
-              <Link
-                href="/"
-                className="font-title shrink-0 text-sm tracking-tight text-white"
-              >
+            <Link
+              href="/mercado"
+              className="font-title shrink-0 text-sm tracking-tight text-white"
+            >
                 Financial Advisor
               </Link>
               <div className="hidden min-w-0 flex-1 sm:flex">

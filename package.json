@@ -52,6 +52,7 @@
     "@auth/prisma-adapter": "^2.11.1",
     "@prisma/client": "^6.19.0",
     "@vercel/blob": "^0.27.0",
+    "bcryptjs": "^3.0.3",
     "lightweight-charts": "^5.2.0",
     "next": "16.2.2",
     "next-auth": "^5.0.0-beta.30",
@@ -62,6 +63,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
