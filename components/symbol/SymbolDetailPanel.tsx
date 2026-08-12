@@ -5,6 +5,7 @@ import { useState } from "react";
 import type { SymbolDetailView } from "@/lib/motor/snapshot-types";
 import type { PerfHorizonId } from "@/lib/market/perf-horizons";
 import { SymbolAvatar } from "@/components/catalog/SymbolAvatar";
+import { WalletBuyButton } from "@/components/wallet/WalletBuyButton";
 import { MotorDataFreshness } from "@/components/home/MotorDataFreshness";
 import {
   formatChangeAbs,
@@ -71,6 +72,14 @@ export function SymbolDetailPanel({ detail }: { detail: SymbolDetailView }) {
                 <span className="rounded bg-zinc-800 px-2 py-0.5 text-xs text-zinc-400">
                   {detail.classLabel}
                 </span>
+                <WalletBuyButton
+                  symbol={detail.symbol}
+                  classId={detail.classId}
+                  name={detail.name}
+                  exchange={detail.exchange}
+                  kind={detail.kind}
+                  lastPrice={quote.price}
+                />
               </div>
               <p className="text-sm text-zinc-500">{detail.name}</p>
               <div className="mt-2 flex flex-wrap items-baseline gap-3">

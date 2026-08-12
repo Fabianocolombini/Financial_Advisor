@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { formatPerf, formatPrice, perfClass } from "@/lib/format-market";
 import type { WalletAlertView, WalletHoldingView } from "@/lib/wallet/types";
+import type { WalletBuyPayload } from "@/lib/wallet/buy-event";
+import { formatBandPrice, type SuggestedBands } from "@/lib/wallet/suggested-bands";
 import { WalletBandBar, WalletPnl } from "./WalletBandBar";
 import { WalletHoldingForm } from "./WalletHoldingForm";
 
@@ -14,20 +16,29 @@ const TONE: Record<string, string> = {
   negative: "bg-red-500/10 text-red-300 ring-red-500/30",
 };
 
-export function WalletPanel({ compact = false }: { compact?: boolean }) {
+export function WalletPanel({
+  compact = false,
+  pendingBuy = null,
+  onPendingConsumed,
+}: {
+  compact?: boolean;
+  pendingBuy?: WalletBuyPayload | null;
+  onPendingConsumed?: () => void;
+}) {
   const [holdings, setHoldings] = useState<WalletHoldingView[]>([]);
   const [alert, setAlert] = useState<WalletAlertView | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [liveBands, setLiveBands] = useState<SuggestedBands | null>(null);
 
   const reload = useCallback(async () => {
     const res = await fetch("/api/wallet");
     if (!res.ok) {
       setError("Não foi possível carregar a carteira.");
       setLoading(false);
-      return;
+      return [] as WalletHoldingView[];
     }
     const json = (await res.json()) as {
       data: { holdings: WalletHoldingView[]; alert: WalletAlertView | null };
@@ -36,6 +47,7 @@ export function WalletPanel({ compact = false }: { compact?: boolean }) {
     setAlert(json.data.alert);
     setError(null);
     setLoading(false);
+    return json.data.holdings;
   }, []);
 
   useEffect(() => {
@@ -75,7 +87,33 @@ export function WalletPanel({ compact = false }: { compact?: boolean }) {
     await reload();
   };
 
+  const showForm = adding || pendingBuy != null;
+
   const active = holdings.find((h) => h.id === selected) ?? null;
+  const activeSymbol = active?.symbol;
+  const activeClassId = active?.classId;
+
+  useEffect(() => {
+    if (!activeSymbol || !activeClassId) return;
+    let cancelled = false;
+    fetch(
+      `/api/wallet/bands?symbol=${encodeURIComponent(activeSymbol)}&classId=${encodeURIComponent(activeClassId)}`,
+    )
+      .then(async (res) => {
+        if (!res.ok) return null;
+        return (await res.json()) as { data: SuggestedBands };
+      })
+      .then((json) => {
+        if (cancelled || !json?.data) return;
+        setLiveBands(json.data);
+      })
+      .catch(() => {
+        /* live bands are a hint */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [activeSymbol, activeClassId]);
   const unread = alert && !alert.read && alert.items.length > 0;
 
   return (
@@ -110,21 +148,48 @@ export function WalletPanel({ compact = false }: { compact?: boolean }) {
         </p>
         <button
           type="button"
-          onClick={() => setAdding((v) => !v)}
+          onClick={() => {
+            if (showForm) {
+              setAdding(false);
+              onPendingConsumed?.();
+            } else {
+              setAdding(true);
+            }
+          }}
           className="text-[11px] text-zinc-300 hover:text-white"
         >
-          {adding ? "Fechar" : "+ Comprar"}
+          {showForm ? "Fechar" : "+ Comprar"}
         </button>
       </div>
 
-      {adding ? (
+      {showForm ? (
         <div className="border-b border-zinc-800 px-3 pb-3">
           <WalletHoldingForm
-            onSaved={() => {
+            key={pendingBuy?.symbol ?? "manual"}
+            initial={
+              pendingBuy
+                ? {
+                    symbol: pendingBuy.symbol,
+                    classId: pendingBuy.classId,
+                    name: pendingBuy.name,
+                    exchange: pendingBuy.exchange,
+                    kind: pendingBuy.kind,
+                  }
+                : undefined
+            }
+            lastPrice={pendingBuy?.lastPrice}
+            onSaved={(symbol) => {
               setAdding(false);
-              void reload();
+              onPendingConsumed?.();
+              void reload().then((rows) => {
+                const row = rows.find((h) => h.symbol === symbol);
+                if (row) setSelected(row.id);
+              });
             }}
-            onCancel={() => setAdding(false)}
+            onCancel={() => {
+              setAdding(false);
+              onPendingConsumed?.();
+            }}
           />
         </div>
       ) : null}
@@ -195,6 +260,49 @@ export function WalletPanel({ compact = false }: { compact?: boolean }) {
               hasUserBands={active.status.band.hasUserBands}
             />
           </div>
+          {liveBands && (liveBands.floor || liveBands.ceiling) ? (
+            <div className="mt-2 space-y-1 text-[10px] text-zinc-500">
+              {liveBands.floor ? (
+                <p>
+                  Próximo piso agora: {formatBandPrice(liveBands.floor.price)} ·{" "}
+                  {liveBands.floor.source}
+                </p>
+              ) : null}
+              {liveBands.ceiling ? (
+                <p>
+                  Próximo teto agora: {formatBandPrice(liveBands.ceiling.price)} ·{" "}
+                  {liveBands.ceiling.source}
+                  {active.targetMax != null &&
+                  liveBands.ceiling.price > active.targetMax + 1e-6 ? (
+                    <button
+                      type="button"
+                      className="ml-2 text-sky-400 hover:underline"
+                      onClick={() => {
+                        void fetch("/api/wallet", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            symbol: active.symbol,
+                            classId: active.classId,
+                            name: active.name,
+                            exchange: active.exchange,
+                            kind: active.kind,
+                            quantity: active.quantity,
+                            costPrice: active.costPrice,
+                            purchasedAt: active.purchasedAt.slice(0, 10),
+                            targetMin: active.targetMin,
+                            targetMax: liveBands.ceiling!.price,
+                          }),
+                        }).then(() => reload());
+                      }}
+                    >
+                      atualizar teto
+                    </button>
+                  ) : null}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
           <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1 text-[11px] text-zinc-500">
             <div>
               Compra <span className="text-zinc-300">{formatPrice(active.costPrice)}</span>

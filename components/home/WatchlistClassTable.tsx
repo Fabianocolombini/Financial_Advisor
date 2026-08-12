@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { SymbolAvatar } from "@/components/catalog/SymbolAvatar";
 import { WatchlistStarButton } from "@/components/home/WatchlistStarButton";
+import { WalletBuyButton } from "@/components/wallet/WalletBuyButton";
 import { formatShareVolumeCompact, formatPerf, perfClass } from "@/lib/format-market";
 import { formatIndicatorValue, formatScore } from "@/lib/motor/format-scores";
 import {
@@ -54,6 +55,13 @@ function SecurityRow({
       <td className="py-2 pl-2 pr-2" onClick={(e) => e.stopPropagation()}>
         <div className="flex min-w-[13rem] items-center gap-2">
           <WatchlistStarButton symbol={row.symbol} />
+          <WalletBuyButton
+            symbol={row.symbol}
+            classId={row.classId}
+            name={row.name}
+            exchange={row.exchange}
+            kind={row.kind}
+          />
           <button
             type="button"
             className="flex min-w-0 flex-1 items-center gap-2 text-left"

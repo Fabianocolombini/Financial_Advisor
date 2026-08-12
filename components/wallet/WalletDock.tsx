@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { WALLET_BUY_EVENT, type WalletBuyPayload } from "@/lib/wallet/buy-event";
 import { WalletPanel } from "./WalletPanel";
 
 const STORAGE_KEY = "fa.wallet.dock";
@@ -35,10 +36,25 @@ function saveDock(state: DockState) {
  */
 export function WalletDock() {
   const [state, setState] = useState<DockState>({ open: false, pinned: false });
+  const [pendingBuy, setPendingBuy] = useState<WalletBuyPayload | null>(null);
 
   useEffect(() => {
     const t = window.setTimeout(() => setState(loadDock()), 0);
     return () => window.clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    const onBuy = (event: Event) => {
+      const detail = (event as CustomEvent<WalletBuyPayload>).detail;
+      setPendingBuy(detail);
+      setState((cur) => {
+        const next = { ...cur, open: true };
+        saveDock(next);
+        return next;
+      });
+    };
+    window.addEventListener(WALLET_BUY_EVENT, onBuy);
+    return () => window.removeEventListener(WALLET_BUY_EVENT, onBuy);
   }, []);
 
   const setDock = (next: DockState) => {
@@ -94,7 +110,11 @@ export function WalletDock() {
             </div>
           </div>
           <div className="min-h-0 flex-1">
-            <WalletPanel compact />
+            <WalletPanel
+              compact
+              pendingBuy={pendingBuy}
+              onPendingConsumed={() => setPendingBuy(null)}
+            />
           </div>
         </aside>
       ) : null}
