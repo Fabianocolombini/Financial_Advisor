@@ -50,6 +50,8 @@ model User {
   budgetEntries    BudgetEntry[]
   transactions     Transaction[]
   watchlistItems   UserWatchlistItem[]
+  walletHoldings   WalletHolding[]
+  walletAlerts     WalletAlert[]
 }
 
 model UserWatchlistItem {
@@ -66,6 +68,42 @@ model UserWatchlistItem {
   @@unique([userId, symbol])
   @@index([userId])
   @@map("user_watchlist_item")
+}
+
+model WalletHolding {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  symbol      String
+  classId     String   @map("class_id")
+  name        String
+  exchange    String?
+  kind        String?
+  quantity    Decimal  @db.Decimal(19, 6)
+  costPrice   Decimal  @map("cost_price") @db.Decimal(19, 6)
+  purchasedAt DateTime @map("purchased_at")
+  targetMin   Decimal? @map("target_min") @db.Decimal(19, 6)
+  targetMax   Decimal? @map("target_max") @db.Decimal(19, 6)
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, symbol])
+  @@index([userId])
+  @@map("wallet_holding")
+}
+
+model WalletAlert {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now()) @map("created_at")
+  payload   Json
+  readAt    DateTime? @map("read_at")
+  emailedAt DateTime? @map("emailed_at")
+
+  @@index([userId, createdAt])
+  @@map("wallet_alert")
 }
 
 model VerificationToken {

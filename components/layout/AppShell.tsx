@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { SymbolSearchTrigger } from "@/components/catalog/SymbolSearchTrigger";
+import { WalletDock } from "@/components/wallet/WalletDock";
 import { SignOutButton } from "./SignOutButton";
 
 const nav = [
@@ -27,7 +28,8 @@ export function AppShell({
   const label = user.name ?? user.email ?? "Account";
 
   return (
-    <div className="flex min-h-full flex-col bg-black text-white">
+    <div className="flex min-h-full bg-black text-white">
+      <div className="flex min-w-0 flex-1 flex-col">
       <header className="sticky top-0 z-[100] border-b border-zinc-800 bg-black backdrop-blur-md">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-3 sm:px-6">
           <div className="flex flex-wrap items-center gap-3">
@@ -84,6 +86,8 @@ export function AppShell({
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">
         {children}
       </main>
+      </div>
+      <WalletDock />
     </div>
   );
 }
