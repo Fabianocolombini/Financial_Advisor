@@ -4,7 +4,7 @@ export function SiteFooter() {
   return (
     <footer className="mt-auto border-t border-zinc-800 bg-black py-6 text-center text-xs text-zinc-500">
       <p className="mx-auto max-w-2xl px-4">
-        Financial Advisor is a personal finance organization tool.{" "}
+        Atlas is a personal finance organization tool.{" "}
         <strong>It is not regulated investment advice</strong> or a recommendation
         of financial products. Use at your own risk.
       </p>

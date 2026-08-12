@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Termos | Financial Advisor",
+  title: "Termos | Atlas",
 };
 
 export default function TermosPage() {
@@ -19,7 +19,7 @@ export default function TermosPage() {
       </h1>
       <div className="mt-6 space-y-4 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
         <p>
-          O Financial Advisor é oferecido como ferramenta de apoio à
+          O Atlas é oferecido como ferramenta de apoio à
           organização financeira. Os cálculos e exibições dependem dos dados
           que você informa e podem conter erros.
         </p>

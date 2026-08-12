@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { SymbolSearchTrigger } from "@/components/catalog/SymbolSearchTrigger";
 import { WalletDock } from "@/components/wallet/WalletDock";
+import { APP_NAME } from "@/lib/brand";
 import { SignOutButton } from "./SignOutButton";
 
 const nav = [
@@ -36,7 +37,7 @@ export function AppShell({
               href="/mercado"
               className="font-title shrink-0 text-sm tracking-tight text-white"
             >
-                Financial Advisor
+              {APP_NAME}
               </Link>
               <div className="hidden min-w-0 flex-1 sm:flex">
                 <SymbolSearchTrigger />

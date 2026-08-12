@@ -1,5 +1,6 @@
-import type { MotorDashboardSnapshot } from "@/lib/motor/snapshot-types";
-import { LANDING_GROUPS, type LandingGroupId } from "./taxonomy";
+import type { MotorDashboardSnapshot, MotorTickerSnapshot } from "@/lib/motor/snapshot-types";
+import { CATALOG_INSTRUMENTS, getCatalogInstrumentsByClass } from "@/lib/catalog/instruments";
+import { LANDING_CLASS_ORDER, landingFeaturedCount } from "./taxonomy";
 
 export type LandingIndexRow = {
   id: string;
@@ -8,26 +9,28 @@ export type LandingIndexRow = {
   changePercent: number | null;
 };
 
-export type LandingGroupCard = {
-  id: LandingGroupId;
-  label: string;
+export type LandingTicker = {
+  symbol: string;
+  name: string;
+  classId: string;
+  classLabel: string;
   changePercent: number | null;
-  sparkline: number[];
-  regimeLabel: string | null;
-  available: boolean;
 };
 
-export type LandingMover = {
-  id: LandingGroupId;
+export type LandingClassCard = {
+  classId: string;
   label: string;
-  changePercent: number;
+  changePercent: number | null;
+  featured: LandingTicker[];
+  available: boolean;
 };
 
 export type LandingViewModel = {
   asOf: string | null;
   indices: LandingIndexRow[];
-  groups: LandingGroupCard[];
-  movers: LandingMover[];
+  tape: LandingTicker[];
+  classes: LandingClassCard[];
+  top10: LandingTicker[];
 };
 
 function mean(values: number[]): number | null {
@@ -35,116 +38,97 @@ function mean(values: number[]): number | null {
   return values.reduce((a, b) => a + b, 0) / values.length;
 }
 
-function regimeLabel(action: string | null | undefined): string | null {
-  switch (action) {
-    case "Overweight":
-    case "Accumulate":
-    case "Ascendente":
-      return "Aumentar";
-    case "Hold":
-    case "Maduro":
-      return "Hold";
-    case "Reduce":
-    case "Descendente":
-      return "Reduce";
-    case "Strong Reduce":
-    case "ForteDescendente":
-      return "Reduce";
-    default:
-      return null;
-  }
+const NAME_BY_SYMBOL = new Map(
+  CATALOG_INSTRUMENTS.map((i) => [i.symbol, i.name] as const),
+);
+
+function catalogName(symbol: string): string {
+  return NAME_BY_SYMBOL.get(symbol) ?? NAME_BY_SYMBOL.get(symbol.toUpperCase()) ?? symbol;
 }
 
-function modeRegime(labels: string[]): string | null {
-  if (!labels.length) return null;
-  const counts = new Map<string, number>();
-  for (const label of labels) {
-    counts.set(label, (counts.get(label) ?? 0) + 1);
-  }
-  let best: string | null = null;
-  let bestN = 0;
-  for (const [label, n] of counts) {
-    if (n > bestN) {
-      best = label;
-      bestN = n;
-    }
-  }
-  return best;
+function classLabel(classId: string): string {
+  return LANDING_CLASS_ORDER.find((t) => t.id === classId)?.label ?? classId;
 }
 
-function sparklineFromHistories(
-  histories: Array<Array<{ date: string; score: number }>>,
-): number[] {
-  const byDate = new Map<string, number[]>();
-  for (const series of histories) {
-    for (const point of series) {
-      if (!Number.isFinite(point.score)) continue;
-      const bucket = byDate.get(point.date) ?? [];
-      bucket.push(point.score);
-      byDate.set(point.date, bucket);
-    }
-  }
-  const dates = [...byDate.keys()].sort();
-  const last = dates.slice(-30);
-  const out: number[] = [];
-  for (const date of last) {
-    const avg = mean(byDate.get(date) ?? []);
-    if (avg != null) out.push(avg);
-  }
-  return out;
+function tickerChange(
+  snapshot: MotorDashboardSnapshot | null,
+  symbol: string,
+): number | null {
+  if (!snapshot) return null;
+  const row =
+    snapshot.tickers[symbol] ?? snapshot.tickers[symbol.toUpperCase()];
+  const v = row?.perf1dPct;
+  return v != null && Number.isFinite(v) ? v : null;
 }
 
-export function buildLandingGroups(snapshot: MotorDashboardSnapshot | null): {
-  groups: LandingGroupCard[];
-  movers: LandingMover[];
+function toLandingTicker(
+  symbol: string,
+  classId: string,
+  changePercent: number | null,
+  name?: string,
+): LandingTicker {
+  return {
+    symbol,
+    name: name ?? catalogName(symbol),
+    classId,
+    classLabel: classLabel(classId),
+    changePercent,
+  };
+}
+
+export function buildLandingBook(snapshot: MotorDashboardSnapshot | null): {
+  classes: LandingClassCard[];
+  tape: LandingTicker[];
+  top10: LandingTicker[];
 } {
-  const groups: LandingGroupCard[] = LANDING_GROUPS.map((group) => {
-    const changeParts: number[] = [];
-    const histories: Array<Array<{ date: string; score: number }>> = [];
-    const regimes: string[] = [];
+  const classes: LandingClassCard[] = LANDING_CLASS_ORDER.map((tab) => {
+    const featuredInst = getCatalogInstrumentsByClass(tab.id).slice(
+      0,
+      landingFeaturedCount(tab.id),
+    );
+    const featured = featuredInst.map((inst) =>
+      toLandingTicker(inst.symbol, tab.id, tickerChange(snapshot, inst.symbol), inst.name),
+    );
 
-    for (const classId of group.classIds) {
-      const klass = snapshot?.classes[classId];
-      if (klass) {
-        const action = klass.allocationAction ?? klass.stageLabel ?? klass.stage;
-        const label = regimeLabel(action);
-        if (label) regimes.push(label);
-        if (klass.scoreHistory?.length) histories.push(klass.scoreHistory);
-      }
-
-      if (!snapshot) continue;
-      for (const tick of Object.values(snapshot.tickers)) {
-        if (tick.classId !== classId) continue;
+    const classMoves: number[] = [];
+    if (snapshot) {
+      for (const tick of Object.values(snapshot.tickers) as MotorTickerSnapshot[]) {
+        if (tick.classId !== tab.id) continue;
         if (tick.perf1dPct != null && Number.isFinite(tick.perf1dPct)) {
-          changeParts.push(tick.perf1dPct);
+          classMoves.push(tick.perf1dPct);
         }
       }
     }
-
-    const changePercent = mean(changeParts);
-    const sparkline = sparklineFromHistories(histories);
-    const regime = modeRegime(regimes);
-    const available = changePercent != null || sparkline.length >= 2 || regime != null;
+    const fromFeatured = featured
+      .map((f) => f.changePercent)
+      .filter((v): v is number => v != null);
+    const changePercent = mean(classMoves) ?? mean(fromFeatured);
+    const available = changePercent != null || featured.some((f) => f.changePercent != null);
 
     return {
-      id: group.id,
-      label: group.label,
+      classId: tab.id,
+      label: tab.label,
       changePercent,
-      sparkline,
-      regimeLabel: regime,
+      featured,
       available,
     };
   });
 
-  const movers = groups
-    .filter((g): g is LandingGroupCard & { changePercent: number } => g.changePercent != null)
-    .sort((a, b) => Math.abs(b.changePercent) - Math.abs(a.changePercent))
-    .slice(0, 3)
-    .map((g) => ({
-      id: g.id,
-      label: g.label,
-      changePercent: g.changePercent,
-    }));
+  const tape: LandingTicker[] = [];
+  if (snapshot) {
+    for (const tick of Object.values(snapshot.tickers) as MotorTickerSnapshot[]) {
+      if (tick.perf1dPct == null || !Number.isFinite(tick.perf1dPct)) continue;
+      tape.push(toLandingTicker(tick.symbol, tick.classId, tick.perf1dPct));
+    }
+    tape.sort((a, b) => a.symbol.localeCompare(b.symbol));
+  }
 
-  return { groups, movers };
+  const top10 = [...tape]
+    .sort(
+      (a, b) =>
+        Math.abs(b.changePercent ?? 0) - Math.abs(a.changePercent ?? 0),
+    )
+    .slice(0, 10);
+
+  return { classes, tape, top10 };
 }

@@ -3,13 +3,46 @@
 import Link from "next/link";
 import { useState } from "react";
 import { formatPerf, perfClass } from "@/lib/format-market";
-import { IndicatorTrend } from "@/components/symbol/IndicatorTrend";
-import type { LandingViewModel } from "@/lib/landing/build-view";
+import { APP_NAME } from "@/lib/brand";
+import type { LandingTicker, LandingViewModel } from "@/lib/landing/build-view";
 import { LoginModal } from "./LoginModal";
 
-function directionOf(change: number | null): "up" | "down" | "flat" {
-  if (change == null || change === 0) return "flat";
-  return change > 0 ? "up" : "down";
+function Change({ value }: { value: number | null }) {
+  if (value == null) {
+    return <span className="text-[11px] text-zinc-600">—</span>;
+  }
+  const arrow = value > 0 ? "▲" : value < 0 ? "▼" : "→";
+  return (
+    <span className={`tabular-nums ${perfClass(value)}`}>
+      {arrow} {formatPerf(value)}
+    </span>
+  );
+}
+
+function TickerTape({ items }: { items: LandingTicker[] }) {
+  if (items.length === 0) {
+    return (
+      <p className="px-4 py-3 text-center text-[11px] text-zinc-600">
+        Dados indisponíveis
+      </p>
+    );
+  }
+  const loop = [...items, ...items];
+  return (
+    <div className="overflow-hidden border-y border-zinc-800 bg-zinc-950">
+      <div className="atlas-ticker-track flex w-max gap-8 py-2.5 pr-8">
+        {loop.map((row, i) => (
+          <span
+            key={`${row.symbol}-${i}`}
+            className="flex shrink-0 items-baseline gap-2 text-xs"
+          >
+            <span className="font-mono text-zinc-200">{row.symbol}</span>
+            <Change value={row.changePercent} />
+          </span>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export function LandingView({
@@ -39,7 +72,7 @@ export function LandingView({
       <header className="sticky top-0 z-[100] h-14 border-b border-zinc-800 bg-black/90 backdrop-blur-md">
         <div className="mx-auto flex h-full w-full max-w-6xl items-center justify-between px-4 sm:px-6">
           <Link href="/" className="font-title text-sm tracking-tight text-white">
-            Atlas
+            {APP_NAME}
           </Link>
           {signedIn ? (
             <Link
@@ -61,24 +94,24 @@ export function LandingView({
       </header>
 
       <main>
-        <section className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
-          <h1 className="font-title max-w-3xl text-3xl tracking-tight text-white sm:text-4xl">
-            Atlas{" "}
-            <span className="text-zinc-400">
-              — sinais macro + técnicos para decisões de carteira
-            </span>
+        <section className="mx-auto w-full max-w-3xl px-4 py-16 text-center sm:px-6 sm:py-20">
+          <h1 className="font-title text-6xl tracking-tight text-white sm:text-8xl">
+            {APP_NAME}
           </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-zinc-400">
+          <p className="mt-4 text-base text-zinc-400 sm:text-lg">
+            Macro and technical signals for wallet decisions
+          </p>
+          <p className="mt-6 text-sm leading-relaxed text-zinc-500">
             Atlas identifica os melhores pontos de entrada em 17 classes de ativos,
             combinando um motor macro com indicadores técnicos por ativo. Diferencial:
             não é só sinalização — é gestão de carteira orientada a geração de renda e
             preservação de capital.
           </p>
-          <div className="mt-6">
+          <div className="mt-8">
             {signedIn ? (
               <Link
                 href={appHref}
-                className="inline-flex rounded-md bg-white px-4 py-2 text-sm font-medium text-black hover:bg-zinc-200"
+                className="inline-flex rounded-md bg-white px-5 py-2.5 text-sm font-medium text-black hover:bg-zinc-200"
               >
                 Abrir Markets
               </Link>
@@ -86,7 +119,7 @@ export function LandingView({
               <button
                 type="button"
                 onClick={openLogin}
-                className="inline-flex rounded-md bg-white px-4 py-2 text-sm font-medium text-black hover:bg-zinc-200"
+                className="inline-flex rounded-md bg-white px-5 py-2.5 text-sm font-medium text-black hover:bg-zinc-200"
               >
                 Começar
               </button>
@@ -94,93 +127,76 @@ export function LandingView({
           </div>
         </section>
 
-        <section
-          aria-label="Índices principais"
-          className="border-y border-zinc-800 bg-zinc-950/80"
-        >
-          <div className="mx-auto flex w-full max-w-6xl gap-6 overflow-x-auto px-4 py-3 sm:px-6">
-            {data.indices.map((row) => (
-              <div key={row.id} className="flex shrink-0 items-baseline gap-2">
-                <span className="text-xs font-medium text-zinc-300">{row.label}</span>
-                {row.changePercent == null ? (
-                  <span className="text-[11px] text-zinc-600">dados indisponíveis</span>
-                ) : (
-                  <span className={`text-xs tabular-nums ${perfClass(row.changePercent)}`}>
-                    {row.changePercent > 0 ? "▲" : row.changePercent < 0 ? "▼" : "→"}{" "}
-                    {formatPerf(row.changePercent)}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
+        <TickerTape items={data.tape} />
 
         <section className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
-          <h2 className="text-sm font-medium text-zinc-300">Grupos de ativos</h2>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {data.groups.map((group) => (
-              <article
-                key={group.id}
-                className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-4"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <h3 className="text-sm font-medium text-white">{group.label}</h3>
-                  {group.regimeLabel ? (
-                    <span className="rounded-full bg-zinc-800 px-2 py-0.5 text-[10px] text-zinc-300">
-                      {group.regimeLabel}
-                    </span>
-                  ) : null}
-                </div>
-                {!group.available ? (
-                  <p className="mt-6 text-xs text-zinc-600">Dados indisponíveis</p>
-                ) : (
-                  <div className="mt-4 flex items-end justify-between gap-3">
-                    <IndicatorTrend
-                      sparklineData={group.sparkline}
-                      direction={directionOf(group.changePercent)}
-                      compact
-                    />
-                    {group.changePercent == null ? (
-                      <span className="text-[11px] text-zinc-600">sem variação 1D</span>
+          <div className="grid gap-8 lg:grid-cols-3">
+            <div className="lg:col-span-2">
+              <h2 className="text-sm font-medium text-zinc-300">Grupos de ativos</h2>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                {data.classes.map((group) => (
+                  <article
+                    key={group.classId}
+                    className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-4"
+                  >
+                    <div className="flex items-baseline justify-between gap-3">
+                      <h3 className="text-sm font-medium text-white">{group.label}</h3>
+                      <Change value={group.changePercent} />
+                    </div>
+                    {!group.available ? (
+                      <p className="mt-3 text-xs text-zinc-600">Dados indisponíveis</p>
                     ) : (
-                      <span
-                        className={`text-sm tabular-nums ${perfClass(group.changePercent)}`}
-                      >
-                        {formatPerf(group.changePercent)}
-                      </span>
+                      <ul className="mt-3 space-y-1.5">
+                        {group.featured.map((row) => (
+                          <li
+                            key={row.symbol}
+                            className="flex items-baseline justify-between gap-2 text-xs"
+                          >
+                            <span className="font-mono text-zinc-300">{row.symbol}</span>
+                            <Change value={row.changePercent} />
+                          </li>
+                        ))}
+                      </ul>
                     )}
-                  </div>
-                )}
-              </article>
-            ))}
-          </div>
-        </section>
+                  </article>
+                ))}
+              </div>
+            </div>
 
-        <section className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6">
-          <h2 className="text-sm font-medium text-zinc-300">O que mais mexeu hoje</h2>
-          {data.movers.length === 0 ? (
-            <p className="mt-3 text-xs text-zinc-600">Dados indisponíveis</p>
-          ) : (
-            <ul className="mt-3 divide-y divide-zinc-800 rounded-xl border border-zinc-800">
-              {data.movers.map((row) => (
-                <li
-                  key={row.id}
-                  className="flex items-center justify-between px-4 py-3 text-sm"
-                >
-                  <span className="text-zinc-200">{row.label}</span>
-                  <span className={`tabular-nums ${perfClass(row.changePercent)}`}>
-                    {row.changePercent > 0 ? "▲" : "▼"} {formatPerf(row.changePercent)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
+            <aside>
+              <h2 className="text-sm font-medium text-zinc-300">
+                Top 10 — variação 1D
+              </h2>
+              {data.top10.length === 0 ? (
+                <p className="mt-3 text-xs text-zinc-600">Dados indisponíveis</p>
+              ) : (
+                <ol className="mt-3 divide-y divide-zinc-800 rounded-xl border border-zinc-800">
+                  {data.top10.map((row, i) => (
+                    <li
+                      key={row.symbol}
+                      className="flex items-baseline justify-between gap-3 px-3 py-2.5 text-xs"
+                    >
+                      <span className="min-w-0">
+                        <span className="mr-2 text-zinc-600">{i + 1}</span>
+                        <span className="font-mono text-zinc-200">{row.symbol}</span>
+                        <span className="ml-2 hidden text-zinc-600 sm:inline">
+                          {row.classLabel}
+                        </span>
+                      </span>
+                      <Change value={row.changePercent} />
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </aside>
+          </div>
+
           {data.asOf ? (
-            <p className="mt-4 text-[10px] text-zinc-600">
+            <p className="mt-8 text-[10px] text-zinc-600">
               Motor as of {data.asOf}. Uso educacional — não é assessoria de investimento.
             </p>
           ) : (
-            <p className="mt-4 text-[10px] text-zinc-600">
+            <p className="mt-8 text-[10px] text-zinc-600">
               Uso educacional — não é assessoria de investimento.
             </p>
           )}

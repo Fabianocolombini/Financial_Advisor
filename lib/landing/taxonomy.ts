@@ -1,44 +1,18 @@
-/**
- * Macro-groups for the public landing. The 17 motor classes stay intact in
- * Markets; the capa only shows five cards so a visitor can scan the book.
- */
+import { ASSET_CLASS_TABS } from "@/lib/catalog/asset-classes";
 
-export const LANDING_GROUPS = [
-  {
-    id: "fixed_income",
-    label: "Renda Fixa",
-    classIds: [
-      "cash_equivalents",
-      "fi_treasury",
-      "fi_ig",
-      "fi_hy",
-      "fi_tips",
-      "fi_preferred",
-    ],
-  },
-  {
-    id: "equities",
-    label: "Renda Variável",
-    classIds: ["us_equity", "intl_equity", "em_equity", "healthcare_biotech"],
-  },
-  {
-    id: "commodities",
-    label: "Commodities",
-    classIds: ["commodities_precious", "commodities_energy", "energy_mlp"],
-  },
-  {
-    id: "real_assets",
-    label: "Real Assets",
-    classIds: ["real_estate"],
-  },
-  {
-    id: "alternatives",
-    label: "Moedas / Alternativos",
-    classIds: ["currencies", "alt_bdc", "alt_infrastructure"],
-  },
-] as const;
+/** How many “most important” names to pin on the capa for each class. */
+export function landingFeaturedCount(classId: string): number {
+  if (
+    classId === "us_equity" ||
+    classId === "intl_equity" ||
+    classId === "em_equity"
+  ) {
+    return 5;
+  }
+  return 3;
+}
 
-export type LandingGroupId = (typeof LANDING_GROUPS)[number]["id"];
+export const LANDING_CLASS_ORDER = ASSET_CLASS_TABS.filter((t) => t.id !== "all");
 
 /** Benchmarks already available via yfinance — no new vendor. */
 export const LANDING_INDICES = [

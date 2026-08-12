@@ -1,11 +1,11 @@
 import { loadMotorDashboardSnapshot } from "@/lib/motor/load-snapshot";
 import { fetchYahooQuoteSummaryCached } from "@/lib/market/yahoo-quote";
 import { LANDING_INDICES } from "./taxonomy";
-import { buildLandingGroups, type LandingIndexRow, type LandingViewModel } from "./build-view";
+import { buildLandingBook, type LandingIndexRow, type LandingViewModel } from "./build-view";
 
 export async function loadLandingView(): Promise<LandingViewModel> {
   const snapshot = await loadMotorDashboardSnapshot();
-  const { groups, movers } = buildLandingGroups(snapshot);
+  const { classes, tape, top10 } = buildLandingBook(snapshot);
 
   const indices: LandingIndexRow[] = await Promise.all(
     LANDING_INDICES.map(async (row) => {
@@ -32,10 +32,21 @@ export async function loadLandingView(): Promise<LandingViewModel> {
     }),
   );
 
+  const indexTape = indices
+    .filter((row) => row.changePercent != null)
+    .map((row) => ({
+      symbol: row.label,
+      name: row.label,
+      classId: "index",
+      classLabel: "Index",
+      changePercent: row.changePercent,
+    }));
+
   return {
     asOf: snapshot?.asOf ?? null,
     indices,
-    groups,
-    movers,
+    tape: [...indexTape, ...tape],
+    classes,
+    top10,
   };
 }

@@ -10,8 +10,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Financial Advisor",
-  description: "Personal finance planning — net worth, goals, and budget.",
+  title: "Atlas",
+  description: "Macro and technical signals for wallet decisions.",
 };
 
 export default function RootLayout({
