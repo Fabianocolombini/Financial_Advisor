@@ -16,12 +16,15 @@ export type LandingTicker = {
   classLabel: string;
   exchange: string;
   changePercent: number | null;
+  change5d: number | null;
 };
 
 export type LandingClassCard = {
   classId: string;
   label: string;
+  chartSymbol: string | null;
   changePercent: number | null;
+  change5d: number | null;
   featured: LandingTicker[];
   available: boolean;
 };
@@ -57,11 +60,12 @@ function classLabel(classId: string): string {
 function tickerChange(
   snapshot: MotorDashboardSnapshot | null,
   symbol: string,
+  field: "perf1dPct" | "perf7dPct",
 ): number | null {
   if (!snapshot) return null;
   const row =
     snapshot.tickers[symbol] ?? snapshot.tickers[symbol.toUpperCase()];
-  const v = row?.perf1dPct;
+  const v = row?.[field];
   return v != null && Number.isFinite(v) ? v : null;
 }
 
@@ -77,6 +81,7 @@ function toLandingTicker(
   symbol: string,
   classId: string,
   changePercent: number | null,
+  change5d: number | null,
   name?: string,
   exchange?: string,
 ): LandingTicker {
@@ -87,7 +92,20 @@ function toLandingTicker(
     classLabel: classLabel(classId),
     exchange: exchange ?? catalogExchange(symbol),
     changePercent,
+    change5d,
   };
+}
+
+export function rankMovers(
+  tickers: LandingTicker[],
+  horizon: "1d" | "5d",
+  n = 10,
+): LandingTicker[] {
+  const key = horizon === "5d" ? "change5d" : "changePercent";
+  return [...tickers]
+    .filter((t) => t[key] != null)
+    .sort((a, b) => Math.abs(b[key] ?? 0) - Math.abs(a[key] ?? 0))
+    .slice(0, n);
 }
 
 export function buildLandingBook(snapshot: MotorDashboardSnapshot | null): {
@@ -104,31 +122,42 @@ export function buildLandingBook(snapshot: MotorDashboardSnapshot | null): {
       toLandingTicker(
         inst.symbol,
         tab.id,
-        tickerChange(snapshot, inst.symbol),
+        tickerChange(snapshot, inst.symbol, "perf1dPct"),
+        tickerChange(snapshot, inst.symbol, "perf7dPct"),
         inst.name,
         inst.exchange,
       ),
     );
 
-    const classMoves: number[] = [];
+    const classMoves1d: number[] = [];
+    const classMoves5d: number[] = [];
     if (snapshot) {
       for (const tick of Object.values(snapshot.tickers) as MotorTickerSnapshot[]) {
         if (tick.classId !== tab.id) continue;
         if (tick.perf1dPct != null && Number.isFinite(tick.perf1dPct)) {
-          classMoves.push(tick.perf1dPct);
+          classMoves1d.push(tick.perf1dPct);
+        }
+        if (tick.perf7dPct != null && Number.isFinite(tick.perf7dPct)) {
+          classMoves5d.push(tick.perf7dPct);
         }
       }
     }
-    const fromFeatured = featured
+    const fromFeatured1d = featured
       .map((f) => f.changePercent)
       .filter((v): v is number => v != null);
-    const changePercent = mean(classMoves) ?? mean(fromFeatured);
+    const fromFeatured5d = featured
+      .map((f) => f.change5d)
+      .filter((v): v is number => v != null);
+    const changePercent = mean(classMoves1d) ?? mean(fromFeatured1d);
+    const change5d = mean(classMoves5d) ?? mean(fromFeatured5d);
     const available = changePercent != null || featured.some((f) => f.changePercent != null);
 
     return {
       classId: tab.id,
       label: tab.label,
+      chartSymbol: featured[0]?.symbol ?? null,
       changePercent,
+      change5d,
       featured,
       available,
     };
@@ -137,18 +166,29 @@ export function buildLandingBook(snapshot: MotorDashboardSnapshot | null): {
   const tape: LandingTicker[] = [];
   if (snapshot) {
     for (const tick of Object.values(snapshot.tickers) as MotorTickerSnapshot[]) {
-      if (tick.perf1dPct == null || !Number.isFinite(tick.perf1dPct)) continue;
-      tape.push(toLandingTicker(tick.symbol, tick.classId, tick.perf1dPct));
+      if (
+        (tick.perf1dPct == null || !Number.isFinite(tick.perf1dPct)) &&
+        (tick.perf7dPct == null || !Number.isFinite(tick.perf7dPct))
+      ) {
+        continue;
+      }
+      tape.push(
+        toLandingTicker(
+          tick.symbol,
+          tick.classId,
+          tick.perf1dPct != null && Number.isFinite(tick.perf1dPct)
+            ? tick.perf1dPct
+            : null,
+          tick.perf7dPct != null && Number.isFinite(tick.perf7dPct)
+            ? tick.perf7dPct
+            : null,
+        ),
+      );
     }
     tape.sort((a, b) => a.symbol.localeCompare(b.symbol));
   }
 
-  const top10 = [...tape]
-    .sort(
-      (a, b) =>
-        Math.abs(b.changePercent ?? 0) - Math.abs(a.changePercent ?? 0),
-    )
-    .slice(0, 10);
+  const top10 = rankMovers(tape, "1d");
 
   return { classes, tape, top10 };
 }

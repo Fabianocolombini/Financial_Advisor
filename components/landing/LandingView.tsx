@@ -5,7 +5,8 @@ import { useState } from "react";
 import { formatPerf, perfClass } from "@/lib/format-market";
 import { APP_NAME } from "@/lib/brand";
 import { SymbolAvatar } from "@/components/catalog/SymbolAvatar";
-import type { LandingTicker, LandingViewModel } from "@/lib/landing/build-view";
+import { rankMovers, type LandingTicker, type LandingViewModel } from "@/lib/landing/build-view";
+import { LandingMiniChart } from "./LandingMiniChart";
 import { LoginModal } from "./LoginModal";
 
 function Change({ value }: { value: number | null }) {
@@ -66,7 +67,9 @@ export function LandingView({
   googleConfigured: boolean;
 }) {
   const [loginOpen, setLoginOpen] = useState(false);
+  const [topHorizon, setTopHorizon] = useState<"1d" | "5d">("1d");
   const appHref = "/mercado";
+  const top10 = rankMovers(data.tape, topHorizon);
 
   const openLogin = () => {
     if (!authEnabled || signedIn) {
@@ -149,7 +152,7 @@ export function LandingView({
           </div>
         </section>
 
-        <TickerTape items={data.tape} />
+        <TickerTape items={data.tape.filter((t) => t.changePercent != null)} />
 
         <section className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
           <div className="grid gap-8 lg:grid-cols-3">
@@ -157,11 +160,11 @@ export function LandingView({
               <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-[#d4af37]/80">
                 Asset groups
               </h2>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 {data.classes.map((group) => (
                   <article
                     key={group.classId}
-                    className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-4 transition hover:border-[#d4af37]/35"
+                    className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-3 transition hover:border-[#d4af37]/35"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2">
@@ -178,12 +181,20 @@ export function LandingView({
                         </div>
                         <h3 className="text-sm font-medium text-white">{group.label}</h3>
                       </div>
+                    </div>
+                    {group.chartSymbol ? (
+                      <LandingMiniChart symbol={group.chartSymbol} />
+                    ) : null}
+                    <div className="mt-2 flex items-baseline justify-between gap-2">
+                      <span className="text-[10px] uppercase tracking-wide text-zinc-600">
+                        Group 1D
+                      </span>
                       <Change value={group.changePercent} />
                     </div>
                     {!group.available ? (
-                      <p className="mt-3 text-xs text-zinc-600">Data unavailable</p>
+                      <p className="mt-2 text-xs text-zinc-600">Data unavailable</p>
                     ) : (
-                      <ul className="mt-3 space-y-2">
+                      <ul className="mt-2 space-y-1.5">
                         {group.featured.map((row) => (
                           <li
                             key={row.symbol}
@@ -209,14 +220,37 @@ export function LandingView({
             </div>
 
             <aside>
-              <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-[#d4af37]/80">
-                Top 10 — 1D change
-              </h2>
-              {data.top10.length === 0 ? (
+              <div className="flex items-center justify-between gap-2">
+                <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-[#d4af37]/80">
+                  Top 10
+                </h2>
+                <div
+                  className="flex gap-0.5 rounded-md border border-zinc-800 p-0.5"
+                  role="group"
+                  aria-label="Top 10 range"
+                >
+                  {(["1d", "5d"] as const).map((id) => (
+                    <button
+                      key={id}
+                      type="button"
+                      aria-pressed={topHorizon === id}
+                      onClick={() => setTopHorizon(id)}
+                      className={`rounded px-2 py-0.5 text-[10px] ${
+                        topHorizon === id
+                          ? "bg-zinc-800 text-white"
+                          : "text-zinc-600 hover:text-zinc-300"
+                      }`}
+                    >
+                      {id === "1d" ? "1D" : "5D"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {top10.length === 0 ? (
                 <p className="mt-3 text-xs text-zinc-600">Data unavailable</p>
               ) : (
                 <ol className="mt-4 divide-y divide-zinc-800/80 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/70">
-                  {data.top10.map((row, i) => (
+                  {top10.map((row, i) => (
                     <li
                       key={row.symbol}
                       className="flex items-center justify-between gap-3 px-3 py-2.5 text-xs"
@@ -238,7 +272,11 @@ export function LandingView({
                           </span>
                         </span>
                       </span>
-                      <Change value={row.changePercent} />
+                      <Change
+                        value={
+                          topHorizon === "5d" ? row.change5d : row.changePercent
+                        }
+                      />
                     </li>
                   ))}
                 </ol>

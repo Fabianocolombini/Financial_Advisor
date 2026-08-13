@@ -41,6 +41,7 @@ export async function loadLandingView(): Promise<LandingViewModel> {
       classLabel: "Index",
       exchange: "NYSE",
       changePercent: row.changePercent,
+      change5d: null,
     }));
 
   return {
