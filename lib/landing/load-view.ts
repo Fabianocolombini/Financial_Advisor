@@ -42,6 +42,8 @@ export async function loadLandingView(): Promise<LandingViewModel> {
       exchange: "NYSE",
       changePercent: row.changePercent,
       change5d: null,
+      shareOfGroupPct: null,
+      entryOpportunity: false,
     }));
 
   return {

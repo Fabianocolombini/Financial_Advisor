@@ -82,6 +82,7 @@ export function LandingMiniChart({ symbol }: { symbol: string }) {
         background: { type: ColorType.Solid, color: "#000000" },
         textColor: "#71717a",
         fontSize: 9,
+        attributionLogo: false,
       },
       grid: {
         vertLines: { color: "#18181b" },

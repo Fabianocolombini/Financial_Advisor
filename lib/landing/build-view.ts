@@ -1,4 +1,8 @@
-import type { MotorDashboardSnapshot, MotorTickerSnapshot } from "@/lib/motor/snapshot-types";
+import type {
+  MotorClassSnapshot,
+  MotorDashboardSnapshot,
+  MotorTickerSnapshot,
+} from "@/lib/motor/snapshot-types";
 import { CATALOG_INSTRUMENTS, getCatalogInstrumentsByClass } from "@/lib/catalog/instruments";
 import { LANDING_CLASS_ORDER, landingFeaturedCount } from "./taxonomy";
 
@@ -17,6 +21,9 @@ export type LandingTicker = {
   exchange: string;
   changePercent: number | null;
   change5d: number | null;
+  /** Share of the names shown on this class card (0–100). */
+  shareOfGroupPct: number | null;
+  entryOpportunity: boolean;
 };
 
 export type LandingClassCard = {
@@ -25,6 +32,9 @@ export type LandingClassCard = {
   chartSymbol: string | null;
   changePercent: number | null;
   change5d: number | null;
+  /** Share of the Atlas mix across the 17 sleeves (0–100). */
+  shareOfMixPct: number | null;
+  entryOpportunity: boolean;
   featured: LandingTicker[];
   available: boolean;
 };
@@ -82,18 +92,66 @@ function toLandingTicker(
   classId: string,
   changePercent: number | null,
   change5d: number | null,
-  name?: string,
-  exchange?: string,
+  extra?: {
+    name?: string;
+    exchange?: string;
+    shareOfGroupPct?: number | null;
+    entryOpportunity?: boolean;
+  },
 ): LandingTicker {
   return {
     symbol,
-    name: name ?? catalogName(symbol),
+    name: extra?.name ?? catalogName(symbol),
     classId,
     classLabel: classLabel(classId),
-    exchange: exchange ?? catalogExchange(symbol),
+    exchange: extra?.exchange ?? catalogExchange(symbol),
     changePercent,
     change5d,
+    shareOfGroupPct: extra?.shareOfGroupPct ?? null,
+    entryOpportunity: extra?.entryOpportunity ?? false,
   };
+}
+
+/** Relative sleeve size from the motor's allocation stance. */
+export function sleeveWeight(
+  action?: string | null,
+  stageLabel?: string | null,
+): number {
+  const raw = `${action ?? ""} ${stageLabel ?? ""}`.toLowerCase();
+  if (raw.includes("strong reduce") || raw.includes("fortedescendente")) return 0.25;
+  if (
+    raw.includes("overweight") ||
+    raw.includes("accumulate") ||
+    raw.includes("ascendente")
+  ) {
+    return 1.5;
+  }
+  if (raw.includes("reduce") || raw.includes("descendente")) return 0.5;
+  return 1;
+}
+
+export function normalizeShares(weights: Array<number | null>): Array<number | null> {
+  const positive = weights.map((w) =>
+    w != null && Number.isFinite(w) && w > 0 ? w : null,
+  );
+  const sum = positive.reduce<number>((acc, w) => acc + (w ?? 0), 0);
+  if (sum <= 0) {
+    const n = weights.length;
+    if (n === 0) return [];
+    return weights.map(() => 100 / n);
+  }
+  return positive.map((w) => (w == null ? null : (w / sum) * 100));
+}
+
+export function isEntryOpportunity(opts: {
+  entryTiming?: string | null;
+  entryValidated?: boolean;
+  stageLabel?: string | null;
+}): boolean {
+  if (opts.entryTiming === "Buy") return true;
+  if (opts.entryTiming === "Avoid" || opts.entryTiming === "Wait") return false;
+  if (opts.entryValidated) return true;
+  return opts.stageLabel === "Accumulate" || opts.stageLabel === "Ascendente";
 }
 
 export function rankMovers(
@@ -118,16 +176,37 @@ export function buildLandingBook(snapshot: MotorDashboardSnapshot | null): {
       0,
       landingFeaturedCount(tab.id),
     );
-    const featured = featuredInst.map((inst) =>
-      toLandingTicker(
+    const classSnap: MotorClassSnapshot | undefined = snapshot?.classes[tab.id];
+    const featuredWeights = featuredInst.map((inst) => {
+      const row =
+        snapshot?.tickers[inst.symbol] ??
+        snapshot?.tickers[inst.symbol.toUpperCase()];
+      const s = row?.score;
+      return s != null && Number.isFinite(s) && s > 0 ? s : 1;
+    });
+    const featuredShares = normalizeShares(featuredWeights);
+
+    const featured = featuredInst.map((inst, i) => {
+      const row =
+        snapshot?.tickers[inst.symbol] ??
+        snapshot?.tickers[inst.symbol.toUpperCase()];
+      return toLandingTicker(
         inst.symbol,
         tab.id,
         tickerChange(snapshot, inst.symbol, "perf1dPct"),
         tickerChange(snapshot, inst.symbol, "perf7dPct"),
-        inst.name,
-        inst.exchange,
-      ),
-    );
+        {
+          name: inst.name,
+          exchange: inst.exchange,
+          shareOfGroupPct: featuredShares[i] ?? null,
+          entryOpportunity: isEntryOpportunity({
+            entryTiming: row?.entryTiming,
+            entryValidated: row?.entryValidated,
+            stageLabel: row?.stageLabel,
+          }),
+        },
+      );
+    });
 
     const classMoves1d: number[] = [];
     const classMoves5d: number[] = [];
@@ -158,10 +237,26 @@ export function buildLandingBook(snapshot: MotorDashboardSnapshot | null): {
       chartSymbol: featured[0]?.symbol ?? null,
       changePercent,
       change5d,
+      shareOfMixPct: null,
+      entryOpportunity: isEntryOpportunity({
+        entryTiming: classSnap?.entryTiming,
+        entryValidated: classSnap?.entryValidated,
+        stageLabel: classSnap?.stageLabel,
+      }),
       featured,
       available,
     };
   });
+
+  const mixShares = normalizeShares(
+    classes.map((card) => {
+      const classSnap = snapshot?.classes[card.classId];
+      return sleeveWeight(classSnap?.allocationAction, classSnap?.stageLabel);
+    }),
+  );
+  for (let i = 0; i < classes.length; i++) {
+    classes[i]!.shareOfMixPct = mixShares[i] ?? null;
+  }
 
   const tape: LandingTicker[] = [];
   if (snapshot) {
@@ -182,6 +277,13 @@ export function buildLandingBook(snapshot: MotorDashboardSnapshot | null): {
           tick.perf7dPct != null && Number.isFinite(tick.perf7dPct)
             ? tick.perf7dPct
             : null,
+          {
+            entryOpportunity: isEntryOpportunity({
+              entryTiming: tick.entryTiming,
+              entryValidated: tick.entryValidated,
+              stageLabel: tick.stageLabel,
+            }),
+          },
         ),
       );
     }

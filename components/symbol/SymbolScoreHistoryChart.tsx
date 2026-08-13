@@ -26,6 +26,7 @@ export function SymbolScoreHistoryChart({
       layout: {
         background: { type: ColorType.Solid, color: "#000000" },
         textColor: "#a1a1aa",
+        attributionLogo: false,
       },
       grid: {
         vertLines: { color: "#18181b" },

@@ -21,6 +21,51 @@ function Change({ value }: { value: number | null }) {
   );
 }
 
+function HorizonChange({
+  label,
+  value,
+  align = "left",
+}: {
+  label: string;
+  value: number | null;
+  align?: "left" | "right";
+}) {
+  return (
+    <span
+      className={`flex min-w-[4.25rem] flex-col ${
+        align === "right" ? "items-end text-right" : "items-start text-left"
+      }`}
+    >
+      <span className="text-[9px] uppercase tracking-wide text-zinc-600">{label}</span>
+      <Change value={value} />
+    </span>
+  );
+}
+
+function formatShare(pct: number | null | undefined): string {
+  if (pct == null || !Number.isFinite(pct)) return "—";
+  return `${pct < 10 ? pct.toFixed(1) : pct.toFixed(0)}%`;
+}
+
+function EntryMark() {
+  return (
+    <span
+      title="Entry opportunity — the motor sees a window to add exposure"
+      aria-label="Entry opportunity"
+      className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400"
+    >
+      <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden>
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M13 7l5 5-5 5M4 12h14"
+        />
+      </svg>
+    </span>
+  );
+}
+
 function TickerTape({ items }: { items: LandingTicker[] }) {
   if (items.length === 0) {
     return (
@@ -47,7 +92,15 @@ function TickerTape({ items }: { items: LandingTicker[] }) {
             <span className="font-mono text-zinc-200">
               {row.classId === "index" ? row.name : row.symbol}
             </span>
-            <Change value={row.changePercent} />
+            {row.entryOpportunity ? <EntryMark /> : null}
+            <span className="flex items-baseline gap-1">
+              <span className="text-[9px] text-zinc-600">1D</span>
+              <Change value={row.changePercent} />
+            </span>
+            <span className="flex items-baseline gap-1">
+              <span className="text-[9px] text-zinc-600">5D</span>
+              <Change value={row.change5d} />
+            </span>
           </span>
         ))}
       </div>
@@ -152,7 +205,11 @@ export function LandingView({
           </div>
         </section>
 
-        <TickerTape items={data.tape.filter((t) => t.changePercent != null)} />
+        <TickerTape
+          items={data.tape.filter(
+            (t) => t.changePercent != null || t.change5d != null,
+          )}
+        />
 
         <section className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
           <div className="grid gap-8 lg:grid-cols-3">
@@ -167,7 +224,7 @@ export function LandingView({
                     className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-3 transition hover:border-[#d4af37]/35"
                   >
                     <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-2">
+                      <div className="flex min-w-0 items-center gap-2">
                         <div className="flex -space-x-2">
                           {group.featured.slice(0, 3).map((row) => (
                             <SymbolAvatar
@@ -179,17 +236,27 @@ export function LandingView({
                             />
                           ))}
                         </div>
-                        <h3 className="text-sm font-medium text-white">{group.label}</h3>
+                        <h3 className="truncate text-sm font-medium text-white">
+                          {group.label}
+                        </h3>
+                        {group.entryOpportunity ? <EntryMark /> : null}
                       </div>
+                      <span
+                        className="shrink-0 text-[11px] tabular-nums text-zinc-400"
+                        title={`${group.label} share of the Atlas mix`}
+                      >
+                        {formatShare(group.shareOfMixPct)}
+                        <span className="ml-1 text-[9px] uppercase tracking-wide text-zinc-600">
+                          of mix
+                        </span>
+                      </span>
                     </div>
                     {group.chartSymbol ? (
                       <LandingMiniChart symbol={group.chartSymbol} />
                     ) : null}
-                    <div className="mt-2 flex items-baseline justify-between gap-2">
-                      <span className="text-[10px] uppercase tracking-wide text-zinc-600">
-                        Group 1D
-                      </span>
-                      <Change value={group.changePercent} />
+                    <div className="mt-2 flex items-end justify-between gap-2">
+                      <HorizonChange label="1D" value={group.changePercent} />
+                      <HorizonChange label="5D" value={group.change5d} align="right" />
                     </div>
                     {!group.available ? (
                       <p className="mt-2 text-xs text-zinc-600">Data unavailable</p>
@@ -198,9 +265,10 @@ export function LandingView({
                         {group.featured.map((row) => (
                           <li
                             key={row.symbol}
-                            className="flex items-center justify-between gap-2 text-xs"
+                            className="flex items-center justify-between gap-1.5 text-xs"
                           >
-                            <span className="flex min-w-0 items-center gap-2">
+                            <HorizonChange label="1D" value={row.changePercent} />
+                            <span className="flex min-w-0 flex-1 items-center justify-center gap-1.5">
                               <SymbolAvatar
                                 symbol={row.symbol}
                                 exchange={row.exchange}
@@ -208,8 +276,19 @@ export function LandingView({
                                 size="xs"
                               />
                               <span className="font-mono text-zinc-200">{row.symbol}</span>
+                              {row.entryOpportunity ? <EntryMark /> : null}
+                              <span
+                                className="tabular-nums text-[10px] text-zinc-500"
+                                title={`${row.symbol} share of ${group.label}`}
+                              >
+                                {formatShare(row.shareOfGroupPct)}
+                              </span>
                             </span>
-                            <Change value={row.changePercent} />
+                            <HorizonChange
+                              label="5D"
+                              value={row.change5d}
+                              align="right"
+                            />
                           </li>
                         ))}
                       </ul>
@@ -253,9 +332,9 @@ export function LandingView({
                   {top10.map((row, i) => (
                     <li
                       key={row.symbol}
-                      className="flex items-center justify-between gap-3 px-3 py-2.5 text-xs"
+                      className="flex items-center justify-between gap-2 px-3 py-2.5 text-xs"
                     >
-                      <span className="flex min-w-0 items-center gap-2.5">
+                      <span className="flex min-w-0 items-center gap-2">
                         <span className="w-4 text-right font-mono text-[#d4af37]/70">
                           {i + 1}
                         </span>
@@ -267,16 +346,20 @@ export function LandingView({
                         />
                         <span className="min-w-0">
                           <span className="font-mono text-zinc-200">{row.symbol}</span>
+                          {row.entryOpportunity ? (
+                            <span className="ml-1 inline-block align-middle">
+                              <EntryMark />
+                            </span>
+                          ) : null}
                           <span className="ml-2 hidden text-zinc-600 sm:inline">
                             {row.classLabel}
                           </span>
                         </span>
                       </span>
-                      <Change
-                        value={
-                          topHorizon === "5d" ? row.change5d : row.changePercent
-                        }
-                      />
+                      <span className="flex shrink-0 items-end gap-3">
+                        <HorizonChange label="1D" value={row.changePercent} align="right" />
+                        <HorizonChange label="5D" value={row.change5d} align="right" />
+                      </span>
                     </li>
                   ))}
                 </ol>
@@ -286,7 +369,8 @@ export function LandingView({
 
           <p className="mt-8 text-[10px] text-zinc-600">
             {data.asOf ? `Motor as of ${data.asOf}. ` : null}
-            Educational use only — not investment advice.
+            Mix weights follow the motor sleeve stance. Educational use only — not
+            investment advice.
           </p>
         </section>
       </main>

@@ -66,9 +66,14 @@ body {
 }
 
 .atlas-ticker-track {
-  animation: atlas-ticker 90s linear infinite;
+  animation: atlas-ticker 180s linear infinite;
 }
 
 .atlas-ticker-track:hover {
   animation-play-state: paused;
+}
+
+/* TradingView attribution is not licensed for this product surface. */
+a[href*="tradingview.com"] {
+  display: none !important;
 }
