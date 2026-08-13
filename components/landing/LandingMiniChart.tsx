@@ -194,7 +194,7 @@ export function LandingMiniChart({ symbol }: { symbol: string }) {
       ) : (
         <div
           ref={containerRef}
-          className="h-[132px] w-full"
+          className="h-[132px] w-full overflow-hidden"
           aria-label={`${symbol} price chart`}
         />
       )}

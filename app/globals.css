@@ -100,6 +100,7 @@ body {
 }
 
 /* TradingView attribution is not licensed for this product surface. */
-a[href*="tradingview.com"] {
+a[href*="tradingview.com"],
+.tv-lightweight-charts a {
   display: none !important;
 }

@@ -212,159 +212,157 @@ export function LandingView({
         />
 
         <section className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
-          <div className="grid gap-8 lg:grid-cols-3">
-            <div className="lg:col-span-2">
+          <div>
+            <div className="flex items-center justify-between gap-2">
               <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-[#d4af37]/80">
-                Asset groups
+                Top 10
               </h2>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                {data.classes.map((group) => (
-                  <article
-                    key={group.classId}
-                    className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-3 transition hover:border-[#d4af37]/35"
+              <div
+                className="flex gap-0.5 rounded-md border border-zinc-800 p-0.5"
+                role="group"
+                aria-label="Top 10 range"
+              >
+                {(["1d", "5d"] as const).map((id) => (
+                  <button
+                    key={id}
+                    type="button"
+                    aria-pressed={topHorizon === id}
+                    onClick={() => setTopHorizon(id)}
+                    className={`rounded px-2 py-0.5 text-[10px] ${
+                      topHorizon === id
+                        ? "bg-zinc-800 text-white"
+                        : "text-zinc-600 hover:text-zinc-300"
+                    }`}
                   >
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex min-w-0 items-center gap-2">
-                        <div className="flex -space-x-2">
-                          {group.featured.slice(0, 3).map((row) => (
+                    {id === "1d" ? "1D" : "5D"}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {top10.length === 0 ? (
+              <p className="mt-3 text-xs text-zinc-600">Data unavailable</p>
+            ) : (
+              <ol className="mt-4 grid overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/70 sm:grid-cols-2">
+                {top10.map((row, i) => (
+                  <li
+                    key={row.symbol}
+                    className="flex items-center justify-between gap-2 border-b border-zinc-800/80 px-3 py-2.5 text-xs sm:odd:border-r"
+                  >
+                    <span className="flex min-w-0 items-center gap-2">
+                      <span className="w-4 text-right font-mono text-[#d4af37]/70">
+                        {i + 1}
+                      </span>
+                      <SymbolAvatar
+                        symbol={row.symbol}
+                        exchange={row.exchange}
+                        classId={row.classId}
+                        size="xs"
+                      />
+                      <span className="min-w-0">
+                        <span className="font-mono text-zinc-200">{row.symbol}</span>
+                        {row.entryOpportunity ? (
+                          <span className="ml-1 inline-block align-middle">
+                            <EntryMark />
+                          </span>
+                        ) : null}
+                        <span className="ml-2 hidden text-zinc-600 sm:inline">
+                          {row.classLabel}
+                        </span>
+                      </span>
+                    </span>
+                    <span className="flex shrink-0 items-end gap-3">
+                      <HorizonChange label="1D" value={row.changePercent} align="right" />
+                      <HorizonChange label="5D" value={row.change5d} align="right" />
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+
+          <div className="mt-10">
+            <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-[#d4af37]/80">
+              Asset groups
+            </h2>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {data.classes.map((group) => (
+                <article
+                  key={group.classId}
+                  className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-3 transition hover:border-[#d4af37]/35"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-2">
+                      <div className="flex -space-x-2">
+                        {group.featured.slice(0, 3).map((row) => (
+                          <SymbolAvatar
+                            key={row.symbol}
+                            symbol={row.symbol}
+                            exchange={row.exchange}
+                            classId={row.classId}
+                            size="xs"
+                          />
+                        ))}
+                      </div>
+                      <h3 className="truncate text-sm font-medium text-white">
+                        {group.label}
+                      </h3>
+                      {group.entryOpportunity ? <EntryMark /> : null}
+                    </div>
+                    <span
+                      className="shrink-0 text-[11px] tabular-nums text-zinc-400"
+                      title={`${group.label} share of the Atlas mix`}
+                    >
+                      {formatShare(group.shareOfMixPct)}
+                      <span className="ml-1 text-[9px] uppercase tracking-wide text-zinc-600">
+                        of mix
+                      </span>
+                    </span>
+                  </div>
+                  {group.chartSymbol ? (
+                    <LandingMiniChart symbol={group.chartSymbol} />
+                  ) : null}
+                  <div className="mt-2 flex items-end justify-between gap-2">
+                    <HorizonChange label="1D" value={group.changePercent} />
+                    <HorizonChange label="5D" value={group.change5d} align="right" />
+                  </div>
+                  {!group.available ? (
+                    <p className="mt-2 text-xs text-zinc-600">Data unavailable</p>
+                  ) : (
+                    <ul className="mt-2 space-y-1.5">
+                      {group.featured.map((row) => (
+                        <li
+                          key={row.symbol}
+                          className="flex items-center justify-between gap-1.5 text-xs"
+                        >
+                          <HorizonChange label="1D" value={row.changePercent} />
+                          <span className="flex min-w-0 flex-1 items-center justify-center gap-1.5">
                             <SymbolAvatar
-                              key={row.symbol}
                               symbol={row.symbol}
                               exchange={row.exchange}
                               classId={row.classId}
                               size="xs"
                             />
-                          ))}
-                        </div>
-                        <h3 className="truncate text-sm font-medium text-white">
-                          {group.label}
-                        </h3>
-                        {group.entryOpportunity ? <EntryMark /> : null}
-                      </div>
-                      <span
-                        className="shrink-0 text-[11px] tabular-nums text-zinc-400"
-                        title={`${group.label} share of the Atlas mix`}
-                      >
-                        {formatShare(group.shareOfMixPct)}
-                        <span className="ml-1 text-[9px] uppercase tracking-wide text-zinc-600">
-                          of mix
-                        </span>
-                      </span>
-                    </div>
-                    {group.chartSymbol ? (
-                      <LandingMiniChart symbol={group.chartSymbol} />
-                    ) : null}
-                    <div className="mt-2 flex items-end justify-between gap-2">
-                      <HorizonChange label="1D" value={group.changePercent} />
-                      <HorizonChange label="5D" value={group.change5d} align="right" />
-                    </div>
-                    {!group.available ? (
-                      <p className="mt-2 text-xs text-zinc-600">Data unavailable</p>
-                    ) : (
-                      <ul className="mt-2 space-y-1.5">
-                        {group.featured.map((row) => (
-                          <li
-                            key={row.symbol}
-                            className="flex items-center justify-between gap-1.5 text-xs"
-                          >
-                            <HorizonChange label="1D" value={row.changePercent} />
-                            <span className="flex min-w-0 flex-1 items-center justify-center gap-1.5">
-                              <SymbolAvatar
-                                symbol={row.symbol}
-                                exchange={row.exchange}
-                                classId={row.classId}
-                                size="xs"
-                              />
-                              <span className="font-mono text-zinc-200">{row.symbol}</span>
-                              {row.entryOpportunity ? <EntryMark /> : null}
-                              <span
-                                className="tabular-nums text-[10px] text-zinc-500"
-                                title={`${row.symbol} share of ${group.label}`}
-                              >
-                                {formatShare(row.shareOfGroupPct)}
-                              </span>
+                            <span className="font-mono text-zinc-200">{row.symbol}</span>
+                            {row.entryOpportunity ? <EntryMark /> : null}
+                            <span
+                              className="tabular-nums text-[10px] text-zinc-500"
+                              title={`${row.symbol} share of ${group.label}`}
+                            >
+                              {formatShare(row.shareOfGroupPct)}
                             </span>
-                            <HorizonChange
-                              label="5D"
-                              value={row.change5d}
-                              align="right"
-                            />
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </article>
-                ))}
-              </div>
-            </div>
-
-            <aside>
-              <div className="flex items-center justify-between gap-2">
-                <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-[#d4af37]/80">
-                  Top 10
-                </h2>
-                <div
-                  className="flex gap-0.5 rounded-md border border-zinc-800 p-0.5"
-                  role="group"
-                  aria-label="Top 10 range"
-                >
-                  {(["1d", "5d"] as const).map((id) => (
-                    <button
-                      key={id}
-                      type="button"
-                      aria-pressed={topHorizon === id}
-                      onClick={() => setTopHorizon(id)}
-                      className={`rounded px-2 py-0.5 text-[10px] ${
-                        topHorizon === id
-                          ? "bg-zinc-800 text-white"
-                          : "text-zinc-600 hover:text-zinc-300"
-                      }`}
-                    >
-                      {id === "1d" ? "1D" : "5D"}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {top10.length === 0 ? (
-                <p className="mt-3 text-xs text-zinc-600">Data unavailable</p>
-              ) : (
-                <ol className="mt-4 divide-y divide-zinc-800/80 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/70">
-                  {top10.map((row, i) => (
-                    <li
-                      key={row.symbol}
-                      className="flex items-center justify-between gap-2 px-3 py-2.5 text-xs"
-                    >
-                      <span className="flex min-w-0 items-center gap-2">
-                        <span className="w-4 text-right font-mono text-[#d4af37]/70">
-                          {i + 1}
-                        </span>
-                        <SymbolAvatar
-                          symbol={row.symbol}
-                          exchange={row.exchange}
-                          classId={row.classId}
-                          size="xs"
-                        />
-                        <span className="min-w-0">
-                          <span className="font-mono text-zinc-200">{row.symbol}</span>
-                          {row.entryOpportunity ? (
-                            <span className="ml-1 inline-block align-middle">
-                              <EntryMark />
-                            </span>
-                          ) : null}
-                          <span className="ml-2 hidden text-zinc-600 sm:inline">
-                            {row.classLabel}
                           </span>
-                        </span>
-                      </span>
-                      <span className="flex shrink-0 items-end gap-3">
-                        <HorizonChange label="1D" value={row.changePercent} align="right" />
-                        <HorizonChange label="5D" value={row.change5d} align="right" />
-                      </span>
-                    </li>
-                  ))}
-                </ol>
-              )}
-            </aside>
+                          <HorizonChange
+                            label="5D"
+                            value={row.change5d}
+                            align="right"
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </article>
+              ))}
+            </div>
           </div>
 
           <p className="mt-8 text-[10px] text-zinc-600">
