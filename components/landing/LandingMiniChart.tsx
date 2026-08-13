@@ -50,8 +50,6 @@ export function LandingMiniChart({ symbol }: { symbol: string }) {
   useEffect(() => {
     if (!inView) return;
     let cancelled = false;
-    setBars(null);
-    setError(false);
     fetch(`/api/market/${encodeURIComponent(symbol)}/chart`)
       .then(async (res) => {
         if (!res.ok) throw new Error("chart failed");
@@ -59,6 +57,7 @@ export function LandingMiniChart({ symbol }: { symbol: string }) {
       })
       .then((json) => {
         if (cancelled) return;
+        setError(false);
         setBars(json.bars ?? []);
       })
       .catch(() => {

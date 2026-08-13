@@ -129,8 +129,8 @@ export function IndicatorExplorer({
     <div className="space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <p className="text-xs text-zinc-500">
-          Select the indicators — charts open two per row, with each one's
-          reference bands.
+          Select the indicators — charts open two per row, with reference bands
+          on each.
         </p>
         <div className="flex gap-1 rounded-md border border-zinc-800 bg-zinc-950 p-0.5">
           {LOOKBACKS.map((l) => (
