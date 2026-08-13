@@ -179,7 +179,7 @@ export function LandingView({
             height={682}
             className="relative mx-auto h-auto w-full max-w-xl"
           />
-          <p className="font-title relative mx-auto mt-4 max-w-3xl text-lg leading-snug tracking-tight text-zinc-200 sm:text-2xl sm:leading-snug">
+          <p className="font-body relative mx-auto mt-4 max-w-3xl text-lg leading-snug tracking-tight text-zinc-200 sm:text-2xl sm:leading-snug">
             Atlas identifies the best entry points across 17 asset classes, combining
             a macro engine with per-security technicals. The difference: this is not
             just signaling — it is portfolio management oriented toward income
