@@ -66,7 +66,7 @@ body {
 }
 
 .atlas-ticker-track {
-  animation: atlas-ticker 80s linear infinite;
+  animation: atlas-ticker 90s linear infinite;
 }
 
 .atlas-ticker-track:hover {

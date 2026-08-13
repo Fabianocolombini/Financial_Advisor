@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { formatPerf, perfClass } from "@/lib/format-market";
 import { APP_NAME } from "@/lib/brand";
+import { SymbolAvatar } from "@/components/catalog/SymbolAvatar";
 import type { LandingTicker, LandingViewModel } from "@/lib/landing/build-view";
 import { LoginModal } from "./LoginModal";
 
@@ -23,21 +23,29 @@ function Change({ value }: { value: number | null }) {
 function TickerTape({ items }: { items: LandingTicker[] }) {
   if (items.length === 0) {
     return (
-      <p className="px-4 py-3 text-center text-[11px] text-zinc-600">
+      <p className="px-4 py-4 text-center text-[11px] text-zinc-600">
         Data unavailable
       </p>
     );
   }
   const loop = [...items, ...items];
   return (
-    <div className="overflow-hidden border-y border-zinc-800 bg-black">
-      <div className="atlas-ticker-track flex w-max gap-8 py-2.5 pr-8">
+    <div className="overflow-hidden border-y border-[#d4af37]/20 bg-zinc-950">
+      <div className="atlas-ticker-track flex w-max items-center gap-6 py-3.5 pr-6">
         {loop.map((row, i) => (
           <span
             key={`${row.symbol}-${i}`}
-            className="flex shrink-0 items-baseline gap-2 text-xs"
+            className="flex shrink-0 items-center gap-2 text-xs"
           >
-            <span className="font-mono text-zinc-200">{row.symbol}</span>
+            <SymbolAvatar
+              symbol={row.symbol}
+              exchange={row.exchange}
+              classId={row.classId}
+              size="xs"
+            />
+            <span className="font-mono text-zinc-200">
+              {row.classId === "index" ? row.name : row.symbol}
+            </span>
             <Change value={row.changePercent} />
           </span>
         ))}
@@ -70,15 +78,22 @@ export function LandingView({
 
   return (
     <div className="min-h-full bg-black text-white">
-      <header className="sticky top-0 z-[100] h-14 border-b border-zinc-800 bg-black/90 backdrop-blur-md">
+      <header className="sticky top-0 z-[100] h-14 border-b border-[#d4af37]/20 bg-black/90 backdrop-blur-md">
         <div className="mx-auto flex h-full w-full max-w-6xl items-center justify-between px-4 sm:px-6">
-          <Link href="/" className="font-title text-sm tracking-tight text-white">
-            {APP_NAME}
+          <Link href="/" className="flex items-center gap-2">
+            <img
+              src="/atlas-logo.jpg"
+              alt=""
+              className="h-8 w-8 rounded-full object-cover object-top"
+            />
+            <span className="font-title text-sm tracking-[0.2em] text-[#d4af37]">
+              {APP_NAME}
+            </span>
           </Link>
           {signedIn ? (
             <Link
               href={appHref}
-              className="rounded-md bg-white px-3 py-1.5 text-xs font-medium text-black hover:bg-zinc-200"
+              className="rounded-md bg-[#d4af37] px-3 py-1.5 text-xs font-medium text-black hover:bg-[#e0c05a]"
             >
               Open app
             </Link>
@@ -86,7 +101,7 @@ export function LandingView({
             <button
               type="button"
               onClick={openLogin}
-              className="rounded-md border border-zinc-700 px-3 py-1.5 text-xs text-zinc-200 hover:bg-zinc-900"
+              className="rounded-md border border-[#d4af37]/40 px-3 py-1.5 text-xs text-[#d4af37] hover:bg-[#d4af37]/10"
             >
               Sign in
             </button>
@@ -95,27 +110,30 @@ export function LandingView({
       </header>
 
       <main>
-        <section className="mx-auto w-full max-w-3xl px-4 py-10 text-center sm:px-6 sm:py-14">
+        <section className="relative mx-auto w-full max-w-3xl px-4 py-10 text-center sm:px-6 sm:py-14">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 mx-auto max-w-lg bg-[radial-gradient(ellipse_at_center,rgba(45,212,191,0.14),transparent_65%)]"
+          />
           <h1 className="sr-only">{APP_NAME}</h1>
-          <Image
+          <img
             src="/atlas-logo.jpg"
             alt="Atlas — macro signals, technicals, portfolio decisions"
             width={1024}
             height={682}
-            priority
-            className="mx-auto h-auto w-full max-w-xl"
+            className="relative mx-auto h-auto w-full max-w-xl"
           />
-          <p className="mx-auto mt-6 max-w-2xl text-sm leading-relaxed text-zinc-400">
+          <p className="relative mx-auto mt-2 max-w-2xl text-sm leading-relaxed text-zinc-400">
             Atlas identifies the best entry points across 17 asset classes, combining
             a macro engine with per-security technicals. The difference: this is not
             just signaling — it is portfolio management oriented toward income
             generation and capital preservation.
           </p>
-          <div className="mt-8">
+          <div className="relative mt-8">
             {signedIn ? (
               <Link
                 href={appHref}
-                className="inline-flex rounded-md bg-white px-5 py-2.5 text-sm font-medium text-black hover:bg-zinc-200"
+                className="inline-flex rounded-md bg-[#d4af37] px-5 py-2.5 text-sm font-medium text-black hover:bg-[#e0c05a]"
               >
                 Open Markets
               </Link>
@@ -123,7 +141,7 @@ export function LandingView({
               <button
                 type="button"
                 onClick={openLogin}
-                className="inline-flex rounded-md bg-white px-5 py-2.5 text-sm font-medium text-black hover:bg-zinc-200"
+                className="inline-flex rounded-md bg-[#d4af37] px-5 py-2.5 text-sm font-medium text-black hover:bg-[#e0c05a]"
               >
                 Get started
               </button>
@@ -136,27 +154,50 @@ export function LandingView({
         <section className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
           <div className="grid gap-8 lg:grid-cols-3">
             <div className="lg:col-span-2">
-              <h2 className="text-sm font-medium text-zinc-300">Asset groups</h2>
+              <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-[#d4af37]/80">
+                Asset groups
+              </h2>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 {data.classes.map((group) => (
                   <article
                     key={group.classId}
-                    className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-4"
+                    className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-4 transition hover:border-[#d4af37]/35"
                   >
-                    <div className="flex items-baseline justify-between gap-3">
-                      <h3 className="text-sm font-medium text-white">{group.label}</h3>
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <div className="flex -space-x-2">
+                          {group.featured.slice(0, 3).map((row) => (
+                            <SymbolAvatar
+                              key={row.symbol}
+                              symbol={row.symbol}
+                              exchange={row.exchange}
+                              classId={row.classId}
+                              size="xs"
+                            />
+                          ))}
+                        </div>
+                        <h3 className="text-sm font-medium text-white">{group.label}</h3>
+                      </div>
                       <Change value={group.changePercent} />
                     </div>
                     {!group.available ? (
                       <p className="mt-3 text-xs text-zinc-600">Data unavailable</p>
                     ) : (
-                      <ul className="mt-3 space-y-1.5">
+                      <ul className="mt-3 space-y-2">
                         {group.featured.map((row) => (
                           <li
                             key={row.symbol}
-                            className="flex items-baseline justify-between gap-2 text-xs"
+                            className="flex items-center justify-between gap-2 text-xs"
                           >
-                            <span className="font-mono text-zinc-300">{row.symbol}</span>
+                            <span className="flex min-w-0 items-center gap-2">
+                              <SymbolAvatar
+                                symbol={row.symbol}
+                                exchange={row.exchange}
+                                classId={row.classId}
+                                size="xs"
+                              />
+                              <span className="font-mono text-zinc-200">{row.symbol}</span>
+                            </span>
                             <Change value={row.changePercent} />
                           </li>
                         ))}
@@ -168,21 +209,33 @@ export function LandingView({
             </div>
 
             <aside>
-              <h2 className="text-sm font-medium text-zinc-300">Top 10 — 1D change</h2>
+              <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-[#d4af37]/80">
+                Top 10 — 1D change
+              </h2>
               {data.top10.length === 0 ? (
                 <p className="mt-3 text-xs text-zinc-600">Data unavailable</p>
               ) : (
-                <ol className="mt-3 divide-y divide-zinc-800 rounded-xl border border-zinc-800">
+                <ol className="mt-4 divide-y divide-zinc-800/80 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/70">
                   {data.top10.map((row, i) => (
                     <li
                       key={row.symbol}
-                      className="flex items-baseline justify-between gap-3 px-3 py-2.5 text-xs"
+                      className="flex items-center justify-between gap-3 px-3 py-2.5 text-xs"
                     >
-                      <span className="min-w-0">
-                        <span className="mr-2 text-zinc-600">{i + 1}</span>
-                        <span className="font-mono text-zinc-200">{row.symbol}</span>
-                        <span className="ml-2 hidden text-zinc-600 sm:inline">
-                          {row.classLabel}
+                      <span className="flex min-w-0 items-center gap-2.5">
+                        <span className="w-4 text-right font-mono text-[#d4af37]/70">
+                          {i + 1}
+                        </span>
+                        <SymbolAvatar
+                          symbol={row.symbol}
+                          exchange={row.exchange}
+                          classId={row.classId}
+                          size="xs"
+                        />
+                        <span className="min-w-0">
+                          <span className="font-mono text-zinc-200">{row.symbol}</span>
+                          <span className="ml-2 hidden text-zinc-600 sm:inline">
+                            {row.classLabel}
+                          </span>
                         </span>
                       </span>
                       <Change value={row.changePercent} />

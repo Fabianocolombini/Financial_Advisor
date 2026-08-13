@@ -14,6 +14,7 @@ export type LandingTicker = {
   name: string;
   classId: string;
   classLabel: string;
+  exchange: string;
   changePercent: number | null;
 };
 
@@ -41,6 +42,9 @@ function mean(values: number[]): number | null {
 const NAME_BY_SYMBOL = new Map(
   CATALOG_INSTRUMENTS.map((i) => [i.symbol, i.name] as const),
 );
+const EXCHANGE_BY_SYMBOL = new Map(
+  CATALOG_INSTRUMENTS.map((i) => [i.symbol, i.exchange] as const),
+);
 
 function catalogName(symbol: string): string {
   return NAME_BY_SYMBOL.get(symbol) ?? NAME_BY_SYMBOL.get(symbol.toUpperCase()) ?? symbol;
@@ -61,17 +65,27 @@ function tickerChange(
   return v != null && Number.isFinite(v) ? v : null;
 }
 
+function catalogExchange(symbol: string): string {
+  return (
+    EXCHANGE_BY_SYMBOL.get(symbol) ??
+    EXCHANGE_BY_SYMBOL.get(symbol.toUpperCase()) ??
+    "NYSE"
+  );
+}
+
 function toLandingTicker(
   symbol: string,
   classId: string,
   changePercent: number | null,
   name?: string,
+  exchange?: string,
 ): LandingTicker {
   return {
     symbol,
     name: name ?? catalogName(symbol),
     classId,
     classLabel: classLabel(classId),
+    exchange: exchange ?? catalogExchange(symbol),
     changePercent,
   };
 }
@@ -87,7 +101,13 @@ export function buildLandingBook(snapshot: MotorDashboardSnapshot | null): {
       landingFeaturedCount(tab.id),
     );
     const featured = featuredInst.map((inst) =>
-      toLandingTicker(inst.symbol, tab.id, tickerChange(snapshot, inst.symbol), inst.name),
+      toLandingTicker(
+        inst.symbol,
+        tab.id,
+        tickerChange(snapshot, inst.symbol),
+        inst.name,
+        inst.exchange,
+      ),
     );
 
     const classMoves: number[] = [];

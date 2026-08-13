@@ -35,10 +35,11 @@ export async function loadLandingView(): Promise<LandingViewModel> {
   const indexTape = indices
     .filter((row) => row.changePercent != null)
     .map((row) => ({
-      symbol: row.label,
+      symbol: row.symbol,
       name: row.label,
       classId: "index",
       classLabel: "Index",
+      exchange: "NYSE",
       changePercent: row.changePercent,
     }));
 
