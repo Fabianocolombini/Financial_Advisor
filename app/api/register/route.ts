@@ -13,13 +13,13 @@ export async function POST(request: Request) {
   try {
     json = await request.json();
   } catch {
-    return NextResponse.json({ error: "JSON inválido." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
   }
 
   const parsed = Body.safeParse(json);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Informe um email válido e uma senha com pelo menos 8 caracteres." },
+      { error: "Enter a valid email and a password of at least 8 characters." },
       { status: 400 },
     );
   }
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing?.passwordHash) {
-    return NextResponse.json({ error: "Já existe uma conta com este email." }, { status: 409 });
+    return NextResponse.json({ error: "An account with this email already exists." }, { status: 409 });
   }
 
   if (existing) {

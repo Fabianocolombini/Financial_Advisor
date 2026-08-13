@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Atlas",
   description:
-    "Sinais macro e técnicos para decisões de carteira — 17 classes de ativos.",
+    "Macro signals, technicals, and portfolio decisions across 17 asset classes.",
 };
 
 export default async function LandingPage() {

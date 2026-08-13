@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { formatPerf, perfClass } from "@/lib/format-market";
@@ -23,13 +24,13 @@ function TickerTape({ items }: { items: LandingTicker[] }) {
   if (items.length === 0) {
     return (
       <p className="px-4 py-3 text-center text-[11px] text-zinc-600">
-        Dados indisponíveis
+        Data unavailable
       </p>
     );
   }
   const loop = [...items, ...items];
   return (
-    <div className="overflow-hidden border-y border-zinc-800 bg-zinc-950">
+    <div className="overflow-hidden border-y border-zinc-800 bg-black">
       <div className="atlas-ticker-track flex w-max gap-8 py-2.5 pr-8">
         {loop.map((row, i) => (
           <span
@@ -79,7 +80,7 @@ export function LandingView({
               href={appHref}
               className="rounded-md bg-white px-3 py-1.5 text-xs font-medium text-black hover:bg-zinc-200"
             >
-              Abrir o app
+              Open app
             </Link>
           ) : (
             <button
@@ -87,25 +88,28 @@ export function LandingView({
               onClick={openLogin}
               className="rounded-md border border-zinc-700 px-3 py-1.5 text-xs text-zinc-200 hover:bg-zinc-900"
             >
-              Entrar
+              Sign in
             </button>
           )}
         </div>
       </header>
 
       <main>
-        <section className="mx-auto w-full max-w-3xl px-4 py-16 text-center sm:px-6 sm:py-20">
-          <h1 className="font-title text-6xl tracking-tight text-white sm:text-8xl">
-            {APP_NAME}
-          </h1>
-          <p className="mt-4 text-base text-zinc-400 sm:text-lg">
-            Macro and technical signals for wallet decisions
-          </p>
-          <p className="mt-6 text-sm leading-relaxed text-zinc-500">
-            Atlas identifica os melhores pontos de entrada em 17 classes de ativos,
-            combinando um motor macro com indicadores técnicos por ativo. Diferencial:
-            não é só sinalização — é gestão de carteira orientada a geração de renda e
-            preservação de capital.
+        <section className="mx-auto w-full max-w-3xl px-4 py-10 text-center sm:px-6 sm:py-14">
+          <h1 className="sr-only">{APP_NAME}</h1>
+          <Image
+            src="/atlas-logo.jpg"
+            alt="Atlas — macro signals, technicals, portfolio decisions"
+            width={1024}
+            height={682}
+            priority
+            className="mx-auto h-auto w-full max-w-xl"
+          />
+          <p className="mx-auto mt-6 max-w-2xl text-sm leading-relaxed text-zinc-400">
+            Atlas identifies the best entry points across 17 asset classes, combining
+            a macro engine with per-security technicals. The difference: this is not
+            just signaling — it is portfolio management oriented toward income
+            generation and capital preservation.
           </p>
           <div className="mt-8">
             {signedIn ? (
@@ -113,7 +117,7 @@ export function LandingView({
                 href={appHref}
                 className="inline-flex rounded-md bg-white px-5 py-2.5 text-sm font-medium text-black hover:bg-zinc-200"
               >
-                Abrir Markets
+                Open Markets
               </Link>
             ) : (
               <button
@@ -121,7 +125,7 @@ export function LandingView({
                 onClick={openLogin}
                 className="inline-flex rounded-md bg-white px-5 py-2.5 text-sm font-medium text-black hover:bg-zinc-200"
               >
-                Começar
+                Get started
               </button>
             )}
           </div>
@@ -132,7 +136,7 @@ export function LandingView({
         <section className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
           <div className="grid gap-8 lg:grid-cols-3">
             <div className="lg:col-span-2">
-              <h2 className="text-sm font-medium text-zinc-300">Grupos de ativos</h2>
+              <h2 className="text-sm font-medium text-zinc-300">Asset groups</h2>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 {data.classes.map((group) => (
                   <article
@@ -144,7 +148,7 @@ export function LandingView({
                       <Change value={group.changePercent} />
                     </div>
                     {!group.available ? (
-                      <p className="mt-3 text-xs text-zinc-600">Dados indisponíveis</p>
+                      <p className="mt-3 text-xs text-zinc-600">Data unavailable</p>
                     ) : (
                       <ul className="mt-3 space-y-1.5">
                         {group.featured.map((row) => (
@@ -164,11 +168,9 @@ export function LandingView({
             </div>
 
             <aside>
-              <h2 className="text-sm font-medium text-zinc-300">
-                Top 10 — variação 1D
-              </h2>
+              <h2 className="text-sm font-medium text-zinc-300">Top 10 — 1D change</h2>
               {data.top10.length === 0 ? (
-                <p className="mt-3 text-xs text-zinc-600">Dados indisponíveis</p>
+                <p className="mt-3 text-xs text-zinc-600">Data unavailable</p>
               ) : (
                 <ol className="mt-3 divide-y divide-zinc-800 rounded-xl border border-zinc-800">
                   {data.top10.map((row, i) => (
@@ -191,15 +193,10 @@ export function LandingView({
             </aside>
           </div>
 
-          {data.asOf ? (
-            <p className="mt-8 text-[10px] text-zinc-600">
-              Motor as of {data.asOf}. Uso educacional — não é assessoria de investimento.
-            </p>
-          ) : (
-            <p className="mt-8 text-[10px] text-zinc-600">
-              Uso educacional — não é assessoria de investimento.
-            </p>
-          )}
+          <p className="mt-8 text-[10px] text-zinc-600">
+            {data.asOf ? `Motor as of ${data.asOf}. ` : null}
+            Educational use only — not investment advice.
+          </p>
         </section>
       </main>
 

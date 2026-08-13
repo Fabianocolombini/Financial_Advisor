@@ -28,7 +28,7 @@ export function LoginModal({
       <button
         type="button"
         className="absolute inset-0 bg-black/70"
-        aria-label="Fechar"
+        aria-label="Close"
         onClick={onClose}
       />
       <div
@@ -40,10 +40,10 @@ export function LoginModal({
         <div className="mb-4 flex items-start justify-between">
           <div>
             <h2 id="login-title" className="font-title text-lg text-white">
-              Entrar no Atlas
+              Sign in to Atlas
             </h2>
             <p className="mt-1 text-[11px] text-zinc-500">
-              Motor, técnicos e carteira ficam atrás do login.
+              The motor, technicals, and wallet sit behind the login.
             </p>
           </div>
           <button

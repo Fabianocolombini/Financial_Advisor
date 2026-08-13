@@ -22,7 +22,7 @@ export default async function SignInPage() {
           Atlas
         </h1>
         <p className="mt-3 text-center text-sm text-zinc-400">
-          Entre para acessar o motor, os técnicos e a carteira.
+          Sign in to access the motor, technicals, and wallet.
         </p>
         <div className="mt-8">
           <LoginPanel googleConfigured={googleConfigured} />

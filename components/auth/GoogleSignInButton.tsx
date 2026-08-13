@@ -40,7 +40,7 @@ export function GoogleSignInButton({
         className="flex w-full items-center justify-center gap-3 rounded-md bg-white px-4 py-2.5 text-sm font-medium text-zinc-900 transition hover:bg-zinc-100"
       >
         <GoogleLogo className="h-5 w-5" />
-        Continuar com Google
+        Continue with Google
       </button>
     );
   }
@@ -50,7 +50,7 @@ export function GoogleSignInButton({
       type="button"
       onClick={() => signIn("google", { callbackUrl })}
       className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-lg ring-1 ring-zinc-200 transition hover:scale-105 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
-      aria-label="Continuar com Google"
+      aria-label="Continue with Google"
     >
       <GoogleLogo className="h-7 w-7" />
     </button>

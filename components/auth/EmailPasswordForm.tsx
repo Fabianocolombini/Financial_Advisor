@@ -30,7 +30,7 @@ export function EmailPasswordForm({
         });
         const json = (await res.json()) as { error?: string };
         if (!res.ok) {
-          setError(json.error ?? "Não foi possível criar a conta.");
+          setError(json.error ?? "Could not create the account.");
           return;
         }
       }
@@ -44,8 +44,8 @@ export function EmailPasswordForm({
       if (result?.error) {
         setError(
           mode === "register"
-            ? "Conta criada, mas o login falhou. Tente entrar de novo."
-            : "Email ou senha inválidos.",
+            ? "Account created, but sign-in failed. Try again."
+            : "Invalid email or password.",
         );
         return;
       }
@@ -69,7 +69,7 @@ export function EmailPasswordForm({
         />
       </label>
       <label className="block text-[11px] text-zinc-400">
-        Senha
+        Password
         <input
           type="password"
           required
@@ -86,7 +86,7 @@ export function EmailPasswordForm({
         disabled={busy}
         className="w-full rounded-md bg-sky-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-sky-400 disabled:opacity-50"
       >
-        {busy ? "Aguarde…" : mode === "register" ? "Criar conta" : "Entrar"}
+        {busy ? "Please wait…" : mode === "register" ? "Create account" : "Sign in"}
       </button>
       <p className="text-center text-[11px] text-zinc-500">
         {mode === "login" ? (
@@ -98,7 +98,7 @@ export function EmailPasswordForm({
               setError(null);
             }}
           >
-            Criar conta
+            Create account
           </button>
         ) : (
           <button
@@ -109,7 +109,7 @@ export function EmailPasswordForm({
               setError(null);
             }}
           >
-            Já tenho conta
+            I already have an account
           </button>
         )}
       </p>
