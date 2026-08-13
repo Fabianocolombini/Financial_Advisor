@@ -47,13 +47,13 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "JSON inválido" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
   const parsed = addSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Validação falhou", details: parsed.error.flatten() },
+      { error: "Validation failed", details: parsed.error.flatten() },
       { status: 400 },
     );
   }
@@ -113,7 +113,7 @@ export async function DELETE(request: Request) {
   const { searchParams } = new URL(request.url);
   const symbol = searchParams.get("symbol");
   if (!symbol) {
-    return NextResponse.json({ error: "symbol é obrigatório" }, { status: 400 });
+    return NextResponse.json({ error: "symbol is required" }, { status: 400 });
   }
 
   await prisma.userWatchlistItem.deleteMany({

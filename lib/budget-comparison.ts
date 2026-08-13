@@ -62,13 +62,13 @@ export function buildBudgetComparison(input: {
   if (uncategorized && !uncategorized.equals(0)) {
     rows.push({
       categoryId: "",
-      categoryName: "Sem categoria",
+      categoryName: "Uncategorized",
       planned: new Prisma.Decimal(0),
       actual: uncategorized,
       variance: new Prisma.Decimal(0).sub(uncategorized),
     });
   }
 
-  rows.sort((a, b) => a.categoryName.localeCompare(b.categoryName, "pt-BR"));
+  rows.sort((a, b) => a.categoryName.localeCompare(b.categoryName, "en"));
   return rows;
 }

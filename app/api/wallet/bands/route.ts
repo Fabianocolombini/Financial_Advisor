@@ -13,7 +13,7 @@ export async function GET(request: Request) {
   const symbol = searchParams.get("symbol")?.trim().toUpperCase();
   const classId = searchParams.get("classId")?.trim() ?? "";
   if (!symbol || !classId) {
-    return NextResponse.json({ error: "symbol e classId são obrigatórios" }, { status: 400 });
+    return NextResponse.json({ error: "symbol and classId are required" }, { status: 400 });
   }
 
   const period2 = Math.floor(Date.now() / 1000);

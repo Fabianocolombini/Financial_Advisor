@@ -19,33 +19,33 @@ export const PIVOT_LEVEL_ORDER: PivotLevelId[] = ["R3", "R2", "R1", "P", "S1", "
 export const PIVOT_METHODS: Array<{ id: PivotMethodId; label: string; description: string }> = [
   {
     id: "classic",
-    label: "Clássico",
+    label: "Classic",
     description:
-      "Média de máxima, mínima e fechamento, com bandas somando a amplitude do período. É o método mais difundido, então tende a atrair ordens.",
+      "Average of high, low, and close, with bands adding the period's range. It is the most widely used method, so it tends to attract orders.",
   },
   {
     id: "fibonacci",
     label: "Fibonacci",
     description:
-      "Mesmo pivô central, com bandas em 38,2%, 61,8% e 100% da amplitude. Costuma dar alvos mais próximos em mercados de baixa volatilidade.",
+      "The same central pivot, with bands at 38.2%, 61.8%, and 100% of the range. Often gives closer targets in low-volatility markets.",
   },
   {
     id: "camarilla",
     label: "Camarilla",
     description:
-      "Bandas estreitas derivadas da amplitude multiplicada por 1,1/12, 1,1/6 e 1,1/4, medidas a partir do fechamento (e não do pivô). Desenhado para reversão à média, não para rompimento — por isso seus níveis podem ficar todos acima ou abaixo de P.",
+      "Narrow bands from the range multiplied by 1.1/12, 1.1/6, and 1.1/4, measured from the close (not the pivot). Designed for mean reversion, not breakout — so its levels can all sit above or below P.",
   },
   {
     id: "woodie",
     label: "Woodie",
     description:
-      "Dá peso dobrado ao fechamento no cálculo do pivô, o que aproxima os níveis do último preço negociado.",
+      "Gives double weight to the close in the pivot calculation, which pulls the levels toward the last traded price.",
   },
   {
     id: "demark",
     label: "DeMark",
     description:
-      "Condicional à relação entre abertura e fechamento; projeta apenas um suporte e uma resistência, deixando R2/R3 e S2/S3 indefinidos.",
+      "Conditional on the relationship between open and close; projects only one support and one resistance, leaving R2/R3 and S2/S3 undefined.",
   },
 ];
 
@@ -57,9 +57,9 @@ export type PivotSet = {
 export type PivotPeriodId = "daily" | "weekly" | "monthly";
 
 export const PIVOT_PERIODS: Array<{ id: PivotPeriodId; label: string; caption: string }> = [
-  { id: "daily", label: "Diário", caption: "pregão anterior" },
-  { id: "weekly", label: "Semanal", caption: "semana anterior" },
-  { id: "monthly", label: "Mensal", caption: "mês anterior" },
+  { id: "daily", label: "Daily", caption: "previous session" },
+  { id: "weekly", label: "Weekly", caption: "previous week" },
+  { id: "monthly", label: "Monthly", caption: "previous month" },
 ];
 
 export type PivotSourceBar = {

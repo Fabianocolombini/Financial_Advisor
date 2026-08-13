@@ -81,9 +81,9 @@ function SecurityRow({
                 {row.divergesFromClass ? (
                   <span
                     className="text-[10px] text-amber-400"
-                    title="Este papel está indo na direção contrária à da classe."
+                    title="This name is moving in the opposite direction of the class."
                   >
-                    contraria a classe
+                    against the class
                   </span>
                 ) : null}
               </div>
@@ -98,14 +98,14 @@ function SecurityRow({
       </td>
       <td
         className="px-2 py-2 text-sm text-zinc-300"
-        title={`Média de papéis negociados por dia nas últimas ${VOLUME_SESSIONS} sessões, e quanto isso representa do volume da classe.`}
+        title={`Average shares traded per day over the last ${VOLUME_SESSIONS} sessions, and how much that is of the class volume.`}
       >
         <div className="tabular-nums">
           {formatShareVolumeCompact(row.avgVolumeShares)}
         </div>
         <div className="text-[10px] text-zinc-500">
           {row.volumeSharePct != null
-            ? `${row.volumeSharePct.toFixed(0)}% da classe`
+            ? `${row.volumeSharePct.toFixed(0)}% of class`
             : "—"}
         </div>
       </td>
@@ -160,14 +160,14 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
         <h2 className="font-title text-base text-white">{group.label}</h2>
         {group.classStageLabel ? (
           <p className="text-[11px] text-zinc-500" title={classTrend.hint}>
-            A classe inteira:{" "}
+            The whole class:{" "}
             <span className="text-zinc-300">{classTrend.label}</span>
             {group.classDominantIndicator?.name
-              ? ` · puxada por ${group.classDominantIndicator.name}`
+              ? ` · driven by ${group.classDominantIndicator.name}`
               : ""}
           </p>
         ) : (
-          <p className="text-[11px] text-zinc-600">Classe ainda não avaliada.</p>
+          <p className="text-[11px] text-zinc-600">Class not scored yet.</p>
         )}
       </div>
 
@@ -175,16 +175,16 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
         <table className="w-full min-w-[48rem] text-left text-sm">
           <thead className="border-b border-zinc-800 bg-zinc-950/90 text-[11px] text-zinc-500">
             <tr>
-              <th className="px-3 py-2 font-medium">Ativo</th>
+              <th className="px-3 py-2 font-medium">Name</th>
               <th
                 className="px-2 py-2 font-medium"
-                title="Posição do papel no ranking da própria classe, de 0 a 1. Não compara classes diferentes."
+                title="Where the name sits in its own class ranking, from 0 to 1. It does not compare different classes."
               >
                 Score
               </th>
               <th
                 className="px-2 py-2 font-medium"
-                title={`Média de papéis negociados por dia nas últimas ${VOLUME_SESSIONS} sessões — K mil, M milhão, B bilhão.`}
+                title={`Average shares traded per day over the last ${VOLUME_SESSIONS} sessions — K thousand, M million, B billion.`}
               >
                 Volume {VOLUME_SESSIONS}d
               </th>
@@ -193,21 +193,21 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
               <th className="px-2 py-2 font-medium">15D</th>
               <th
                 className="px-2 py-2 font-medium"
-                title="Para onde a classe está indo: aumentar, manter ou reduzir."
+                title="Where the class is heading: increase, hold, or reduce."
               >
-                Tendência
+                Trend
               </th>
               <th
                 className="px-2 py-2 font-medium"
-                title="Se o modelo libera dinheiro novo neste papel agora."
+                title="Whether the model allows new money in this name now."
               >
-                Dinheiro novo
+                New money
               </th>
               <th
                 className="px-2 py-2 font-medium"
-                title="O ingrediente que mais pesou no score deste papel hoje."
+                title="The ingredient that weighed most on this name's score today."
               >
-                Principal fator
+                Main factor
               </th>
               {columns.map((col) => (
                 <th

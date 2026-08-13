@@ -32,7 +32,7 @@ describe("chart-overlays", () => {
       { ...bars[bars.length - 1]!, volume: 50_000 },
     ];
     const result = volumeConfirmation(loud, 20);
-    expect(result.message).toMatch(/acima da média|próximo da média/);
+    expect(result.message).toMatch(/above average|near average/);
   });
 
   it("detects compression when band width shrinks", () => {
@@ -40,7 +40,7 @@ describe("chart-overlays", () => {
       i < 25 ? 100 + (i % 3) : 100 + (i % 2) * 0.05,
     );
     const label = bollingerCompressionLabel(flat, 20);
-    expect(label === "comprimida" || label === null).toBe(true);
+    expect(label === "compressed" || label === null).toBe(true);
   });
 });
 

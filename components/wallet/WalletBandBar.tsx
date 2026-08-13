@@ -36,19 +36,19 @@ export function WalletBandBar({
         <span
           className="absolute top-1/2 h-3 w-0.5 -translate-y-1/2 bg-zinc-300"
           style={{ left: `${Math.round(costFrac * 100)}%` }}
-          title={`Compra ${formatPrice(cost)}`}
+          title={`Cost ${formatPrice(cost)}`}
         />
       </div>
       <div className="flex justify-between text-[10px] text-zinc-600">
         <span className={hitMin ? "text-red-400" : undefined}>
-          {hasUserBands ? "Piso" : "−15%"} {formatPrice(low)}
+          {hasUserBands ? "Floor" : "−15%"} {formatPrice(low)}
         </span>
         <span className="text-zinc-400">
-          Compra {formatPrice(cost)}
-          {last != null ? ` · agora ${formatPrice(last)}` : ""}
+          Cost {formatPrice(cost)}
+          {last != null ? ` · now ${formatPrice(last)}` : ""}
         </span>
         <span className={hitMax ? "text-red-400" : undefined}>
-          {hasUserBands ? "Teto" : "+15%"} {formatPrice(high)}
+          {hasUserBands ? "Ceiling" : "+15%"} {formatPrice(high)}
         </span>
       </div>
     </div>

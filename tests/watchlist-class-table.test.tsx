@@ -93,7 +93,7 @@ describe("WatchlistClassTable", () => {
       <WatchlistClassTable group={group([row()])} />,
     );
     expect(html).toContain("20M");
-    expect(html).toContain("38% da classe");
+    expect(html).toContain("38% of class");
     expect(html.indexOf("Score")).toBeLessThan(html.indexOf("Volume 15d"));
   });
 
@@ -101,8 +101,8 @@ describe("WatchlistClassTable", () => {
     const html = renderToStaticMarkup(
       <WatchlistClassTable group={group([row()])} />,
     );
-    expect(html).toContain("Manter");
-    expect(html).toContain("Não aportar");
+    expect(html).toContain("Hold");
+    expect(html).toContain("Do not add");
     expect(html).not.toContain("Not validated");
     expect(html).not.toContain(">Stage<");
   });

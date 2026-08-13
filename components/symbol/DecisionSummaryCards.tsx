@@ -98,31 +98,31 @@ export function DecisionSummaryCards({
   return (
     <div className="space-y-4">
       <section className="rounded-lg border border-zinc-700 bg-zinc-900/60 p-4">
-        <p className="text-xs uppercase tracking-wide text-zinc-500">Leitura principal</p>
+        <p className="text-xs uppercase tracking-wide text-zinc-500">Main reading</p>
         <p className="mt-1 text-lg font-medium text-white">{decision.headline}</p>
       </section>
 
       <div className="grid gap-3 lg:grid-cols-3">
         <DecisionCard
-          title="Alocação da classe"
+          title="Class allocation"
           term="allocation_stance"
-          question={`Quanto carregar de ${classLabel}?`}
+          question={`How much ${classLabel} to hold?`}
           value={allocation.label}
           tone={allocationTone(allocation.stance)}
           detail={allocation.explanation}
         />
         <DecisionCard
-          title="Instrumento vs pares"
+          title="Instrument vs peers"
           term="instrument_quality"
-          question="Este papel é o melhor da classe?"
+          question="Is this name the best in the class?"
           value={instrument.label}
           tone={qualityTone(instrument.quality)}
           detail={instrument.explanation}
         />
         <DecisionCard
-          title="Entrada agora"
+          title="Entry now"
           term="entry_timing"
-          question="Este é um bom momento de compra?"
+          question="Is this a good moment to buy?"
           value={entry.label}
           tone={entryTone(entry.timing)}
           detail={entry.explanation}
@@ -139,11 +139,11 @@ export function DecisionSummaryCards({
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="rounded border border-zinc-800 bg-black/40 px-3 py-2">
-          <p className="text-[11px] uppercase tracking-wide text-zinc-600">Dinheiro novo</p>
+          <p className="text-[11px] uppercase tracking-wide text-zinc-600">New money</p>
           <p className="mt-1 text-sm text-zinc-300">{decision.position.newMoney}</p>
         </div>
         <div className="rounded border border-zinc-800 bg-black/40 px-3 py-2">
-          <p className="text-[11px] uppercase tracking-wide text-zinc-600">Posição existente</p>
+          <p className="text-[11px] uppercase tracking-wide text-zinc-600">Existing position</p>
           <p className="mt-1 text-sm text-zinc-300">{decision.position.existing}</p>
         </div>
       </div>
@@ -154,7 +154,7 @@ export function DecisionSummaryCards({
 export function DecisionNarrative({ sections }: { sections: NarrativeSection[] }) {
   return (
     <section className="h-full rounded-lg border border-zinc-800 bg-black p-4">
-      <h3 className="text-sm font-medium text-white">Leitura qualitativa</h3>
+      <h3 className="text-sm font-medium text-white">Qualitative reading</h3>
       <div className="mt-3 space-y-3">
         {sections.map((section) => (
           <div key={section.title}>

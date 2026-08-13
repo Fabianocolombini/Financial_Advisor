@@ -24,7 +24,7 @@ describe("suggestWalletBands", () => {
     expect(sources.every((s) => !/Fibonacci/i.test(s!))).toBe(true);
     expect(result.resistances.length).toBeGreaterThan(0);
     expect(result.resistances.length).toBeLessThanOrEqual(3);
-    expect(result.note).toMatch(/Caixa/i);
+    expect(result.note).toMatch(/Cash/i);
   });
 
   it("returns the next floor below price and up to three resistances above it", () => {

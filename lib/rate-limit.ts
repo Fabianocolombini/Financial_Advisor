@@ -31,7 +31,7 @@ export function writeRateLimitOr429(request: Request): NextResponse | null {
   b.count += 1;
   if (b.count > MAX_REQUESTS) {
     return NextResponse.json(
-      { error: "Muitas requisições. Tente novamente em instantes." },
+      { error: "Too many requests. Try again in a moment." },
       {
         status: 429,
         headers: { "Retry-After": String(Math.ceil((b.resetAt - now) / 1000)) },

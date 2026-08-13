@@ -91,7 +91,7 @@ export function suggestWalletBands(
 
   const price = last ?? (bars.length ? bars[bars.length - 1]!.value : null);
   if (price == null || !Number.isFinite(price) || bars.length < 20) {
-    return empty("Histórico insuficiente para sugerir piso e teto.", price);
+    return empty("Not enough history to suggest a floor and ceiling.", price);
   }
 
   const stability = classScoreProfile(classId).stabilityFocused;
@@ -99,11 +99,11 @@ export function suggestWalletBands(
 
   const floors: Candidate[] = structure.supports.map((value) => ({
     price: value,
-    source: "suporte da estrutura",
+    source: "structure support",
   }));
   const ceilings: Candidate[] = structure.resistances.map((value) => ({
     price: value,
-    source: "resistência da estrutura",
+    source: "structure resistance",
   }));
 
   if (!stability) {
@@ -124,10 +124,10 @@ export function suggestWalletBands(
       const value = pivotConsensusLevel(table, level);
       if (value == null) continue;
       if (level.startsWith("S") && value < price) {
-        floors.push({ price: value, source: `pivô ${level} (consenso)` });
+        floors.push({ price: value, source: `pivot ${level} (consensus)` });
       }
       if (level.startsWith("R") && value > price) {
-        ceilings.push({ price: value, source: `pivô ${level} (consenso)` });
+        ceilings.push({ price: value, source: `pivot ${level} (consensus)` });
       }
     }
   }
@@ -139,8 +139,8 @@ export function suggestWalletBands(
   if (stability) {
     note =
       supports.length || resistances.length
-        ? "Caixa: piso, teto e resistências vêm da estrutura e dos pivôs do NAV (sem Fibonacci)."
-        : "Caixa: o NAV quase não oscila — sem piso/teto de estrutura. Informe o seu plano ou deixe em branco.";
+        ? "Cash: floor, ceiling, and resistances come from NAV structure and pivots (no Fibonacci)."
+        : "Cash: NAV barely swings — no structure floor/ceiling. Enter your plan or leave blank.";
   }
 
   return {

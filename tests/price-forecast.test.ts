@@ -51,7 +51,7 @@ describe("buildPriceForecast", () => {
     });
     expect(forecast.dataSufficiency).toBe("insufficient");
     expect(forecast.scenarios).toHaveLength(0);
-    expect(forecast.explanations.join(" ")).toContain("insuficiente");
+    expect(forecast.explanations.join(" ")).toContain("Not enough history");
   });
 
   it("produces three horizons with nested 68% and 95% bands", () => {
@@ -185,7 +185,7 @@ describe("buildPriceForecast", () => {
       motorScore: 0.5,
     });
     expect(forecast.usedAdjustedSeries).toBe(true);
-    expect(forecast.explanations.join(" ")).toContain("ajustada");
+    expect(forecast.explanations.join(" ")).toContain("adjusted");
     expect(forecast.current).toBeCloseTo(bars[bars.length - 1]!.value, 6);
   });
 
@@ -198,7 +198,7 @@ describe("buildPriceForecast", () => {
     });
     if (forecast.dailyDrift >= 0 && forecast.levels.nearestSupport != null) {
       expect(forecast.levels.invalidation).toBe(forecast.levels.nearestSupport);
-      expect(forecast.levels.invalidationNote).toContain("suporte");
+      expect(forecast.levels.invalidationNote).toContain("support");
     }
   });
 

@@ -48,8 +48,8 @@ export async function runWalletDailyAlerts(): Promise<{
     });
     const sent = await sendWalletAlertEmail({
       to: user.email,
-      subject: `My Wallet — ${items.length} decisão${items.length === 1 ? "" : "ões"} hoje`,
-      text: `Papéis na sua carteira que pedem uma decisão:\n\n${lines.join("\n\n")}\n\nAbra My Wallet no Atlas para o detalhe vs o preço de compra e as bandas.`,
+      subject: `My Wallet — ${items.length} decision${items.length === 1 ? "" : "s"} today`,
+      text: `Names in your wallet that need a decision:\n\n${lines.join("\n\n")}\n\nOpen My Wallet in Atlas for the detail vs purchase price and the bands.`,
     });
     if (sent.sent) {
       await prisma.walletAlert.update({

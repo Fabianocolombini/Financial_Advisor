@@ -26,13 +26,13 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "JSON inválido" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
   const parsed = upsertHoldingSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Validação falhou", details: parsed.error.flatten() },
+      { error: "Validation failed", details: parsed.error.flatten() },
       { status: 400 },
     );
   }
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
   const symbol = data.symbol.toUpperCase();
   const purchasedAt = new Date(data.purchasedAt);
   if (Number.isNaN(purchasedAt.getTime())) {
-    return NextResponse.json({ error: "Data de compra inválida" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid purchase date" }, { status: 400 });
   }
   if (
     data.targetMin != null &&
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     data.targetMin >= data.targetMax
   ) {
     return NextResponse.json(
-      { error: "O piso precisa ser menor que o teto" },
+      { error: "The floor must be below the ceiling" },
       { status: 400 },
     );
   }
@@ -101,7 +101,7 @@ export async function DELETE(request: Request) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
   if (!id) {
-    return NextResponse.json({ error: "id é obrigatório" }, { status: 400 });
+    return NextResponse.json({ error: "id is required" }, { status: 400 });
   }
 
   await prisma.walletHolding.deleteMany({

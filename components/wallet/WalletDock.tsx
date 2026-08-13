@@ -36,7 +36,7 @@ export function WalletDock() {
         type="button"
         onClick={() => setOpen(true)}
         className="fixed right-0 top-1/3 z-40 rounded-l-md border border-r-0 border-zinc-700 bg-zinc-950 px-1.5 py-3 text-[11px] tracking-wide text-zinc-300 [writing-mode:vertical-rl] hover:bg-zinc-900 hover:text-white"
-        aria-label="Abrir My Wallet"
+        aria-label="Open My Wallet"
       >
         My Wallet
       </button>
@@ -48,7 +48,7 @@ export function WalletDock() {
       <button
         type="button"
         className="fixed inset-0 z-40 bg-black/60 md:hidden"
-        aria-label="Fechar My Wallet"
+        aria-label="Close My Wallet"
         onClick={close}
       />
       <aside
@@ -61,7 +61,7 @@ export function WalletDock() {
             type="button"
             onClick={close}
             className="rounded px-2 py-1 text-[11px] text-zinc-500 hover:text-white"
-            aria-label="Fechar My Wallet"
+            aria-label="Close My Wallet"
           >
             ✕
           </button>

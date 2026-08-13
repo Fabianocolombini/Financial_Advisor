@@ -13,7 +13,7 @@ import {
 
 function formatLevel(value: number | null): string {
   if (value == null || !Number.isFinite(value)) return "—";
-  return value.toLocaleString("pt-BR", {
+  return value.toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
@@ -42,7 +42,7 @@ export function PivotPointsTable({
   if (!table) {
     return (
       <p className="text-sm text-zinc-500">
-        Histórico insuficiente para calcular pivôs do período anterior.
+        Not enough history to calculate pivots for the previous period.
       </p>
     );
   }
@@ -53,11 +53,11 @@ export function PivotPointsTable({
     <div className="space-y-3">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <p className="max-w-xl text-xs text-zinc-500">
-          Níveis calculados sobre a máxima, mínima e fechamento do {periodMeta?.caption}
+          Levels calculated from the high, low, and close of the {periodMeta?.caption}
           {" "}({table.source.from === table.source.to
             ? table.source.from
-            : `${table.source.from} a ${table.source.to}`}). Ficam fixos até o período
-          fechar, por isso servem como alvo definido de antemão.
+            : `${table.source.from} to ${table.source.to}`}). They stay fixed until the period
+          closes, so they work as a target set in advance.
         </p>
         <div className="flex gap-1 rounded-md border border-zinc-800 bg-zinc-950 p-0.5">
           {PIVOT_PERIODS.map((p) => (
@@ -80,19 +80,19 @@ export function PivotPointsTable({
       {targets && (targets.resistance || targets.support) ? (
         <div className="grid gap-2 sm:grid-cols-2">
           <div className="rounded border border-zinc-800 bg-black px-3 py-2">
-            <p className="text-[11px] text-zinc-600">Próximo alvo de alta</p>
+            <p className="text-[11px] text-zinc-600">Next upside target</p>
             <p className="text-sm tabular-nums text-zinc-200">
               {targets.resistance
                 ? `${formatLevel(targets.resistance.price)} (${targets.resistance.level}, ${targets.resistance.distancePct >= 0 ? "+" : ""}${targets.resistance.distancePct.toFixed(2)}%)`
-                : "acima de todos os níveis projetados"}
+                : "above every projected level"}
             </p>
           </div>
           <div className="rounded border border-zinc-800 bg-black px-3 py-2">
-            <p className="text-[11px] text-zinc-600">Próximo suporte</p>
+            <p className="text-[11px] text-zinc-600">Next support</p>
             <p className="text-sm tabular-nums text-zinc-200">
               {targets.support
                 ? `${formatLevel(targets.support.price)} (${targets.support.level}, ${targets.support.distancePct.toFixed(2)}%)`
-                : "abaixo de todos os níveis projetados"}
+                : "below every projected level"}
             </p>
           </div>
         </div>
@@ -102,7 +102,7 @@ export function PivotPointsTable({
         <table className="w-full text-left text-sm">
           <thead className="border-b border-zinc-800 bg-zinc-950 text-[11px] text-zinc-500">
             <tr>
-              <th className="px-3 py-2">Pivô</th>
+              <th className="px-3 py-2">Pivot</th>
               {PIVOT_METHODS.map((m) => (
                 <th key={m.id} className="px-3 py-2" title={m.description}>
                   {m.label}
@@ -135,7 +135,7 @@ export function PivotPointsTable({
                       className={`px-3 py-2 tabular-nums ${
                         crossed ? "text-zinc-600 line-through" : "text-zinc-300"
                       }`}
-                      title={crossed ? "Nível já rompido pelo preço atual" : undefined}
+                      title={crossed ? "Level already broken by the current price" : undefined}
                     >
                       {formatLevel(value)}
                     </td>
@@ -149,7 +149,7 @@ export function PivotPointsTable({
 
       <details className="rounded border border-zinc-800 bg-black px-3 py-2">
         <summary className="cursor-pointer text-[11px] text-zinc-500">
-          Como ler cada método
+          How to read each method
         </summary>
         <ul className="mt-2 space-y-1.5 text-[11px] text-zinc-500">
           {PIVOT_METHODS.map((m) => (

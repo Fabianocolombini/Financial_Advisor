@@ -17,7 +17,7 @@ function ExcludedNote({
   return (
     <div className="rounded border border-zinc-800 bg-black/40 px-3 py-2">
       <p className="text-[11px] font-medium text-zinc-400">
-        Não se aplicam a esta classe ({excluded.length})
+        Do not apply to this class ({excluded.length})
       </p>
       <p className="mt-1 text-[11px] text-zinc-600">
         {excluded.map((e) => e.row.name).join(", ")}
@@ -74,10 +74,10 @@ function SignalTable({
           <table className="w-full text-left text-sm">
             <thead className="border-b border-zinc-800 bg-zinc-950 text-[11px] text-zinc-500">
               <tr>
-                <th className="px-3 py-2">Indicador</th>
-                <th className="px-3 py-2">Valor</th>
-                {showVsPrice ? <th className="px-3 py-2">Preço vs média</th> : null}
-                <th className="px-3 py-2">Sinal</th>
+                <th className="px-3 py-2">Indicator</th>
+                <th className="px-3 py-2">Value</th>
+                {showVsPrice ? <th className="px-3 py-2">Price vs average</th> : null}
+                <th className="px-3 py-2">Signal</th>
               </tr>
             </thead>
             <tbody>
@@ -85,10 +85,10 @@ function SignalTable({
                 const vs =
                   showVsPrice && price != null && row.value != null
                     ? price > row.value
-                      ? "acima"
+                      ? "above"
                       : price < row.value
-                        ? "abaixo"
-                        : "na média"
+                        ? "below"
+                        : "at average"
                     : null;
                 const overbought = row.action === "Sell" && row.group === "oscillator";
                 const oversold = row.action === "Buy" && row.group === "oscillator";
@@ -143,9 +143,9 @@ export function TechnicalIndicatorsTable({
   return (
     <section className="space-y-3">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h3 className="text-sm font-medium text-white">Indicadores — Buy, Neutral, Sell</h3>
+        <h3 className="text-sm font-medium text-white">Indicators — Buy, Neutral, Sell</h3>
         <p className="text-[11px] text-zinc-600">
-          Buy = favorece alta · Neutral = sem sinal agora · Sell = favorece baixa
+          Buy = favors upside · Neutral = no signal now · Sell = favors downside
         </p>
       </div>
 
@@ -158,32 +158,32 @@ export function TechnicalIndicatorsTable({
                 : "bg-red-500/10 text-red-400"
             }`}
           >
-            {cross === "golden" ? "Golden cross" : "Death cross"} — MM50 vs MM200
+            {cross === "golden" ? "Golden cross" : "Death cross"} — MA50 vs MA200
           </span>
         </p>
       ) : null}
 
       <div className="grid gap-4 lg:grid-cols-2">
         <SignalTable
-          title="Osciladores"
+          title="Oscillators"
           rows={oscillators}
           glossary="rsi"
           empty={
             excludedOscillators.length > 0
-              ? "Nenhum oscilador de momentum se aplica a esta classe."
-              : "Histórico insuficiente para osciladores."
+              ? "No momentum oscillator applies to this class."
+              : "Not enough history for oscillators."
           }
           excluded={excludedOscillators}
         />
         <SignalTable
-          title="Médias móveis"
+          title="Moving averages"
           rows={movingAverages}
           price={price}
           glossary="moving_averages"
           empty={
             excludedMovingAverages.length > 0
-              ? "Nenhuma média móvel se aplica a esta classe."
-              : "Histórico insuficiente para médias móveis."
+              ? "No moving average applies to this class."
+              : "Not enough history for moving averages."
           }
           excluded={excludedMovingAverages}
         />

@@ -79,26 +79,26 @@ export type DecisionSummary = {
 };
 
 const ALLOCATION_LABELS: Record<AllocationStance, string> = {
-  Overweight: "Aumentar peso da classe",
-  Hold: "Manter peso da classe",
-  Reduce: "Reduzir peso da classe",
-  "Strong Reduce": "Reduzir peso com convicção",
-  Unknown: "Peso da classe indefinido",
+  Overweight: "Increase class weight",
+  Hold: "Hold class weight",
+  Reduce: "Reduce class weight",
+  "Strong Reduce": "Reduce class weight with conviction",
+  Unknown: "Class weight undefined",
 };
 
 const QUALITY_LABELS: Record<InstrumentQuality, string> = {
-  Preferred: "Preferido entre os pares",
-  Competitive: "Competitivo entre os pares",
-  Weak: "Fraco vs pares da classe",
-  Unknown: "Comparação com pares indisponível",
+  Preferred: "Preferred among peers",
+  Competitive: "Competitive among peers",
+  Weak: "Weak vs class peers",
+  Unknown: "Peer comparison unavailable",
 };
 
 const ENTRY_LABELS: Record<EntryTiming, string> = {
-  Buy: "Comprar agora",
-  Wait: "Aguardar melhor entrada",
-  Neutral: "Momento indiferente",
-  Avoid: "Evitar entrada agora",
-  Unknown: "Entrada indefinida",
+  Buy: "Buy now",
+  Wait: "Wait for a better entry",
+  Neutral: "Timing indifferent",
+  Avoid: "Avoid entry now",
+  Unknown: "Entry undefined",
 };
 
 function stanceFromLabel(label: string | null | undefined): AllocationStance {
@@ -128,7 +128,7 @@ function resolveAllocation(motor: SymbolMotorContext): DecisionSummary["allocati
       score: regimeScore ?? null,
       source: "regime_model",
       explanation:
-        "Vem do modelo de regime da classe (macro, carry e curva). Responde quanto alocar no agregado, não se este papel específico é uma compra.",
+        "Comes from the class regime model (macro, carry, and the curve). It answers how much to allocate in aggregate, not whether this specific name is a buy.",
     };
   }
 
@@ -140,7 +140,7 @@ function resolveAllocation(motor: SymbolMotorContext): DecisionSummary["allocati
       score: motor.classScore,
       source: "class_stage",
       explanation:
-        "Derivado do estágio da classe no motor. Responde quanto alocar no agregado, não se este papel específico é uma compra.",
+        "Derived from the class stage in the motor. It answers how much to allocate in aggregate, not whether this specific name is a buy.",
     };
   }
 
@@ -149,7 +149,7 @@ function resolveAllocation(motor: SymbolMotorContext): DecisionSummary["allocati
     label: ALLOCATION_LABELS.Unknown,
     score: null,
     source: "none",
-    explanation: "Sem score de classe no snapshot do motor.",
+    explanation: "No class score in the motor snapshot.",
   };
 }
 
@@ -167,7 +167,7 @@ function resolveInstrument(
       score: null,
       percentile: null,
       explanation:
-        "Sem score de security layer para este ticker — usando apenas a leitura da classe.",
+        "No security-layer score for this ticker — using the class reading only.",
     };
   }
 
@@ -181,9 +181,9 @@ function resolveInstrument(
   const explanation =
     domain === "unit"
       ? isPercentile
-        ? `Ranking cross-sectional dentro da classe: ${(score * 100).toFixed(0)}º percentil entre os pares. É uma comparação relativa, não um sinal de compra.`
-        : `Score relativo dentro da classe: ${score.toFixed(3)} (fora da faixa 0–1 por penalidades do modelo, como crowding). É uma comparação com os pares, não um sinal de compra.`
-      : "Score composto direcional do papel no motor.";
+        ? `Cross-sectional ranking inside the class: ${(score * 100).toFixed(0)}th percentile among peers. This is a relative comparison, not a buy signal.`
+        : `Relative score inside the class: ${score.toFixed(3)} (outside the 0–1 range because of model penalties such as crowding). This is a peer comparison, not a buy signal.`
+      : "Directional composite score for this name in the motor.";
 
   return {
     quality,
@@ -212,45 +212,45 @@ function resolveEntry(input: EntryInput): DecisionSummary["entry"] {
 
   if (stabilityFocused) {
     reasons.push(
-      "Instrumento de caixa: o NAV é estável por construção, então não existe um ponto de entrada técnico relevante.",
+      "Cash instrument: NAV is stable by construction, so there is no meaningful technical entry point.",
     );
     if (allocationBlocks) {
-      reasons.push("O modelo de regime pede reduzir caixa — o carry não compensa aumentar agora.");
+      reasons.push("The regime model calls for reducing cash — carry does not justify adding now.");
       return {
         timing: "Avoid",
         label: ENTRY_LABELS.Avoid,
         reasons,
         explanation:
-          "Para caixa, a decisão de entrada é a decisão de alocação. Com o sleeve em redução, não aumente a posição.",
+          "For cash, the entry decision is the allocation decision. With the sleeve in reduction, do not add to the position.",
       };
     }
     if (quality === "Weak") {
-      reasons.push("Há instrumentos melhores dentro do próprio sleeve de caixa (liquidez e estabilidade).");
+      reasons.push("There are better instruments inside the cash sleeve itself (liquidity and stability).");
       return {
         timing: "Wait",
         label: ENTRY_LABELS.Wait,
         reasons,
         explanation:
-          "Antes de aportar, troque pelo par mais líquido e menos volátil da mesma classe.",
+          "Before adding, switch to the more liquid and less volatile peer in the same class.",
       };
     }
     if (allocation === "Overweight") {
-      reasons.push("O modelo de regime pede aumentar caixa e este papel está entre os melhores pares.");
+      reasons.push("The regime model calls for increasing cash and this name ranks among the best peers.");
       return {
         timing: "Buy",
         label: ENTRY_LABELS.Buy,
         reasons,
         explanation:
-          "Aporte quando precisar de caixa: o custo de esperar é o carry perdido, não um risco de preço.",
+          "Add when you need cash: the cost of waiting is lost carry, not price risk.",
       };
     }
-    reasons.push("O sleeve está em manutenção — aportar ou não é uma decisão de necessidade de liquidez.");
+    reasons.push("The sleeve is on hold — adding or not is a liquidity-need decision.");
     return {
       timing: "Neutral",
       label: ENTRY_LABELS.Neutral,
       reasons,
       explanation:
-        "Não espere por um preço melhor: em caixa, esperar custa carry e não reduz risco de forma relevante.",
+        "Do not wait for a better price: in cash, waiting costs carry and does not meaningfully reduce risk.",
     };
   }
 
@@ -258,66 +258,66 @@ function resolveEntry(input: EntryInput): DecisionSummary["entry"] {
 
   if (trend.direction === "up") {
     score += 1;
-    reasons.push("Médias de 20 e 50 dias em tendência de alta.");
+    reasons.push("20- and 50-day averages in an uptrend.");
   } else if (trend.direction === "down") {
     score -= 1;
-    reasons.push("Médias de 20 e 50 dias em tendência de baixa.");
+    reasons.push("20- and 50-day averages in a downtrend.");
   } else if (trend.direction === "sideways") {
-    reasons.push("Preço lateral: médias de 20 e 50 dias sem inclinação definida.");
+    reasons.push("Sideways price: 20- and 50-day averages with no clear slope.");
   }
 
   if (bollinger.zone === "above_upper") {
     score -= 1;
-    reasons.push("Preço acima da banda superior de Bollinger — esticado para cima, entrada cara.");
+    reasons.push("Price above the upper Bollinger band — stretched higher, expensive entry.");
   } else if (bollinger.zone === "upper_half") {
-    reasons.push("Preço na metade superior da banda de Bollinger.");
+    reasons.push("Price in the upper half of the Bollinger band.");
   } else if (bollinger.zone === "middle") {
-    reasons.push("Preço na mediana da banda de Bollinger — sem desconto nem esticamento.");
+    reasons.push("Price at the middle of the Bollinger band — neither a discount nor stretched.");
   } else if (bollinger.zone === "lower_half") {
     score += trend.direction === "down" ? 0 : 1;
     reasons.push(
       trend.direction === "down"
-        ? "Preço na metade inferior da banda, mas dentro de tendência de baixa — pode continuar caindo."
-        : "Preço na metade inferior da banda de Bollinger — desconto dentro da faixa normal.",
+        ? "Price in the lower half of the band, but inside a downtrend — it can keep falling."
+        : "Price in the lower half of the Bollinger band — a discount inside the normal range.",
     );
   } else if (bollinger.zone === "below_lower") {
     score += trend.direction === "down" ? -1 : 1;
     reasons.push(
       trend.direction === "down"
-        ? "Preço rompeu a banda inferior em tendência de baixa — sinal de fraqueza, não de barganha."
-        : "Preço abaixo da banda inferior sem tendência de baixa — esticado para baixo.",
+        ? "Price broke the lower band in a downtrend — a weakness signal, not a bargain."
+        : "Price below the lower band without a downtrend — stretched lower.",
     );
   }
 
   if (price != null && trend.sma50 != null) {
     if (price > trend.sma50) {
       score += 1;
-      reasons.push("Preço acima da média de 50 dias.");
+      reasons.push("Price above the 50-day average.");
     } else {
       score -= 1;
-      reasons.push("Preço abaixo da média de 50 dias.");
+      reasons.push("Price below the 50-day average.");
     }
   }
 
   if (allocationBlocks) {
-    reasons.push("O modelo de regime da classe pede reduzir exposição.");
+    reasons.push("The class regime model calls for reducing exposure.");
     return {
       timing: "Avoid",
       label: ENTRY_LABELS.Avoid,
       reasons,
       explanation:
-        "Mesmo com sinais técnicos pontuais, a classe está em redução — novas entradas ficam contra o regime.",
+        "Even with isolated technical signals, the class is in reduction — new entries go against the regime.",
     };
   }
 
   if (quality === "Weak") {
-    reasons.push("O papel está no terço inferior do ranking da própria classe.");
+    reasons.push("The name sits in the bottom third of its own class ranking.");
     return {
       timing: "Wait",
       label: ENTRY_LABELS.Wait,
       reasons,
       explanation:
-        "Prefira um par melhor classificado dentro da mesma classe antes de aportar neste papel.",
+        "Prefer a better-ranked peer in the same class before adding to this name.",
     };
   }
 
@@ -326,7 +326,7 @@ function resolveEntry(input: EntryInput): DecisionSummary["entry"] {
       timing: "Buy",
       label: ENTRY_LABELS.Buy,
       reasons,
-      explanation: "Tendência e posição na banda confirmam entrada neste momento.",
+      explanation: "Trend and band position confirm an entry at this moment.",
     };
   }
   if (score <= -2) {
@@ -334,7 +334,7 @@ function resolveEntry(input: EntryInput): DecisionSummary["entry"] {
       timing: "Avoid",
       label: ENTRY_LABELS.Avoid,
       reasons,
-      explanation: "Preço e tendência apontam fraqueza — aguarde estabilização antes de entrar.",
+      explanation: "Price and trend point to weakness — wait for stabilization before entering.",
     };
   }
   return {
@@ -342,7 +342,7 @@ function resolveEntry(input: EntryInput): DecisionSummary["entry"] {
     label: ENTRY_LABELS.Wait,
     reasons,
     explanation:
-      "Os sinais de preço não confirmam nem negam entrada: sem gatilho, esperar custa pouco.",
+      "Price signals neither confirm nor deny an entry: with no trigger, waiting costs little.",
   };
 }
 
@@ -353,25 +353,25 @@ function resolvePosition(
 ): DecisionSummary["position"] {
   let newMoney: string;
   if (entry === "Buy") {
-    newMoney = "Pode aportar agora, respeitando o peso alvo da classe.";
+    newMoney = "You can add now, staying within the class target weight.";
   } else if (entry === "Avoid") {
-    newMoney = "Não aporte agora.";
+    newMoney = "Do not add now.";
   } else if (entry === "Wait") {
-    newMoney = "Aguarde confirmação antes de aportar dinheiro novo.";
+    newMoney = "Wait for confirmation before adding new money.";
   } else {
-    newMoney = "Aporte conforme a necessidade de liquidez, não conforme o preço.";
+    newMoney = "Add according to liquidity need, not according to price.";
   }
 
   let existing: string;
   if (allocation === "Strong Reduce") {
-    existing = "Se já está posicionado, reduza a exposição da classe.";
+    existing = "If you already hold it, reduce the class exposure.";
   } else if (allocation === "Reduce") {
-    existing = "Se já está posicionado, reduza gradualmente ou pare de reinvestir.";
+    existing = "If you already hold it, reduce gradually or stop reinvesting.";
   } else if (quality === "Weak") {
-    existing = "Se já está posicionado, mantenha, mas avalie trocar por um par melhor classificado.";
+    existing = "If you already hold it, keep it, but consider switching to a better-ranked peer.";
   } else {
-    existing = "Se já está posicionado, mantenha — nada aqui pede venda.";
-  }
+    existing = "If you already hold it, keep it — nothing here calls for a sale.";
+  };
 
   return { newMoney, existing };
 }
@@ -382,18 +382,18 @@ function buildHeadline(
   stabilityFocused: boolean,
 ): string {
   if (allocation === "Strong Reduce" || allocation === "Reduce") {
-    return "Reduza a exposição da classe; não aporte dinheiro novo agora.";
+    return "Reduce the class exposure; do not add new money now.";
   }
   if (entry === "Buy") {
-    return "Momento favorável para aportar; se já está posicionado, mantenha.";
+    return "A favorable moment to add; if you already hold it, keep it.";
   }
   if (entry === "Avoid") {
-    return "Não aporte agora; se já está posicionado, mantenha e reavalie.";
+    return "Do not add now; if you already hold it, keep it and reassess.";
   }
   if (entry === "Neutral" && stabilityFocused) {
-    return "Aporte conforme a necessidade de caixa; esperar por preço melhor não faz sentido aqui.";
+    return "Add according to cash need; waiting for a better price does not make sense here.";
   }
-  return "Aguarde uma entrada melhor; se já está posicionado, mantenha.";
+  return "Wait for a better entry; if you already hold it, keep it.";
 }
 
 export function buildDecisionSummary(input: {
@@ -453,12 +453,12 @@ export function entryValidatedExplanation(
   stabilityFocused: boolean,
 ): string {
   if (!validated) {
-    return "Entrada não validada: o motor não considera este papel elegível para aportes incrementais no momento.";
+    return "Entry not validated: the motor does not consider this name eligible for incremental adds right now.";
   }
   if (stabilityFocused) {
-    return "Entrada validada significa apenas que o papel é elegível para aportes de caixa dentro do sleeve — não é um sinal de que o preço está barato.";
+    return "Validated entry only means the name is eligible for cash adds inside the sleeve — it is not a signal that the price is cheap.";
   }
-  return "Entrada validada significa que o papel passou nos critérios de elegibilidade do motor (estágio e score vs classe). Não é confirmação técnica de que este é o melhor momento de compra.";
+  return "Validated entry means the name passed the motor's eligibility criteria (stage and score vs the class). It is not technical confirmation that this is the best moment to buy.";
 }
 
 export type NarrativeSection = { title: string; body: string };
@@ -475,27 +475,27 @@ export function buildDecisionNarrative(
   ].join(" ");
 
   const priceParts: string[] = [];
-  priceParts.push(`Preço ${price.bollinger.label}.`);
-  priceParts.push(`Leitura de tendência: ${price.trend.label}.`);
+  priceParts.push(`Price ${price.bollinger.label}.`);
+  priceParts.push(`Trend reading: ${price.trend.label}.`);
   if (decision.stabilityFocused) {
     priceParts.push(
-      "Para instrumentos de caixa, osciladores de momentum não são informativos: o NAV sobe de forma quase monotônica e distribuições periódicas criam quedas artificiais.",
+      "For cash instruments, momentum oscillators are not informative: NAV rises almost monotonically and periodic distributions create artificial drops.",
     );
   }
 
   const sections: NarrativeSection[] = [
-    { title: "O que o motor está dizendo", body: motorBody },
-    { title: "O que o preço está dizendo", body: priceParts.join(" ") },
+    { title: "What the motor is saying", body: motorBody },
+    { title: "What the price is saying", body: priceParts.join(" ") },
     {
-      title: "O que fazer",
+      title: "What to do",
       body: `${entry.label}. ${entry.explanation} ${position.newMoney} ${position.existing}`,
     },
     {
-      title: "O que mudaria esta leitura",
+      title: "What would change this reading",
       body: buildInvalidationText(decision),
     },
     {
-      title: "Sobre a expressão “entrada validada”",
+      title: "About the phrase “validated entry”",
       body: entryValidatedExplanation(context.entryValidated, decision.stabilityFocused),
     },
   ];
@@ -508,10 +508,10 @@ function buildInvalidationText(decision: DecisionSummary): string {
 
   if (decision.stabilityFocused) {
     parts.push(
-      "Mudança no regime de caixa (queda do carry real, curva desinvertendo ou alta probabilidade de corte de juros) muda a recomendação de alocação.",
+      "A change in the cash regime (falling real carry, the curve un-inverting, or a high probability of rate cuts) changes the allocation recommendation.",
     );
     parts.push(
-      "No nível do papel, perda de liquidez relativa ou aumento da volatilidade do NAV rebaixaria o ranking vs pares.",
+      "At the name level, a loss of relative liquidity or a rise in NAV volatility would lower the ranking vs peers.",
     );
     return parts.join(" ");
   }
@@ -519,14 +519,14 @@ function buildInvalidationText(decision: DecisionSummary): string {
   const { bollinger, trend } = decision.price;
   if (trend.sma50 != null) {
     parts.push(
-      `Fechamento consistente ${trend.direction === "down" ? "acima" : "abaixo"} da média de 50 dias (${trend.sma50.toFixed(2)}) inverteria a leitura de tendência.`,
+      `A consistent close ${trend.direction === "down" ? "above" : "below"} the 50-day average (${trend.sma50.toFixed(2)}) would reverse the trend reading.`,
     );
   }
   if (bollinger.upper != null && bollinger.lower != null) {
     parts.push(
-      `Rompimento das bandas de Bollinger (${bollinger.lower.toFixed(2)} / ${bollinger.upper.toFixed(2)}) com volume acima da média confirmaria uma nova direção.`,
+      `A break of the Bollinger bands (${bollinger.lower.toFixed(2)} / ${bollinger.upper.toFixed(2)}) with above-average volume would confirm a new direction.`,
     );
   }
-  parts.push("No nível macro, mudança da ação de regime da classe altera a recomendação de peso.");
+  parts.push("At the macro level, a change in the class regime action alters the weight recommendation.");
   return parts.join(" ");
 }

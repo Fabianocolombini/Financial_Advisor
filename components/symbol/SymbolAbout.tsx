@@ -9,7 +9,7 @@ export function SymbolAbout({ summary }: { summary: string | null }) {
     return (
       <section className="space-y-2">
         <h3 className="text-sm font-medium text-white">About</h3>
-        <p className="text-sm text-zinc-500">Descrição da empresa não disponível.</p>
+        <p className="text-sm text-zinc-500">Company description unavailable.</p>
       </section>
     );
   }

@@ -19,13 +19,13 @@ function gradeClass(grade: DecisionReliabilitySummary["grade"]): string {
 function gradeWord(grade: DecisionReliabilitySummary["grade"]): string {
   switch (grade) {
     case "strong":
-      return "alta";
+      return "high";
     case "adequate":
-      return "adequada";
+      return "adequate";
     case "weak":
-      return "fraca";
+      return "weak";
     default:
-      return "insuficiente";
+      return "insufficient";
   }
 }
 
@@ -40,15 +40,15 @@ export function SymbolReliabilityBanner({
   return (
     <section
       className="rounded-lg border border-zinc-800 bg-zinc-950/80 px-4 py-3"
-      aria-label="Auditoria de confiabilidade dos dados"
+      aria-label="Data reliability audit"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-baseline gap-2">
           <span className={`rounded px-2 py-0.5 text-sm ring-1 ring-inset ${gradeClass(grade)}`}>
-            Qualidade dos dados: {gradeWord(grade)} ({score.toFixed(1)}/10)
+            Data quality: {gradeWord(grade)} ({score.toFixed(1)}/10)
           </span>
           <span className="text-[11px] text-zinc-500">
-            mede cobertura e atualidade da informação, não probabilidade de acerto
+            measures coverage and freshness of the information, not hit-rate probability
           </span>
         </div>
         <button
@@ -57,14 +57,14 @@ export function SymbolReliabilityBanner({
           className="text-xs text-zinc-400 underline-offset-2 hover:text-zinc-200 hover:underline"
           aria-expanded={open}
         >
-          {open ? "Ocultar detalhes" : "Ver detalhes"}
+          {open ? "Hide details" : "Show details"}
         </button>
       </div>
 
       {open ? (
         <div className="mt-3 space-y-3 border-t border-zinc-800 pt-3">
           <p className="text-xs text-zinc-500">
-            {summary} {meetsTarget ? `Meta ≥ ${target} atingida.` : `Abaixo da meta de ${target}.`}
+            {summary} {meetsTarget ? `Target ≥ ${target} met.` : `Below the target of ${target}.`}
           </p>
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {factors.map((f) => (

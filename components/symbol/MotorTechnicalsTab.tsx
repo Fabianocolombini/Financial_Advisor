@@ -62,7 +62,7 @@ function MotorQuantDetail({
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="rounded border border-zinc-800 bg-zinc-950 p-3">
           <p className="inline-flex items-center gap-1 text-xs text-zinc-500">
-            Score do ativo vs média da classe
+            Name score vs class average
             <InfoTooltip term="global_motor_models" />
           </p>
           <p className="mt-1 text-lg tabular-nums text-white">
@@ -95,13 +95,13 @@ function MotorQuantDetail({
 
       {motor.tickerIndicators.length > 0 ? (
         <MotorIndicatorsCompact
-          title="Security — indicadores"
+          title="Security — indicators"
           indicators={motor.tickerIndicators}
         />
       ) : null}
       {motor.classIndicators.length > 0 ? (
         <MotorIndicatorsCompact
-          title="Sleeve — indicadores"
+          title="Sleeve — indicators"
           indicators={motor.classIndicators}
         />
       ) : null}
@@ -123,9 +123,9 @@ function MotorIndicatorsCompact({
         <table className="w-full text-left text-sm">
           <thead className="border-b border-zinc-800 bg-zinc-950 text-[11px] text-zinc-500">
             <tr>
-              <th className="px-3 py-2">Indicador</th>
-              <th className="px-3 py-2">Valor</th>
-              <th className="px-3 py-2">Sinal</th>
+              <th className="px-3 py-2">Indicator</th>
+              <th className="px-3 py-2">Value</th>
+              <th className="px-3 py-2">Signal</th>
               <th className="px-3 py-2">Contrib.</th>
             </tr>
           </thead>
@@ -169,13 +169,13 @@ function MacroRiskDetail({ detail }: { detail: SymbolDetailView }) {
           classId={motor.classId}
         />
       ) : (
-        <p className="text-sm text-zinc-500">Regime da classe indisponível.</p>
+        <p className="text-sm text-zinc-500">Class regime unavailable.</p>
       )}
       <SymbolModelsPanel models={snapshot?.models} />
       {macroInds.length > 0 ? (
         <div className="space-y-2">
           <h4 className="inline-flex items-center gap-1 text-xs font-medium text-zinc-400">
-            Macro / curva / spreads
+            Macro / curve / spreads
             <InfoTooltip term="macro_risk" />
           </h4>
           <ul className="space-y-1 text-sm">
@@ -277,8 +277,8 @@ export function MotorTechnicalsTab({ detail }: { detail: SymbolDetailView }) {
     <div className="space-y-6">
       {!hasMotor ? (
         <p className="rounded border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-300">
-          Dados do motor indisponíveis para este ativo — exibindo apenas técnica genérica
-          (Yahoo). Aguarde Motor Daily ou scoring on-demand.
+          Motor data is unavailable for this name — showing generic technicals
+          only (Yahoo). Wait for Motor Daily or on-demand scoring.
         </p>
       ) : null}
 
@@ -290,19 +290,19 @@ export function MotorTechnicalsTab({ detail }: { detail: SymbolDetailView }) {
             scale={gaugeScale}
             value={decision.gauge.value}
             confidence={confidence}
-            caption={`Alocação da classe: ${decision.allocation.label} · Entrada: ${decision.entry.label}`}
+            caption={`Class allocation: ${decision.allocation.label} · Entry: ${decision.entry.label}`}
             summary={summary}
           />
           <div className="grid gap-3 sm:grid-cols-2">
             <TechnicalRatingGauge
               scale={technicalSignalScale(
-                "Osciladores",
-                "Relógio do consenso entre os osciladores. Não é o ranking do motor.",
+                "Oscillators",
+                "Consensus clock among the oscillators. It is not the motor ranking.",
               )}
               value={oscGauge}
               compact
               showConfidence={false}
-              emptyLabel="Não se aplica"
+              emptyLabel="Does not apply"
               caption={
                 oscillators.length > 0
                   ? `Sell ${oscCounts.sell} · Neutral ${oscCounts.neutral} · Buy ${oscCounts.buy}`
@@ -311,13 +311,13 @@ export function MotorTechnicalsTab({ detail }: { detail: SymbolDetailView }) {
             />
             <TechnicalRatingGauge
               scale={technicalSignalScale(
-                "Médias móveis",
-                "Relógio do consenso entre as médias. Preço acima da média = Buy.",
+                "Moving averages",
+                "Consensus clock among the averages. Price above the average = Buy.",
               )}
               value={maGauge}
               compact
               showConfidence={false}
-              emptyLabel="Não se aplica"
+              emptyLabel="Does not apply"
               caption={
                 movingAvgs.length > 0
                   ? `Sell ${maCounts.sell} · Neutral ${maCounts.neutral} · Buy ${maCounts.buy}`
@@ -346,7 +346,7 @@ export function MotorTechnicalsTab({ detail }: { detail: SymbolDetailView }) {
           onExpand={() => toggle("motor")}
         />
         <SignalCountCard
-          label="Macro/Risco"
+          label="Macro/Risk"
           dominantSignal={macroSignal}
           weight="15%"
           expanded={expanded === "macro"}
@@ -354,10 +354,10 @@ export function MotorTechnicalsTab({ detail }: { detail: SymbolDetailView }) {
         />
       </div>
 
-      <AccordionPanel id="motor" title="Motor quantitativo" expanded={expanded}>
+      <AccordionPanel id="motor" title="Quantitative motor" expanded={expanded}>
         <MotorQuantDetail detail={detail} />
       </AccordionPanel>
-      <AccordionPanel id="macro" title="Macro / Risco" expanded={expanded}>
+      <AccordionPanel id="macro" title="Macro / Risk" expanded={expanded}>
         <MacroRiskDetail detail={detail} />
       </AccordionPanel>
 
@@ -369,11 +369,11 @@ export function MotorTechnicalsTab({ detail }: { detail: SymbolDetailView }) {
           className="flex w-full items-center justify-between gap-2 text-left"
         >
           <span className="inline-flex items-center gap-1.5 text-sm font-medium text-white">
-            Pivôs e alvos
+            Pivots and targets
             <InfoTooltip term="pivot_points" />
           </span>
           <span className="text-xs text-zinc-500">
-            {expanded === "pivots" ? "Ocultar" : "Mostrar"}
+            {expanded === "pivots" ? "Hide" : "Show"}
           </span>
         </button>
         {expanded === "pivots" ? (
@@ -395,10 +395,10 @@ export function MotorTechnicalsTab({ detail }: { detail: SymbolDetailView }) {
           className="flex w-full items-center justify-between gap-2 text-left"
         >
           <span className="text-sm font-medium text-white">
-            Gráficos por indicador
+            Charts by indicator
           </span>
           <span className="text-xs text-zinc-500">
-            {expanded === "charts" ? "Ocultar" : "Mostrar"}
+            {expanded === "charts" ? "Hide" : "Show"}
           </span>
         </button>
         {expanded === "charts" ? (
@@ -417,13 +417,13 @@ export function MotorTechnicalsTab({ detail }: { detail: SymbolDetailView }) {
         technicalSignal={techConv}
         motorCaption={
           decision.scoreDomain === "unit"
-            ? "Ranking do papel dentro da classe (percentil 0–1), comparado às faixas do próprio modelo."
-            : "Score composto direcional do motor."
+            ? "Ranking of the name inside the class (0–1 percentile), compared with the model's own bands."
+            : "Motor directional composite score."
         }
         technicalCaption={
           applicability.excluded.length > 0
-            ? `Calculada apenas sobre os ${applicableRows.length} indicadores aplicáveis a esta classe.`
-            : `Calculada sobre ${applicableRows.length} indicadores de preço (informativo, fonte Yahoo).`
+            ? `Calculated only on the ${applicableRows.length} indicators that apply to this class.`
+            : `Calculated on ${applicableRows.length} price indicators (informational, Yahoo source).`
         }
       />
     </div>

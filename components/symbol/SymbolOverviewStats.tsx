@@ -40,11 +40,11 @@ export function SymbolOverviewStats({
 
   return (
     <section className="space-y-3">
-      <h3 className="text-sm font-medium text-white">Estatísticas</h3>
+      <h3 className="text-sm font-medium text-white">Statistics</h3>
 
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-3">
-          <p className="text-[11px] text-zinc-500">Volume (dia)</p>
+          <p className="text-[11px] text-zinc-500">Volume (day)</p>
           <p className="mt-1 text-base font-medium tabular-nums text-white">
             {formatShareVolumeCompact(vol.latestVolume)}
           </p>
@@ -58,7 +58,7 @@ export function SymbolOverviewStats({
             />
           </div>
           <p className="mt-1 text-[10px] text-zinc-600">
-            Média 20D: {formatShareVolumeCompact(avgVol)}
+            20D average: {formatShareVolumeCompact(avgVol)}
           </p>
         </div>
 
@@ -72,7 +72,7 @@ export function SymbolOverviewStats({
         </div>
 
         <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-3 sm:col-span-2">
-          <p className="text-[11px] text-zinc-500">Retornos acumulados</p>
+          <p className="text-[11px] text-zinc-500">Cumulative returns</p>
           <div className="mt-2 flex flex-wrap gap-3">
             {PERF_HORIZON_ORDER.map((id) => {
               const pct = horizons[id];
@@ -92,7 +92,7 @@ export function SymbolOverviewStats({
               direction={returnTrend.direction}
               delta={returnTrend.delta}
               deltaPct={returnTrend.deltaPct}
-              value="tendência"
+              value="trend"
             />
           </div>
         </div>

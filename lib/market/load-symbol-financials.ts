@@ -250,10 +250,10 @@ function computeFlags(fin: SymbolFinancials): SymbolFinancials {
   if (!hasFinancialData) {
     if (fin.isFund) {
       emptyReason =
-        "Este fundo/ETF não publica demonstrações corporativas no Yahoo/SEC. Exibimos perfil do fundo quando disponível.";
+        "This fund/ETF does not publish corporate statements on Yahoo/SEC. We show the fund profile when available.";
     } else {
       emptyReason =
-        "Dados financeiros não disponíveis para este ativo nas fontes oficiais (Yahoo Finance / SEC EDGAR).";
+        "Financial data is not available for this name from official sources (Yahoo Finance / SEC EDGAR).";
     }
   }
 

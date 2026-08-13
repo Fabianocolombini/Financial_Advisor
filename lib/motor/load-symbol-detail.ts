@@ -185,7 +185,7 @@ export async function loadSymbolDetailView(
     distributions = chart.distributions;
   } catch (err) {
     yahooWarning =
-      err instanceof Error ? err.message : "Falha ao buscar histórico de preços.";
+      err instanceof Error ? err.message : "Failed to fetch price history.";
   }
 
   if (quote.error) {

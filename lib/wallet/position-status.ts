@@ -50,23 +50,23 @@ export type WalletPositionStatus = {
 
 const LABELS: Record<WalletAction, Omit<WalletActionLabel, "action">> = {
   stay: {
-    label: "Manter",
-    hint: "O papel está dentro do plano. Não há motivo para vender nem para acelerar aportes.",
+    label: "Hold",
+    hint: "The name is inside the plan. There is no reason to sell or to add faster.",
     tone: "neutral",
   },
   add: {
-    label: "Comprar mais",
-    hint: "A classe está favorável e o preço ainda não estourou o teto. Aportar mais é suportado.",
+    label: "Buy more",
+    hint: "The class is favorable and the price has not broken the ceiling. Adding more is supported.",
     tone: "positive",
   },
   leave: {
-    label: "Sair",
-    hint: "O preço bateu a sua banda, ou o motor pede para reduzir a exposição. Realize o plano.",
+    label: "Exit",
+    hint: "The price hit your band, or the motor calls for reducing exposure. Follow the plan.",
     tone: "negative",
   },
   falling: {
-    label: "Tendência de queda — sair",
-    hint: "A tendência da classe virou contra. Não é prejuízo realizado — é o vento mudando de direção.",
+    label: "Downtrend — exit",
+    hint: "The class trend turned against you. That is not a realized loss — it is the wind changing direction.",
     tone: "caution",
   },
 };

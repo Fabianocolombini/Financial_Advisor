@@ -64,9 +64,9 @@ export type GaugeScale = {
 
 export const SIGNED_DIRECTIONAL_SCALE: GaugeScale = {
   id: "signed_directional",
-  title: "Sinal direcional do motor",
+  title: "Motor directional signal",
   caption:
-    "Escala −1 (Strong Sell) a +1 (Strong Buy): o sinal indica direção esperada.",
+    "Scale −1 (Strong Sell) to +1 (Strong Buy): the signal indicates expected direction.",
   domainMin: -1,
   domainMax: 1,
   bands: GAUGE_ZONES.map((z) => ({
@@ -85,17 +85,17 @@ export const SIGNED_DIRECTIONAL_SCALE: GaugeScale = {
  */
 export const UNIT_QUALITY_SCALE: GaugeScale = {
   id: "unit_quality",
-  title: "Qualidade do instrumento vs pares",
+  title: "Instrument quality vs peers",
   caption:
-    "Escala 0 a 1: ranking cross-sectional dentro da própria classe. Não indica compra ou venda.",
+    "Scale 0 to 1: cross-sectional ranking inside this class. It does not indicate buy or sell.",
   domainMin: 0,
   domainMax: 1,
   bands: [
-    { label: "Fraco", min: 0, max: 0.25, color: "#dc2626", textClass: "text-red-500" },
-    { label: "Abaixo dos pares", min: 0.25, max: 0.45, color: "#f87171", textClass: "text-red-400" },
-    { label: "Na média", min: 0.45, max: 0.65, color: "#71717a", textClass: "text-zinc-400" },
-    { label: "Competitivo", min: 0.65, max: 0.85, color: "#4ade80", textClass: "text-emerald-400" },
-    { label: "Preferido", min: 0.85, max: 1, color: "#16a34a", textClass: "text-emerald-500" },
+    { label: "Weak", min: 0, max: 0.25, color: "#dc2626", textClass: "text-red-500" },
+    { label: "Below peers", min: 0.25, max: 0.45, color: "#f87171", textClass: "text-red-400" },
+    { label: "In line", min: 0.45, max: 0.65, color: "#71717a", textClass: "text-zinc-400" },
+    { label: "Competitive", min: 0.65, max: 0.85, color: "#4ade80", textClass: "text-emerald-400" },
+    { label: "Preferred", min: 0.85, max: 1, color: "#16a34a", textClass: "text-emerald-500" },
   ],
 };
 

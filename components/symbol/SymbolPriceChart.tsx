@@ -387,7 +387,7 @@ export function SymbolPriceChart({
   if (bars.length < 2) {
     return (
       <div className="flex h-80 items-center justify-center rounded-lg border border-zinc-800 bg-black text-sm text-zinc-500">
-        Histórico de preços indisponível.
+        Price history unavailable.
       </div>
     );
   }

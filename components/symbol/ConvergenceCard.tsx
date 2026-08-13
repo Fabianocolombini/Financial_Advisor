@@ -12,65 +12,65 @@ type ConvergenceRow = {
 };
 
 const SIGNAL_LABELS: Record<ConvergenceSignal, string> = {
-  positive: "Positivo",
-  neutral: "Neutro",
-  negative: "Negativo",
+  positive: "Positive",
+  neutral: "Neutral",
+  negative: "Negative",
 };
 
 const MATRIX: Record<string, ConvergenceRow> = {
   "positive|positive": {
     icon: "✅",
-    reading: "Sinal forte",
+    reading: "Strong signal",
     explanation:
-      "Motor e técnica alinhados positivamente — contexto favorável para manter ou aumentar exposição.",
+      "Motor and technicals aligned positively — a favorable backdrop to keep or increase exposure.",
   },
   "positive|neutral": {
     icon: "🟡",
-    reading: "Motor positivo sem gatilho de preço",
+    reading: "Motor positive with no price trigger",
     explanation:
-      "O motor favorece o papel, mas o preço não está nem esticado nem descontado. Não há contradição: simplesmente não existe gatilho técnico agora.",
+      "The motor favors the name, but price is neither stretched nor discounted. There is no contradiction: there simply is no technical trigger now.",
   },
   "positive|negative": {
     icon: "⏳",
-    reading: "Esperar confirmação",
+    reading: "Wait for confirmation",
     explanation:
-      "O motor está positivo, mas a técnica ainda não confirma — aguardar melhor ponto de entrada.",
+      "The motor is positive, but technicals have not confirmed yet — wait for a better entry.",
   },
   "neutral|positive": {
     icon: "🟡",
-    reading: "Preço melhora sem suporte do motor",
+    reading: "Price improving without motor support",
     explanation:
-      "A técnica melhora enquanto o motor permanece neutro — movimento de preço ainda sem confirmação quantitativa.",
+      "Technicals are improving while the motor stays neutral — a price move still without quantitative confirmation.",
   },
   "neutral|neutral": {
     icon: "⚪",
-    reading: "Sem sinal dos dois lados",
+    reading: "No signal on either side",
     explanation:
-      "Motor e técnica neutros. Nenhum dos dois lados pede ação — nem compra nem venda.",
+      "Motor and technicals are both neutral. Neither side calls for action — neither buy nor sell.",
   },
   "neutral|negative": {
     icon: "🟠",
-    reading: "Deterioração de preço sem sinal do motor",
+    reading: "Price deteriorating without a motor signal",
     explanation:
-      "A técnica piora enquanto o motor permanece neutro — acompanhe, mas ainda não é sinal de redução.",
+      "Technicals are worsening while the motor stays neutral — watch it, but it is not yet a reduce signal.",
   },
   "negative|positive": {
     icon: "⚠️",
-    reading: "Possível rebound — cautela",
+    reading: "Possible rebound — caution",
     explanation:
-      "Técnica melhora enquanto o motor permanece negativo — possível repique, mas com risco elevado.",
+      "Technicals are improving while the motor stays negative — a possible bounce, but with elevated risk.",
   },
   "negative|neutral": {
     icon: "🟠",
-    reading: "Motor negativo, preço ainda sem confirmar",
+    reading: "Motor negative, price not confirming yet",
     explanation:
-      "O motor está negativo e o preço ainda não confirmou fraqueza. Evite aumentar exposição.",
+      "The motor is negative and price has not confirmed weakness yet. Avoid increasing exposure.",
   },
   "negative|negative": {
     icon: "🔻",
-    reading: "Reduzir / evitar",
+    reading: "Reduce / avoid",
     explanation:
-      "Motor e técnica negativos — priorizar redução de risco ou evitar novas entradas.",
+      "Motor and technicals are both negative — prioritize reducing risk or avoid new entries.",
   },
 };
 
@@ -99,7 +99,7 @@ export function ConvergenceCard({
   return (
     <section className="rounded-lg border border-zinc-800 bg-zinc-950 p-4">
       <div className="flex items-center gap-1.5">
-        <h3 className="text-sm font-medium text-white">Convergência Motor × Técnica</h3>
+        <h3 className="text-sm font-medium text-white">Motor × Technicals convergence</h3>
         <InfoTooltip term="convergence" />
       </div>
 
@@ -112,7 +112,7 @@ export function ConvergenceCard({
           <p className="mt-0.5 text-xs text-zinc-500">
             Motor: <span className="text-zinc-300">{SIGNAL_LABELS[motorSignal]}</span>
             {" · "}
-            Técnica: <span className="text-zinc-300">{SIGNAL_LABELS[technicalSignal]}</span>
+            Technicals: <span className="text-zinc-300">{SIGNAL_LABELS[technicalSignal]}</span>
           </p>
         </div>
       </div>
@@ -120,7 +120,7 @@ export function ConvergenceCard({
       {motorCaption || technicalCaption ? (
         <div className="mt-3 space-y-1 border-t border-zinc-800/80 pt-3 text-[11px] text-zinc-600">
           {motorCaption ? <p>Motor: {motorCaption}</p> : null}
-          {technicalCaption ? <p>Técnica: {technicalCaption}</p> : null}
+          {technicalCaption ? <p>Technicals: {technicalCaption}</p> : null}
         </div>
       ) : null}
     </section>

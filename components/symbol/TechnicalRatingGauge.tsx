@@ -26,7 +26,7 @@ export function TechnicalRatingGauge({
   summary,
   compact = false,
   showConfidence = true,
-  emptyLabel = "Sem dado do motor",
+  emptyLabel = "No motor data",
 }: {
   scale: GaugeScale;
   value: number | null;
@@ -91,10 +91,10 @@ export function TechnicalRatingGauge({
         </p>
         {showConfidence ? (
           <p className="mt-1 text-center text-xs text-zinc-400">
-            Confiabilidade dos dados: {confidenceText}
+            Data reliability: {confidenceText}
             <span className="text-zinc-600">
               {" "}
-              (qualidade da informação, não probabilidade de acerto)
+              (information quality, not hit-rate probability)
             </span>
           </p>
         ) : null}

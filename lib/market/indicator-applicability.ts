@@ -23,10 +23,10 @@ export type IndicatorApplicability = {
 };
 
 const NAV_MONOTONIC_REASON =
-  "Osciladores não se aplicam a caixa: o NAV é quase monotônico, então momentum e força de tendência não têm o que medir, e as distribuições periódicas criam quedas artificiais.";
+  "Oscillators do not apply to cash: NAV is almost monotonic, so momentum and trend strength have nothing to measure, and periodic distributions create artificial drops.";
 
 const DISTRIBUTION_SAWTOOTH_REASON =
-  "Médias móveis não se aplicam a caixa: o NAV sobe alguns centavos por dia e cai de uma vez na distribuição mensal, então o preço fica quase sempre abaixo das próprias médias e o sinal seria vendedor por construção.";
+  "Moving averages do not apply to cash: NAV rises a few cents a day and drops all at once on the monthly distribution, so price sits almost always below its own averages and the signal would be a sell by construction.";
 
 function exclusionReason(
   row: TechnicalIndicatorRow,
@@ -73,7 +73,7 @@ export function pivotsApplicable(classId: string | null | undefined): {
   return {
     applicable: false,
     reason:
-      "Pivôs não se aplicam a caixa: a amplitude de um pregão é de frações de centavo, então todos os métodos colapsam sobre o mesmo preço e não projetam alvo algum.",
+      "Pivots do not apply to cash: a session's range is a fraction of a cent, so every method collapses onto the same price and projects no target.",
   };
 }
 

@@ -12,22 +12,22 @@ export default async function WalletPage() {
 
   const financeStats = [
     {
-      label: "Patrimônio líquido",
+      label: "Net worth",
       value: formatBRL(stats.netWorth.toNumber()),
       href: "/patrimonio",
-      description: "Ativos menos passivos cadastrados.",
+      description: "Assets minus liabilities you have recorded.",
     },
     {
-      label: "Objetivos",
+      label: "Goals",
       value: String(stats.goalCount),
       href: "/objetivos",
-      description: "Metas financeiras em acompanhamento.",
+      description: "Financial goals being tracked.",
     },
     {
-      label: "Orçamento",
+      label: "Budget",
       value: String(stats.categoryCount),
       href: "/orcamento",
-      description: "Estrutura mensal de gastos.",
+      description: "Monthly spending structure.",
     },
   ];
 
@@ -36,9 +36,9 @@ export default async function WalletPage() {
       <div>
         <h1 className="font-title text-2xl tracking-tight text-white">My Wallet</h1>
         <p className="mt-2 max-w-2xl text-sm text-zinc-400">
-          Papéis que você já comprou: resultado vs o preço de entrada, piso e teto, e se
-          o motor pede para manter, aportar mais ou sair. A aba lateral fica disponível
-          em qualquer tela — fixe ou deixe flutuar.
+          Names you already bought: result vs entry price, floor and ceiling, and whether
+          the motor asks you to hold, add more, or exit. The side panel is available
+          on any screen — pin it or let it float.
         </p>
       </div>
 
@@ -47,7 +47,7 @@ export default async function WalletPage() {
       </div>
 
       <section className="space-y-2">
-        <h2 className="text-sm font-medium text-zinc-400">Finanças pessoais</h2>
+        <h2 className="text-sm font-medium text-zinc-400">Personal finances</h2>
         <MyWalletPanel stats={financeStats} compact />
       </section>
     </div>

@@ -28,13 +28,13 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "JSON inválido" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
   const parsed = createBudgetCategorySchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Validação falhou", details: parsed.error.flatten() },
+      { error: "Validation failed", details: parsed.error.flatten() },
       { status: 400 },
     );
   }

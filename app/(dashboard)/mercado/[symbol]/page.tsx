@@ -27,7 +27,7 @@ export default async function SymbolMercadoPage({
       </Link>
       <Suspense
         fallback={
-          <p className="text-sm text-zinc-500">Carregando detalhe do papel…</p>
+          <p className="text-sm text-zinc-500">Loading name detail…</p>
         }
       >
         <SymbolDetailPanel detail={detail} />

@@ -60,7 +60,7 @@ describe("motor-technicals-summary", () => {
 
   it("builds summary for divergent motor vs technical", () => {
     const text = buildConvergenceSummary("positive", "negative", false);
-    expect(text).toContain("técnica");
+    expect(text).toContain("technicals");
   });
 
   it("uses class score for macro when no regime action", () => {

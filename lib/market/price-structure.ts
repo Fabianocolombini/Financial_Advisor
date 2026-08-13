@@ -42,12 +42,12 @@ export type BollingerPosition = {
 };
 
 const BOLLINGER_LABELS: Record<BollingerZone, string> = {
-  below_lower: "abaixo da banda inferior (esticado para baixo)",
-  lower_half: "na metade inferior da banda",
-  middle: "na mediana da banda",
-  upper_half: "na metade superior da banda",
-  above_upper: "acima da banda superior (esticado para cima)",
-  unknown: "posição na banda indisponível",
+  below_lower: "below the lower band (stretched lower)",
+  lower_half: "in the lower half of the band",
+  middle: "at the middle of the band",
+  upper_half: "in the upper half of the band",
+  above_upper: "above the upper band (stretched higher)",
+  unknown: "band position unavailable",
 };
 
 export function bollingerPosition(
@@ -111,10 +111,10 @@ function simpleAverage(values: number[], period: number, offsetFromEnd = 0): num
 }
 
 const TREND_LABELS: Record<TrendDirection, string> = {
-  up: "tendência de alta",
-  down: "tendência de baixa",
-  sideways: "sem tendência definida (lateral)",
-  unknown: "tendência indisponível",
+  up: "uptrend",
+  down: "downtrend",
+  sideways: "no defined trend (sideways)",
+  unknown: "trend unavailable",
 };
 
 export function trendState(values: number[]): TrendState {

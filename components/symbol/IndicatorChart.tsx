@@ -51,7 +51,7 @@ export function IndicatorChart({
   const legend = useMemo(() => {
     const items = [{ name: series.name, color: indicatorPrimaryColor() }];
     for (const line of series.lines) items.push({ name: line.name, color: line.color });
-    if (overlayPrice) items.push({ name: "Preço", color: "#34d399" });
+    if (overlayPrice) items.push({ name: "Price", color: "#34d399" });
     return items;
   }, [series, overlayPrice]);
 
@@ -140,7 +140,7 @@ export function IndicatorChart({
   if (bars.length < 2) {
     return (
       <div className="flex h-40 items-center justify-center rounded border border-zinc-800 bg-black text-xs text-zinc-500">
-        Histórico insuficiente para plotar {series.name}.
+        Not enough history to plot {series.name}.
       </div>
     );
   }

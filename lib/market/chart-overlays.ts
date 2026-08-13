@@ -60,10 +60,10 @@ export function volumeConfirmation(bars: ChartBar[], avgPeriod = 20): {
   const vsAvgPct = ((latestVolume - averageVolume) / averageVolume) * 100;
   const message =
     vsAvgPct >= 20
-      ? `Volume ${vsAvgPct.toFixed(0)}% acima da média — movimento confirmado`
+      ? `Volume ${vsAvgPct.toFixed(0)}% above average — move confirmed`
       : vsAvgPct <= -20
-        ? `Volume ${Math.abs(vsAvgPct).toFixed(0)}% abaixo da média — confirmação fraca`
-        : `Volume próximo da média (${vsAvgPct >= 0 ? "+" : ""}${vsAvgPct.toFixed(0)}%)`;
+        ? `Volume ${Math.abs(vsAvgPct).toFixed(0)}% below average — weak confirmation`
+        : `Volume near average (${vsAvgPct >= 0 ? "+" : ""}${vsAvgPct.toFixed(0)}%)`;
   return { latestVolume, averageVolume, vsAvgPct, message };
 }
 
@@ -79,7 +79,7 @@ export function cumulativeReturnSparkline(values: number[], points = 20): number
 export function bollingerCompressionLabel(
   values: number[],
   period = 20,
-): "comprimida" | "expandida" | null {
+): "compressed" | "expanded" | null {
   if (values.length < period + 5) return null;
   const { upper, lower } = bollingerBands(values, period);
   const widths: number[] = [];
@@ -98,7 +98,7 @@ export function bollingerCompressionLabel(
   const priorAvg = prior.reduce((a, b) => a + b, 0) / prior.length;
   if (priorAvg <= 0) return null;
   const ratio = recentAvg / priorAvg;
-  if (ratio < 0.75) return "comprimida";
-  if (ratio > 1.25) return "expandida";
+  if (ratio < 0.75) return "compressed";
+  if (ratio > 1.25) return "expanded";
   return null;
 }

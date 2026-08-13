@@ -97,7 +97,7 @@ export function computeDecisionReliability(input: {
     score: securityPts,
     max: 2,
     note: motor.hasTickerMotor
-      ? `${tickerCov.withValue}/${tickerCov.total} ticker indicators (mínimo ${minSecurityInds} para esta classe)`
+      ? `${tickerCov.withValue}/${tickerCov.total} ticker indicators (minimum ${minSecurityInds} for this class)`
       : "Using class fallback only",
   });
 
@@ -206,7 +206,7 @@ export function computeDecisionReliability(input: {
   let summary: string;
   if (meetsTarget) {
     summary =
-      "Cobertura de dados suficiente para decisão consciente do sleeve — macro do motor e security layer presentes.";
+      "Enough data coverage for a considered sleeve decision — motor macro and security layer are present.";
   } else if (grade === "adequate") {
     summary =
       "Usable but incomplete — review proxies, missing sleeve indicators, or stale snapshot before sizing.";

@@ -22,8 +22,8 @@ export async function GET(request: Request) {
       {
         ok: false,
         error:
-          "Configure GITHUB_MOTOR_DISPATCH_TOKEN e GITHUB_REPO na Vercel para disparar o workflow.",
-        hint: "O schedule principal está em .github/workflows/motor-daily.yml (06:00 UTC).",
+          "Configure GITHUB_MOTOR_DISPATCH_TOKEN and GITHUB_REPO on Vercel to dispatch the workflow.",
+        hint: "The main schedule is in .github/workflows/motor-daily.yml (06:00 UTC).",
       },
       { status: 503 },
     );
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
   const [owner, name] = repo.split("/");
   if (!owner || !name) {
     return NextResponse.json(
-      { ok: false, error: "GITHUB_REPO inválido — use formato owner/repo" },
+      { ok: false, error: "Invalid GITHUB_REPO — use owner/repo format" },
       { status: 500 },
     );
   }

@@ -23,20 +23,20 @@ export async function PATCH(request: Request, { params }: Params) {
   const { id } = await params;
   const existing = await getOwned(session.userId, id);
   if (!existing) {
-    return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
   let body: unknown;
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "JSON inválido" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
   const parsed = updateBudgetCategorySchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Validação falhou", details: parsed.error.flatten() },
+      { error: "Validation failed", details: parsed.error.flatten() },
       { status: 400 },
     );
   }
@@ -59,7 +59,7 @@ export async function DELETE(request: Request, { params }: Params) {
   const { id } = await params;
   const existing = await getOwned(session.userId, id);
   if (!existing) {
-    return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
   await prisma.budgetCategory.delete({ where: { id } });

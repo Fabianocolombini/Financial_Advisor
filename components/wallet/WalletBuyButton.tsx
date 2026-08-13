@@ -24,8 +24,8 @@ export function WalletBuyButton({
         e.stopPropagation();
         requestWalletBuy({ symbol, classId, name, exchange, kind, lastPrice });
       }}
-      title="Comprar e acompanhar em My Wallet"
-      aria-label={`Adicionar ${symbol} à My Wallet`}
+      title="Buy and track in My Wallet"
+      aria-label={`Add ${symbol} to My Wallet`}
       className="shrink-0 rounded p-0.5 text-zinc-500 transition-colors hover:text-emerald-400"
     >
       <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>

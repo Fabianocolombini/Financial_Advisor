@@ -22,7 +22,7 @@ export function ClassScoreLegend({
   return (
     <details className="rounded-lg border border-zinc-800 bg-black px-3 py-2">
       <summary className="cursor-pointer text-[11px] text-zinc-500 hover:text-zinc-300">
-        Como o score de {label} é calculado
+        How the {label} score is calculated
       </summary>
 
       <p className="mt-2 text-xs text-zinc-400">{recipe.headline}</p>
@@ -41,12 +41,12 @@ export function ClassScoreLegend({
       </ul>
 
       <p className="mt-2 text-[11px] text-zinc-500">
-        Cada ingrediente vira uma nota de 0 a 1 comparando este papel com os outros
-        da mesma classe no mesmo dia, e o score é a média ponderada dessas notas.
-        Por isso <span className="text-zinc-300">0,5 é o papel mediano do grupo</span>{" "}
-        e o score só faz sentido dentro da própria classe: 0,62 em {label} e 0,62 em
-        outra classe não dizem qual das duas é o melhor lugar para o seu dinheiro —
-        isso é o papel da linha “A classe inteira”.
+        Each ingredient becomes a 0-to-1 grade comparing this name with the others
+        in the same class on the same day, and the score is the weighted average of
+        those grades. That is why <span className="text-zinc-300">0.5 is the median name in the group</span>{" "}
+        and the score only makes sense inside its own class: 0.62 in {label} and 0.62 in
+        another class do not say which of the two is the better place for your money —
+        that is the job of the “The whole class” line.
       </p>
     </details>
   );

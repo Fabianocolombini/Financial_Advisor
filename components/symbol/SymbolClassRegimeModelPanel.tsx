@@ -5,106 +5,106 @@ const CLASS_META: Record<
   { title: string; scoreLabel: string; securityNote: string }
 > = {
   cash_equivalents: {
-    title: "Modelo Cash — duas camadas",
+    title: "Cash model — two layers",
     scoreLabel: "CashRegimeScore",
     securityNote:
-      "SecurityScore: percentis cross-sectional (liquidez, vol, |Δ50|). Sem RSI.",
+      "SecurityScore: cross-sectional percentiles (liquidity, vol, |Δ50|). No RSI.",
   },
   fi_treasury: {
-    title: "Modelo Treasuries — duas camadas",
+    title: "Treasuries model — two layers",
     scoreLabel: "TreasuryRegimeScore",
     securityNote:
-      "SecurityScore: tendência + RSI + volume − COT crowding. Rankeia ponto da curva.",
+      "SecurityScore: trend + RSI + volume − COT crowding. Ranks the point on the curve.",
   },
   fi_ig: {
-    title: "Modelo IG Bonds — duas camadas",
+    title: "IG Bonds model — two layers",
     scoreLabel: "IGRegimeScore",
     securityNote:
-      "SecurityScore: tendência + RSI + volume + duration fit vs term premium.",
+      "SecurityScore: trend + RSI + volume + duration fit vs term premium.",
   },
   fi_hy: {
-    title: "Modelo High Yield — duas camadas",
+    title: "High Yield model — two layers",
     scoreLabel: "HYRegimeScore",
     securityNote:
-      "SecurityScore: tendência + RSI + volume − vol penalty (σ20). Sem fed cut prob.",
+      "SecurityScore: trend + RSI + volume − vol penalty (σ20). No fed cut prob.",
   },
   fi_tips: {
-    title: "Modelo TIPS — duas camadas",
+    title: "TIPS model — two layers",
     scoreLabel: "TIPSRegimeScore",
     securityNote:
-      "SecurityScore: tendência + RSI + volume + duration fit vs yield real (RY_pct).",
+      "SecurityScore: trend + RSI + volume + duration fit vs real yield (RY_pct).",
   },
   fi_preferred: {
-    title: "Modelo Preferred — duas camadas",
+    title: "Preferred model — two layers",
     scoreLabel: "PreferredRegimeScore",
     securityNote:
-      "SecurityScore: tendência + RSI + yield − vol penalty (σ20). Sem volume.",
+      "SecurityScore: trend + RSI + yield − vol penalty (σ20). No volume.",
   },
   us_equity: {
-    title: "Modelo US Equity — duas camadas",
+    title: "US Equity model — two layers",
     scoreLabel: "USEquityRegimeScore",
     securityNote:
-      "SecurityScore: tendência + RSI + volume − vol penalty (σ20).",
+      "SecurityScore: trend + RSI + volume − vol penalty (σ20).",
   },
   intl_equity: {
-    title: "Modelo International — duas camadas",
+    title: "International model — two layers",
     scoreLabel: "IntlEquityRegimeScore",
     securityNote:
-      "SecurityScore: tendência + RSI + vol inversa + hedge fit (UUP).",
+      "SecurityScore: trend + RSI + inverse vol + hedge fit (UUP).",
   },
   em_equity: {
-    title: "Modelo Emerging Markets — duas camadas",
+    title: "Emerging Markets model — two layers",
     scoreLabel: "EMEquityRegimeScore",
     securityNote:
-      "SecurityScore: tendência + RSI + volume + china fit (FXI beta).",
+      "SecurityScore: trend + RSI + volume + china fit (FXI beta).",
   },
   real_estate: {
-    title: "Modelo REITs — duas camadas",
+    title: "REITs model — two layers",
     scoreLabel: "REITsRegimeScore",
     securityNote:
-      "SecurityScore: tendência + yield + volume − vol (sem RSI).",
+      "SecurityScore: trend + yield + volume − vol (no RSI).",
   },
   commodities_precious: {
-    title: "Modelo Metais Preciosos — duas camadas",
+    title: "Precious Metals model — two layers",
     scoreLabel: "PreciousRegimeScore",
     securityNote:
-      "SecurityScore: tendência + RSI + volume − expense ratio.",
+      "SecurityScore: trend + RSI + volume − expense ratio.",
   },
   commodities_energy: {
-    title: "Modelo Energia — duas camadas",
+    title: "Energy model — two layers",
     scoreLabel: "EnergyRegimeScore",
     securityNote:
-      "SecurityScore: tendência + RSI + volume + beta fit vs USO.",
+      "SecurityScore: trend + RSI + volume + beta fit vs USO.",
   },
   energy_mlp: {
-    title: "Modelo MLP — duas camadas",
+    title: "MLP model — two layers",
     scoreLabel: "MLPRegimeScore",
     securityNote:
-      "SecurityScore: tendência + yield + volume − vol penalty.",
+      "SecurityScore: trend + yield + volume − vol penalty.",
   },
   healthcare_biotech: {
-    title: "Modelo Biotech — duas camadas",
+    title: "Biotech model — two layers",
     scoreLabel: "BiotechRegimeScore",
     securityNote:
-      "SecurityScore: tendência + RSI + volume + catalyst density (FDA).",
+      "SecurityScore: trend + RSI + volume + catalyst density (FDA).",
   },
   alt_bdc: {
-    title: "Modelo BDC — duas camadas",
+    title: "BDC model — two layers",
     scoreLabel: "BDCRegimeScore",
     securityNote:
-      "SecurityScore: tendência + NAV discount + yield − vol penalty.",
+      "SecurityScore: trend + NAV discount + yield − vol penalty.",
   },
   alt_infrastructure: {
-    title: "Modelo Infraestrutura — duas camadas",
+    title: "Infrastructure model — two layers",
     scoreLabel: "InfraRegimeScore",
     securityNote:
-      "SecurityScore: tendência + yield + vol inversa + volume.",
+      "SecurityScore: trend + yield + inverse vol + volume.",
   },
   currencies: {
-    title: "Modelo FX — ritmo de conversão",
+    title: "FX model — conversion pace",
     scoreLabel: "ConversionPaceScore",
     securityNote:
-      "SecurityScore: custo efetivo + liquidez + adequação fiscal (carry).",
+      "SecurityScore: effective cost + liquidity + tax fit (carry).",
   },
 };
 
@@ -161,12 +161,12 @@ export function SymbolClassRegimeModelPanel({
         ) : null}
       </div>
       <p className="text-xs text-zinc-400">
-        <strong className="text-zinc-300">Modelo 1 (regime)</strong> define{" "}
+        <strong className="text-zinc-300">Model 1 (regime)</strong> sets{" "}
         {regimeModel.outputType === "pace"
-          ? "o ritmo de conversão FX"
-          : "quanto alocar no sleeve"}
-        . <strong className="text-zinc-300">Modelo 2 (security)</strong> rankeia qual
-        instrumento — scores não se misturam.
+          ? "the FX conversion pace"
+          : "how much to allocate in the sleeve"}
+        . <strong className="text-zinc-300">Model 2 (security)</strong> ranks which
+        instrument — scores do not mix.
       </p>
       <div className="grid gap-2 sm:grid-cols-3">
         <div className="rounded border border-zinc-800 bg-black/40 p-3">
@@ -177,7 +177,7 @@ export function SymbolClassRegimeModelPanel({
         </div>
         <div className="rounded border border-zinc-800 bg-black/40 p-3">
           <p className="text-[10px] uppercase tracking-wide text-zinc-500">
-            {regimeModel.outputType === "pace" ? "Ritmo conversão" : "Ação sleeve"}
+            {regimeModel.outputType === "pace" ? "Conversion pace" : "Sleeve action"}
           </p>
           <p className="text-lg font-semibold text-emerald-300">{regimeModel.action ?? "—"}</p>
           {regimeModel.flightToQualityFlag ? (
@@ -221,7 +221,7 @@ export function SymbolClassRegimeModelPanel({
           ) : null}
         </div>
         <div className="rounded border border-zinc-800 bg-black/40 p-3">
-          <p className="text-[10px] uppercase tracking-wide text-zinc-500">Ação calculada</p>
+          <p className="text-[10px] uppercase tracking-wide text-zinc-500">Calculated action</p>
           <p className="text-sm text-zinc-300">{regimeModel.actionCalculated ?? "—"}</p>
         </div>
       </div>

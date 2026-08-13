@@ -38,35 +38,35 @@ export function plainTrend(stageLabel: string | null | undefined): PlainLabel {
     case "Accumulate":
     case "Ascendente":
       return {
-        label: "Aumentar",
-        hint: "A tendência da classe está a favor: o modelo apoia colocar mais dinheiro aqui.",
+        label: "Increase",
+        hint: "The class trend is in your favor: the model supports putting more money here.",
         tone: "positive",
       };
     case "Hold":
     case "Maduro":
       return {
-        label: "Manter",
-        hint: "Sem tendência definida: o modelo apoia manter o que já está investido, sem acelerar aportes.",
+        label: "Hold",
+        hint: "No clear trend: the model supports keeping what you already hold, without adding faster.",
         tone: "neutral",
       };
     case "Reduce":
     case "Descendente":
       return {
-        label: "Reduzir",
-        hint: "A tendência virou contra a classe. Não significa que já deu prejuízo — significa que o vento mudou de direção.",
+        label: "Reduce",
+        hint: "The trend turned against the class. That is not a realized loss — it means the wind changed direction.",
         tone: "caution",
       };
     case "Strong Reduce":
     case "ForteDescendente":
       return {
-        label: "Reduzir forte",
-        hint: "A tendência é claramente negativa: o modelo apoia cortar exposição, não apenas parar de aportar.",
+        label: "Reduce hard",
+        hint: "The trend is clearly negative: the model supports cutting exposure, not just pausing new money.",
         tone: "negative",
       };
     default:
       return {
-        label: "Sem dados",
-        hint: "O motor ainda não pontuou este ativo. Aguarde a próxima rodada diária.",
+        label: "No data",
+        hint: "The motor has not scored this name yet. Wait for the next daily run.",
         tone: "unknown",
       };
   }
@@ -76,7 +76,7 @@ export function plainTrend(stageLabel: string | null | undefined): PlainLabel {
  * Whether *new* money is eligible here.
  *
  * This replaces "Validated / Not validated", which read like a data-quality
- * check. The question being answered is "posso aportar agora?" — and the answer
+ * check. The question being answered is "can I add money now?" — and the answer
  * is about eligibility, never a promise of return.
  */
 export function plainNewMoney(input: {
@@ -87,8 +87,8 @@ export function plainNewMoney(input: {
 }): PlainLabel {
   if (!input.hasMotorData) {
     return {
-      label: "Sem dados",
-      hint: "O motor ainda não avaliou este papel. Aguarde a próxima rodada diária.",
+      label: "No data",
+      hint: "The motor has not scored this name yet. Wait for the next daily run.",
       tone: "unknown",
     };
   }
@@ -96,26 +96,26 @@ export function plainNewMoney(input: {
   switch (input.entryTiming) {
     case "Buy":
       return {
-        label: "Pode aportar",
-        hint: "A classe está favorável e este papel está entre os melhores do grupo. É elegível para dinheiro novo — não é uma garantia de retorno.",
+        label: "Can add",
+        hint: "The class is favorable and this name ranks among the best in the group. Eligible for new money — not a return guarantee.",
         tone: "positive",
       };
     case "Wait":
       return {
-        label: "Esperar",
-        hint: "Elegível, mas sem pressa: falta confirmação da classe ou o papel não está entre os melhores do grupo.",
+        label: "Wait",
+        hint: "Eligible, but no rush: the class still needs confirmation, or this name is not among the best in the group.",
         tone: "caution",
       };
     case "Avoid":
       return {
-        label: "Não aportar",
-        hint: "O modelo desaconselha dinheiro novo aqui agora. Quem já tem posição não precisa necessariamente vender — veja a página do ativo.",
+        label: "Do not add",
+        hint: "The model advises against new money here now. Existing holders do not necessarily need to sell — see the name's page.",
         tone: "negative",
       };
     case "Neutral":
       return {
-        label: "Indiferente",
-        hint: "Para reserva de caixa não existe momento bom ou ruim de entrada: o papel serve para guardar dinheiro, não para buscar valorização.",
+        label: "Indifferent",
+        hint: "For a cash reserve there is no good or bad entry: the name is for holding cash, not for seeking appreciation.",
         tone: "neutral",
       };
     default:
@@ -126,26 +126,26 @@ export function plainNewMoney(input: {
   if (input.motorScope === "class") {
     return input.entryValidated
       ? {
-          label: "Pode aportar",
-          hint: "Avaliado pela classe, não pelo papel: a classe aceita dinheiro novo, mas este papel específico ainda não foi pontuado.",
+          label: "Can add",
+          hint: "Scored at the class level, not the name: the class accepts new money, but this specific name has not been scored yet.",
           tone: "neutral",
         }
       : {
-          label: "Não aportar",
-          hint: "Avaliado pela classe, não pelo papel: a classe está desfavorável para dinheiro novo.",
+          label: "Do not add",
+          hint: "Scored at the class level, not the name: the class is unfavorable for new money.",
           tone: "caution",
         };
   }
 
   return input.entryValidated
     ? {
-        label: "Pode aportar",
-        hint: "Elegível para dinheiro novo: a classe não está desfavorável e o papel está acima da mediana do grupo.",
+        label: "Can add",
+        hint: "Eligible for new money: the class is not unfavorable and the name sits above the group median.",
         tone: "positive",
       }
     : {
-        label: "Não aportar",
-        hint: "Não elegível para dinheiro novo agora: a classe está desfavorável ou o papel está abaixo da mediana do grupo.",
+        label: "Do not add",
+        hint: "Not eligible for new money now: the class is unfavorable or the name sits below the group median.",
         tone: "negative",
       };
 }
@@ -158,31 +158,31 @@ export function plainQuality(input: {
   const quality = input.instrumentQuality;
   if (quality === "Preferred") {
     return {
-      label: "Entre os melhores",
-      hint: "Está no topo do ranking da própria classe.",
+      label: "Among the best",
+      hint: "It sits at the top of its own class ranking.",
       tone: "positive",
     };
   }
   if (quality === "Competitive") {
     return {
-      label: "Na média",
-      hint: "Fica no meio do ranking da própria classe.",
+      label: "In the middle",
+      hint: "It sits in the middle of its own class ranking.",
       tone: "neutral",
     };
   }
   if (quality === "Weak") {
     return {
-      label: "Entre os piores",
-      hint: "Está na parte de baixo do ranking da própria classe.",
+      label: "Among the weakest",
+      hint: "It sits in the bottom of its own class ranking.",
       tone: "caution",
     };
   }
   if (input.score == null) {
-    return { label: "—", hint: "Sem score disponível.", tone: "unknown" };
+    return { label: "—", hint: "No score available.", tone: "unknown" };
   }
   return {
-    label: input.score >= 0.5 ? "Acima da mediana" : "Abaixo da mediana",
-    hint: "Posição do papel no ranking da própria classe.",
+    label: input.score >= 0.5 ? "Above median" : "Below median",
+    hint: "Where this name sits in its own class ranking.",
     tone: input.score >= 0.5 ? "neutral" : "caution",
   };
 }

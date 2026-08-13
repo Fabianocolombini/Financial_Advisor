@@ -91,10 +91,10 @@ describe("gauge scales", () => {
     const scale = gaugeScaleForClass("cash_equivalents");
     expect(scale.id).toBe("unit_quality");
     expect(scale.bands.map((b) => b.label)).not.toContain("Buy");
-    expect(gaugeBandForValue(scale, 0.4).label).toBe("Abaixo dos pares");
-    expect(gaugeBandForValue(scale, 0.55).label).toBe("Na média");
-    expect(gaugeBandForValue(scale, 0.1).label).toBe("Fraco");
-    expect(gaugeBandForValue(scale, 0.9).label).toBe("Preferido");
+    expect(gaugeBandForValue(scale, 0.4).label).toBe("Below peers");
+    expect(gaugeBandForValue(scale, 0.55).label).toBe("In line");
+    expect(gaugeBandForValue(scale, 0.1).label).toBe("Weak");
+    expect(gaugeBandForValue(scale, 0.9).label).toBe("Preferred");
   });
 
   it("maps the unit domain across the full needle sweep", () => {
@@ -151,15 +151,15 @@ describe("indicator applicability", () => {
     const result = applicableTechnicalRows(rows, "cash_equivalents");
     expect(result.rows).toHaveLength(0);
     expect(result.excluded).toHaveLength(4);
-    expect(result.note).toContain("monotônico");
+    expect(result.note).toContain("monotonic");
     expect(
       result.excluded.find((e) => e.row.group === "moving_average")?.reason,
-    ).toContain("distribuição mensal");
+    ).toContain("monthly distribution");
   });
 
   it("does not project pivots for cash", () => {
     expect(pivotsApplicable("cash_equivalents").applicable).toBe(false);
-    expect(pivotsApplicable("cash_equivalents").reason).toContain("centavo");
+    expect(pivotsApplicable("cash_equivalents").reason).toContain("cent");
     expect(pivotsApplicable("us_equity").applicable).toBe(true);
   });
 
@@ -197,8 +197,8 @@ describe("buildDecisionSummary", () => {
       price: bars[bars.length - 1]!.value,
       technicalRows: [],
     });
-    expect(decision.headline).toContain("necessidade de caixa");
-    expect(decision.entry.reasons.join(" ")).toContain("NAV é estável");
+    expect(decision.headline).toContain("cash need");
+    expect(decision.entry.reasons.join(" ")).toContain("NAV is stable");
   });
 
   it("blocks new money when the sleeve is being reduced", () => {
@@ -223,8 +223,8 @@ describe("buildDecisionSummary", () => {
     });
     expect(decision.allocation.stance).toBe("Reduce");
     expect(decision.entry.timing).toBe("Avoid");
-    expect(decision.position.newMoney).toContain("Não aporte");
-    expect(decision.position.existing).toContain("reduza");
+    expect(decision.position.newMoney).toContain("Do not add");
+    expect(decision.position.existing).toContain("reduce");
   });
 
   it("recommends a better peer when the instrument is weak", () => {
@@ -237,7 +237,7 @@ describe("buildDecisionSummary", () => {
     });
     expect(decision.instrument.quality).toBe("Weak");
     expect(decision.entry.timing).toBe("Wait");
-    expect(decision.entry.explanation).toContain("par mais líquido");
+    expect(decision.entry.explanation).toContain("more liquid");
   });
 
   it("reports unknown instrument quality without a ticker score", () => {
@@ -255,9 +255,9 @@ describe("buildDecisionSummary", () => {
 
 describe("narrative", () => {
   it("states that validated entry is not a purchase instruction", () => {
-    expect(entryValidatedExplanation(true, true)).toContain("não é um sinal");
-    expect(entryValidatedExplanation(true, false)).toContain("Não é confirmação técnica");
-    expect(entryValidatedExplanation(false, false)).toContain("não validada");
+    expect(entryValidatedExplanation(true, true)).toContain("not a signal");
+    expect(entryValidatedExplanation(true, false)).toContain("not technical confirmation");
+    expect(entryValidatedExplanation(false, false)).toContain("not validated");
   });
 
   it("covers motor, price, action and invalidation", () => {
@@ -275,10 +275,10 @@ describe("narrative", () => {
       entryValidated: true,
     });
     const titles = sections.map((s) => s.title);
-    expect(titles).toContain("O que o motor está dizendo");
-    expect(titles).toContain("O que o preço está dizendo");
-    expect(titles).toContain("O que fazer");
-    expect(titles).toContain("O que mudaria esta leitura");
+    expect(titles).toContain("What the motor is saying");
+    expect(titles).toContain("What the price is saying");
+    expect(titles).toContain("What to do");
+    expect(titles).toContain("What would change this reading");
     for (const section of sections) {
       expect(section.body.length).toBeGreaterThan(20);
     }

@@ -9,8 +9,8 @@ import { IndicatorChart, type IndicatorChartBar } from "./IndicatorChart";
 const LOOKBACKS = [
   { id: "3m", label: "3M", bars: 63 },
   { id: "6m", label: "6M", bars: 126 },
-  { id: "1y", label: "1A", bars: 252 },
-  { id: "all", label: "Tudo", bars: Number.POSITIVE_INFINITY },
+  { id: "1y", label: "1Y", bars: 252 },
+  { id: "all", label: "All", bars: Number.POSITIVE_INFINITY },
 ] as const;
 
 type LookbackId = (typeof LOOKBACKS)[number]["id"];
@@ -80,7 +80,7 @@ export function IndicatorExplorer({
   if (available.length === 0) {
     return (
       <p className="text-sm text-zinc-500">
-        Histórico insuficiente para plotar indicadores.
+        Not enough history to plot indicators.
       </p>
     );
   }
@@ -129,8 +129,8 @@ export function IndicatorExplorer({
     <div className="space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <p className="text-xs text-zinc-500">
-          Selecione os indicadores — os gráficos abrem dois por linha, com as faixas de
-          referência de cada um.
+          Select the indicators — charts open two per row, with each one's
+          reference bands.
         </p>
         <div className="flex gap-1 rounded-md border border-zinc-800 bg-zinc-950 p-0.5">
           {LOOKBACKS.map((l) => (
@@ -151,23 +151,23 @@ export function IndicatorExplorer({
       </div>
 
       <div className="space-y-3 rounded-lg border border-zinc-800 bg-zinc-950 p-3">
-        {renderGroup("Osciladores", oscillators)}
-        {renderGroup("Médias móveis", movingAverages)}
+        {renderGroup("Oscillators", oscillators)}
+        {renderGroup("Moving averages", movingAverages)}
         {selected.length > 0 ? (
           <button
             type="button"
             onClick={() => setSelected([])}
             className="text-[11px] text-zinc-600 underline-offset-2 hover:text-zinc-400 hover:underline"
           >
-            Limpar seleção
+            Clear selection
           </button>
         ) : null}
       </div>
 
       {selectedSeries.length === 0 ? (
         <p className="rounded border border-dashed border-zinc-800 px-3 py-6 text-center text-xs text-zinc-600">
-          Nenhum indicador selecionado. Clique em um indicador acima para ver seu
-          histórico.
+          No indicator selected. Click an indicator above to see its
+          history.
         </p>
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">

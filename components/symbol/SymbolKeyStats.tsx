@@ -88,12 +88,12 @@ export function SymbolKeyStatsPreview({
             href={`/mercado/${symbol}?tab=financials`}
             className="text-xs text-sky-400 hover:text-sky-300"
           >
-            Ver Financials →
+            See Financials →
           </Link>
         </div>
         <p className="rounded border border-zinc-800 bg-zinc-950 px-3 py-3 text-sm text-zinc-500">
           {financials.emptyReason ??
-            "Dados financeiros não disponíveis para este ativo."}
+            "Financial data is not available for this name."}
         </p>
       </section>
     );
@@ -109,7 +109,7 @@ export function SymbolKeyStatsPreview({
           href={`/mercado/${symbol}?tab=financials`}
           className="text-xs text-sky-400 hover:text-sky-300"
         >
-          Ver Financials →
+          See Financials →
         </Link>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">

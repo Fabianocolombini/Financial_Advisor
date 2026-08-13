@@ -4,7 +4,7 @@ export function SymbolModelsPanel({ models }: { models?: MotorModelsSnapshot }) 
   if (!models?.regime && !models?.ewma_vol) {
     return (
       <section className="rounded-lg border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-500">
-        Modelos globais (regime / EWMA vol) não disponíveis no snapshot.
+        Global models (regime / EWMA vol) are not available in the snapshot.
       </section>
     );
   }

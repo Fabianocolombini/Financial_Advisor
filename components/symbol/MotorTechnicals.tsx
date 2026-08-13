@@ -99,9 +99,9 @@ export function MotorWhySection({
         </span>
         <span
           className="rounded-full bg-zinc-800 px-2 py-0.5 text-xs text-zinc-300"
-          title="Elegibilidade do motor para aportes incrementais — não é confirmação técnica de que agora é o melhor momento de compra."
+          title="Motor eligibility for incremental adds — not technical confirmation that now is the best moment to buy."
         >
-          Elegibilidade: {entryLabel}
+          Eligibility: {entryLabel}
         </span>
         <span className="rounded-full bg-zinc-800 px-2 py-0.5 text-xs text-zinc-300">
           Class: {classLabel}
@@ -128,7 +128,7 @@ export function MotorWhySection({
         </ul>
       ) : (
         <p className="text-sm text-zinc-500">
-          Sem rationale detalhado no snapshot — aguarde próximo Motor Daily ou scoring on-demand.
+          No detailed rationale in the snapshot — wait for the next Motor Daily or on-demand scoring.
         </p>
       )}
     </section>
@@ -144,7 +144,7 @@ export function MotorIndicatorsTable({
 }) {
   if (indicators.length === 0) {
     return (
-      <p className="text-sm text-zinc-500">Indicadores do motor não disponíveis para este papel.</p>
+      <p className="text-sm text-zinc-500">Motor indicators are not available for this name.</p>
     );
   }
 

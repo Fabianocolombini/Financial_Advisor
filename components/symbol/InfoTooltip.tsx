@@ -19,7 +19,7 @@ export function InfoTooltip({
       <button
         type="button"
         className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-zinc-600 text-[10px] leading-none text-zinc-400 transition-colors hover:border-zinc-400 hover:text-zinc-200"
-        aria-label={`Informação: ${term.replace(/_/g, " ")}`}
+        aria-label={`Information: ${term.replace(/_/g, " ")}`}
       >
         i
       </button>

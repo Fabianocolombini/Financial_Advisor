@@ -67,7 +67,7 @@ export function SymbolScoreHistoryChart({
   if (points.length < 2) {
     return (
       <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-500">
-        {title}: histórico insuficiente (aguarde mais Motor Daily runs).
+        {title}: not enough history (wait for more Motor Daily runs).
       </div>
     );
   }

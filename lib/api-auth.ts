@@ -17,7 +17,7 @@ export async function requireSession(): Promise<
   if (!userId) {
     return {
       ok: false,
-      response: NextResponse.json({ error: "Não autenticado" }, { status: 401 }),
+      response: NextResponse.json({ error: "Not authenticated" }, { status: 401 }),
     };
   }
   return { ok: true, userId };

@@ -5,7 +5,7 @@ function EmptyFinancials({ reason }: { reason: string }) {
   return (
     <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-6 text-center">
       <p className="text-sm font-medium text-amber-200">
-        Dados financeiros não disponíveis para este ativo.
+        Financial data is not available for this name.
       </p>
       <p className="mt-2 text-xs text-amber-200/80">{reason}</p>
     </div>
@@ -47,13 +47,13 @@ export function SymbolFinancialsPanel({
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 className="text-sm font-medium text-white">Financials</h3>
           {sources ? (
-            <p className="text-[10px] text-zinc-600">Fontes: {sources}</p>
+            <p className="text-[10px] text-zinc-600">Sources: {sources}</p>
           ) : null}
         </div>
         <EmptyFinancials
           reason={
             financials.emptyReason ??
-            "Sem fundamentals nas fontes oficiais (Yahoo Finance / SEC EDGAR)."
+            "No fundamentals from official sources (Yahoo Finance / SEC EDGAR)."
           }
         />
       </section>
@@ -64,17 +64,17 @@ export function SymbolFinancialsPanel({
     <section className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-sm font-medium text-white">
-          {financials.isFund ? "Perfil do fundo" : "Demonstrativos"}
+          {financials.isFund ? "Fund profile" : "Statements"}
         </h3>
         {sources ? (
-          <p className="text-[10px] text-zinc-600">Fontes: {sources}</p>
+          <p className="text-[10px] text-zinc-600">Sources: {sources}</p>
         ) : null}
       </div>
 
       {financials.isFund ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Stat label="Família" value={financials.fundFamily ?? "—"} />
-          <Stat label="Categoria" value={financials.fundCategory ?? "—"} />
+          <Stat label="Family" value={financials.fundFamily ?? "—"} />
+          <Stat label="Category" value={financials.fundCategory ?? "—"} />
           <Stat
             label="Expense ratio"
             value={
@@ -84,7 +84,7 @@ export function SymbolFinancialsPanel({
             }
           />
           <Stat
-            label="Patrimônio (AUM)"
+            label="Assets (AUM)"
             value={formatUsdCompact(financials.totalAssets)}
           />
           <Stat label="Dividend yield" value={pct(financials.dividendYield)} />
@@ -144,7 +144,7 @@ export function SymbolFinancialsPanel({
 
       {financials.annualStatements.length > 0 ? (
         <div className="space-y-2">
-          <h4 className="text-xs font-medium text-zinc-400">Histórico anual</h4>
+          <h4 className="text-xs font-medium text-zinc-400">Annual history</h4>
           <div className="overflow-x-auto rounded-lg border border-zinc-800">
             <table className="w-full text-left text-sm">
               <thead className="border-b border-zinc-800 bg-zinc-950 text-[11px] text-zinc-500">
@@ -153,7 +153,7 @@ export function SymbolFinancialsPanel({
                   <th className="px-3 py-2">Revenue</th>
                   <th className="px-3 py-2">Net income</th>
                   <th className="px-3 py-2">EPS</th>
-                  <th className="px-3 py-2">Fonte</th>
+                  <th className="px-3 py-2">Source</th>
                 </tr>
               </thead>
               <tbody>
@@ -182,7 +182,7 @@ export function SymbolFinancialsPanel({
 
       {financials.website ? (
         <p className="text-xs text-zinc-500">
-          Site:{" "}
+          Website:{" "}
           <a
             href={
               financials.website.startsWith("http")
@@ -209,8 +209,8 @@ export function SymbolEarningsPanel({
   if (!financials.hasEarningsData) {
     return (
       <section className="space-y-3">
-        <h3 className="text-sm font-medium text-white">Divulgação de resultados</h3>
-        <EmptyFinancials reason="Sem calendário ou histórico de earnings nas fontes oficiais para este ativo." />
+        <h3 className="text-sm font-medium text-white">Earnings</h3>
+        <EmptyFinancials reason="No earnings calendar or history from official sources for this name." />
       </section>
     );
   }
@@ -219,10 +219,10 @@ export function SymbolEarningsPanel({
 
   return (
     <section className="space-y-4">
-      <h3 className="text-sm font-medium text-white">Divulgação de resultados</h3>
+      <h3 className="text-sm font-medium text-white">Earnings</h3>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat label="Próxima data" value={financials.nextEarningsDate ?? "—"} />
-        <Stat label="Último quarter" value={q?.date ?? "—"} />
+        <Stat label="Next date" value={financials.nextEarningsDate ?? "—"} />
+        <Stat label="Last quarter" value={q?.date ?? "—"} />
         <Stat label="Revenue (Q)" value={formatUsdCompact(q?.revenue ?? null)} />
         <Stat
           label="EPS (Q)"
@@ -235,11 +235,11 @@ export function SymbolEarningsPanel({
           <table className="w-full text-left text-sm">
             <thead className="border-b border-zinc-800 bg-zinc-950 text-[11px] text-zinc-500">
               <tr>
-                <th className="px-3 py-2">Período</th>
-                <th className="px-3 py-2">Data</th>
-                <th className="px-3 py-2">EPS atual</th>
-                <th className="px-3 py-2">EPS estimado</th>
-                <th className="px-3 py-2">Surpresa</th>
+                <th className="px-3 py-2">Period</th>
+                <th className="px-3 py-2">Date</th>
+                <th className="px-3 py-2">Actual EPS</th>
+                <th className="px-3 py-2">Estimated EPS</th>
+                <th className="px-3 py-2">Surprise</th>
               </tr>
             </thead>
             <tbody>

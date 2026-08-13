@@ -579,26 +579,26 @@ export function computeIndicatorSeries(bars: IndicatorBar[]): IndicatorSeries[] 
   const oscillators: IndicatorSeries[] = [
     {
       id: "rsi_14",
-      name: "Índice de Força Relativa (14)",
+      name: "Relative Strength Index (14)",
       group: "oscillator",
       values: rsiSeries(closes, 14),
       lines: [],
       levels: [
-        { value: 70, label: "Sobrecomprado", kind: "threshold" },
-        { value: 30, label: "Sobrevendido", kind: "threshold" },
+        { value: 70, label: "Overbought", kind: "threshold" },
+        { value: 30, label: "Oversold", kind: "threshold" },
       ],
       pane: "separate",
       decimals: 2,
     },
     {
       id: "stoch_k",
-      name: "Estocástico %K (14, 3, 3)",
+      name: "Stochastic %K (14, 3, 3)",
       group: "oscillator",
       values: stoch.k,
       lines: [{ id: "stoch_d", name: "%D", values: stoch.d, color: LINE_SECONDARY }],
       levels: [
-        { value: 80, label: "Sobrecomprado", kind: "threshold" },
-        { value: 20, label: "Sobrevendido", kind: "threshold" },
+        { value: 80, label: "Overbought", kind: "threshold" },
+        { value: 20, label: "Oversold", kind: "threshold" },
       ],
       pane: "separate",
       decimals: 2,
@@ -610,22 +610,22 @@ export function computeIndicatorSeries(bars: IndicatorBar[]): IndicatorSeries[] 
       values: cciSeries(closes, highs, lows, 20),
       lines: [],
       levels: [
-        { value: 100, label: "Sobrecomprado", kind: "threshold" },
-        { value: -100, label: "Sobrevendido", kind: "threshold" },
+        { value: 100, label: "Overbought", kind: "threshold" },
+        { value: -100, label: "Oversold", kind: "threshold" },
       ],
       pane: "separate",
       decimals: 2,
     },
     {
       id: "adx_14",
-      name: "Índice Direcional Médio (14)",
+      name: "Average Directional Index (14)",
       group: "oscillator",
       values: adx.adx,
       lines: [
         { id: "di_plus", name: "+DI", values: adx.plusDi, color: "#22c55e" },
         { id: "di_minus", name: "−DI", values: adx.minusDi, color: "#ef4444" },
       ],
-      levels: [{ value: 20, label: "Tendência definida", kind: "threshold" }],
+      levels: [{ value: 20, label: "Defined trend", kind: "threshold" }],
       pane: "separate",
       decimals: 2,
     },
@@ -654,20 +654,20 @@ export function computeIndicatorSeries(bars: IndicatorBar[]): IndicatorSeries[] 
       name: "MACD (12, 26)",
       group: "oscillator",
       values: macd.macd,
-      lines: [{ id: "macd_signal", name: "Sinal (9)", values: macd.signal, color: LINE_SECONDARY }],
+      lines: [{ id: "macd_signal", name: "Signal (9)", values: macd.signal, color: LINE_SECONDARY }],
       levels: [{ value: 0, kind: "zero" }],
       pane: "separate",
       decimals: 2,
     },
     {
       id: "stoch_rsi",
-      name: "Estocástico RSI Fast (3, 3, 14, 14)",
+      name: "Stochastic RSI Fast (3, 3, 14, 14)",
       group: "oscillator",
       values: stochRsi.k,
       lines: [{ id: "stoch_rsi_d", name: "%D", values: stochRsi.d, color: LINE_SECONDARY }],
       levels: [
-        { value: 80, label: "Sobrecomprado", kind: "threshold" },
-        { value: 20, label: "Sobrevendido", kind: "threshold" },
+        { value: 80, label: "Overbought", kind: "threshold" },
+        { value: 20, label: "Oversold", kind: "threshold" },
       ],
       pane: "separate",
       decimals: 2,
@@ -679,8 +679,8 @@ export function computeIndicatorSeries(bars: IndicatorBar[]): IndicatorSeries[] 
       values: williamsRSeries(closes, highs, lows, 14),
       lines: [],
       levels: [
-        { value: -20, label: "Sobrecomprado", kind: "threshold" },
-        { value: -80, label: "Sobrevendido", kind: "threshold" },
+        { value: -20, label: "Overbought", kind: "threshold" },
+        { value: -80, label: "Oversold", kind: "threshold" },
       ],
       pane: "separate",
       decimals: 2,
@@ -705,8 +705,8 @@ export function computeIndicatorSeries(bars: IndicatorBar[]): IndicatorSeries[] 
       values: ultimateOscillatorSeries(closes, highs, lows, 7, 14, 28),
       lines: [],
       levels: [
-        { value: 70, label: "Sobrecomprado", kind: "threshold" },
-        { value: 30, label: "Sobrevendido", kind: "threshold" },
+        { value: 70, label: "Overbought", kind: "threshold" },
+        { value: 30, label: "Oversold", kind: "threshold" },
       ],
       pane: "separate",
       decimals: 2,
@@ -717,7 +717,7 @@ export function computeIndicatorSeries(bars: IndicatorBar[]): IndicatorSeries[] 
   for (const period of MA_PERIODS) {
     movingAverages.push({
       id: `ema_${period}`,
-      name: `Média Móvel Exponencial (${period})`,
+      name: `Exponential Moving Average (${period})`,
       group: "moving_average",
       values: emaSeriesOf(closes, period),
       lines: [],
@@ -727,7 +727,7 @@ export function computeIndicatorSeries(bars: IndicatorBar[]): IndicatorSeries[] 
     });
     movingAverages.push({
       id: `sma_${period}`,
-      name: `Média Móvel Simples (${period})`,
+      name: `Simple Moving Average (${period})`,
       group: "moving_average",
       values: smaSeriesOf(closes, period),
       lines: [],
@@ -756,7 +756,7 @@ export function computeIndicatorSeries(bars: IndicatorBar[]): IndicatorSeries[] 
   });
   movingAverages.push({
     id: "vwma_20",
-    name: "Média Móvel Ponderada por Volume (20)",
+    name: "Volume Weighted Moving Average (20)",
     group: "moving_average",
     values: vwmaSeries(closes, volumes, 20),
     lines: [],

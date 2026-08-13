@@ -34,7 +34,7 @@ export function IndicatorFredChart({
         if (json.error) throw new Error(json.error);
         const obs = json.observations as Array<{ date: string; value: number }>;
         if (!containerRef.current || obs.length < 2) {
-          setError("Série curta ou vazia");
+          setError("Series too short or empty");
           setLoading(false);
           return;
         }
@@ -72,7 +72,7 @@ export function IndicatorFredChart({
   if (!seriesId) {
     return (
       <p className="text-[11px] text-zinc-600">
-        {indicatorName}: histórico FRED não mapeado (fonte external/scraper — valor atual no snapshot).
+        {indicatorName}: FRED history not mapped (external/scraper source — current value in the snapshot).
       </p>
     );
   }
@@ -82,7 +82,7 @@ export function IndicatorFredChart({
       <p className="text-[11px] text-zinc-500">
         {indicatorName} · FRED {seriesId}
       </p>
-      {loading ? <p className="text-xs text-zinc-500">Carregando histórico…</p> : null}
+      {loading ? <p className="text-xs text-zinc-500">Loading history…</p> : null}
       {error ? <p className="text-xs text-amber-400">{error}</p> : null}
       <div ref={containerRef} className="w-full rounded border border-zinc-800 bg-black" />
     </div>

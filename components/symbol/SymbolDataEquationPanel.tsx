@@ -11,10 +11,10 @@ export function SymbolDataEquationPanel({
   return (
     <section className="space-y-4 rounded-lg border border-zinc-800 bg-black p-4">
       <div>
-        <h3 className="text-sm font-medium text-white">Equação de dados — {classLabel}</h3>
+        <h3 className="text-sm font-medium text-white">Data equation — {classLabel}</h3>
         <p className="mt-1 text-xs text-zinc-500">{equation.role}</p>
         <p className="mt-2 text-xs text-zinc-400">
-          Cobertura do mapa de decisão:{" "}
+          Decision map coverage:{" "}
           <span className="text-white">{equation.overallCoveragePct}%</span> dos indicadores
           gratuitos mapeados com valor no snapshot.
         </p>

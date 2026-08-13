@@ -36,7 +36,7 @@ export function WalletPanel({
   const reload = useCallback(async () => {
     const res = await fetch("/api/wallet");
     if (!res.ok) {
-      setError("Não foi possível carregar a carteira.");
+      setError("Could not load the wallet.");
       setLoading(false);
       return [] as WalletHoldingView[];
     }
@@ -68,7 +68,7 @@ export function WalletPanel({
       })
       .catch(() => {
         if (cancelled) return;
-        setError("Não foi possível carregar a carteira.");
+        setError("Could not load the wallet.");
         setLoading(false);
       });
     return () => {
@@ -121,7 +121,7 @@ export function WalletPanel({
       {unread ? (
         <div className="border-b border-amber-500/30 bg-amber-500/10 px-3 py-2">
           <p className="text-[11px] font-medium text-amber-200">
-            {alert.items.length} papel{alert.items.length === 1 ? "" : "es"} pedem decisão
+            {alert.items.length} name{alert.items.length === 1 ? "" : "s"} need a decision
           </p>
           <ul className="mt-1 space-y-0.5 text-[11px] text-amber-100/80">
             {alert.items.slice(0, 4).map((item) => (
@@ -135,7 +135,7 @@ export function WalletPanel({
             onClick={() => void dismissAlert()}
             className="mt-1 text-[11px] text-amber-200/70 underline-offset-2 hover:underline"
           >
-            Marcar como lido
+            Mark as read
           </button>
         </div>
       ) : null}
@@ -144,8 +144,8 @@ export function WalletPanel({
       <div className="flex items-center justify-between px-3 py-2">
         <p className="text-[11px] text-zinc-500">
           {holdings.length === 0
-            ? "Nenhum papel comprado ainda"
-            : `${holdings.length} papel${holdings.length === 1 ? "" : "es"}`}
+            ? "No names bought yet"
+            : `${holdings.length} name${holdings.length === 1 ? "" : "s"}`}
         </p>
         <button
           type="button"
@@ -159,7 +159,7 @@ export function WalletPanel({
           }}
           className="text-[11px] text-zinc-300 hover:text-white"
         >
-          {showForm ? "Fechar" : "+ Comprar"}
+          {showForm ? "Close" : "+ Buy"}
         </button>
       </div>
       ) : null}
@@ -197,7 +197,7 @@ export function WalletPanel({
       ) : null}
 
       {loading ? (
-        <p className="px-3 py-4 text-xs text-zinc-500">Carregando…</p>
+        <p className="px-3 py-4 text-xs text-zinc-500">Loading…</p>
       ) : error ? (
         <p className="px-3 py-4 text-xs text-red-400">{error}</p>
       ) : (
@@ -269,13 +269,13 @@ export function WalletPanel({
             <div className="mt-2 space-y-1 text-[10px] text-zinc-500">
               {liveBands.floor ? (
                 <p>
-                  Próximo piso agora: {formatBandPrice(liveBands.floor.price)} ·{" "}
+                  Next floor now: {formatBandPrice(liveBands.floor.price)} ·{" "}
                   {liveBands.floor.source}
                 </p>
               ) : null}
               {(liveBands.resistances ?? []).length > 0 ? (
                 <div>
-                  <p className="font-medium text-zinc-400">3 resistências à frente</p>
+                  <p className="font-medium text-zinc-400">3 resistances ahead</p>
                   {(liveBands.resistances ?? []).map((row, i) => (
                     <p key={`${row.price}-${row.source}`}>
                       R{i + 1} {formatBandPrice(row.price)} · {row.source}
@@ -304,7 +304,7 @@ export function WalletPanel({
                             }).then(() => reload());
                           }}
                         >
-                          atualizar teto
+                          update ceiling
                         </button>
                       ) : null}
                     </p>
@@ -312,7 +312,7 @@ export function WalletPanel({
                 </div>
               ) : liveBands.ceiling ? (
                 <p>
-                  Próximo teto agora: {formatBandPrice(liveBands.ceiling.price)} ·{" "}
+                  Next ceiling now: {formatBandPrice(liveBands.ceiling.price)} ·{" "}
                   {liveBands.ceiling.source}
                 </p>
               ) : null}
@@ -320,19 +320,19 @@ export function WalletPanel({
           ) : null}
           <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1 text-[11px] text-zinc-500">
             <div>
-              Compra <span className="text-zinc-300">{formatPrice(active.costPrice)}</span>
+              Bought <span className="text-zinc-300">{formatPrice(active.costPrice)}</span>
             </div>
             <div>
-              Qtd <span className="text-zinc-300">{active.quantity}</span>
+              Qty <span className="text-zinc-300">{active.quantity}</span>
             </div>
             <div>
-              Vs compra{" "}
+              Vs cost{" "}
               <span className={perfClass(active.status.vsCostPct)}>
                 {formatPerf(active.status.vsCostPct)}
               </span>
             </div>
             <div>
-              Resultado{" "}
+              Result{" "}
               <WalletPnl
                 pnlAbs={active.status.pnlAbs}
                 pnlPct={active.status.pnlPct}
@@ -345,21 +345,21 @@ export function WalletPanel({
               href={`/mercado/${active.symbol}?tab=motor`}
               className="text-[11px] text-sky-400 hover:underline"
             >
-              Análise completa
+              Full analysis
             </Link>
             <button
               type="button"
               onClick={() => void remove(active.id)}
               className="text-[11px] text-zinc-500 hover:text-red-400"
             >
-              Remover
+              Remove
             </button>
           </div>
         </div>
       ) : !compact ? (
         <p className="border-t border-zinc-800 px-3 py-3 text-[11px] text-zinc-600">
-          Clique em um papel para ver o piso, o teto e a recomendação vs o preço de
-          compra.
+          Click a name to see the floor, the ceiling, and the recommendation vs purchase
+          price.
         </p>
       ) : null}
     </div>

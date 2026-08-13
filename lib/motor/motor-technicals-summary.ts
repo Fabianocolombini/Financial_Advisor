@@ -63,32 +63,32 @@ export function buildConvergenceSummary(
   entryValidated: boolean,
 ): string {
   if (motorSignal === "neutral" && technicalSignal === "neutral") {
-    return "Motor e técnica neutros — nenhum dos dois lados pede ação agora.";
+    return "Motor and technicals are both neutral — neither side calls for action now.";
   }
   if (technicalSignal === "neutral") {
     return motorSignal === "positive"
-      ? "O motor está positivo e a técnica está neutra — sem gatilho de preço, entradas podem ser graduais."
+      ? "The motor is positive and technicals are neutral — with no price trigger, entries can be gradual."
       : motorSignal === "negative"
-        ? "O motor está negativo e a técnica está neutra — o preço ainda não confirma fraqueza, mas o contexto pede cautela."
-        : "Leitura neutra dos dois lados.";
+        ? "The motor is negative and technicals are neutral — price has not confirmed weakness yet, but the backdrop calls for caution."
+        : "Neutral reading on both sides.";
   }
   if (motorSignal === "neutral") {
     return technicalSignal === "positive"
-      ? "A técnica melhora enquanto o motor permanece neutro — movimento de preço sem suporte quantitativo."
-      : "A técnica piora enquanto o motor permanece neutro — atenção a deterioração de preço.";
+      ? "Technicals are improving while the motor stays neutral — a price move without quantitative support."
+      : "Technicals are worsening while the motor stays neutral — watch for price deterioration.";
   }
   if (motorSignal === "negative" && technicalSignal === "negative") {
-    return "O motor está negativo e a técnica confirma fraqueza — priorize redução de risco.";
+    return "The motor is negative and technicals confirm weakness — prioritize reducing risk.";
   }
   if (motorSignal === "positive" && technicalSignal === "positive") {
     return entryValidated
-      ? "Motor e técnica alinhados positivamente com entrada validada."
-      : "Sinais positivos, mas aguarde validação de entrada antes de aumentar exposição.";
+      ? "Motor and technicals aligned positively with validated entry."
+      : "Positive signals, but wait for entry validation before increasing exposure.";
   }
   if (motorSignal === "positive" && technicalSignal === "negative") {
-    return "O motor está positivo, mas a técnica ainda não confirma ponto de entrada.";
+    return "The motor is positive, but technicals have not confirmed an entry point yet.";
   }
-  return "Técnica melhora enquanto o motor permanece negativo — possível repique com cautela.";
+  return "Technicals are improving while the motor stays negative — a possible bounce, with caution.";
 }
 
 export function motorLayerCounts(motor: SymbolMotorContext): {

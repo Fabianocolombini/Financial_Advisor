@@ -174,15 +174,15 @@ export function SymbolDetailPanel({ detail }: { detail: SymbolDetailView }) {
           <PriceForecastPanel forecast={detail.forecast} bars={detail.bars} />
           <AnalystForecastCard quote={quote} />
           <p className="text-xs text-zinc-500">
-            A projeção é recalculada a cada carregamento a partir do histórico do Yahoo; a
-            leitura de alocação e entrada fica na aba Motor &amp; Technicals.
+            The projection is recalculated on each load from Yahoo history; the
+            allocation and entry reading is on the Motor &amp; Technicals tab.
           </p>
         </div>
       ) : null}
 
       <p className="text-[11px] text-zinc-600">
-        Conteúdo educacional. Não constitui assessoria de investimentos ou recomendação
-        personalizada.
+        Educational content. This is not investment advice or a personalized
+        recommendation.
       </p>
     </div>
   );

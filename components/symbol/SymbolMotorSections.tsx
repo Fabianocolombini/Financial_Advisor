@@ -16,7 +16,7 @@ export function ClassMacroSection({
   const snap = motor.classSnap;
   if (!motor.hasClassMotor || !snap) {
     return (
-      <p className="text-sm text-zinc-500">Macro da classe {classLabel} pendente no snapshot.</p>
+      <p className="text-sm text-zinc-500">Class macro for {classLabel} is pending in the snapshot.</p>
     );
   }
 
@@ -62,7 +62,7 @@ export function ClassMacroSection({
       />
       <MotorIndicatorsTable indicators={motor.classIndicators} title="All class indicators" />
       <SymbolScoreHistoryChart
-        title="Class composite score (historico)"
+        title="Class composite score (history)"
         points={motor.classScoreHistory}
         color="#38bdf8"
       />
@@ -80,7 +80,7 @@ export function TickerMotorSection({ motor }: { motor: SymbolMotorContext }) {
   if (!motor.hasTickerMotor || !motor.ticker) {
     return (
       <p className="text-sm text-zinc-500">
-        Sem score motor individual — usando macro da classe como referência.
+        No individual motor score — using class macro as the reference.
       </p>
     );
   }
@@ -105,17 +105,17 @@ export function TickerMotorSection({ motor }: { motor: SymbolMotorContext }) {
       <MotorIndicatorsTable indicators={motor.tickerIndicators} title="SecurityScore drivers (no RSI)" />
       {motor.classId === "cash_equivalents" ? (
         <p className="text-[10px] text-zinc-500">
-          SecurityScore: percentis cross-sectional (liquidez + estabilidade + |Δ50|). Rankeia
-          instrumentos cash no mesmo momento — não altera CashRegimeScore.
+          SecurityScore: cross-sectional percentiles (liquidity + stability + |Δ50|). Ranks
+          cash instruments at the same moment — does not change CashRegimeScore.
         </p>
       ) : motor.classId === "fi_treasury" ? (
         <p className="text-[10px] text-zinc-500">
-          SecurityScore: tendência (MM50/MM200) + RSI + volume − crowding COT. RSI mantido —
-          vol genuína em duration ETFs.
+          SecurityScore: trend (MA50/MA200) + RSI + volume − COT crowding. RSI kept —
+          genuine vol in duration ETFs.
         </p>
       ) : null}
       <SymbolScoreHistoryChart
-        title="Ticker composite score (historico)"
+        title="Ticker composite score (history)"
         points={motor.tickerScoreHistory}
         color="#34d399"
       />

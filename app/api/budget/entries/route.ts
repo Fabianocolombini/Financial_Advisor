@@ -21,7 +21,7 @@ export async function GET(request: Request) {
   const parsed = budgetEntriesQuerySchema.safeParse(raw);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Query inválida", details: parsed.error.flatten() },
+      { error: "Invalid query", details: parsed.error.flatten() },
       { status: 400 },
     );
   }
@@ -60,13 +60,13 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "JSON inválido" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
   const parsed = createBudgetEntrySchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Validação falhou", details: parsed.error.flatten() },
+      { error: "Validation failed", details: parsed.error.flatten() },
       { status: 400 },
     );
   }
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
     where: { id: categoryId, userId: session.userId },
   });
   if (!category) {
-    return NextResponse.json({ error: "Categoria não encontrada" }, { status: 404 });
+    return NextResponse.json({ error: "Category not found" }, { status: 404 });
   }
 
   const entry = await prisma.budgetEntry.upsert({

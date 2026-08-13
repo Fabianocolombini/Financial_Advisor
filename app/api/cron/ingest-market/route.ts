@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   const fredKey = process.env.FRED_API_KEY;
   if (!fredKey) {
     return NextResponse.json(
-      { error: "FRED_API_KEY não configurada" },
+      { error: "FRED_API_KEY is not configured" },
       { status: 500 },
     );
   }

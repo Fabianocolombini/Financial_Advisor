@@ -32,9 +32,9 @@ export const FORECAST_HORIZONS: Array<{
   days: number;
   label: string;
 }> = [
-  { id: "5d", days: 5, label: "5 dias" },
-  { id: "20d", days: 20, label: "20 dias (~1 mês)" },
-  { id: "60d", days: 60, label: "60 dias (~3 meses)" },
+  { id: "5d", days: 5, label: "5 days" },
+  { id: "20d", days: 20, label: "20 days (~1 month)" },
+  { id: "60d", days: 60, label: "60 days (~3 months)" },
 ];
 
 export type ForecastScenario = {
@@ -77,7 +77,7 @@ export type ForecastDriver = {
   id: string;
   label: string;
   value: string;
-  effect: "alarga" | "estreita" | "empurra para cima" | "empurra para baixo" | "neutro";
+  effect: "widens" | "narrows" | "pushes up" | "pushes down" | "neutral";
 };
 
 export type PriceForecast = {
@@ -103,7 +103,7 @@ export type PriceForecast = {
 };
 
 const DISCLAIMER =
-  "Projeção estatística educacional a partir de volatilidade e estrutura de preço. Faixas, não previsões — o preço pode sair delas.";
+  "Educational statistical projection from volatility and price structure. Ranges, not forecasts — price can leave them.";
 
 /** Normal CDF via Abramowitz-Stegun erf approximation. */
 function normalCdf(z: number): number {
@@ -259,22 +259,22 @@ function motorBias(input: {
       // Rank 0.5 is neutral; map [0,1] to [-1,1] but keep the pull modest since a
       // peer ranking is not a directional forecast.
       parts.push((input.motorScore - 0.5) * 2 * 0.5);
-      sources.push("ranking do motor vs pares");
+      sources.push("motor ranking vs peers");
     } else {
       parts.push(Math.max(-1, Math.min(1, input.motorScore)));
-      sources.push("score direcional do motor");
+      sources.push("motor directional score");
     }
   }
 
   if (input.trendDirection === "up") {
     parts.push(0.5);
-    sources.push("tendência de alta");
+    sources.push("uptrend");
   } else if (input.trendDirection === "down") {
     parts.push(-0.5);
-    sources.push("tendência de baixa");
+    sources.push("downtrend");
   }
 
-  if (parts.length === 0) return { bias: 0, source: "sem viés direcional" };
+  if (parts.length === 0) return { bias: 0, source: "no directional bias" };
   const bias = parts.reduce((a, b) => a + b, 0) / parts.length;
   return {
     bias: Math.max(-1, Math.min(1, bias)),
@@ -284,9 +284,9 @@ function motorBias(input: {
 
 function cashDrivers(classIndicators: MotorIndicatorSnapshot[]): ForecastDriver[] {
   const wanted: Array<{ id: string; label: string; up: ForecastDriver["effect"] }> = [
-    { id: "yield_real_caixa", label: "Yield real de caixa", up: "empurra para cima" },
-    { id: "spread_10y_2y", label: "Spread 10y-2y", up: "neutro" },
-    { id: "fed_cut_probability", label: "Prob. de corte do Fed (6m)", up: "empurra para baixo" },
+    { id: "yield_real_caixa", label: "Cash real yield", up: "pushes up" },
+    { id: "spread_10y_2y", label: "10y-2y spread", up: "neutral" },
+    { id: "fed_cut_probability", label: "Fed cut probability (6m)", up: "pushes down" },
   ];
   const drivers: ForecastDriver[] = [];
   for (const w of wanted) {
@@ -337,13 +337,13 @@ export function buildPriceForecast(input: {
     classId,
     methodology: stability ? "cash_stability" : "statistical_envelope",
     methodologyLabel: stability
-      ? "Faixa de estabilidade de NAV + carry"
-      : "Envelope estatístico de volatilidade com estrutura de preço",
+      ? "NAV stability range + carry"
+      : "Statistical volatility envelope with price structure",
     current: bars.length ? bars[bars.length - 1]!.value : null,
     dailyVol: null,
     annualizedVolPct: null,
     dailyDrift: 0,
-    driftSource: "sem dados",
+    driftSource: "no data",
     usedAdjustedSeries: false,
     scenarios: [],
     levels: emptyLevels,
@@ -356,7 +356,7 @@ export function buildPriceForecast(input: {
 
   if (bars.length < 60) {
     base.explanations.push(
-      "Histórico insuficiente (menos de 60 pregões) — nenhuma faixa é projetada.",
+      "Not enough history (fewer than 60 sessions) — no range is projected.",
     );
     return base;
   }
@@ -370,7 +370,7 @@ export function buildPriceForecast(input: {
   const dailyVol = volEwma ?? volRealized;
 
   if (dailyVol == null || dailyVol <= 0) {
-    base.explanations.push("Não foi possível estimar volatilidade a partir da série.");
+    base.explanations.push("Could not estimate volatility from the series.");
     return base;
   }
 
@@ -386,7 +386,7 @@ export function buildPriceForecast(input: {
   let driftSource: string;
   if (stability) {
     dailyDrift = carryDrift;
-    driftSource = `carry realizado (mediana dos retornos diários em ${DRIFT_WINDOW} pregões)`;
+    driftSource = `realized carry (median of daily returns over ${DRIFT_WINDOW} sessions)`;
   } else {
     const { bias, source } = motorBias({
       motorScore,
@@ -396,7 +396,7 @@ export function buildPriceForecast(input: {
     // Cap the directional pull at a quarter of a standard deviation per day: a
     // ranking and a moving average are not a return forecast.
     dailyDrift = bias * 0.25 * dailyVol;
-    driftSource = `viés de ${(bias * 100).toFixed(0)}% aplicado a 0,25σ/dia (${source})`;
+    driftSource = `${(bias * 100).toFixed(0)}% bias applied to 0.25σ/day (${source})`;
   }
 
   const volSeries = ewmaVolSeries(returns);
@@ -466,51 +466,51 @@ export function buildPriceForecast(input: {
       invalidation == null
         ? null
         : bullish
-          ? "Perda deste suporte invalida o viés de alta da projeção."
-          : "Superação desta resistência invalida o viés de baixa da projeção.",
+          ? "Losing this support invalidates the projection's upside bias."
+          : "Breaking this resistance invalidates the projection's downside bias.",
   };
 
   const drivers: ForecastDriver[] = [];
   drivers.push({
     id: "volatility",
-    label: "Volatilidade diária (EWMA λ=0,94)",
+    label: "Daily volatility (EWMA λ=0.94)",
     value: `${(dailyVol * 100).toFixed(2)}%`,
-    effect: "alarga",
+    effect: "widens",
   });
   if (bandWidth != null) {
     drivers.push({
       id: "bollinger_width",
-      label: "Largura da banda de Bollinger",
+      label: "Bollinger band width",
       value: `${(bandWidth * 100).toFixed(2)}%`,
-      effect: bandWidth < 0.05 ? "estreita" : "alarga",
+      effect: bandWidth < 0.05 ? "narrows" : "widens",
     });
   }
   if (!stability) {
     drivers.push({
       id: "trend",
-      label: "Tendência (MM20 vs MM50)",
+      label: "Trend (MA20 vs MA50)",
       value: trend.label,
       effect:
         trend.direction === "up"
-          ? "empurra para cima"
+          ? "pushes up"
           : trend.direction === "down"
-            ? "empurra para baixo"
-            : "neutro",
+            ? "pushes down"
+            : "neutral",
     });
     if (atrValue != null) {
       drivers.push({
         id: "atr",
         label: "ATR(14)",
         value: atrValue.toFixed(2),
-        effect: "alarga",
+        effect: "widens",
       });
     }
   } else {
     drivers.push({
       id: "carry",
-      label: "Carry diário realizado",
+      label: "Realized daily carry",
       value: `${(carryDrift * 100).toFixed(3)}%`,
-      effect: carryDrift >= 0 ? "empurra para cima" : "empurra para baixo",
+      effect: carryDrift >= 0 ? "pushes up" : "pushes down",
     });
     drivers.push(...cashDrivers(input.classIndicators ?? []));
   }
@@ -521,32 +521,32 @@ export function buildPriceForecast(input: {
   const explanations: string[] = [];
   explanations.push(
     stability
-      ? "Instrumento de caixa: o NAV é estável por construção, então a faixa mede oscilação residual e o centro segue o carry realizado, não um alvo de preço."
-      : "A faixa vem da volatilidade recente escalada pela raiz do horizonte; o centro incorpora um viés direcional limitado a 0,25σ por dia.",
+      ? "Cash instrument: NAV is stable by construction, so the range measures residual swing and the center follows realized carry, not a price target."
+      : "The range comes from recent volatility scaled by the square root of the horizon; the center includes a directional bias capped at 0.25σ per day.",
   );
   if (usedAdjusted) {
     explanations.push(
-      "Cálculos feitos sobre a série ajustada por distribuições e splits, para que pagamentos periódicos não sejam lidos como queda de preço.",
+      "Calculations use the series adjusted for distributions and splits, so periodic payments are not read as a price drop.",
     );
   }
   if (dataSufficiency === "thin") {
     explanations.push(
-      `Apenas ${bars.length} pregões disponíveis — a calibração é menos confiável do que com 252 ou mais.`,
+      `Only ${bars.length} sessions available — calibration is less reliable than with 252 or more.`,
     );
   }
   const withCoverage = scenarios.filter((s) => s.coverage68 != null);
   if (withCoverage.length === 0) {
     explanations.push(
-      "Amostra insuficiente para calibrar as faixas em teste walk-forward — a largura usa a hipótese normal padrão e os intervalos são apenas indicativos.",
+      "Not enough sample to calibrate the ranges in a walk-forward test — width uses the standard normal assumption and the intervals are indicative only.",
     );
   } else {
     explanations.push(
-      "A largura das faixas é calibrada em teste walk-forward: em cada data histórica a projeção é refeita apenas com dados disponíveis até ali. O ajuste é estimado nos 70% mais antigos e a cobertura exibida é medida nos 30% seguintes, fora da amostra de calibração.",
+      "Range width is calibrated in a walk-forward test: on each historical date the projection is rebuilt using only data available up to then. The adjustment is estimated on the oldest 70% and the displayed coverage is measured on the following 30%, out of the calibration sample.",
     );
   }
   if (stability) {
     explanations.push(
-      "Fibonacci e projeção de extensão não são aplicados a caixa: não existe swing relevante para ancorar níveis.",
+      "Fibonacci and extension projection are not applied to cash: there is no relevant swing to anchor levels.",
     );
   }
 

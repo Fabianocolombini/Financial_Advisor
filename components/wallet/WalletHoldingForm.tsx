@@ -135,15 +135,15 @@ export function WalletHoldingForm({
     const targetMin = draft.targetMin.trim() ? Number(draft.targetMin) : null;
     const targetMax = draft.targetMax.trim() ? Number(draft.targetMax) : null;
     if (!draft.symbol || !draft.classId) {
-      setError("Escolha o papel na busca.");
+      setError("Pick the name in search.");
       return;
     }
     if (!Number.isFinite(quantity) || quantity <= 0) {
-      setError("Quantidade inválida.");
+      setError("Invalid quantity.");
       return;
     }
     if (!Number.isFinite(costPrice) || costPrice <= 0) {
-      setError("Preço de compra inválido.");
+      setError("Invalid purchase price.");
       return;
     }
 
@@ -167,7 +167,7 @@ export function WalletHoldingForm({
       });
       const json = (await res.json()) as { error?: string };
       if (!res.ok) {
-        setError(json.error ?? "Não foi possível salvar.");
+        setError(json.error ?? "Could not save.");
         return;
       }
       onSaved(draft.symbol);
@@ -186,7 +186,7 @@ export function WalletHoldingForm({
       ) : (
         <>
           <label className="block text-[11px] leading-4 text-zinc-400">
-            Papel
+            Name
             <input
               value={query}
               onChange={(e) => {
@@ -225,7 +225,7 @@ export function WalletHoldingForm({
 
       <div className="grid grid-cols-2 gap-2">
         <label className="block text-[11px] leading-4 text-zinc-400">
-          Quantidade
+          Quantity
           <input
             value={draft.quantity}
             onChange={(e) => setDraft((d) => ({ ...d, quantity: e.target.value }))}
@@ -234,7 +234,7 @@ export function WalletHoldingForm({
           />
         </label>
         <label className="block text-[11px] leading-4 text-zinc-400">
-          Preço de compra
+          Purchase price
           <input
             value={draft.costPrice}
             onChange={(e) => setDraft((d) => ({ ...d, costPrice: e.target.value }))}
@@ -246,15 +246,15 @@ export function WalletHoldingForm({
 
       {total != null ? (
         <p className="rounded border border-zinc-800 bg-zinc-900/60 px-2 py-1.5 text-[11px] text-zinc-300">
-          Total da compra{" "}
+          Purchase total{" "}
           <span className="font-medium tabular-nums text-white">{formatPrice(total)}</span>
         </p>
       ) : (
-        <p className="text-[11px] text-zinc-600">Informe a quantidade para ver o total.</p>
+        <p className="text-[11px] text-zinc-600">Enter the quantity to see the total.</p>
       )}
 
       <label className="block text-[11px] leading-4 text-zinc-400">
-        Data
+        Date
         <input
           type="date"
           value={draft.purchasedAt}
@@ -265,22 +265,22 @@ export function WalletHoldingForm({
 
       <div className="grid grid-cols-2 gap-2">
         <label className="block text-[11px] leading-4 text-zinc-400">
-          Piso — próximo suporte
+          Floor — next support
           <input
             value={draft.targetMin}
             onChange={(e) => setDraft((d) => ({ ...d, targetMin: e.target.value }))}
             inputMode="decimal"
-            placeholder="próximo piso"
+            placeholder="next floor"
             className={fieldClass()}
           />
         </label>
         <label className="block text-[11px] leading-4 text-zinc-400">
-          Teto — próxima resistência
+          Ceiling — next resistance
           <input
             value={draft.targetMax}
             onChange={(e) => setDraft((d) => ({ ...d, targetMax: e.target.value }))}
             inputMode="decimal"
-            placeholder="próximo teto"
+            placeholder="next ceiling"
             className={fieldClass()}
           />
         </label>
@@ -289,7 +289,7 @@ export function WalletHoldingForm({
       {resistances.length > 0 ? (
         <div className="rounded border border-zinc-800 px-2 py-1.5">
           <p className="text-[10px] font-medium uppercase tracking-wide text-zinc-500">
-            3 resistências à frente
+            3 resistances ahead
           </p>
           <ol className="mt-1 space-y-0.5">
             {resistances.map((row, i) => (
@@ -318,7 +318,7 @@ export function WalletHoldingForm({
 
       {bands?.floor ? (
         <p className="text-[10px] text-zinc-500">
-          Piso sugerido: {formatBandPrice(bands.floor.price)} · {bands.floor.source}
+          Suggested floor: {formatBandPrice(bands.floor.price)} · {bands.floor.source}
         </p>
       ) : null}
       {bands?.note ? <p className="text-[10px] leading-4 text-zinc-500">{bands.note}</p> : null}
@@ -331,14 +331,14 @@ export function WalletHoldingForm({
           disabled={saving}
           className="rounded bg-white px-3 py-1.5 text-xs font-medium text-black disabled:opacity-50"
         >
-          {saving ? "Salvando…" : "Salvar e acompanhar"}
+          {saving ? "Saving…" : "Save and track"}
         </button>
         <button
           type="button"
           onClick={onCancel}
           className="rounded px-3 py-1.5 text-xs text-zinc-400 hover:text-white"
         >
-          Cancelar
+          Cancel
         </button>
       </div>
     </form>
