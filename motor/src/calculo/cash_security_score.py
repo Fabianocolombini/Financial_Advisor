@@ -8,22 +8,53 @@ from typing import Any
 
 import pandas as pd
 
-from motor.src.calculo.indicadores_tecnicos import get_tecnico_series
+from motor.src.calculo.indicadores_tecnicos import get_tecnico_series, mm50_distance_zscore
 from motor.src.dates import motor_as_of_date
+from motor.src.ingestao.yfinance_client import get_price_series
 from motor.src.paths import CONFIG_DIR
 
+_TECNICOS_PATH = CONFIG_DIR / "indicadores_tecnicos_cash.json"
 _CONFIG_PATH = CONFIG_DIR / "models" / "cash_regime.json"
+
+_VOLUME_ID = "volume_vs_media"
+_SIGMA_ID = "vol_realizada"
+_DELTA_ID = "preco_vs_mm50_z_abs"
+
+
+def _load_security_ingredients() -> list[dict[str, Any]]:
+    if not _TECNICOS_PATH.is_file():
+        return [
+            {"id": _VOLUME_ID, "peso": 0.5, "inverte_percentil": False},
+            {"id": _SIGMA_ID, "peso": 0.35, "inverte_percentil": True},
+            {"id": _DELTA_ID, "peso": 0.15, "inverte_percentil": True},
+        ]
+    cfg = json.loads(_TECNICOS_PATH.read_text(encoding="utf-8"))
+    return list(cfg.get("indicadores") or [])
+
+
+def _ingredient(ind_id: str) -> dict[str, Any]:
+    for item in _load_security_ingredients():
+        if item.get("id") == ind_id:
+            return item
+    return {}
 
 
 def _load_security_weights() -> dict[str, float]:
+    by_id = {i["id"]: float(i.get("peso") or 0) for i in _load_security_ingredients()}
+    if by_id.get(_VOLUME_ID) and by_id.get(_SIGMA_ID) and by_id.get(_DELTA_ID):
+        return {
+            "wa": by_id[_VOLUME_ID],
+            "wb": by_id[_SIGMA_ID],
+            "wc": by_id[_DELTA_ID],
+        }
     if not _CONFIG_PATH.is_file():
-        return {"wa": 0.4, "wb": 0.35, "wc": 0.25}
+        return {"wa": 0.5, "wb": 0.35, "wc": 0.15}
     cfg = json.loads(_CONFIG_PATH.read_text(encoding="utf-8"))
     sw = cfg.get("security_weights", {})
     return {
-        "wa": float(sw.get("wa", 0.4)),
+        "wa": float(sw.get("wa", 0.5)),
         "wb": float(sw.get("wb", 0.35)),
-        "wc": float(sw.get("wc", 0.25)),
+        "wc": float(sw.get("wc", 0.15)),
     }
 
 
@@ -43,6 +74,14 @@ def _cross_sectional_percentile(values: dict[str, float]) -> dict[str, float]:
         if t not in ranks:
             ranks[t] = 0.5
     return ranks
+
+
+def _directed_percentile(values: dict[str, float], invert: bool) -> dict[str, float]:
+    """Cross-sectional percentile; invert=True → highest score = lowest raw value."""
+    if invert:
+        flipped = {t: -v for t, v in values.items()}
+        return _cross_sectional_percentile(flipped)
+    return _cross_sectional_percentile(values)
 
 
 def _latest_at(series: pd.Series, as_of: dt.date) -> float | None:
@@ -66,6 +105,18 @@ def _security_estagio(score: float) -> str:
     return "Descendente"
 
 
+def _ma50_z_abs(ticker: str, as_of: dt.date) -> float:
+    stored = _latest_at(get_tecnico_series(ticker, _DELTA_ID), as_of)
+    if stored is not None:
+        return abs(stored)
+    prices = get_price_series(ticker)
+    if prices.empty:
+        return 0.0
+    z_s = mm50_distance_zscore(prices).abs()
+    val = _latest_at(z_s, as_of)
+    return abs(val) if val is not None else 0.0
+
+
 def compute_cash_security_batch(
     tickers: list[str],
     universe_tickers: list[str] | None = None,
@@ -78,6 +129,9 @@ def compute_cash_security_batch(
     as_of = as_of or motor_as_of_date()
     weights = _load_security_weights()
     wa, wb, wc = weights["wa"], weights["wb"], weights["wc"]
+    invert_vol = bool(_ingredient(_VOLUME_ID).get("inverte_percentil", False))
+    invert_sigma = bool(_ingredient(_SIGMA_ID).get("inverte_percentil", True))
+    invert_delta = bool(_ingredient(_DELTA_ID).get("inverte_percentil", True))
     cs_universe = list(dict.fromkeys((universe_tickers or tickers) + tickers))
 
     raw_vol: dict[str, float] = {}
@@ -86,17 +140,15 @@ def compute_cash_security_batch(
 
     for ticker in cs_universe:
         t = ticker.upper()
-        vol_s = get_tecnico_series(t, "volume_vs_media")
-        sigma_s = get_tecnico_series(t, "vol_realizada")
-        mm50_s = get_tecnico_series(t, "preco_vs_mm50")
+        vol_s = get_tecnico_series(t, _VOLUME_ID)
+        sigma_s = get_tecnico_series(t, _SIGMA_ID)
         raw_vol[t] = _latest_at(vol_s, as_of) or 0.0
         raw_sigma[t] = _latest_at(sigma_s, as_of) or 0.0
-        mm50_val = _latest_at(mm50_s, as_of)
-        raw_delta[t] = abs(mm50_val) if mm50_val is not None else 0.0
+        raw_delta[t] = _ma50_z_abs(t, as_of)
 
-    p_vol = _cross_sectional_percentile(raw_vol)
-    p_sigma = _cross_sectional_percentile(raw_sigma)
-    p_delta = _cross_sectional_percentile(raw_delta)
+    p_vol = _directed_percentile(raw_vol, invert_vol)
+    p_sigma = _directed_percentile(raw_sigma, invert_sigma)
+    p_delta = _directed_percentile(raw_delta, invert_delta)
 
     results: dict[str, dict[str, Any]] = {}
     for ticker in tickers:
@@ -106,40 +158,43 @@ def compute_cash_security_batch(
         delta_pct = p_delta.get(t, 0.5)
 
         c_vol = wa * vol_pct
-        c_sigma = wb * (1.0 - sigma_pct)
-        c_delta = wc * (1.0 - delta_pct)
+        c_sigma = wb * sigma_pct
+        c_delta = wc * delta_pct
         security_score = c_vol + c_sigma + c_delta
 
         componentes = [
             {
-                "id": "volume_vs_media",
+                "id": _VOLUME_ID,
                 "nome": "Volume vs média (Vol_rel)",
                 "camada": "tecnico",
                 "valor": raw_vol.get(t),
                 "percentile_cs": vol_pct,
                 "peso": wa,
+                "inverte_percentil": invert_vol,
                 "contribuicao": c_vol,
                 "role": "liquidez — mais líquido vs pares cash",
             },
             {
-                "id": "vol_realizada",
+                "id": _SIGMA_ID,
                 "nome": "Vol realizada 20d (σ20)",
                 "camada": "tecnico",
                 "valor": raw_sigma.get(t),
                 "percentile_cs": sigma_pct,
                 "peso": wb,
+                "inverte_percentil": invert_sigma,
                 "contribuicao": c_sigma,
                 "role": "estabilidade — menor vol vs pares",
             },
             {
-                "id": "preco_vs_mm50_abs",
-                "nome": "|Preço vs MM50| (Δ50)",
+                "id": _DELTA_ID,
+                "nome": "|Preço vs MM50| z-score (Δ50z)",
                 "camada": "tecnico",
                 "valor": raw_delta.get(t),
                 "percentile_cs": delta_pct,
                 "peso": wc,
+                "inverte_percentil": invert_delta,
                 "contribuicao": c_delta,
-                "role": "anomalia — extensão grande desconfia, não é bullish",
+                "role": "anomalia — |z| vs MA50; drift saudável ≠ extensão",
             },
         ]
 
@@ -149,15 +204,15 @@ def compute_cash_security_batch(
             f"SecurityScore = {security_score:.3f} (ranking dentro do universo cash, não mistura com regime).",
             (
                 f"Liquidez: Vol_rel pct cross-sectional = {vol_pct:.0%} "
-                f"(contrib {c_vol:.3f})."
+                f"(contrib {c_vol:.3f}, peso {wa:.0%})."
             ),
             (
-                f"Estabilidade: σ20 pct = {sigma_pct:.0%} → "
-                f"(1−pct)×wb = {c_sigma:.3f}."
+                f"Estabilidade: σ20 pct invertido = {sigma_pct:.0%} "
+                f"(contrib {c_sigma:.3f}, peso {wb:.0%})."
             ),
             (
-                f"Anomalia: |Δ50| pct = {delta_pct:.0%} → "
-                f"(1−pct)×wc = {c_delta:.3f}."
+                f"Anomalia: |Δ50| z-score pct invertido = {delta_pct:.0%} "
+                f"(contrib {c_delta:.3f}, peso {wc:.0%})."
             ),
             "RSI excluído — NAV monotônico de ETFs cash/CLO distorce momentum.",
         ]
@@ -170,7 +225,7 @@ def compute_cash_security_batch(
             "componentes": componentes,
             "indicador_dominante": dominant,
             "estagio": _security_estagio(security_score),
-            "model": "cash_security_v1",
+            "model": "cash_security_v2",
             "cross_sectional_universe_size": len(cs_universe),
             "explanation": explanation,
         }
@@ -180,5 +235,6 @@ def compute_cash_security_batch(
 def cash_security_explanation_note() -> str:
     return (
         "Modelo 2: percentis cross-sectional entre instrumentos cash no mesmo momento. "
+        "Volume 50% / σ20 35% / |ΔMA50| z-score 15%. "
         "Não combina com CashRegimeScore (Modelo 1)."
     )

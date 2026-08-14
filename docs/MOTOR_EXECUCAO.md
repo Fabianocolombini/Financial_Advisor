@@ -53,9 +53,9 @@ APIs: `/api/market/[symbol]/chart|quote`, `/api/market/fred/[seriesId]`.
 
 Snapshot export: `allIndicators`, `scoreHistory`, `decisionMap` (após Motor Daily).
 
-**Cash (`cash_equivalents`) — modelos dedicados (v1):**
+**Cash (`cash_equivalents`) — modelos dedicados:**
 - Modelo 1 `CashRegimeScore` → Overweight/Hold/Reduce/Strong Reduce (`calibrated: false`)
-- Modelo 2 `SecurityScore` cross-sectional — sem RSI; liquidez + vol + |Δ50|
+- Modelo 2 `SecurityScore` v2 — sem RSI; 50% liquidez + 35% σ20 + 15% |ΔMA50| z-score `(preço−MA50)/σ50`
 - Config: `motor/config/models/cash_regime.json`, `indicadores_tecnicos_cash.json`
 
 **Treasuries (`fi_treasury`) — modelos dedicados (v1):**

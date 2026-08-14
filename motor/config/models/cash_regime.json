@@ -1,15 +1,15 @@
 {
   "calibrated": false,
-  "note": "Pesos w1/w2/w3 e wa/wb/wc definidos por julgamento — não calibrados contra histórico (mesmo padrão regime_logit.json).",
+  "note": "Pesos w1/w2/w3 (regime) e wa/wb/wc (security) por julgamento — não calibrados contra histórico. Security Proposta A: 50% volume / 35% σ20 / 15% |ΔMA50| z-score. Regime Score não muda nesta revisão.",
   "regime_weights": {
     "w1": 0.5,
     "w2": 0.3,
     "w3": 0.2
   },
   "security_weights": {
-    "wa": 0.4,
+    "wa": 0.5,
     "wb": 0.35,
-    "wc": 0.25
+    "wc": 0.15
   },
   "thresholds": {
     "overweight": 0.65,

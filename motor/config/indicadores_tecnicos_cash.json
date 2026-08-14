@@ -3,28 +3,32 @@
     {
       "id": "volume_vs_media",
       "nome": "Volume vs média",
-      "peso": 0.4,
+      "peso": 0.5,
       "direcao": "positiva",
-      "role": "liquidez cross-sectional"
+      "inverte_percentil": false,
+      "role": "liquidez cross-sectional — percentil alto = melhor"
     },
     {
       "id": "vol_realizada",
       "nome": "Volatilidade realizada 20d",
       "peso": 0.35,
       "direcao": "negativa",
-      "role": "estabilidade cross-sectional"
+      "inverte_percentil": true,
+      "role": "estabilidade cross-sectional — percentil alto = menor vol bruta"
     },
     {
-      "id": "preco_vs_mm50_abs",
-      "nome": "|Preço vs MM50|",
-      "peso": 0.25,
+      "id": "preco_vs_mm50_z_abs",
+      "nome": "|Preço vs MM50| z-score",
+      "peso": 0.15,
       "direcao": "negativa",
-      "role": "anomalia vs média (distância absoluta)"
+      "inverte_percentil": true,
+      "role": "anomalia vs média — (preço−MA50)/σ50; percentil alto = menor |z|"
     }
   ],
   "zscore_window": 252,
   "rsi_period": 14,
   "vol_window": 20,
+  "ma50_zscore_window": 50,
   "exclude_indicators": ["rsi_14", "preco_vs_mm200"],
-  "note": "Cash não usa RSI — NAV monotônico contamina momentum. Percentis cross-sectional no SecurityScore."
+  "note": "Cash não usa RSI — NAV monotônico contamina momentum. SecurityScore: percentis 0–1 na classe/dia. Pesos Proposta A (50/35/15). Distância MA50 em z-score para não penalizar drift de yield. Vol lookback 20d (consistência com as outras classes)."
 }

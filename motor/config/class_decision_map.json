@@ -36,13 +36,13 @@
       "tickerIndicators": {
         "timing": ["volume_vs_media"],
         "role": ["vol_realizada"],
-        "projection": ["preco_vs_mm50_abs"],
+        "projection": ["preco_vs_mm50_z_abs"],
         "investability": ["volume_vs_media", "vol_realizada"],
-        "forecast": ["vol_realizada", "preco_vs_mm50_abs"]
+        "forecast": ["vol_realizada", "preco_vs_mm50_z_abs"]
       },
       "models": {
         "regime": "cash_regime_v1 — CashRegimeScore (quanto alocar)",
-        "security": "cash_security_v1 — SecurityScore cross-sectional (qual símbolo)"
+        "security": "cash_security_v2 — SecurityScore cross-sectional (qual símbolo); MA50 em z-score"
       }
     },
     "fi_treasury": {

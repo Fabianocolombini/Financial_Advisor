@@ -22,6 +22,13 @@ def _rsi(series: pd.Series, period: int = 14) -> pd.Series:
     return 100 - (100 / (1 + rs))
 
 
+def mm50_distance_zscore(prices: pd.Series, window: int = 50) -> pd.Series:
+    """(price − MA) / std(price, window). Distinguishes healthy drift from a real anomaly."""
+    mm = prices.rolling(window).mean()
+    std = prices.rolling(window).std().replace(0, np.nan)
+    return (prices - mm) / std
+
+
 def compute_for_ticker(ticker: str, benchmark: str, cfg: dict) -> dict[str, pd.Series]:
     prices = get_price_series(ticker)
     bench = get_price_series(benchmark) if benchmark else pd.Series(dtype=float)
@@ -34,6 +41,9 @@ def compute_for_ticker(ticker: str, benchmark: str, cfg: dict) -> dict[str, pd.S
     out["preco_vs_mm50"] = prices / mm50 - 1.0
     out["preco_vs_mm200"] = prices / mm200 - 1.0
     out["preco_vs_mm50_abs"] = out["preco_vs_mm50"].abs()
+    z50 = mm50_distance_zscore(prices, int(cfg.get("ma50_zscore_window", 50)))
+    out["preco_vs_mm50_z"] = z50
+    out["preco_vs_mm50_z_abs"] = z50.abs()
     out["rsi_14"] = _rsi(prices, cfg.get("rsi_period", 14))
     vol = prices.pct_change().rolling(cfg.get("vol_window", 20)).std()
     out["vol_realizada"] = vol

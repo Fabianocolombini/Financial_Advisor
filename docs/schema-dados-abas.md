@@ -88,10 +88,13 @@ motor/
 | `peso` | Peso dentro da camada (normalizado no cálculo) |
 | `zscore_window` | Janela em dias (default 252) |
 | `direcao` | `positiva` (z alto = favorável) ou `negativa` |
+| `inverte_percentil` | `true` se o percentil alto deve corresponder ao **menor** valor bruto (Cash: vol realizada e |ΔMA50| z-score) |
 
 ### Indicadores técnicos genéricos
 
 Definidos em `config/indicadores_tecnicos.json`. Calculados para cada ticker em `universo` — não repetir no JSON da aba.
+
+Cash usa `config/indicadores_tecnicos_cash.json` (sem RSI). O SecurityScore ranqueia por percentil 0–1 na classe/dia; `inverte_percentil` deixa o sinal auditável.
 
 ## Exemplo Taxas (seção 2)
 
