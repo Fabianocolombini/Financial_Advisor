@@ -390,7 +390,7 @@ export function WalletPanel({
           </dl>
           <div className="mt-3 flex flex-wrap gap-2">
             <Link
-              href={`/mercado/${active.symbol}?tab=motor`}
+              href={`/markets/${active.symbol}?tab=motor`}
               className="text-[11px] text-sky-400 hover:underline"
             >
               Full analysis

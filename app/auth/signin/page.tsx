@@ -7,10 +7,10 @@ import { GoogleSetupHelp } from "./google-setup-help";
 export const dynamic = "force-dynamic";
 
 export default async function SignInPage() {
-  if (!authEnabled) redirect("/mercado");
+  if (!authEnabled) redirect("/markets");
 
   const session = await auth();
-  if (session?.user) redirect("/mercado");
+  if (session?.user) redirect("/markets");
 
   const googleConfigured =
     Boolean(process.env.AUTH_GOOGLE_ID) && Boolean(process.env.AUTH_GOOGLE_SECRET);

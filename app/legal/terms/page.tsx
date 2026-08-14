@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Terms | Atlas",
 };
 
-export default function TermosPage() {
+export default function TermsPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-12">
       <Link

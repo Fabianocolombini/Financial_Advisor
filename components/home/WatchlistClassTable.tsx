@@ -50,7 +50,7 @@ function SecurityRow({
   return (
     <tr
       className="border-b border-zinc-800/80 cursor-pointer hover:bg-zinc-950/50"
-      onClick={() => router.push(`/mercado/${row.symbol}`)}
+      onClick={() => router.push(`/markets/${row.symbol}`)}
     >
       <td className="py-2 pl-2 pr-2" onClick={(e) => e.stopPropagation()}>
         <div className="flex min-w-[13rem] items-center gap-2">
@@ -65,7 +65,7 @@ function SecurityRow({
           <button
             type="button"
             className="flex min-w-0 flex-1 items-center gap-2 text-left"
-            onClick={() => router.push(`/mercado/${row.symbol}`)}
+            onClick={() => router.push(`/markets/${row.symbol}`)}
           >
             <SymbolAvatar
               symbol={row.symbol}

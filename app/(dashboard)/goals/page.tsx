@@ -4,7 +4,7 @@ import { EditGoalRow } from "@/components/forms/EditGoalRow";
 import { prisma } from "@/lib/prisma";
 import { getServerUserId } from "@/lib/server-user";
 
-export default async function ObjetivosPage() {
+export default async function GoalsPage() {
   const userId = await getServerUserId();
   if (!userId) return null;
 

@@ -19,14 +19,14 @@ export function BudgetMonthNav({
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3">
       <Link
-        href={`/orcamento?year=${prev.year}&month=${prev.month}`}
+        href={`/budget?year=${prev.year}&month=${prev.month}`}
         className="text-sm text-zinc-400 hover:text-white"
       >
         ← Previous month
       </Link>
       <span className="font-title text-sm capitalize text-white">{label}</span>
       <Link
-        href={`/orcamento?year=${next.year}&month=${next.month}`}
+        href={`/budget?year=${next.year}&month=${next.month}`}
         className="text-sm text-zinc-400 hover:text-white"
       >
         Next month →

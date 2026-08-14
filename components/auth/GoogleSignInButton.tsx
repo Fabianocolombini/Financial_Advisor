@@ -26,7 +26,7 @@ function GoogleLogo({ className }: { className?: string }) {
 }
 
 export function GoogleSignInButton({
-  callbackUrl = "/mercado",
+  callbackUrl = "/markets",
   variant = "icon",
 }: {
   callbackUrl?: string;

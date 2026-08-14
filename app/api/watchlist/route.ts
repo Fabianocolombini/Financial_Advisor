@@ -82,7 +82,7 @@ export async function POST(request: Request) {
   });
 
   revalidatePath("/");
-  revalidatePath("/mercado");
+  revalidatePath("/markets");
 
   const motorDispatch = await dispatchMotorSymbol(normalized, classId);
 
@@ -124,7 +124,7 @@ export async function DELETE(request: Request) {
   });
 
   revalidatePath("/");
-  revalidatePath("/mercado");
+  revalidatePath("/markets");
 
   return NextResponse.json({ ok: true });
 }

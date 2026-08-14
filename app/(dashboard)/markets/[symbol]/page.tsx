@@ -5,7 +5,7 @@ import { SymbolDetailPanel } from "@/components/symbol/SymbolDetailPanel";
 import { loadSymbolDetailView } from "@/lib/motor/load-symbol-detail";
 import { getServerUserId } from "@/lib/server-user";
 
-export default async function SymbolMercadoPage({
+export default async function SymbolMarketsPage({
   params,
 }: {
   params: Promise<{ symbol: string }>;
@@ -20,7 +20,7 @@ export default async function SymbolMercadoPage({
   return (
     <div className="space-y-4">
       <Link
-        href="/mercado"
+        href="/markets"
         className="text-sm text-zinc-500 hover:text-zinc-300"
       >
         ← Markets

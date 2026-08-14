@@ -9,10 +9,10 @@ export function SiteFooter() {
         of financial products. Use at your own risk.
       </p>
       <nav className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1">
-        <Link href="/legal/privacidade" className="underline hover:text-zinc-300">
+        <Link href="/legal/privacy" className="underline hover:text-zinc-300">
           Privacy
         </Link>
-        <Link href="/legal/termos" className="underline hover:text-zinc-300">
+        <Link href="/legal/terms" className="underline hover:text-zinc-300">
           Terms
         </Link>
       </nav>

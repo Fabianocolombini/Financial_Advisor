@@ -18,7 +18,14 @@ export const authConfig = {
       if (path.startsWith("/api/auth")) return true;
       if (path.startsWith("/legal")) return true;
 
-      const protectedExact = ["/patrimonio", "/objetivos", "/orcamento"];
+      const protectedExact = [
+        "/net-worth",
+        "/goals",
+        "/budget",
+        "/patrimonio",
+        "/objetivos",
+        "/orcamento",
+      ];
       const needsAuth = protectedExact.includes(path);
       if (needsAuth) return !!auth?.user;
       return true;

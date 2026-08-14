@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerUserId } from "@/lib/server-user";
 import { Prisma } from "@prisma/client";
 
-export default async function PatrimonioPage() {
+export default async function NetWorthPage() {
   const userId = await getServerUserId();
   if (!userId) return null;
 

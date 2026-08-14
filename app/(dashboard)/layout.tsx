@@ -33,7 +33,7 @@ export default async function DashboardLayout({
   return (
     <AppShell
       user={{
-        name: row?.name ?? "Modo local",
+        name: row?.name ?? "Local mode",
         email: row?.email,
       }}
     >

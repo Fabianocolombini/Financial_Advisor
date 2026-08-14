@@ -14,19 +14,19 @@ export default async function WalletPage() {
     {
       label: "Net worth",
       value: formatBRL(stats.netWorth.toNumber()),
-      href: "/patrimonio",
+      href: "/net-worth",
       description: "Assets minus liabilities you have recorded.",
     },
     {
       label: "Goals",
       value: String(stats.goalCount),
-      href: "/objetivos",
+      href: "/goals",
       description: "Financial goals being tracked.",
     },
     {
       label: "Budget",
       value: String(stats.categoryCount),
-      href: "/orcamento",
+      href: "/budget",
       description: "Monthly spending structure.",
     },
   ];

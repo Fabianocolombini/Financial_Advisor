@@ -85,7 +85,7 @@ export function SymbolKeyStatsPreview({
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-medium text-white">Key stats</h3>
           <Link
-            href={`/mercado/${symbol}?tab=financials`}
+            href={`/markets/${symbol}?tab=financials`}
             className="text-xs text-sky-400 hover:text-sky-300"
           >
             See Financials →
@@ -106,7 +106,7 @@ export function SymbolKeyStatsPreview({
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-white">Key stats</h3>
         <Link
-          href={`/mercado/${symbol}?tab=financials`}
+          href={`/markets/${symbol}?tab=financials`}
           className="text-xs text-sky-400 hover:text-sky-300"
         >
           See Financials →

@@ -6,9 +6,9 @@ import { APP_NAME } from "@/lib/brand";
 import { SignOutButton } from "./SignOutButton";
 
 const nav = [
-  { href: "/mercado", label: "Markets" },
+  { href: "/markets", label: "Markets" },
   { href: "/wallet", label: "My Wallet" },
-  { href: "/orcamento", label: "Budget" },
+  { href: "/budget", label: "Budget" },
 ] as const;
 
 type UserBar = {
@@ -34,7 +34,7 @@ export function AppShell({
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-3 sm:px-6">
             <div className="flex flex-wrap items-center gap-3">
             <Link
-              href="/mercado"
+              href="/markets"
               className="font-title shrink-0 text-sm tracking-tight text-white"
             >
               {APP_NAME}

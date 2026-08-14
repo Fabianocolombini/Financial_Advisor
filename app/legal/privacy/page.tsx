@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Privacy | Atlas",
 };
 
-export default function PrivacidadePage() {
+export default function PrivacyPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-12">
       <Link

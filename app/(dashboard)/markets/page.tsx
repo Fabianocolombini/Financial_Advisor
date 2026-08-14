@@ -4,7 +4,7 @@ import { getServerUserId } from "@/lib/server-user";
 
 export const dynamic = "force-dynamic";
 
-export default async function MercadoPage() {
+export default async function MarketsPage() {
   const userId = await getServerUserId();
   if (!userId) return null;
 

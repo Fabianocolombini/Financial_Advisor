@@ -28,7 +28,7 @@ function parseYm(
   return { year: y, month: m };
 }
 
-export default async function OrcamentoPage({ searchParams }: Props) {
+export default async function BudgetPage({ searchParams }: Props) {
   const userId = await getServerUserId();
   if (!userId) return null;
 
@@ -41,7 +41,7 @@ export default async function OrcamentoPage({ searchParams }: Props) {
     return (
       <div className="text-sm text-red-600">
         Invalid year/month. Use{" "}
-        <a href={`/orcamento?year=${y}&month=${m}`} className="underline">
+        <a href={`/budget?year=${y}&month=${m}`} className="underline">
           {y}/{m}
         </a>
         .
