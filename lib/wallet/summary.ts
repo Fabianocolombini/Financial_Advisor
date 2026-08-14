@@ -1,0 +1,65 @@
+/**
+ * Wallet book totals. Tax is an educational 15% on net profit only
+ * (typical BR PF rate on offshore financial gains / capital gains).
+ * Losses are not taxed. This is not a tax filing.
+ */
+
+export const WALLET_GAIN_TAX_RATE = 0.15;
+
+export type WalletLotForSummary = {
+  status: {
+    costValue: number;
+    marketValue: number | null;
+  };
+};
+
+export type WalletSummary = {
+  invested: number;
+  gross: number | null;
+  profit: number | null;
+  tax: number | null;
+  net: number | null;
+  taxRate: number;
+  quotedLots: number;
+  totalLots: number;
+  incomplete: boolean;
+};
+
+export function summarizeWallet(
+  holdings: WalletLotForSummary[],
+  taxRate = WALLET_GAIN_TAX_RATE,
+): WalletSummary {
+  const invested = holdings.reduce((sum, row) => sum + row.status.costValue, 0);
+  const quoted = holdings.filter((row) => row.status.marketValue != null);
+  if (quoted.length === 0) {
+    return {
+      invested,
+      gross: null,
+      profit: null,
+      tax: null,
+      net: null,
+      taxRate,
+      quotedLots: 0,
+      totalLots: holdings.length,
+      incomplete: holdings.length > 0,
+    };
+  }
+
+  const quotedCost = quoted.reduce((sum, row) => sum + row.status.costValue, 0);
+  const gross = quoted.reduce((sum, row) => sum + (row.status.marketValue ?? 0), 0);
+  const profit = gross - quotedCost;
+  const tax = Math.max(0, profit) * taxRate;
+  const net = gross - tax;
+
+  return {
+    invested,
+    gross,
+    profit,
+    tax,
+    net,
+    taxRate,
+    quotedLots: quoted.length,
+    totalLots: holdings.length,
+    incomplete: quoted.length !== holdings.length,
+  };
+}

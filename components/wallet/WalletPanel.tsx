@@ -6,8 +6,19 @@ import { formatPerf, formatPrice, perfClass } from "@/lib/format-market";
 import type { WalletAlertView, WalletHoldingView } from "@/lib/wallet/types";
 import type { WalletBuyPayload } from "@/lib/wallet/buy-event";
 import { formatBandPrice, type SuggestedBands } from "@/lib/wallet/suggested-bands";
+import { summarizeWallet } from "@/lib/wallet/summary";
 import { WalletBandBar, WalletPnl } from "./WalletBandBar";
 import { WalletHoldingForm } from "./WalletHoldingForm";
+
+const USD = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
+function formatUsd(value: number | null): string {
+  if (value == null || !Number.isFinite(value)) return "—";
+  return USD.format(value);
+}
 
 const TONE: Record<string, string> = {
   positive: "bg-emerald-500/10 text-emerald-300 ring-emerald-500/30",
@@ -115,6 +126,7 @@ export function WalletPanel({
     };
   }, [activeSymbol, activeClassId]);
   const unread = alert && !alert.read && alert.items.length > 0;
+  const totals = summarizeWallet(holdings);
 
   return (
     <div className="flex h-full flex-col">
@@ -162,6 +174,42 @@ export function WalletPanel({
           {showForm ? "Close" : "+ Buy"}
         </button>
       </div>
+      ) : null}
+
+      {holdings.length > 0 && !loading ? (
+        <dl className="border-b border-zinc-800 px-3 py-2.5">
+          <div className="flex items-baseline justify-between gap-2 text-[11px]">
+            <dt className="text-zinc-500">Invested</dt>
+            <dd className="tabular-nums text-zinc-200">{formatUsd(totals.invested)}</dd>
+          </div>
+          <div className="mt-1 flex items-baseline justify-between gap-2 text-[11px]">
+            <dt className="text-zinc-500">Gross now</dt>
+            <dd className="tabular-nums text-white">{formatUsd(totals.gross)}</dd>
+          </div>
+          <div className="mt-1 flex items-baseline justify-between gap-2 text-[11px]">
+            <dt className="text-zinc-500">
+              Net after {Math.round(totals.taxRate * 100)}% tax
+            </dt>
+            <dd
+              className={`tabular-nums ${
+                totals.profit == null
+                  ? "text-zinc-400"
+                  : totals.profit >= 0
+                    ? "text-emerald-400"
+                    : "text-red-400"
+              }`}
+            >
+              {formatUsd(totals.net)}
+            </dd>
+          </div>
+          <p className="mt-1.5 text-[10px] leading-snug text-zinc-600">
+            {totals.tax != null && totals.tax > 0
+              ? `Tax of ${formatUsd(totals.tax)} on profit only. `
+              : "No tax while the book is at a loss. "}
+            Educational 15% — not a tax filing.
+            {totals.incomplete ? " Some names still have no live quote." : ""}
+          </p>
+        </dl>
       ) : null}
 
       {showForm ? (
