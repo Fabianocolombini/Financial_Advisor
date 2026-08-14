@@ -10,8 +10,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://atlascapital.markets"),
   title: "Atlas",
   description: "Macro and technical signals for wallet decisions.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "32x32" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [{ url: "/apple-icon.png", type: "image/png", sizes: "180x180" }],
+    shortcut: "/favicon.ico",
+  },
+  openGraph: {
+    title: "Atlas",
+    description: "Macro and technical signals for wallet decisions.",
+    url: "https://atlascapital.markets",
+    siteName: "Atlas",
+    images: [{ url: "/atlas-logo.jpg" }],
+  },
 };
 
 export default function RootLayout({
