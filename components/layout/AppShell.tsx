@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { SymbolSearchTrigger } from "@/components/catalog/SymbolSearchTrigger";
@@ -35,10 +36,17 @@ export function AppShell({
             <div className="flex flex-wrap items-center gap-3">
             <Link
               href="/markets"
-              className="font-title shrink-0 text-sm tracking-tight text-white"
+              className="font-title flex shrink-0 items-center gap-1.5 text-sm tracking-tight text-white"
             >
+              <Image
+                src="/atlas-logo.jpg"
+                alt=""
+                width={24}
+                height={24}
+                className="h-6 w-6 rounded-full object-cover object-top"
+              />
               {APP_NAME}
-              </Link>
+            </Link>
               <div className="hidden min-w-0 flex-1 sm:flex">
                 <SymbolSearchTrigger />
               </div>
