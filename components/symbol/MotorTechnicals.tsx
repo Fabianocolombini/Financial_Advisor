@@ -1,4 +1,5 @@
 import type { MotorIndicatorSnapshot } from "@/lib/motor/snapshot-types";
+import { IndicatorNameWithInfo, InfoTooltip } from "./InfoTooltip";
 import {
   countIndicatorActions,
   formatIndicatorValue,
@@ -156,10 +157,30 @@ export function MotorIndicatorsTable({
           <thead className="border-b border-zinc-800 bg-zinc-950 text-[11px] text-zinc-500">
             <tr>
               <th className="px-3 py-2">Name</th>
-              <th className="px-3 py-2">Value</th>
-              <th className="px-3 py-2">Action</th>
-              <th className="px-3 py-2">Contribution</th>
-              <th className="px-3 py-2">z-score</th>
+              <th className="px-3 py-2">
+                <span className="inline-flex items-center gap-1">
+                  Value
+                  <InfoTooltip term="motor_col_value" />
+                </span>
+              </th>
+              <th className="px-3 py-2">
+                <span className="inline-flex items-center gap-1">
+                  Action
+                  <InfoTooltip term="motor_col_action" />
+                </span>
+              </th>
+              <th className="px-3 py-2">
+                <span className="inline-flex items-center gap-1">
+                  Contribution
+                  <InfoTooltip term="motor_col_contribution" />
+                </span>
+              </th>
+              <th className="px-3 py-2">
+                <span className="inline-flex items-center gap-1">
+                  z-score
+                  <InfoTooltip term="motor_col_zscore" />
+                </span>
+              </th>
               <th className="px-3 py-2">Note</th>
             </tr>
           </thead>
@@ -169,10 +190,15 @@ export function MotorIndicatorsTable({
               return (
                 <tr key={ind.id} className="border-b border-zinc-800/80">
                   <td className="px-3 py-2 text-white">
-                    {ind.name}
-                    {ind.isProxy ? (
-                      <span className="ml-1 text-[10px] text-amber-400">proxy</span>
-                    ) : null}
+                    <IndicatorNameWithInfo
+                      id={ind.id}
+                      name={ind.name}
+                      extra={
+                        ind.isProxy ? (
+                          <span className="text-[10px] text-amber-400">proxy</span>
+                        ) : null
+                      }
+                    />
                   </td>
                   <td className="px-3 py-2 tabular-nums text-zinc-300">
                     {formatIndicatorValue(ind.value)}

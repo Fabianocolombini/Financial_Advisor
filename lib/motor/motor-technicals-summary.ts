@@ -132,24 +132,4 @@ export function detectMaCross(rows: TechnicalIndicatorRow[]): "golden" | "death"
   return null;
 }
 
-export function glossaryTermForIndicator(id: string): string | null {
-  const map: Record<string, string> = {
-    rsi_14: "rsi",
-    stoch_k: "stochastic_fast",
-    cci_20: "cci",
-    adx_14: "adx",
-    awesome: "awesome_oscillator",
-    momentum_10: "momentum",
-    macd: "macd_level",
-    stoch_rsi: "stochastic_rsi",
-    williams_r: "williams_r",
-    bull_bear_power: "bull_bear_power",
-    ultimate: "ultimate_oscillator",
-    ichimoku_base: "ichimoku",
-    vwma_20: "vwma",
-    hull_ma_9: "hull_ma",
-  };
-  if (map[id]) return map[id]!;
-  if (id.startsWith("sma_") || id.startsWith("ema_")) return "moving_averages";
-  return null;
-}
+export { glossaryTermForIndicator } from "@/lib/motor/glossary-lookup";

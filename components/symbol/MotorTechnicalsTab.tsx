@@ -36,7 +36,7 @@ import { ConvergenceCard } from "./ConvergenceCard";
 import { DecisionNarrative, DecisionSummaryCards } from "./DecisionSummaryCards";
 import { IndicatorExplorer } from "./IndicatorExplorer";
 import { PivotPointsTable } from "./PivotPointsTable";
-import { InfoTooltip } from "./InfoTooltip";
+import { IndicatorNameWithInfo, InfoTooltip } from "./InfoTooltip";
 import { MotorWhySection } from "./MotorTechnicals";
 import { SignalCountCard } from "./SignalCountCard";
 import { SymbolClassRegimeModelPanel } from "./SymbolClassRegimeModelPanel";
@@ -124,9 +124,24 @@ function MotorIndicatorsCompact({
           <thead className="border-b border-zinc-800 bg-zinc-950 text-[11px] text-zinc-500">
             <tr>
               <th className="px-3 py-2">Indicator</th>
-              <th className="px-3 py-2">Value</th>
-              <th className="px-3 py-2">Signal</th>
-              <th className="px-3 py-2">Contrib.</th>
+              <th className="px-3 py-2">
+                <span className="inline-flex items-center gap-1">
+                  Value
+                  <InfoTooltip term="motor_col_value" />
+                </span>
+              </th>
+              <th className="px-3 py-2">
+                <span className="inline-flex items-center gap-1">
+                  Signal
+                  <InfoTooltip term="motor_col_action" />
+                </span>
+              </th>
+              <th className="px-3 py-2">
+                <span className="inline-flex items-center gap-1">
+                  Contrib.
+                  <InfoTooltip term="motor_col_contribution" />
+                </span>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -135,10 +150,15 @@ function MotorIndicatorsCompact({
               return (
                 <tr key={ind.id} className="border-b border-zinc-800/80">
                   <td className="px-3 py-2 text-white">
-                    {ind.name}
-                    {ind.isProxy ? (
-                      <span className="ml-1 text-[10px] text-amber-400">proxy</span>
-                    ) : null}
+                    <IndicatorNameWithInfo
+                      id={ind.id}
+                      name={ind.name}
+                      extra={
+                        ind.isProxy ? (
+                          <span className="text-[10px] text-amber-400">proxy</span>
+                        ) : null
+                      }
+                    />
                   </td>
                   <td className="px-3 py-2 tabular-nums text-zinc-300">
                     {formatIndicatorValue(ind.value)}
@@ -184,13 +204,10 @@ function MacroRiskDetail({ detail }: { detail: SymbolDetailView }) {
                 key={ind.id}
                 className="flex flex-wrap items-center gap-2 rounded border border-zinc-800/80 px-3 py-2"
               >
-                <span className="text-zinc-300">{ind.name}</span>
+                <IndicatorNameWithInfo id={ind.id} name={ind.name} />
                 <span className="tabular-nums text-white">
                   {formatIndicatorValue(ind.value)}
                 </span>
-                {(ind.id.includes("spread") || ind.name.toLowerCase().includes("spread")) && (
-                  <InfoTooltip term="fred_10y_spread" />
-                )}
               </li>
             ))}
           </ul>

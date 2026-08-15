@@ -5,6 +5,7 @@ import type { IndicatorSeries } from "@/lib/market/technical-indicators";
 import type { TechnicalIndicatorRow } from "@/lib/market/technical-summary";
 import { actionClass, formatIndicatorValue } from "@/lib/motor/format-scores";
 import { IndicatorChart, type IndicatorChartBar } from "./IndicatorChart";
+import { InfoTooltip } from "./InfoTooltip";
 
 const LOOKBACKS = [
   { id: "3m", label: "3M", bars: 63 },
@@ -176,7 +177,10 @@ export function IndicatorExplorer({
             return (
               <div key={s.id} className="space-y-1.5">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <h5 className="text-sm text-white">{s.name}</h5>
+                  <h5 className="inline-flex items-center gap-1 text-sm text-white">
+                    {s.name}
+                    <InfoTooltip term={s.id} />
+                  </h5>
                   {row ? (
                     <p className="text-xs text-zinc-400">
                       <span className="tabular-nums text-zinc-200">

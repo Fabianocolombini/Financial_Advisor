@@ -1,21 +1,48 @@
 {
   "model_confidence": "How much the model trusts this reading, based on coverage and consistency of the source data. It is not a hit-rate probability.",
   "class_composition_score": "How this name compares with the others in the same asset class in the motor snapshot.",
-  "fred_10y_spread": "Difference between long-term and short-term rates (the yield curve). When negative (inverted), it signals a higher recession risk.",
+  "fred_10y_spread": {
+    "meaning": "Difference between the 10-year and 2-year Treasury yields — the slope of the yield curve.",
+    "read": "Positive (steep) is a normal cycle. Near zero is flat. Negative (inverted) historically raises recession risk and often favors cash or shorter duration."
+  },
   "security_score": "Quantitative score of the individual name (security layer), combining ticker-specific indicators in the motor model.",
   "global_motor_models": "The name's score compared with the average or benchmark of its asset class in the motor.",
   "entry_validated": "Whether price, volume, and momentum confirm a technical entry point, independent of the motor's recommendation.",
   "entry_not_validated": "Technical conditions have not confirmed an entry yet — wait for confirmation even with a favorable motor signal.",
   "strong_reduce": "The motor recommends reducing the position with high conviction; it does not imply an automatic full sale.",
-  "stochastic_rsi": "Oscillator that combines RSI with stochastic. Above 80 tends to overbought; below 20, oversold.",
-  "cci": "Commodity Channel Index measures price deviation from the average. High values suggest overbought; low values, oversold.",
-  "macd_level": "Difference between exponential moving averages — momentum and trend direction. Positive favors buy; negative, sell.",
-  "stochastic_fast": "Compares the close with the recent range. Above 80 overbought; below 20 oversold.",
-  "williams_r": "Inverted momentum oscillator (−100 to 0). Near 0 overbought; near −100 oversold.",
-  "bull_bear_power": "Buying vs selling strength relative to the average. Positive favors bulls; negative, bears.",
+  "stochastic_rsi": {
+    "meaning": "Stochastic applied to RSI — a second oscillator that shows how stretched RSI itself is.",
+    "read": "Above 80: overbought; below 20: oversold. A turn back from those zones is the usable signal, not the extreme alone."
+  },
+  "cci": {
+    "meaning": "Commodity Channel Index: how far price sits from its typical average, in units of mean deviation.",
+    "read": "Above +100 the name is extended higher; below −100, lower. The motor treats a turn back through those bands as the signal."
+  },
+  "macd_level": {
+    "meaning": "MACD line: 12-day EMA minus 26-day EMA. It measures whether short-term momentum is faster than the medium trend.",
+    "read": "Above zero favors upside; below zero favors downside. A cross of the signal line (9-day EMA of MACD) confirms a turn."
+  },
+  "stochastic_fast": {
+    "meaning": "Fast stochastic %K: where the close sits inside the recent high–low range (0–100).",
+    "read": "Above 80: overbought; below 20: oversold. Buy when %K crosses back up through %D in the oversold zone; sell on the opposite cross up high."
+  },
+  "williams_r": {
+    "meaning": "Williams %R: an inverted stochastic on a −100 to 0 scale.",
+    "read": "Near 0 is overbought; near −100 is oversold. A move back from the extreme is the reading that matters."
+  },
+  "bull_bear_power": {
+    "meaning": "Elder’s Bull/Bear Power: high and low versus an exponential average — buying vs selling pressure.",
+    "read": "Positive net power favors bulls; negative favors bears. Rising bull power with price is confirmation; fading power warns the move is tired."
+  },
   "bollinger_bands": "Volatility band around price. Compression indicates low volatility (possible breakout); expansion, high volatility.",
-  "moving_averages": "Moving averages smooth price to identify trend. Price above the average tends to be a strength signal.",
-  "oscillators": "Short-term momentum and reversal indicators — they measure whether the name is stretched higher or lower.",
+  "moving_averages": {
+    "meaning": "A moving average is the typical price over N sessions. SMA weights every day equally; EMA reacts faster to the latest prints.",
+    "read": "Price above the average = strength for that horizon. Price below = weakness. A 50-day cross above the 200-day is a golden cross; the reverse is a death cross."
+  },
+  "oscillators": {
+    "meaning": "Short-term momentum tools (RSI, stochastic, MACD, and similar). They ask whether the name is stretched, not whether the class is cheap.",
+    "read": "Buy/Sell here means a reversal from an extreme, not a forecast. Many Neutrals in a strong trend is normal — oscillators stay pinned."
+  },
   "motor_signal": "Quantitative reading from the decision motor by class and name, combining macro, regime, and sleeve indicators.",
   "macro_risk": "Macro and systemic-risk block (yield curve, spreads, volatility) that contextualizes the name's score.",
   "convergence": "Comparison between the motor signal (quantitative) and the technical signal (price/momentum) to avoid unexplained contradictory readings.",
@@ -27,13 +54,265 @@
   "forecast_coverage": "Share of times realized price stayed inside the projected range in walk-forward tests. Near the nominal level (68% or 95%) indicates a well-calibrated range.",
   "fibonacci": "Retracement and extension levels calculated on a confirmed swing. They are reference zones, not guaranteed targets.",
   "support_resistance": "Prices where the name reversed in the recent past, detected by swing pivots confirmed on both sides.",
-  "rsi": "Relative Strength Index: compares the average of gains with the average of losses over 14 sessions, on a 0 to 100 scale. Above 70 the name is stretched higher; below 30, lower.",
-  "adx": "Measures trend strength, not direction. Above 20 indicates a defined trend; direction comes from the +DI and −DI lines.",
-  "awesome_oscillator": "Difference between 5- and 34-period averages of the bar's midpoint. Crossing zero signals a change in short- vs medium-term momentum.",
-  "momentum": "Raw difference between the current price and the price 10 sessions ago. It measures acceleration, so the signal comes from rising or falling, not from the value itself.",
-  "ultimate_oscillator": "Combines three windows (7, 14, and 28) to reduce the false signals typical of single-window oscillators.",
-  "ichimoku": "Japanese system with conversion line, base line, and a cloud projected forward. The signal requires agreement among price, lines, and cloud.",
-  "vwma": "Volume-weighted moving average: gives more weight to sessions with more trading, pulling the average toward the price where real money traded.",
-  "hull_ma": "Hull moving average: reduces the typical lag of averages, reacting faster to turns at the cost of more noise.",
-  "pivot_points": "Levels calculated from the previous period's high, low, and close. P is equilibrium, R1–R3 are resistances and S1–S3 supports. Because they stay fixed until the period closes, they work as targets set in advance."
+  "rsi": {
+    "meaning": "Relative Strength Index: average gains versus average losses over 14 sessions, on a 0–100 scale.",
+    "read": "Above 70 the name is stretched higher; below 30, lower. The table signals Buy only when RSI leaves oversold heading up, and Sell when it leaves overbought heading down."
+  },
+  "adx": {
+    "meaning": "Average Directional Index: strength of the trend, not its direction. +DI and −DI say who is in control.",
+    "read": "ADX above 20 = a defined trend. If +DI is above −DI, the trend is up; the reverse is down. Low ADX means a range — ignore trend-following signals."
+  },
+  "awesome_oscillator": {
+    "meaning": "Difference between 5- and 34-period averages of the bar’s midpoint. It compares very short momentum with a slower pulse.",
+    "read": "Crossing from below zero to above is a momentum turn up; the opposite is a turn down. Color/histogram rising while still negative is only early, not a buy on its own."
+  },
+  "momentum": {
+    "meaning": "Raw difference between today’s close and the close 10 sessions ago.",
+    "read": "The level is less important than the direction: rising momentum supports the move; falling momentum says the move is slowing even if price is still up."
+  },
+  "ultimate_oscillator": {
+    "meaning": "Weighted blend of 7-, 14-, and 28-session buying pressure, built to reduce the false turns of a single window.",
+    "read": "Above 70 is extended higher; below 30, lower. A failure to make a new oscillator high with price is a divergence — treat as a warning, not an automatic sale."
+  },
+  "ichimoku": {
+    "meaning": "Ichimoku: conversion line, base line, and a cloud projected forward. It is a full trend system, not a single oscillator.",
+    "read": "Bullish when price is above the cloud, conversion above base, and the cloud is rising. Mixed readings (price in the cloud) mean wait."
+  },
+  "vwma": {
+    "meaning": "Volume-weighted moving average: days with more trading pull the average toward that price.",
+    "read": "Price above VWMA means the heavy volume was done at lower prices (buyers in control). Below means the volume sat higher (sellers in control)."
+  },
+  "hull_ma": {
+    "meaning": "Hull moving average: a faster average that cuts the usual lag of SMA/EMA, at the cost of more noise.",
+    "read": "Price crossing above is a quicker strength signal; crossing below is quicker weakness. Use it with a slower average so one whip does not decide the trade."
+  },
+  "pivot_points": "Levels calculated from the previous period's high, low, and close. P is equilibrium, R1–R3 are resistances and S1–S3 supports. Because they stay fixed until the period closes, they work as targets set in advance.",
+  "motor_col_value": {
+    "meaning": "The raw reading of this indicator on the snapshot date — a yield, a spread, a percent, or a z-score, depending on the row.",
+    "read": "Compare it with the note and the i. A number alone is not a buy: the Action and Contribution columns say how the motor uses it."
+  },
+  "motor_col_action": {
+    "meaning": "How this row is leaning inside the motor right now: Buy, Neutral, or Sell.",
+    "read": "It comes from the sign of the contribution, not from a broker rating. Several Neutrals plus one strong driver is normal."
+  },
+  "motor_col_contribution": {
+    "meaning": "This row’s weighted input to the Security Score or class score (weight × directed percentile or z).",
+    "read": "Larger absolute contribution = this indicator is doing more of the work. The sign says whether it is helping or hurting the score."
+  },
+  "motor_col_zscore": {
+    "meaning": "How unusual today’s value is versus this indicator’s own recent history (typically ~1 year).",
+    "read": "Near 0 = typical. Around ±1 = a bit unusual. Beyond ±2 = a rare print. Direction (positive vs negative) follows the indicator’s own scale."
+  },
+  "volume_vs_media": {
+    "meaning": "Traded volume versus its recent average. In Cash it is the liquidity pillar of the Security Score (highest weight).",
+    "read": "Higher percentile vs peers = easier to enter and exit. A spike versus its own average can also mean unusual flow — read it as activity, not as a return forecast."
+  },
+  "vol_realizada": {
+    "meaning": "Realized volatility over the last 20 sessions (standard deviation of daily returns).",
+    "read": "For Cash and most income sleeves, lower is better: the motor inverts the percentile so a calmer name ranks higher. A sudden rise is a stability break."
+  },
+  "preco_vs_mm50": {
+    "meaning": "How far the last price sits from its 50-day moving average, as a percent.",
+    "read": "Near the average is normal. A large gap is an extension. In most risk assets, above the average is strength; in Cash the motor treats a large gap as an anomaly, not as a bullish trend."
+  },
+  "preco_vs_mm50_z_abs": {
+    "meaning": "Absolute z-score of price versus its 50-day average: (price − MA50) / 50-day price standard deviation.",
+    "read": "Small |z| = the name is drifting in line with its own usual pace (healthy for cash ETFs). Large |z| = a real dislocation. The motor ranks the smaller |z| as safer."
+  },
+  "preco_vs_mm200": {
+    "meaning": "How far the last price sits from its 200-day moving average — the long trend line.",
+    "read": "Above the 200-day is a longer-term uptrend; below is a downtrend. A cross of this line is slower and more meaningful than a 50-day wiggle."
+  },
+  "trend": {
+    "meaning": "Combined reading of the 50- and 200-day averages: whether the name is in a confirmed uptrend versus peers.",
+    "read": "Higher percentile = stronger trend versus the rest of the class on the same day. It is a ranking, not a promise that the trend continues."
+  },
+  "dividend_yield": {
+    "meaning": "Income the name is currently distributing, as a percent of price (dividend or distribution yield).",
+    "read": "Higher yield can mean more income or a cheaper (fallen) price. The motor ranks it versus peers; a yield that jumps only because price collapsed is not a quality upgrade."
+  },
+  "duration_efetiva": {
+    "meaning": "Effective duration: how much the bond-like name’s price tends to move when yields move 1%.",
+    "read": "Higher duration = more sensitivity to rate moves. The motor scores whether that duration fits the current term-premium / real-yield regime — not “higher is better”."
+  },
+  "cot_net_position": {
+    "meaning": "CFTC Commitments of Traders: net speculative positioning in the related futures (crowding).",
+    "read": "A very crowded long is a caution (everyone is already in). A crowded short can be fuel for a squeeze. The Treasury security model treats extreme crowding as a penalty."
+  },
+  "nav_discount": {
+    "meaning": "Price versus the fund’s net asset value (NAV). A discount means the market price is below the portfolio’s book.",
+    "read": "A wider discount can be a cheaper entry if NAV is honest. A persistent discount can also mean the market does not trust the assets. The motor ranks a larger discount as more attractive, with a proxy flag."
+  },
+  "expense_ratio": {
+    "meaning": "Annual fund fee. The motor inverts it so cheaper vehicles rank better.",
+    "read": "Lower expense = more of the yield or return stays with you. Among near-identical commodity or metal ETFs, this is often the deciding quality gap."
+  },
+  "custo_efetivo_inv": {
+    "meaning": "Inverted expense / holding cost for FX vehicles — cheaper access ranks higher.",
+    "read": "Higher score = you pay less to hold the currency exposure. It is not a view on whether the dollar will rise."
+  },
+  "adequacao_fiscal": {
+    "meaning": "Proxy for how well the vehicle tracks the intended USD / fiscal exposure (beta fit).",
+    "read": "Higher means the name behaves like the sleeve it is supposed to represent. A poor fit is a tool problem, not a macro call."
+  },
+  "hedge_fit": {
+    "meaning": "How well the international name’s behavior lines up with a USD hedge (vs UUP).",
+    "read": "Higher fit = the hedge overlay is doing its job. Low fit means FX is leaking into the return — read the class regime before adding."
+  },
+  "beta_fit": {
+    "meaning": "How closely the name moves with the sleeve’s benchmark (for energy, typically USO / oil).",
+    "read": "High beta fit = you are actually buying the commodity factor. Low fit = the ticker is a noisy or diluted proxy."
+  },
+  "china_fit": {
+    "meaning": "How much the emerging-market name behaves like China-sensitive risk.",
+    "read": "Higher China fit means the name will swing with China news. That can be desired exposure or unwanted concentration — check the rest of the wallet."
+  },
+  "catalyst_density": {
+    "meaning": "Proxy for nearby FDA / pipeline catalysts in biotech (calendar density).",
+    "read": "Higher density = more event risk and more optionality in the next window. It is not a probability that the trial succeeds."
+  },
+  "yield_real_caixa": {
+    "meaning": "Real cash yield: 3-month T-bill (DTB3) minus inflation (CPI). What cash pays after prices rise.",
+    "read": "Above zero: cash preserves purchasing power. Near or below zero: sitting in bills loses real value — the regime model then leans away from overweight cash."
+  },
+  "spread_10y_2y": {
+    "meaning": "10-year minus 2-year Treasury yield. Same curve as the FRED 10y–2y spread.",
+    "read": "Steep (positive) supports risk and longer duration. Flat or inverted favors cash, floating rate, and caution on cyclicals."
+  },
+  "fed_cut_probability": {
+    "meaning": "Market-implied chance of Fed cuts over the next ~6 months (CME FedWatch).",
+    "read": "Rising cut odds usually help duration and risk assets, and reduce the need to hoard cash. Falling cut odds (or hike pricing) do the opposite. For cash, high cut probability is a reason to look beyond T-bills."
+  },
+  "term_premium": {
+    "meaning": "Extra yield investors demand to hold a long Treasury instead of rolling shorts (ACM / FRED THREEFYTP10).",
+    "read": "Rising term premium = bonds are cheaper / yields compensating more for duration. Falling term premium = long bonds are rich. The Treasury regime uses this as the main valuation pillar."
+  },
+  "bond_vol_proxy": {
+    "meaning": "Proxy for bond-market volatility (TLT implied or realized vol) — not the official MOVE index.",
+    "read": "High bond vol = unstable rates; the model reduces duration risk. Low vol = a calmer backdrop for adding Treasuries."
+  },
+  "yield_real_10y": {
+    "meaning": "10-year real yield: nominal 10-year minus inflation breakeven (DGS10 − T10YIE), or TIPS yield DFII10.",
+    "read": "Rising real yields tighten financial conditions and usually hurt gold, long duration, and rich growth. Falling real yields do the reverse. High real yield can be a better entry for TIPS/Treasuries."
+  },
+  "yield_10y": {
+    "meaning": "Nominal 10-year Treasury yield (DGS10). The risk-free long rate everything else is priced against.",
+    "read": "Rising 10-year yield pressures REITs, preferreds, and long bonds. Falling yield is usually a tailwind for those sleeves. Read it with inflation: a rise from growth is different from a rise from inflation fear."
+  },
+  "fed_funds": {
+    "meaning": "Federal funds rate — the overnight policy rate set by the Fed.",
+    "read": "A high or rising funds rate tightens liquidity and often weighs on equities and credit. Cuts ease conditions. The level matters less than the direction the market has not yet priced."
+  },
+  "vix": {
+    "meaning": "CBOE VIX: implied 30-day volatility on the S&P 500. A fear gauge, not a forecast of the next print.",
+    "read": "Low VIX (teens) = complacent / cheap hedges. Spikes (20s–30s+) = stress; the motor treats very high VIX as a risk-off input, sometimes a better entry for equities after the spike."
+  },
+  "dxy": {
+    "meaning": "US Dollar Index — the dollar versus a basket of major currencies.",
+    "read": "A strong dollar typically hurts gold, EM, and international equities in USD terms. A weakening dollar is a tailwind for those sleeves and for commodities."
+  },
+  "cpi": {
+    "meaning": "US CPI — the official consumer inflation print.",
+    "read": "Rising CPI that the market has not priced is hostile to long bonds and gold’s real-rate story. Cooling CPI supports duration and can support risk. Always read next to breakevens: surprise vs what is already in the price."
+  },
+  "dfii10": {
+    "meaning": "10-year TIPS real yield (FRED DFII10). The market’s real risk-free rate.",
+    "read": "Same reading as real yield: up is tighter conditions (headwind for gold and long duration); down is easier. For precious metals this is often the single most important macro input."
+  },
+  "wti": {
+    "meaning": "West Texas Intermediate crude oil price.",
+    "read": "Rising WTI supports energy commodities and MLPs; falling WTI does the opposite. A spike can also be a growth/inflation shock for the rest of the book — not automatically “good.”"
+  },
+  "henry_hub": {
+    "meaning": "Henry Hub natural-gas price, the US gas benchmark.",
+    "read": "Higher gas supports midstream / energy infrastructure that is volume- or price-sensitive to gas. A collapse in gas can cut MLP distributions even if oil is fine."
+  },
+  "eurusd": {
+    "meaning": "Euro versus US dollar spot.",
+    "read": "A rising EURUSD is a weaker dollar. That usually helps international assets in USD and can weigh on pure-dollar cash. The FX sleeve uses it as the core rate pair."
+  },
+  "ig_oas": {
+    "meaning": "Investment-grade option-adjusted spread — extra yield of IG corporates over Treasuries.",
+    "read": "Wider OAS = credit is cheaper / more stressed (better entry if you want IG). Tight OAS = little compensation for default risk. A sudden widening is a risk-off signal."
+  },
+  "delta_ig_spread_20d": {
+    "meaning": "20-day change in the IG credit spread.",
+    "read": "Spreads widening over two weeks = credit deteriorating now. Tightening = healing. The motor uses the short window to catch a break that the slow OAS level would miss."
+  },
+  "ig_bbb_aaa_spread": {
+    "meaning": "Gap between BBB and AAA IG spreads — quality inside investment grade.",
+    "read": "A fatter BBB–AAA gap means investors are demanding more to own the weakest IG names. That is early credit stress, even if headline IG OAS still looks fine."
+  },
+  "hy_oas": {
+    "meaning": "High-yield option-adjusted spread — extra yield of junk bonds over Treasuries.",
+    "read": "Wide HY OAS = the market is paying you more to take credit risk (or is scared). Tight HY OAS = little cushion if defaults rise. The HY and BDC sleeves treat a sudden widening as stress."
+  },
+  "delta_hy_spread_20d": {
+    "meaning": "20-day change in the high-yield spread.",
+    "read": "Fast widening = credit event in progress. Fast tightening after a spike can be a bounce, not a new cycle. Pair it with the level of HY OAS."
+  },
+  "hy_quality_ratio": {
+    "meaning": "Quality mix inside high yield (better-rated HY versus weaker names).",
+    "read": "Deteriorating quality (more weight on weaker credits) is a warning even if the headline spread has not blown out. Improving quality supports holding HY."
+  },
+  "hy_distress_proxy_score": {
+    "meaning": "Proxy for HY distress: percentile of CCC spreads plus HY ETF realized vol. It is not the official S&P distress ratio.",
+    "read": "High score = the weakest credits and HY volatility are already stressed. Treat as a reduce / wait signal for HY and BDCs, not as a precise default forecast."
+  },
+  "hy_minus_ig": {
+    "meaning": "High-yield spread minus investment-grade spread — the extra junk premium.",
+    "read": "A compressed HY−IG gap means you are barely paid to step down in quality. A wide gap can justify HY over IG if you want the risk."
+  },
+  "hy_bb_spread": {
+    "meaning": "Option-adjusted spread of BB-rated high yield (the highest-quality junk).",
+    "read": "BB is the “crossover” bucket. Widening here is a broader credit problem, not just CCC distress. Tight BB with wide CCC is a barbell inside HY."
+  },
+  "hy_b_spread": {
+    "meaning": "Option-adjusted spread of B-rated high yield.",
+    "read": "B sits between BB and CCC. Persistent widening here is the middle of the credit stack leaking — usually a reason to cut HY beta."
+  },
+  "sloos": {
+    "meaning": "Fed Senior Loan Officer Opinion Survey — how many banks are tightening lending standards.",
+    "read": "More officers tightening = credit will get scarcer with a lag (bad for HY, BDCs, preferreds). Easing standards support those sleeves. The print is quarterly — do not treat it as a daily ticker."
+  },
+  "preferred_spread": {
+    "meaning": "Extra yield of preferreds (e.g. PFF) over the 10-year Treasury.",
+    "read": "A wider preferred spread = more income versus duration, or more fear about banks/issuers. Tight spread = you are not paid much to own preferreds instead of Treasuries."
+  },
+  "delta_preferred_spread_20d": {
+    "meaning": "20-day change in the preferred-over-Treasury spread.",
+    "read": "A fast widening is a bank / credit scare. Tightening is healing. Use it as a short-term stress flag on top of the level."
+  },
+  "kre_vs_spy_60d": {
+    "meaning": "60-day relative performance of regional banks (KRE) versus the S&P 500.",
+    "read": "KRE lagging SPY is a bank-stress warning for preferreds. KRE leading is a healthier backdrop for bank-issued preferreds."
+  },
+  "breakeven_5y5y": {
+    "meaning": "5y5y inflation breakeven (FRED T5YIFR) — what the market prices for inflation five years from now, for five years.",
+    "read": "Rising 5y5y = inflation expectations un-anchoring (supports TIPS, can hurt nominal long bonds). Falling 5y5y = disinflation priced in. Compare with realized CPI."
+  },
+  "cpi_breakeven_gap": {
+    "meaning": "Gap between realized CPI and the inflation the TIPS market is pricing.",
+    "read": "CPI running above breakevens means TIPS may still be cheap vs incoming inflation. The opposite means the market already paid up for inflation that is cooling."
+  },
+  "tips_liquidity_proxy": {
+    "meaning": "Proxy for how easily TIPS are trading (not a full bid-ask tape).",
+    "read": "Stressed liquidity = wider gaps and jumpy NAV — size down. Normal liquidity means the TIPS sleeve can be used as a real-yield tool again."
+  },
+  "pe_rel_intl_us": {
+    "meaning": "International equity P/E relative to US P/E (cheap or expensive versus SPX).",
+    "read": "A low relative P/E means international is cheaper than the US on earnings. That is a valuation tailwind, not a timing signal — pair it with the dollar and VIX."
+  },
+  "pe_rel_em_us": {
+    "meaning": "Emerging-market P/E relative to US P/E.",
+    "read": "EM cheaper than the US (low ratio) is the valuation case for the sleeve. EM richer than the US needs a growth or flow story. Always read with the dollar."
+  },
+  "gdp_growth_em": {
+    "meaning": "Emerging-market GDP growth (World Bank / lagged official data).",
+    "read": "Faster EM growth versus developed markets supports the EM sleeve. Because the print is slow, treat it as a regime backdrop, not a weekly trigger."
+  },
+  "distribution_yield_spread": {
+    "meaning": "MLP / midstream distribution yield minus the 10-year Treasury — extra income versus duration.",
+    "read": "A wide spread means you are paid more to own the pipeline sleeve instead of Treasuries. A tight spread means the yield is not compensating for equity/energy risk."
+  }
 }

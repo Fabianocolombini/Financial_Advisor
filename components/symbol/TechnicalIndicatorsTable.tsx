@@ -4,7 +4,7 @@ import type { TechnicalIndicatorRow } from "@/lib/market/technical-summary";
 import { countTaActions } from "@/lib/market/technical-summary";
 import { actionClass, formatIndicatorValue } from "@/lib/motor/format-scores";
 import { detectMaCross } from "@/lib/motor/motor-technicals-summary";
-import { InfoTooltip } from "./InfoTooltip";
+import { IndicatorNameWithInfo, InfoTooltip } from "./InfoTooltip";
 import type { GlossaryTerm } from "./InfoTooltip";
 
 function ExcludedNote({
@@ -103,7 +103,9 @@ function SignalTable({
                           : ""
                     }`}
                   >
-                    <td className="px-3 py-2 text-white">{row.name}</td>
+                    <td className="px-3 py-2 text-white">
+                      <IndicatorNameWithInfo id={row.id} name={row.name} />
+                    </td>
                     <td className="px-3 py-2 tabular-nums text-zinc-300">
                       {formatIndicatorValue(row.value)}
                     </td>
