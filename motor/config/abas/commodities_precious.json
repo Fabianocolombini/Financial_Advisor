@@ -1,10 +1,10 @@
 {
   "id": "commodities_precious",
   "nome": "Commodities — metais preciosos",
-  "descricao": "PreciousRegimeScore",
+  "descricao": "PreciousRegimeScore + SecurityScore v2 (tendência + RSI + volume dólar + expense invertida)",
   "model": {
     "regime": "commodities_precious_regime_v1",
-    "security": "commodities_precious_security_v1",
+    "security": "commodities_precious_security_v2",
     "calibrated": false
   },
   "pesos_camada": {

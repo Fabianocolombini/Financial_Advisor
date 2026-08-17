@@ -1,0 +1,37 @@
+{
+  "indicadores": [
+    {
+      "id": "preco_vs_mm50",
+      "nome": "Tendência vs médias",
+      "peso": 0.35,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "role": "price trend — percentil alto = mais acima das médias MM50/MM200"
+    },
+    {
+      "id": "rsi_14",
+      "nome": "RSI 14d",
+      "peso": 0.25,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "role": "momentum — percentil alto = RSI mais forte"
+    },
+    {
+      "id": "volume_dolar",
+      "nome": "Volume em dólar",
+      "peso": 0.25,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "role": "liquidez — percentil alto = maior close × volume em ações (não cotas)"
+    },
+    {
+      "id": "expense_ratio",
+      "nome": "Expense ratio",
+      "peso": 0.15,
+      "direcao": "negativa",
+      "inverte_percentil": true,
+      "role": "custo do veículo — percentil alto = menor taxa vs pares do mesmo metal"
+    }
+  ],
+  "note": "Precious Metals Security Score v2 — pesos 35/25/25/15. Volume em dólar. Expense invertida. Sem COT neste score: cot_gold_net e holdings GLD já estão no Regime e são constantes no dia (não mudam o ranking)."
+}

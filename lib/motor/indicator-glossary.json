@@ -112,7 +112,7 @@
     "read": "Higher percentile vs peers = more volume that day = easier to enter and exit. The motor does not invert this percentile. US Stocks use dollar volume instead."
   },
   "volume_dolar": {
-    "meaning": "Dollar volume on the snapshot day: last close × shares traded. Liquidity pillar of the US Stocks (20%), Emerging Markets (20%), and REITs (20%) Security Scores.",
+    "meaning": "Dollar volume on the snapshot day: last close × shares traded. Liquidity pillar of the US Stocks (20%), Emerging Markets (20%), REITs (20%), and Precious Metals (25%) Security Scores.",
     "read": "Higher percentile vs peers = more dollars changed hands = easier to enter and exit. Share count would favor cheap names; this does not. The motor does not invert this percentile."
   },
   "vol_realizada": {
@@ -147,6 +147,10 @@
     "meaning": "Weekly CFTC Commitments of Traders: net speculative positioning in Treasury futures (crowding).",
     "read": "Held at the last weekly print until the next CFTC release — no interpolation. In the Treasuries score this is inverted: higher crowding lowers the class-level contribution. It does not rank one ETF against another."
   },
+  "crowding": {
+    "meaning": "Class-level positioning: for precious metals, CFTC gold COT (`cot_gold_net`), falling back to GLD tonnes if COT is missing.",
+    "read": "Lives in PreciousRegimeScore, not in the Security Score. On a given day every metal ETF sees the same print, so it cannot pick GLD over IAU. High crowding is a class-level caution, same idea as Treasuries COT."
+  },
   "preco_vs_mm50_dur": {
     "meaning": "Price vs its 50-day average, divided by the ETF’s modified duration so a long bond is not scored as stronger momentum just because it moves more for the same yield change.",
     "read": "Compared across Treasuries, IG, or TIPS on the same day. Higher percentile = stronger duration-adjusted uptrend (rate-risk-adjusted, not raw price gap). For TIPS this uses the ETF share price, not a TIPS dirty bond price."
@@ -160,8 +164,8 @@
     "read": "A wider discount can be a cheaper entry if NAV is honest. A persistent discount can also mean the market does not trust the assets. The motor ranks a larger discount as more attractive, with a proxy flag."
   },
   "expense_ratio": {
-    "meaning": "Annual fund fee. The motor inverts it so cheaper vehicles rank better.",
-    "read": "Lower expense = more of the yield or return stays with you. Among near-identical commodity or metal ETFs, this is often the deciding quality gap."
+    "meaning": "Annual fund fee. In Precious Metals this is the 15% inverted Security Score pillar.",
+    "read": "Lower expense = more of the metal’s return stays with you. Among funds that hold the same ounce, cheaper ranks higher (IAU vs GLD). The motor inverts the percentile so 0.5 is still the median-cost name that day."
   },
   "custo_efetivo_inv": {
     "meaning": "Inverted expense / holding cost for FX vehicles — cheaper access ranks higher.",

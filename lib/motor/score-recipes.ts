@@ -339,13 +339,34 @@ const RECIPES: Record<string, ScoreRecipe> = {
     ],
   },
   commodities_precious: {
-    headline: "In precious metals the score includes the fund's cost, which erodes return over time.",
+    headline:
+      "In precious metals the funds compete for the same ounce, so the score ranks trend and momentum, liquidity in dollars, and a cheaper vehicle. Gold COT and ETF holdings stay in the class layer — they do not pick GLD over IAU.",
     ingredients: [
-      { label: "Price trend", weight: 0.35, meaning: "price above the averages" },
-      { label: "Momentum (RSI)", weight: 0.25, meaning: "recent strength of the move" },
-      { label: "Traded volume", weight: 0.25, meaning: "more liquid is better" },
-      { label: "Expense ratio", weight: 0.15, meaning: "cheaper is better" },
+      {
+        label: "Price trend",
+        weight: 0.35,
+        meaning: "price vs the 50- and 200-day averages — higher is better",
+      },
+      {
+        label: "Momentum (RSI)",
+        weight: 0.25,
+        meaning: "recent strength of the move vs other metal funds that day",
+      },
+      {
+        label: "Dollar volume",
+        weight: 0.25,
+        meaning:
+          "price × shares traded that day vs peers — higher is better. Share count would favor cheap tickers like SGOL",
+      },
+      {
+        label: "Expense ratio (inverted)",
+        weight: 0.15,
+        meaning:
+          "annual fund fee vs other metal ETFs that day — lower is better. This is the quality gap between GLD and IAU",
+      },
     ],
+    note:
+      "CFTC gold COT and GLD holdings already sit in PreciousRegimeScore. On a given day they are the same number for every name, so putting them in this score would not change the rank. Trend and RSI stay at 35/25: metals do trend, and the overlap is accepted rather than reweighted.",
   },
   commodities_energy: {
     headline: "In energy the score includes how closely the name tracks oil.",

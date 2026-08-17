@@ -245,14 +245,14 @@
       },
       "tickerIndicators": {
         "timing": ["trend", "rsi_14"],
-        "role": ["vol_realizada", "volume_vs_media"],
-        "projection": ["trend", "volume_vs_media"],
-        "investability": ["volume_vs_media", "expense_ratio"],
+        "role": ["expense_ratio", "volume_dolar"],
+        "projection": ["trend", "rsi_14"],
+        "investability": ["volume_dolar", "expense_ratio"],
         "forecast": ["rsi_14", "expense_ratio"]
       },
       "models": {
         "regime": "commodities_precious_regime_v1 — PreciousRegimeScore",
-        "security": "commodities_precious_security_v1 — trend + RSI + volume − ER"
+        "security": "commodities_precious_security_v2 — trend + RSI + dollar volume + inverted expense (COT stays in regime)"
       }
     },
     "commodities_energy": {

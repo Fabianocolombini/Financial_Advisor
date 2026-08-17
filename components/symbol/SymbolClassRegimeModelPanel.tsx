@@ -68,7 +68,7 @@ const CLASS_META: Record<
     title: "Precious Metals model — two layers",
     scoreLabel: "PreciousRegimeScore",
     securityNote:
-      "SecurityScore: trend + RSI + volume − expense ratio.",
+      "SecurityScore: trend and RSI (35/25) + dollar volume (25) + inverted expense (15). Gold COT and ETF holdings stay in the regime layer.",
   },
   commodities_energy: {
     title: "Energy model — two layers",

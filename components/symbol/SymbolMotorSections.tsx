@@ -181,6 +181,13 @@ export function TickerMotorSection({ motor }: { motor: SymbolMotorContext }) {
           rank — that comparison is in REITsRegimeScore. Ranks REIT names on the
           same day.
         </p>
+      ) : motor.classId === "commodities_precious" ? (
+        <p className="text-[10px] text-zinc-500">
+          SecurityScore: 35% trend + 25% RSI + 25% dollar volume + 15% inverted
+          expense ratio. Gold COT and GLD holdings stay in PreciousRegimeScore —
+          they are the same for every name that day and do not change the rank.
+          Ranks metal funds on the same day.
+        </p>
       ) : null}
       <SymbolScoreHistoryChart
         title="Ticker composite score (history)"

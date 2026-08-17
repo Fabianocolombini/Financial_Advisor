@@ -1,6 +1,6 @@
 {
   "calibrated": false,
-  "note": "Pesos definidos por julgamento — não calibrados (`calibrated: false`).",
+  "note": "Pesos w1–w5 (regime) e wa/wb/wc/wd (security) por julgamento — não calibrados. Security v2: 35/25/25/15 tendência/RSI/volume dólar/expense invertida. COT gold e holdings GLD ficam no Regime (constantes no dia). Regime Score não muda nesta revisão.",
   "regime_weights": {
     "w1": 0.3,
     "w2": 0.2,
