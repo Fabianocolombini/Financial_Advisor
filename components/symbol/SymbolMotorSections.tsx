@@ -158,6 +158,14 @@ export function TickerMotorSection({ motor }: { motor: SymbolMotorContext }) {
           cheap names; this uses dollars. Ranks US names on the same day — does
           not change USEquityRegimeScore. No P/E or ROE in this layer.
         </p>
+      ) : motor.classId === "intl_equity" ? (
+        <p className="text-[10px] text-zinc-500">
+          SecurityScore: 30% trend + 20% RSI + 20% inverted 20-day vol + 30%
+          dollar-beta fit vs UUP (closer to the class target is better). Uses the
+          USD ETF close — there is no local-currency series for EFA/VEA. Ranks
+          international names on the same day — does not change
+          IntlEquityRegimeScore.
+        </p>
       ) : null}
       <SymbolScoreHistoryChart
         title="Ticker composite score (history)"

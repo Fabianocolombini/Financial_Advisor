@@ -11,6 +11,7 @@ from motor.src.config_loader import (
     is_class_model_aba,
     is_hy_aba,
     is_ig_aba,
+    is_intl_equity_aba,
     is_preferred_aba,
     is_tips_aba,
     is_treasury_aba,
@@ -324,6 +325,31 @@ def build_report_markdown(
             "Sem P/E/ROE nesta etapa. Percentil no universo da aba (sem neutralização setorial/cap)."
         )
         lines.append("")
+    if is_intl_equity_aba(aba_result["aba_id"]):
+        lines.append("## Modelo International Equity — Regime (Modelo 1)")
+        lines.append("")
+        try:
+            from motor.src.calculo.models.intl_equity_regime_model import compute_intl_equity_regime
+
+            regime = compute_intl_equity_regime()
+            lines.append(
+                f"- IntlEquityRegimeScore: **{_fmt(regime.get('intl_equity_regime_score'))}** "
+                f"→ ação **{regime.get('regime_action')}** (quanto intl equity)"
+            )
+            for note in regime.get("explanation", []):
+                lines.append(f"- {note.replace('**', '')}")
+            if not regime.get("calibrated"):
+                lines.append("- ⚠ Pesos não calibrados (`calibrated: false`).")
+        except Exception as e:
+            lines.append(f"- Erro regime International Equity: {e}")
+        lines.append("")
+        lines.append("## Modelo International Equity — Seleção (Modelo 2)")
+        lines.append("")
+        lines.append(
+            "- SecurityScore v2: 30% tendência + 20% RSI + 20% σ20 invertida + 30% hedge fit vs UUP "
+            "(distância ao alvo de |β|, bucket regional/cambial). Close USD do ETF — sem série em moeda local."
+        )
+        lines.append("")
     _LEGACY_CLASS_REPORTS = {
         is_cash_aba,
         is_treasury_aba,
@@ -332,6 +358,7 @@ def build_report_markdown(
         is_tips_aba,
         is_preferred_aba,
         is_us_equity_aba,
+        is_intl_equity_aba,
     }
     if is_class_model_aba(aba_result["aba_id"]) and not any(
         fn(aba_result["aba_id"]) for fn in _LEGACY_CLASS_REPORTS

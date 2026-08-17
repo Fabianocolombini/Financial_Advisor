@@ -117,7 +117,7 @@
   },
   "vol_realizada": {
     "meaning": "Realized volatility over the last 20 sessions (standard deviation of daily returns).",
-    "read": "For Cash, High Yield, Preferred, and US Stocks, lower is better: the motor inverts the percentile so a calmer name ranks higher vs peers that day. A market-wide vol spike does not single out one name. On preferreds, extra swing is a credit-stress symptom on subordinated paper."
+    "read": "For Cash, High Yield, Preferred, US Stocks, and International Stocks, lower is better: the motor inverts the percentile so a calmer name ranks higher vs peers that day. A market-wide vol spike does not single out one name. On preferreds, extra swing is a credit-stress symptom on subordinated paper."
   },
   "preco_vs_mm50": {
     "meaning": "How far the last price sits from its 50-day moving average, as a percent.",
@@ -172,8 +172,8 @@
     "read": "Higher means the name behaves like the sleeve it is supposed to represent. A poor fit is a tool problem, not a macro call."
   },
   "hedge_fit": {
-    "meaning": "How well the international name’s behavior lines up with a USD hedge (vs UUP).",
-    "read": "Higher fit = the hedge overlay is doing its job. Low fit means FX is leaking into the return — read the class regime before adding."
+    "meaning": "Distance of |beta vs UUP| to the International Stocks class target (35th percentile of the sleeve that day). Fit = 1 − |P(|β|) − 0.35|.",
+    "read": "Closer to the target is better in both directions — not more dollar beta, not less. Two ETFs with the same |beta| get the same fit: this is a regional/FX bucket, not an issuer signal. USD-weak/strong stays in IntlEquityRegimeScore."
   },
   "beta_fit": {
     "meaning": "How closely the name moves with the sleeve’s benchmark (for energy, typically USO / oil).",

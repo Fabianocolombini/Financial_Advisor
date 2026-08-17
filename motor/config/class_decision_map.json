@@ -182,14 +182,14 @@
       },
       "tickerIndicators": {
         "timing": ["trend", "rsi_14"],
-        "role": ["vol_penalty_inv", "hedge_fit"],
+        "role": ["vol_realizada", "hedge_fit"],
         "projection": ["trend", "rsi_14"],
-        "investability": ["hedge_fit", "vol_penalty_inv"],
+        "investability": ["hedge_fit", "vol_realizada"],
         "forecast": ["rsi_14", "trend"]
       },
       "models": {
         "regime": "intl_equity_regime_v1 — IntlEquityRegimeScore",
-        "security": "intl_equity_security_v1 — trend + RSI + vol_inv + hedge_fit"
+        "security": "intl_equity_security_v2 — trend + RSI + inverted σ20 + UUP hedge fit"
       }
     },
     "em_equity": {

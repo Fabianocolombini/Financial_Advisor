@@ -89,12 +89,13 @@ motor/
 | `zscore_window` | Janela em dias (default 252) |
 | `direcao` | `positiva` (z alto = favorável) ou `negativa` |
 | `inverte_percentil` | `true` se o percentil alto deve corresponder ao **menor** valor bruto (Cash: vol realizada e |ΔMA50| z-score) |
+| `tipo_metrica` | `distancia_ao_alvo` quando a nota é proximidade a um alvo de classe (IG duration fit, TIPS real-yield fit, Intl currency exposure), não “mais alto / mais baixo” |
 
 ### Indicadores técnicos genéricos
 
 Definidos em `config/indicadores_tecnicos.json`. Calculados para cada ticker em `universo` — não repetir no JSON da aba.
 
-Cash usa `config/indicadores_tecnicos_cash.json` (sem RSI). Treasuries usa `config/indicadores_tecnicos_treasury.json` (tendência e RSI / duration, volume bruto, COT `inverte_percentil` + `cot_refresh: hold_last`). IG usa `config/indicadores_tecnicos_ig.json` (tendência e RSI / duration, volume bruto, duration fit vs term premium). HY usa `config/indicadores_tecnicos_hy.json` (tendência + RSI, volume bruto, σ20 `inverte_percentil`, lookback 20d). TIPS usa `config/indicadores_tecnicos_tips.json` (tendência e RSI / duration, volume bruto, real-yield fit vs DFII10; preço = close do ETF). Preferred usa `config/indicadores_tecnicos_preferred.json` (tendência + RSI, yield anti-trap, σ20 `inverte_percentil`). US Stocks usa `config/indicadores_tecnicos_us_equity.json` (tendência + RSI, volume em dólar, σ20 `inverte_percentil`). O SecurityScore ranqueia por percentil 0–1 na classe/dia; `inverte_percentil` deixa o sinal auditável.
+Cash usa `config/indicadores_tecnicos_cash.json` (sem RSI). Treasuries usa `config/indicadores_tecnicos_treasury.json` (tendência e RSI / duration, volume bruto, COT `inverte_percentil` + `cot_refresh: hold_last`). IG usa `config/indicadores_tecnicos_ig.json` (tendência e RSI / duration, volume bruto, duration fit vs term premium). HY usa `config/indicadores_tecnicos_hy.json` (tendência + RSI, volume bruto, σ20 `inverte_percentil`, lookback 20d). TIPS usa `config/indicadores_tecnicos_tips.json` (tendência e RSI / duration, volume bruto, real-yield fit vs DFII10; preço = close do ETF). Preferred usa `config/indicadores_tecnicos_preferred.json` (tendência + RSI, yield anti-trap, σ20 `inverte_percentil`). US Stocks usa `config/indicadores_tecnicos_us_equity.json` (tendência + RSI, volume em dólar, σ20 `inverte_percentil`). International Stocks usa `config/indicadores_tecnicos_intl_equity.json` (tendência + RSI, σ20 `inverte_percentil`, currency exposure `tipo_metrica: distancia_ao_alvo` vs UUP; close USD do ETF). O SecurityScore ranqueia por percentil 0–1 na classe/dia; `inverte_percentil` deixa o sinal auditável.
 
 ## Exemplo Taxas (seção 2)
 

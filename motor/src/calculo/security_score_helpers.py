@@ -53,11 +53,26 @@ def trend_percentile(raw: dict[str, dict[str, float]], ticker: str) -> float:
     return (p50.get(ticker.upper(), 0.5) + p200.get(ticker.upper(), 0.5)) / 2.0
 
 
-def rolling_beta(ticker: str, benchmark: str, window: int = 63) -> float:
+def rolling_beta(
+    ticker: str,
+    benchmark: str,
+    window: int = 63,
+    as_of: dt.date | None = None,
+) -> float:
     a = get_price_series(ticker)
     b = get_price_series(benchmark)
     if a.empty or b.empty:
         return 0.0
+    if as_of is not None:
+        cap = pd.Timestamp(as_of)
+        a = a.copy()
+        b = b.copy()
+        a.index = pd.DatetimeIndex(pd.to_datetime(a.index))
+        b.index = pd.DatetimeIndex(pd.to_datetime(b.index))
+        a = a.loc[a.index <= cap]
+        b = b.loc[b.index <= cap]
+        if a.empty or b.empty:
+            return 0.0
     combined = pd.concat([a.pct_change(), b.pct_change()], axis=1, join="inner").dropna()
     if len(combined) < window:
         return 0.0

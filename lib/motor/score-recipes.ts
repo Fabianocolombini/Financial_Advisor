@@ -237,13 +237,35 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "There is no valuation or quality ingredient (P/E, ROE) in this score: it is the technical selection layer inside the class. Fundamentals stay in USEquityRegimeScore (CAPE, earnings revision) or in a later pass. Percentiles are whole-universe, not sector- or size-neutral — the scored sleeve today is broad ETFs (SPY, QQQ, IWM, VOO).",
   },
   intl_equity: {
-    headline: "In international stocks the score includes how much the name depends on the dollar.",
+    headline:
+      "In international stocks the score ranks names on USD-listed ETF prices, then asks how close their dollar sensitivity is to the class target.",
     ingredients: [
-      { label: "Price trend", weight: 0.3, meaning: "price above the averages" },
-      { label: "Momentum (RSI)", weight: 0.2, meaning: "recent strength of the move" },
-      { label: "Stability", weight: 0.2, meaning: "less swing is better" },
-      { label: "Currency exposure", weight: 0.3, meaning: "dollar sensitivity close to the class target" },
+      {
+        label: "Price trend",
+        weight: 0.3,
+        meaning:
+          "price vs the 50- and 200-day averages of the USD ETF close — higher is better. There is no local-currency series for this sleeve (EFA, VEA, …)",
+      },
+      {
+        label: "Momentum (RSI)",
+        weight: 0.2,
+        meaning: "14-day RSI of the same USD close — higher is better: recent strength of the move",
+      },
+      {
+        label: "Stability (inverted 20-day vol)",
+        weight: 0.2,
+        meaning:
+          "how much the price swung in the last 20 sessions vs other international names that day — lower is better",
+      },
+      {
+        label: "Currency exposure (distance to target)",
+        weight: 0.3,
+        meaning:
+          "how close |beta vs UUP| sits to the class target (35th percentile of the sleeve that day). Closer is better in both directions — not “more dollar beta is better”",
+      },
     ],
+    note:
+      "Currency exposure is a regional/FX bucket, like duration fit in IG: two ETFs with the same dollar beta get the same fit. It does not pick issuers. USD prices do embed FX; converting a multi-country ETF by one FX rate would not isolate local performance, so that conversion is not used. No P/E or ROE in this layer.",
   },
   em_equity: {
     headline: "In emerging markets the score includes how much the name depends on China.",

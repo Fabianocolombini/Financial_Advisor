@@ -50,7 +50,7 @@ const CLASS_META: Record<
     title: "International model — two layers",
     scoreLabel: "IntlEquityRegimeScore",
     securityNote:
-      "SecurityScore: trend + RSI + inverse vol + hedge fit (UUP).",
+      "SecurityScore: trend and RSI (30/20) + inverted 20-day vol (20) + UUP hedge fit (30). USD ETF close; FX is the distance-to-target pillar.",
   },
   em_equity: {
     title: "Emerging Markets model — two layers",

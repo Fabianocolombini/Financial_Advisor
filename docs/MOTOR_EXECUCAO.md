@@ -94,6 +94,12 @@ Snapshot export: `allIndicators`, `scoreHistory`, `decisionMap` (após Motor Dai
 - Config: `motor/config/models/us_equity_regime.json`, `indicadores_tecnicos_us_equity.json`
 - Spec: `docs/spec-revisao-us-equity-security-score.md`
 
+**International Stocks (`intl_equity`) — modelos dedicados (v2):**
+- Modelo 1 `IntlEquityRegimeScore` — CAPE gap + USD fraco + OECD + rate diff — **sem mudança nesta revisão**
+- Modelo 2 `SecurityScore` v2 — tendência + RSI + σ20 invertida + hedge fit vs UUP (distância ao alvo); pesos 30/20/20/30. Close USD do ETF (sem série local). Currency Exposure é bucket regional/cambial, igual Duration Fit
+- Config: `motor/config/models/intl_equity_regime.json`, `indicadores_tecnicos_intl_equity.json`
+- Spec: `docs/spec-revisao-intl-equity-security-score.md`
+
 **Backlog 1B:** click em cada indicador → mini-chart; sparklines no snapshot para external-only series.
 
 ## Etapa 1 — Gestão de fontes (base)

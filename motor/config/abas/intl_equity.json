@@ -4,7 +4,7 @@
   "descricao": "IntlEquityRegimeScore + hedge_fit",
   "model": {
     "regime": "intl_equity_regime_v1",
-    "security": "intl_equity_security_v1",
+    "security": "intl_equity_security_v2",
     "calibrated": false
   },
   "pesos_camada": {
