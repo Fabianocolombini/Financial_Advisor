@@ -1,12 +1,12 @@
 {
   "indicadores": [
     {
-      "id": "volume_vs_media",
-      "nome": "Volume vs média",
+      "id": "volume_negociado",
+      "nome": "Volume negociado",
       "peso": 0.5,
       "direcao": "positiva",
       "inverte_percentil": false,
-      "role": "liquidez cross-sectional — percentil alto = melhor"
+      "role": "liquidez — percentil alto = maior volume bruto no dia"
     },
     {
       "id": "vol_realizada",
@@ -14,7 +14,7 @@
       "peso": 0.35,
       "direcao": "negativa",
       "inverte_percentil": true,
-      "role": "estabilidade cross-sectional — percentil alto = menor vol bruta"
+      "role": "estabilidade — percentil alto = menor vol bruta"
     },
     {
       "id": "preco_vs_mm50_z_abs",
@@ -30,5 +30,5 @@
   "vol_window": 20,
   "ma50_zscore_window": 50,
   "exclude_indicators": ["rsi_14", "preco_vs_mm200"],
-  "note": "Cash não usa RSI — NAV monotônico contamina momentum. SecurityScore: percentis 0–1 na classe/dia. Pesos Proposta A (50/35/15). Distância MA50 em z-score para não penalizar drift de yield. Vol lookback 20d (consistência com as outras classes)."
+  "note": "Cash Security Score v3 — Proposta A fechada: 50% volume bruto / 35% σ20 / 15% |ΔMA50| z-score. Sem RSI. Vol lookback 20d. Percentis 0–1 na classe/dia."
 }

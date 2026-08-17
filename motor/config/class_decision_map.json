@@ -34,15 +34,15 @@
         "forecast": ["yield_real_caixa", "spread_10y_2y", "fed_cut_probability"]
       },
       "tickerIndicators": {
-        "timing": ["volume_vs_media"],
+        "timing": ["volume_negociado"],
         "role": ["vol_realizada"],
         "projection": ["preco_vs_mm50_z_abs"],
-        "investability": ["volume_vs_media", "vol_realizada"],
+        "investability": ["volume_negociado", "vol_realizada"],
         "forecast": ["vol_realizada", "preco_vs_mm50_z_abs"]
       },
       "models": {
         "regime": "cash_regime_v1 — CashRegimeScore (quanto alocar)",
-        "security": "cash_security_v2 — SecurityScore cross-sectional (qual símbolo); MA50 em z-score"
+        "security": "cash_security_v3 — SecurityScore cross-sectional; volume bruto + MA50 z-score"
       }
     },
     "fi_treasury": {

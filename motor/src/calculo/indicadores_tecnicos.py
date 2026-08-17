@@ -57,8 +57,10 @@ def compute_for_ticker(ticker: str, benchmark: str, cfg: dict) -> dict[str, pd.S
         vdates = [dt.date.fromisoformat(r["data"]) for r in rows]
         volumes = pd.Series([float(r["volume"] or 0) for r in rows], index=vdates)
         vma = volumes.rolling(20).mean()
+        out["volume_negociado"] = volumes
         out["volume_vs_media"] = volumes / vma - 1.0
     else:
+        out["volume_negociado"] = pd.Series(dtype=float)
         out["volume_vs_media"] = pd.Series(dtype=float)
 
     if not bench.empty:

@@ -1,6 +1,6 @@
 {
   "calibrated": false,
-  "note": "Pesos w1/w2/w3 (regime) e wa/wb/wc (security) por julgamento — não calibrados contra histórico. Security Proposta A: 50% volume / 35% σ20 / 15% |ΔMA50| z-score. Regime Score não muda nesta revisão.",
+  "note": "Pesos w1/w2/w3 (regime) e wa/wb/wc (security) por julgamento — não calibrados contra histórico. Security Proposta A fechada: 50% volume bruto / 35% σ20 / 15% |ΔMA50| z-score. Regime Score não muda nesta revisão.",
   "regime_weights": {
     "w1": 0.5,
     "w2": 0.3,

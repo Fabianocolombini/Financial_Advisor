@@ -104,8 +104,12 @@
     "read": "Near 0 = typical. Around ±1 = a bit unusual. Beyond ±2 = a rare print. Direction (positive vs negative) follows the indicator’s own scale."
   },
   "volume_vs_media": {
-    "meaning": "Traded volume versus its recent average. In Cash it is the liquidity pillar of the Security Score (highest weight).",
-    "read": "Higher percentile vs peers = easier to enter and exit. A spike versus its own average can also mean unusual flow — read it as activity, not as a return forecast."
+    "meaning": "Traded volume versus its recent average — unusual activity, not how liquid the name is in absolute terms.",
+    "read": "A spike versus its own average can mean unusual flow. It is not the Cash Security Score liquidity pillar."
+  },
+  "volume_negociado": {
+    "meaning": "Raw traded volume on the snapshot day. In Cash this is the liquidity pillar of the Security Score (50%).",
+    "read": "Higher percentile vs peers = more volume that day = easier to enter and exit. The motor does not invert this percentile."
   },
   "vol_realizada": {
     "meaning": "Realized volatility over the last 20 sessions (standard deviation of daily returns).",

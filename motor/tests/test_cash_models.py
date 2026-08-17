@@ -104,8 +104,8 @@ def test_cash_security_prefers_liquid_stable_on_mean():
 
     def fake_tecnico(ticker: str, indicador_id: str) -> pd.Series:
         table = {
-            ("AAA", "volume_vs_media"): 1.0,
-            ("BBB", "volume_vs_media"): 0.0,
+            ("AAA", "volume_negociado"): 1.0,
+            ("BBB", "volume_negociado"): 0.0,
             ("AAA", "vol_realizada"): 0.01,
             ("BBB", "vol_realizada"): 0.05,
             ("AAA", "preco_vs_mm50_z_abs"): 0.2,
@@ -124,12 +124,12 @@ def test_cash_security_prefers_liquid_stable_on_mean():
 
     assert out["AAA"]["security_score"] == 1.0
     assert out["BBB"]["security_score"] == 0.0
-    assert out["AAA"]["model"] == "cash_security_v2"
+    assert out["AAA"]["model"] == "cash_security_v3"
     by_id = {c["id"]: c for c in out["AAA"]["componentes"]}
-    assert by_id["volume_vs_media"]["inverte_percentil"] is False
+    assert by_id["volume_negociado"]["inverte_percentil"] is False
     assert by_id["vol_realizada"]["inverte_percentil"] is True
     assert by_id["preco_vs_mm50_z_abs"]["inverte_percentil"] is True
-    assert by_id["volume_vs_media"]["peso"] == 0.5
+    assert by_id["volume_negociado"]["peso"] == 0.5
     assert by_id["vol_realizada"]["peso"] == 0.35
     assert by_id["preco_vs_mm50_z_abs"]["peso"] == 0.15
 

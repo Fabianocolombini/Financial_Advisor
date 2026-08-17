@@ -4,7 +4,7 @@
   "descricao": "T-bills e ultra-short — regime CashRegimeScore + seleção SecurityScore",
   "model": {
     "regime": "cash_regime_v1",
-    "security": "cash_security_v2",
+    "security": "cash_security_v3",
     "calibrated": false
   },
   "pesos_camada": {

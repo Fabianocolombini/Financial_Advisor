@@ -27,6 +27,7 @@
     { "id": "preco_vs_mm200", "fonte": "yfinance", "calculo": "price_vs_sma200" },
     { "id": "rsi_14", "fonte": "yfinance", "calculo": "rsi_14" },
     { "id": "volume_vs_media", "fonte": "yfinance", "calculo": "volume_vs_avg" },
+    { "id": "volume_negociado", "fonte": "yfinance", "calculo": "raw_traded_volume" },
     { "id": "vol_realizada", "fonte": "yfinance", "calculo": "realized_vol_20d" }
   ],
   "tickers_teste": {

@@ -10,13 +10,14 @@ import pandas as pd
 
 from motor.src.calculo.indicadores_tecnicos import get_tecnico_series, mm50_distance_zscore
 from motor.src.dates import motor_as_of_date
+from motor.src.db.connection import get_connection
 from motor.src.ingestao.yfinance_client import get_price_series
 from motor.src.paths import CONFIG_DIR
 
 _TECNICOS_PATH = CONFIG_DIR / "indicadores_tecnicos_cash.json"
 _CONFIG_PATH = CONFIG_DIR / "models" / "cash_regime.json"
 
-_VOLUME_ID = "volume_vs_media"
+_VOLUME_ID = "volume_negociado"
 _SIGMA_ID = "vol_realizada"
 _DELTA_ID = "preco_vs_mm50_z_abs"
 
@@ -105,6 +106,22 @@ def _security_estagio(score: float) -> str:
     return "Descendente"
 
 
+def _volume_series(ticker: str) -> pd.Series:
+    stored = get_tecnico_series(ticker, _VOLUME_ID)
+    if not stored.empty:
+        return stored
+    with get_connection() as conn:
+        rows = conn.execute(
+            "SELECT data, volume FROM price_daily WHERE ticker = ? ORDER BY data",
+            (ticker.upper(),),
+        ).fetchall()
+    if not rows:
+        return pd.Series(dtype=float)
+    dates = [dt.date.fromisoformat(r["data"]) for r in rows]
+    vals = [float(r["volume"] or 0) for r in rows]
+    return pd.Series(vals, index=dates)
+
+
 def _ma50_z_abs(ticker: str, as_of: dt.date) -> float:
     stored = _latest_at(get_tecnico_series(ticker, _DELTA_ID), as_of)
     if stored is not None:
@@ -140,7 +157,7 @@ def compute_cash_security_batch(
 
     for ticker in cs_universe:
         t = ticker.upper()
-        vol_s = get_tecnico_series(t, _VOLUME_ID)
+        vol_s = _volume_series(t)
         sigma_s = get_tecnico_series(t, _SIGMA_ID)
         raw_vol[t] = _latest_at(vol_s, as_of) or 0.0
         raw_sigma[t] = _latest_at(sigma_s, as_of) or 0.0
@@ -165,14 +182,14 @@ def compute_cash_security_batch(
         componentes = [
             {
                 "id": _VOLUME_ID,
-                "nome": "Volume vs média (Vol_rel)",
+                "nome": "Volume negociado",
                 "camada": "tecnico",
                 "valor": raw_vol.get(t),
                 "percentile_cs": vol_pct,
                 "peso": wa,
                 "inverte_percentil": invert_vol,
                 "contribuicao": c_vol,
-                "role": "liquidez — mais líquido vs pares cash",
+                "role": "liquidez — maior volume bruto vs pares cash",
             },
             {
                 "id": _SIGMA_ID,
@@ -203,7 +220,7 @@ def compute_cash_security_batch(
         explanation = [
             f"SecurityScore = {security_score:.3f} (ranking dentro do universo cash, não mistura com regime).",
             (
-                f"Liquidez: Vol_rel pct cross-sectional = {vol_pct:.0%} "
+                f"Liquidez: volume bruto pct cross-sectional = {vol_pct:.0%} "
                 f"(contrib {c_vol:.3f}, peso {wa:.0%})."
             ),
             (
@@ -225,7 +242,7 @@ def compute_cash_security_batch(
             "componentes": componentes,
             "indicador_dominante": dominant,
             "estagio": _security_estagio(security_score),
-            "model": "cash_security_v2",
+            "model": "cash_security_v3",
             "cross_sectional_universe_size": len(cs_universe),
             "explanation": explanation,
         }
@@ -235,6 +252,6 @@ def compute_cash_security_batch(
 def cash_security_explanation_note() -> str:
     return (
         "Modelo 2: percentis cross-sectional entre instrumentos cash no mesmo momento. "
-        "Volume 50% / σ20 35% / |ΔMA50| z-score 15%. "
+        "Volume bruto 50% / σ20 35% / |ΔMA50| z-score 15%. "
         "Não combina com CashRegimeScore (Modelo 1)."
     )
