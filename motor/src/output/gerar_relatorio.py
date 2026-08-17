@@ -161,7 +161,8 @@ def build_report_markdown(
         lines.append("## Modelo IG — Seleção (Modelo 2)")
         lines.append("")
         lines.append(
-            "- SecurityScore: tendência + RSI + volume + duration fit vs term premium."
+            "- SecurityScore v2: 30% tendência/duration + 20% RSI(retorno/duration) + 15% volume bruto + 35% duration fit (bucket vs term premium). "
+            "OAS de crédito fica no Regime Score — FRED não tem spread por ETF."
         )
         lines.append("")
     if is_hy_aba(aba_result["aba_id"]):

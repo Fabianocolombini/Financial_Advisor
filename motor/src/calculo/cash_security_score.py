@@ -60,17 +60,25 @@ def _load_security_weights() -> dict[str, float]:
 
 
 def _cross_sectional_percentile(values: dict[str, float]) -> dict[str, float]:
-    """Rank tickers at the same moment → percentile in [0, 1]."""
+    """Rank tickers at the same moment → percentile in [0, 1]. Ties share the average rank."""
     valid = {t: v for t, v in values.items() if v is not None and pd.notna(v)}
     if not valid:
         return {t: 0.5 for t in values}
     if len(valid) == 1:
         return {t: 0.5 for t in values}
-    sorted_items = sorted(valid.items(), key=lambda x: x[1])
+    grouped: dict[float, list[str]] = {}
+    for ticker, value in valid.items():
+        grouped.setdefault(value, []).append(ticker)
+    n = len(valid)
     ranks: dict[str, float] = {}
-    n = len(sorted_items)
-    for i, (ticker, _) in enumerate(sorted_items):
-        ranks[ticker] = i / (n - 1)
+    running = 0.0
+    for value in sorted(grouped):
+        names = grouped[value]
+        avg_rank = running + (len(names) - 1) / 2.0
+        share = avg_rank / (n - 1)
+        for ticker in names:
+            ranks[ticker] = share
+        running += len(names)
     for t in values:
         if t not in ranks:
             ranks[t] = 0.5

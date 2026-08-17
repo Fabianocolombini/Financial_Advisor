@@ -83,13 +83,35 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "COT is inverted (1 − crowding) and applied at class level — it does not rank one ETF against another. The Regime Score (flight-to-quality vs inflation shock) is a separate model and is not mixed into this rank.",
   },
   fi_ig: {
-    headline: "In investment-grade credit the score combines technicals with how duration fits the backdrop.",
+    headline:
+      "In investment-grade credit the score ranks names on duration-adjusted momentum and liquidity, plus whether that name’s duration band fits today’s term premium. Credit spreads live in the class Regime Score — FRED OAS is an index, not a per-ETF reading.",
     ingredients: [
-      { label: "Price trend", weight: 0.3, meaning: "price above the averages" },
-      { label: "Momentum (RSI)", weight: 0.2, meaning: "recent strength of the move" },
-      { label: "Traded volume", weight: 0.15, meaning: "more liquid is better" },
-      { label: "Duration fit", weight: 0.35, meaning: "duration suited to the current term premium" },
+      {
+        label: "Price trend / duration",
+        weight: 0.3,
+        meaning:
+          "price vs the 50- and 200-day averages, each divided by modified duration so a long corporate fund is not ranked higher just because it moves more for the same yield change",
+      },
+      {
+        label: "Momentum (RSI on return / duration)",
+        weight: 0.2,
+        meaning:
+          "14-day RSI of daily percent change divided by duration — strength per unit of rate risk. Kept because IG has genuine rate-reversal, like Treasuries",
+      },
+      {
+        label: "Traded volume",
+        weight: 0.15,
+        meaning: "raw shares traded that day vs peers — higher is better: you can enter and exit without moving the price",
+      },
+      {
+        label: "Duration fit vs term premium",
+        weight: 0.35,
+        meaning:
+          "by design a duration-band factor, not an issuer signal: names in the same maturity bucket get the same fit that day. High term premium favors longer duration; low term premium favors shorter",
+      },
     ],
+    note:
+      "Duration fit is 1 − |duration percentile − term-premium percentile|. OAS (BAMLC0A0CM) is the same number for every name, so it cannot rank LQD vs VCIT — that layer stays in IGRegimeScore.",
   },
   fi_hy: {
     headline: "In high yield the score rewards trend and penalizes volatility, which is the real risk of the class.",

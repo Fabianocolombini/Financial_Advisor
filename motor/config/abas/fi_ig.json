@@ -1,10 +1,10 @@
 {
   "id": "fi_ig",
   "nome": "Renda Fixa Corporativa IG",
-  "descricao": "Investment grade — IGRegimeScore + SecurityScore (duration fit)",
+  "descricao": "Investment grade — IGRegimeScore + SecurityScore v2 (tendência/RSI / duration + volume + duration fit)",
   "model": {
     "regime": "ig_regime_v1",
-    "security": "ig_security_v1",
+    "security": "ig_security_v2",
     "calibrated": false
   },
   "pesos_camada": {

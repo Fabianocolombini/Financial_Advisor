@@ -70,6 +70,14 @@ def test_cross_sectional_percentile_ranking():
     assert pct["B"] == 0.5
 
 
+def test_cross_sectional_percentile_ties_share_rank():
+    values = {"A": 10.0, "B": 20.0, "C": 20.0}
+    pct = _cross_sectional_percentile(values)
+    assert pct["A"] == 0.0
+    assert pct["B"] == pct["C"]
+    assert pct["B"] == 0.75
+
+
 def test_directed_percentile_inverts_raw_rank():
     values = {"A": 0.01, "B": 0.02, "C": 0.03}
     pct = _directed_percentile(values, invert=True)

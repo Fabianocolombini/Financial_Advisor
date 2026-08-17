@@ -20,7 +20,7 @@ const CLASS_META: Record<
     title: "IG Bonds model — two layers",
     scoreLabel: "IGRegimeScore",
     securityNote:
-      "SecurityScore: trend + RSI + volume + duration fit vs term premium.",
+      "SecurityScore: duration-adjusted trend and RSI (30/20) + traded volume (15) + duration fit vs term premium (35). Credit OAS stays in the regime layer.",
   },
   fi_hy: {
     title: "High Yield model — two layers",
@@ -168,6 +168,7 @@ export function SymbolClassRegimeModelPanel({
         . <strong className="text-zinc-300">Model 2 (security)</strong> ranks which
         instrument — scores do not mix.
       </p>
+      <p className="text-[10px] text-zinc-500">{meta.securityNote}</p>
       <div className="grid gap-2 sm:grid-cols-3">
         <div className="rounded border border-zinc-800 bg-black/40 p-3">
           <p className="text-[10px] uppercase tracking-wide text-zinc-500">{meta.scoreLabel}</p>

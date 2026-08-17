@@ -1,0 +1,38 @@
+{
+  "indicadores": [
+    {
+      "id": "preco_vs_mm50_dur",
+      "nome": "Tendência vs médias / duration",
+      "peso": 0.3,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "role": "price trend dividido pela duration modificada — percentil alto = mais acima das médias por unidade de risco de taxa"
+    },
+    {
+      "id": "rsi_14_dur",
+      "nome": "RSI 14d (retorno / duration)",
+      "peso": 0.2,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "role": "RSI sobre retorno diário / duration — percentil alto = momentum mais forte por unidade de duration"
+    },
+    {
+      "id": "volume_negociado",
+      "nome": "Volume negociado",
+      "peso": 0.15,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "role": "liquidez — percentil alto = maior volume bruto"
+    },
+    {
+      "id": "duration_efetiva",
+      "nome": "Duration fit vs term premium",
+      "peso": 0.35,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "fit": "1 - |P(duration) - P(term_premium)|",
+      "role": "bucket macro — mesma faixa de duration recebe o mesmo fit no dia; não é sinal idiossincrático do emissor"
+    }
+  ],
+  "note": "IG Security Score v2 — pesos 30/20/15/35. Trend e RSI / duration. Volume bruto. Duration fit é bucket vs term premium. Spread OAS fica no Regime Score (FRED não tem OAS por ETF)."
+}

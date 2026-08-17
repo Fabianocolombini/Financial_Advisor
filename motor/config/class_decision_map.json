@@ -76,15 +76,15 @@
         "forecast": ["ig_oas", "fed_cut_probability", "term_premium"]
       },
       "tickerIndicators": {
-        "timing": ["preco_vs_mm50", "rsi_14"],
+        "timing": ["preco_vs_mm50_dur", "rsi_14_dur"],
         "role": ["duration_efetiva", "preco_vs_mm200"],
-        "projection": ["preco_vs_mm50", "volume_vs_media"],
-        "investability": ["volume_vs_media", "duration_efetiva"],
-        "forecast": ["rsi_14", "duration_efetiva"]
+        "projection": ["preco_vs_mm50_dur", "volume_negociado"],
+        "investability": ["volume_negociado", "duration_efetiva"],
+        "forecast": ["rsi_14_dur", "duration_efetiva"]
       },
       "models": {
         "regime": "ig_regime_v1 — IGRegimeScore (quanto IG)",
-        "security": "ig_security_v1 — SecurityScore + duration fit"
+        "security": "ig_security_v2 — trend/RSI / duration + volume bruto + duration fit (bucket vs term premium)"
       }
     },
     "fi_hy": {

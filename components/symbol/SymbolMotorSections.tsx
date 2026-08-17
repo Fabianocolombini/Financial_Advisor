@@ -123,6 +123,13 @@ export function TickerMotorSection({ motor }: { motor: SymbolMotorContext }) {
           Ranks curve points on the same day — does not change TreasuryRegimeScore.
           RSI is kept because Treasuries have genuine rate-reversal cycles.
         </p>
+      ) : motor.classId === "fi_ig" ? (
+        <p className="text-[10px] text-zinc-500">
+          SecurityScore: 30% trend/duration + 20% RSI(return/duration) + 15% traded
+          volume + 35% duration fit vs term premium (same duration band, same fit).
+          Ranks IG names on the same day — does not change IGRegimeScore. Credit OAS
+          is a class index (FRED), so it stays in the regime layer.
+        </p>
       ) : null}
       <SymbolScoreHistoryChart
         title="Ticker composite score (history)"

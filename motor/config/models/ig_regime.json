@@ -1,6 +1,6 @@
 {
   "calibrated": false,
-  "note": "Pesos w1–w5 e wa–wd definidos por julgamento — não calibrados (`calibrated: false`).",
+  "note": "Pesos w1–w5 e wa–wd definidos por julgamento — não calibrados (`calibrated: false`). Security v2: 30/20/15/35 com trend e RSI / duration. Duration fit é bucket vs term premium. OAS fica no Regime Score.",
   "regime_weights": {
     "w1": 0.30,
     "w2": 0.20,

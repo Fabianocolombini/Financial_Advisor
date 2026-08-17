@@ -64,6 +64,12 @@ Snapshot export: `allIndicators`, `scoreHistory`, `decisionMap` (após Motor Dai
 - Config: `motor/config/models/treasury_regime.json`, `indicadores_tecnicos_treasury.json`, `treasury_duration_map.json`
 - Spec: `docs/spec-revisao-treasury-security-score.md`; term premium FRED `THREEFYTP10` (ACM não na API FRED)
 
+**IG Bonds (`fi_ig`) — modelos dedicados (v2):**
+- Modelo 1 `IGRegimeScore` — OAS + term premium + Fed + Δ spread 20d + BBB−AAA; credit-event cap — **sem mudança nesta revisão**
+- Modelo 2 `SecurityScore` v2 — tendência e RSI / duration + volume bruto + duration fit (bucket vs term premium); pesos 30/20/15/35. OAS por ETF não existe nas fontes grátis (FRED é índice de classe)
+- Config: `motor/config/models/ig_regime.json`, `indicadores_tecnicos_ig.json`, `ig_duration_map.json`
+- Spec: `docs/spec-revisao-ig-security-score.md`
+
 **Backlog 1B:** click em cada indicador → mini-chart; sparklines no snapshot para external-only series.
 
 ## Etapa 1 — Gestão de fontes (base)

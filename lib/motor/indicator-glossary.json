@@ -108,7 +108,7 @@
     "read": "A spike versus its own average can mean unusual flow. It is not the Cash Security Score liquidity pillar."
   },
   "volume_negociado": {
-    "meaning": "Raw traded volume on the snapshot day. Liquidity pillar of the Security Score in Cash (50%) and Treasuries (20%).",
+    "meaning": "Raw traded volume on the snapshot day. Liquidity pillar of the Security Score in Cash (50%), Treasuries (20%), and IG (15%).",
     "read": "Higher percentile vs peers = more volume that day = easier to enter and exit. The motor does not invert this percentile."
   },
   "vol_realizada": {
@@ -136,8 +136,8 @@
     "read": "Higher yield can mean more income or a cheaper (fallen) price. The motor ranks it versus peers; a yield that jumps only because price collapsed is not a quality upgrade."
   },
   "duration_efetiva": {
-    "meaning": "Effective duration: how much the bond-like name’s price tends to move when yields move 1%.",
-    "read": "Higher duration = more sensitivity to rate moves. The motor scores whether that duration fits the current term-premium / real-yield regime — not “higher is better”."
+    "meaning": "Effective duration: how much the bond-like name’s price tends to move when yields move 1%. In IG this is scored as a duration-band fit vs today’s term premium, not “higher is better”.",
+    "read": "Names in the same maturity bucket get the same fit that day — it is not an issuer-quality signal. High term premium favors the long bucket; low term premium favors the short bucket."
   },
   "cot_net_position": {
     "meaning": "Weekly CFTC Commitments of Traders: net speculative positioning in Treasury futures (crowding).",
@@ -145,11 +145,11 @@
   },
   "preco_vs_mm50_dur": {
     "meaning": "Price vs its 50-day average, divided by the ETF’s modified duration so a long bond is not scored as stronger momentum just because it moves more for the same yield change.",
-    "read": "Compared across Treasuries on the same day. Higher percentile = stronger duration-adjusted uptrend (rate-risk-adjusted, not raw price gap)."
+    "read": "Compared across Treasuries or IG on the same day. Higher percentile = stronger duration-adjusted uptrend (rate-risk-adjusted, not raw price gap)."
   },
   "rsi_14_dur": {
     "meaning": "14-day RSI computed on daily percent change divided by modified duration — momentum in yield space, not raw price RSI.",
-    "read": "Higher percentile = stronger duration-adjusted momentum. Unlike Cash, Treasuries keep RSI because the curve has genuine rate-reversal cycles."
+    "read": "Higher percentile = stronger duration-adjusted momentum. Unlike Cash, Treasuries and IG keep RSI because those sleeves have genuine rate-reversal cycles."
   },
   "nav_discount": {
     "meaning": "Price versus the fund’s net asset value (NAV). A discount means the market price is below the portfolio’s book.",
@@ -245,7 +245,7 @@
   },
   "ig_oas": {
     "meaning": "Investment-grade option-adjusted spread — extra yield of IG corporates over Treasuries.",
-    "read": "Wider OAS = credit is cheaper / more stressed (better entry if you want IG). Tight OAS = little compensation for default risk. A sudden widening is a risk-off signal."
+    "read": "Wider OAS = credit is cheaper / more stressed (better entry if you want IG). Tight OAS = little compensation for default risk. A sudden widening is a risk-off signal. This is a class index (ICE BofA via FRED), so it feeds IGRegimeScore — it cannot rank one IG ETF against another."
   },
   "delta_ig_spread_20d": {
     "meaning": "20-day change in the IG credit spread.",

@@ -1,5 +1,5 @@
 {
-  "note": "Effective duration (years) — static approximations; yfinance does not expose cleanly.",
+  "note": "Effective duration (years) — static approximations; yfinance does not expose cleanly. Used as a duration-band fit vs term premium and to scale trend/RSI.",
   "default": 6.0,
   "tickers": {
     "LQD": 8.4,
