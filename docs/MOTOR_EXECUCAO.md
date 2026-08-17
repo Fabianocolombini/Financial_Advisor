@@ -118,6 +118,12 @@ Snapshot export: `allIndicators`, `scoreHistory`, `decisionMap` (após Motor Dai
 - Config: `motor/config/models/commodities_precious_regime.json`, `indicadores_tecnicos_commodities_precious.json`
 - Spec: `docs/spec-revisao-precious-security-score.md`
 
+**Energy (`commodities_energy`) — modelos dedicados (v2):**
+- Modelo 1 `EnergyRegimeScore` — curva / estoques / rigs / WTI spot / COT crowding — **sem mudança nesta revisão**
+- Modelo 2 `SecurityScore` v2 — tendência e RSI / \|β vs USO\| + volume em dólar + oil fit (distância ao alvo 0.70); pesos 35/20/20/25. Benchmark = USO (WTI), não Brent. Estoques/COT/rigs ficam no Regime
+- Config: `motor/config/models/commodities_energy_regime.json`, `indicadores_tecnicos_commodities_energy.json`
+- Spec: `docs/spec-revisao-energy-security-score.md`
+
 **Backlog 1B:** click em cada indicador → mini-chart; sparklines no snapshot para external-only series.
 
 ## Etapa 1 — Gestão de fontes (base)

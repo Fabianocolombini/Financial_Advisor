@@ -74,7 +74,7 @@ const CLASS_META: Record<
     title: "Energy model — two layers",
     scoreLabel: "EnergyRegimeScore",
     securityNote:
-      "SecurityScore: trend + RSI + volume + beta fit vs USO.",
+      "SecurityScore: oil-beta-adjusted trend and RSI (35/20) + dollar volume (20) + USO distance fit (25). Inventories/COT stay in the regime layer.",
   },
   energy_mlp: {
     title: "MLP model — two layers",

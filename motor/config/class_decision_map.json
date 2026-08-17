@@ -265,15 +265,15 @@
         "forecast": ["crowding", "curve_backwardation"]
       },
       "tickerIndicators": {
-        "timing": ["trend", "rsi_14"],
-        "role": ["beta_fit", "volume_vs_media"],
-        "projection": ["trend", "volume_vs_media"],
-        "investability": ["volume_vs_media", "beta_fit"],
-        "forecast": ["rsi_14", "beta_fit"]
+        "timing": ["preco_vs_mm50_oil", "rsi_14_oil"],
+        "role": ["beta_fit", "volume_dolar"],
+        "projection": ["preco_vs_mm50_oil", "rsi_14_oil"],
+        "investability": ["volume_dolar", "beta_fit"],
+        "forecast": ["rsi_14_oil", "beta_fit"]
       },
       "models": {
         "regime": "commodities_energy_regime_v1 — EnergyRegimeScore",
-        "security": "commodities_energy_security_v1 — trend + RSI + volume + beta_fit"
+        "security": "commodities_energy_security_v2 — trend/RSI / |β_USO| + dollar volume + oil distance fit"
       }
     },
     "energy_mlp": {

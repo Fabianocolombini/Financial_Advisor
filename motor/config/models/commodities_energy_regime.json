@@ -1,6 +1,6 @@
 {
   "calibrated": false,
-  "note": "Pesos definidos por julgamento — não calibrados (`calibrated: false`).",
+  "note": "Pesos w1–w5 (regime) e wa/wb/wc/wd (security) por julgamento — não calibrados. Security v2: 35/20/20/25 tendência/RSI / |β_USO|, volume dólar, oil fit distância ao alvo 0.70. Estoques/COT/rigs ficam no Regime. Benchmark = USO (WTI). Regime Score não muda nesta revisão.",
   "regime_weights": {
     "w1": 0.3,
     "w2": 0.25,

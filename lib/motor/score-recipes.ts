@@ -369,13 +369,36 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "CFTC gold COT and GLD holdings already sit in PreciousRegimeScore. On a given day they are the same number for every name, so putting them in this score would not change the rank. Trend and RSI stay at 35/25: metals do trend, and the overlap is accepted rather than reweighted.",
   },
   commodities_energy: {
-    headline: "In energy the score includes how closely the name tracks oil.",
+    headline:
+      "In energy the score ranks names after stripping oil-beta from the technicals, then asks whether that oil sensitivity sits near the class target. USO is the WTI proxy — not Brent.",
     ingredients: [
-      { label: "Price trend", weight: 0.35, meaning: "price above the averages" },
-      { label: "Momentum (RSI)", weight: 0.2, meaning: "recent strength of the move" },
-      { label: "Traded volume", weight: 0.2, meaning: "more liquid is better" },
-      { label: "Oil adherence", weight: 0.25, meaning: "oil sensitivity close to the class target" },
+      {
+        label: "Price trend / oil beta",
+        weight: 0.35,
+        meaning:
+          "price vs the 50- and 200-day averages, divided by max(|beta vs USO|, 0.25) — higher is better per unit of oil sensitivity. Stops E&P from winning just because oil moved",
+      },
+      {
+        label: "Momentum (RSI) / oil beta",
+        weight: 0.2,
+        meaning:
+          "RSI on daily return divided by the same oil-beta scale — higher is better per unit of sensitivity",
+      },
+      {
+        label: "Dollar volume",
+        weight: 0.2,
+        meaning:
+          "price × shares traded that day vs peers — higher is better. Share count would favor cheap tickers like UNG",
+      },
+      {
+        label: "Oil adherence",
+        weight: 0.25,
+        meaning:
+          "distance of beta vs USO to the class target (70th percentile that day). Closer is better in both directions — a subsector bucket, not an issuer signal",
+      },
     ],
+    note:
+      "Inventories, rigs, and WTI COT already sit in EnergyRegimeScore and are the same for every name that day. Trend and RSI stay at 35/20. Two names with the same USO beta get the same oil-adherence grade.",
   },
   energy_mlp: {
     headline: "In energy MLPs the score weights income and trend, discounting swing.",

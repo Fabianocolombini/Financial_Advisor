@@ -1,0 +1,43 @@
+{
+  "indicadores": [
+    {
+      "id": "preco_vs_mm50_oil",
+      "nome": "Tendência vs médias / |β_óleo|",
+      "peso": 0.35,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "role": "price trend dividido por max(|β vs USO|, 0.25) — percentil alto = mais acima das médias por unidade de beta ao petróleo"
+    },
+    {
+      "id": "rsi_14_oil",
+      "nome": "RSI 14d (retorno / |β_óleo|)",
+      "peso": 0.2,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "role": "RSI sobre retorno diário / max(|β vs USO|, 0.25) — percentil alto = momentum mais forte por unidade de beta"
+    },
+    {
+      "id": "volume_dolar",
+      "nome": "Volume em dólar",
+      "peso": 0.2,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "role": "liquidez — percentil alto = maior close × volume em ações (não cotas)"
+    },
+    {
+      "id": "beta_fit",
+      "nome": "Oil adherence (fit vs USO)",
+      "peso": 0.25,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "tipo_metrica": "distancia_ao_alvo",
+      "fit": "1 - |P(beta_USO) - alvo_percentil|",
+      "alvo_percentil": 0.7,
+      "benchmark": "USO",
+      "role": "bucket de subsetor — mesma β vs USO, mesmo fit no dia; não é sinal do emissor. Beta com sinal (UNG na ponta baixa)"
+    }
+  ],
+  "alvo_percentil": 0.7,
+  "beta_floor": 0.25,
+  "note": "Energy Security Score v2 — pesos 35/20/20/25. Trend e RSI / |β_USO|. Volume em dólar. Oil adherence = distância ao alvo 0.70, fator de bucket. Sem 5º ingrediente (EIA/COT/rigs já no Regime). Benchmark = USO (WTI), não Brent."
+}

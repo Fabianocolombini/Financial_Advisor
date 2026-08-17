@@ -188,6 +188,13 @@ export function TickerMotorSection({ motor }: { motor: SymbolMotorContext }) {
           they are the same for every name that day and do not change the rank.
           Ranks metal funds on the same day.
         </p>
+      ) : motor.classId === "commodities_energy" ? (
+        <p className="text-[10px] text-zinc-500">
+          SecurityScore: 35% trend / |oil-beta| + 20% RSI / |oil-beta| + 20%
+          dollar volume + 25% oil-adherence fit vs USO (closer to the class
+          target is better). Inventories, rigs, and WTI COT stay in
+          EnergyRegimeScore. Ranks energy names on the same day.
+        </p>
       ) : null}
       <SymbolScoreHistoryChart
         title="Ticker composite score (history)"

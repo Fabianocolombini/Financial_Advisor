@@ -112,7 +112,7 @@
     "read": "Higher percentile vs peers = more volume that day = easier to enter and exit. The motor does not invert this percentile. US Stocks use dollar volume instead."
   },
   "volume_dolar": {
-    "meaning": "Dollar volume on the snapshot day: last close × shares traded. Liquidity pillar of the US Stocks (20%), Emerging Markets (20%), REITs (20%), and Precious Metals (25%) Security Scores.",
+    "meaning": "Dollar volume on the snapshot day: last close × shares traded. Liquidity pillar of the US Stocks (20%), Emerging Markets (20%), REITs (20%), Precious Metals (25%), and Energy (20%) Security Scores.",
     "read": "Higher percentile vs peers = more dollars changed hands = easier to enter and exit. Share count would favor cheap names; this does not. The motor does not invert this percentile."
   },
   "vol_realizada": {
@@ -159,6 +159,14 @@
     "meaning": "14-day RSI computed on daily percent change divided by modified duration — momentum in yield space, not raw price RSI.",
     "read": "Higher percentile = stronger duration-adjusted momentum. Unlike Cash, Treasuries, IG, and TIPS keep RSI because those sleeves have genuine rate-reversal cycles."
   },
+  "preco_vs_mm50_oil": {
+    "meaning": "Price vs its 50-day average, divided by max(|beta vs USO|, 0.25) so a high-beta E&P is not scored as stronger trend just because oil moved.",
+    "read": "Compared across Energy names on the same day. Higher percentile = stronger oil-beta-adjusted uptrend. Natural-gas names with tiny oil beta are floored at 0.25 so the ratio does not explode."
+  },
+  "rsi_14_oil": {
+    "meaning": "14-day RSI computed on daily percent change divided by max(|beta vs USO|, 0.25) — momentum per unit of oil sensitivity.",
+    "read": "RSI is scale-invariant on a single name; the oil-beta bias is fixed mostly on the trend pillar. Kept for consistency with duration-adjusted RSI in Treasuries/IG/TIPS."
+  },
   "nav_discount": {
     "meaning": "Price versus the fund’s net asset value (NAV). A discount means the market price is below the portfolio’s book.",
     "read": "A wider discount can be a cheaper entry if NAV is honest. A persistent discount can also mean the market does not trust the assets. The motor ranks a larger discount as more attractive, with a proxy flag."
@@ -180,8 +188,8 @@
     "read": "Closer to the target is better in both directions — not more dollar beta, not less. Two ETFs with the same |beta| get the same fit: this is a regional/FX bucket, not an issuer signal. USD-weak/strong stays in IntlEquityRegimeScore."
   },
   "beta_fit": {
-    "meaning": "How closely the name moves with the sleeve’s benchmark (for energy, typically USO / oil).",
-    "read": "High beta fit = you are actually buying the commodity factor. Low fit = the ticker is a noisy or diluted proxy."
+    "meaning": "Distance of signed beta vs USO to the Energy class target (70th percentile of the sleeve that day). Fit = 1 − |P(β) − 0.70|. USO is the WTI proxy.",
+    "read": "Closer to the target is better in both directions — not more oil beta. Two ETFs with the same USO beta get the same fit: this is a subsector bucket (E&P vs integrated vs gas), not an issuer signal. Inventories, rigs, and WTI COT stay in EnergyRegimeScore."
   },
   "china_fit": {
     "meaning": "Distance of beta vs FXI to the Emerging Markets class target (60th percentile of the sleeve that day). Fit = 1 − |P(β) − 0.60|. Beta is signed, not absolute.",

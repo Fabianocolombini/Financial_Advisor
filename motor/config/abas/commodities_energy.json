@@ -1,10 +1,10 @@
 {
   "id": "commodities_energy",
   "nome": "Commodities — energia",
-  "descricao": "EnergyRegimeScore + beta_fit",
+  "descricao": "EnergyRegimeScore + SecurityScore v2 (tendência/RSI / |β_óleo| + volume dólar + oil fit vs USO)",
   "model": {
     "regime": "commodities_energy_regime_v1",
-    "security": "commodities_energy_security_v1",
+    "security": "commodities_energy_security_v2",
     "calibrated": false
   },
   "pesos_camada": {

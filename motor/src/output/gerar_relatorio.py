@@ -9,6 +9,7 @@ from typing import Any
 from motor.src.config_loader import (
     is_cash_aba,
     is_class_model_aba,
+    is_commodities_energy_aba,
     is_commodities_precious_aba,
     is_em_equity_aba,
     is_hy_aba,
@@ -436,6 +437,34 @@ def build_report_markdown(
             "COT ouro e holdings GLD ficam no Regime — constantes no dia, não mudam o ranking."
         )
         lines.append("")
+    if is_commodities_energy_aba(aba_result["aba_id"]):
+        lines.append("## Modelo Energy — Regime (Modelo 1)")
+        lines.append("")
+        try:
+            from motor.src.calculo.models.commodities_energy_regime_model import (
+                compute_commodities_energy_regime,
+            )
+
+            regime = compute_commodities_energy_regime()
+            lines.append(
+                f"- EnergyRegimeScore: **{_fmt(regime.get('commodities_energy_regime_score'))}** "
+                f"→ ação **{regime.get('regime_action')}** (quanto energia)"
+            )
+            for note in regime.get("explanation", []):
+                lines.append(f"- {note.replace('**', '')}")
+            if not regime.get("calibrated"):
+                lines.append("- ⚠ Pesos não calibrados (`calibrated: false`).")
+        except Exception as e:
+            lines.append(f"- Erro regime Energy: {e}")
+        lines.append("")
+        lines.append("## Modelo Energy — Seleção (Modelo 2)")
+        lines.append("")
+        lines.append(
+            "- SecurityScore v2: 35% tendência/|β_USO| + 20% RSI(retorno/|β|) + 20% volume em dólar "
+            "+ 25% oil fit vs USO (distância ao alvo 0.70, bucket de subsetor). "
+            "Estoques/COT/rigs ficam no Regime. Benchmark = USO (WTI), não Brent."
+        )
+        lines.append("")
     _LEGACY_CLASS_REPORTS = {
         is_cash_aba,
         is_treasury_aba,
@@ -448,6 +477,7 @@ def build_report_markdown(
         is_em_equity_aba,
         is_reits_aba,
         is_commodities_precious_aba,
+        is_commodities_energy_aba,
     }
     if is_class_model_aba(aba_result["aba_id"]) and not any(
         fn(aba_result["aba_id"]) for fn in _LEGACY_CLASS_REPORTS
