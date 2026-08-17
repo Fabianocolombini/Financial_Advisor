@@ -8,7 +8,7 @@ const CLASS_META: Record<
     title: "Cash model — two layers",
     scoreLabel: "CashRegimeScore",
     securityNote:
-      "SecurityScore: cross-sectional percentiles (liquidity, 20d vol, |MA50| z-score). No RSI.",
+      "SecurityScore: 50% traded volume + 35% 20-day vol (lower is better) + 15% |MA50| z-score (smaller gap is better). No RSI.",
   },
   fi_treasury: {
     title: "Treasuries model — two layers",

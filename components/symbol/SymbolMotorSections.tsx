@@ -105,8 +105,9 @@ export function TickerMotorSection({ motor }: { motor: SymbolMotorContext }) {
       <MotorIndicatorsTable indicators={motor.tickerIndicators} title="SecurityScore drivers (no RSI)" />
       {motor.classId === "cash_equivalents" ? (
         <p className="text-[10px] text-zinc-500">
-          SecurityScore: cross-sectional percentiles (liquidity + 20d vol + |MA50| z-score).
-          Ranks cash instruments at the same moment — does not change CashRegimeScore.
+          SecurityScore: 50% traded volume + 35% 20-day vol (inverted) + 15% |MA50|
+          z-score (inverted). Ranks cash instruments on the same day — does not change
+          CashRegimeScore. RSI is excluded so yield drift is not read as momentum.
         </p>
       ) : motor.classId === "fi_treasury" ? (
         <p className="text-[10px] text-zinc-500">

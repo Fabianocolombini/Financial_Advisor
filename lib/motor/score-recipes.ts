@@ -27,11 +27,26 @@ export type ScoreRecipe = {
 const RECIPES: Record<string, ScoreRecipe> = {
   cash_equivalents: {
     headline:
-      "In cash the score measures which name holds money better — not which will yield more.",
+      "In cash the score measures which name holds money better — not which will yield more. RSI is left out on purpose: a slow upward drift from accrued yield is not momentum.",
     ingredients: [
-      { label: "Traded volume", weight: 0.4, meaning: "more liquid is better: you can enter and exit without cost" },
-      { label: "20-day volatility", weight: 0.35, meaning: "less swing is better: cash should not bounce around" },
-      { label: "Distance from the 50-day average", weight: 0.25, meaning: "the closer to the average, the better: a stretched price is an anomaly" },
+      {
+        label: "Traded volume",
+        weight: 0.5,
+        meaning:
+          "raw shares traded that day vs peers — higher is better: you can enter and exit without moving the price",
+      },
+      {
+        label: "20-day volatility",
+        weight: 0.35,
+        meaning:
+          "how much the price swung in the last 20 sessions — lower is better: cash should not bounce around",
+      },
+      {
+        label: "Distance from the 50-day average (z-score)",
+        weight: 0.15,
+        meaning:
+          "gap vs the 50-day average, divided by that name's own 50-day price noise — a small gap is better. A fund that is simply drifting up with yield is not penalized; a real dislocation is",
+      },
     ],
   },
   fi_treasury: {

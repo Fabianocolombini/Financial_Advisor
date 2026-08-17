@@ -84,7 +84,7 @@ def build_report_markdown(
         lines.append("## Modelo Cash — Seleção (Modelo 2)")
         lines.append("")
         lines.append(
-            "- SecurityScore: percentis cross-sectional (liquidez, σ20, |Δ50|). "
+            "- SecurityScore: 50% volume bruto + 35% σ20 invertida + 15% |ΔMA50| z-score invertido. "
             "RSI excluído — NAV monotônico distorce momentum em ETFs cash/CLO."
         )
         lines.append("")
