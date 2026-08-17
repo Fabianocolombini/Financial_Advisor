@@ -14,6 +14,7 @@ from motor.src.config_loader import (
     is_ig_aba,
     is_intl_equity_aba,
     is_preferred_aba,
+    is_reits_aba,
     is_tips_aba,
     is_treasury_aba,
     is_us_equity_aba,
@@ -381,6 +382,32 @@ def build_report_markdown(
             "(distância ao alvo de β, bucket estrutural). Sem σ20 neste sleeve. FX fica no Regime Score."
         )
         lines.append("")
+    if is_reits_aba(aba_result["aba_id"]):
+        lines.append("## Modelo REITs — Regime (Modelo 1)")
+        lines.append("")
+        try:
+            from motor.src.calculo.models.reits_regime_model import compute_reits_regime
+
+            regime = compute_reits_regime()
+            lines.append(
+                f"- REITsRegimeScore: **{_fmt(regime.get('reits_regime_score'))}** "
+                f"→ ação **{regime.get('regime_action')}** (quanto REITs)"
+            )
+            for note in regime.get("explanation", []):
+                lines.append(f"- {note.replace('**', '')}")
+            if not regime.get("calibrated"):
+                lines.append("- ⚠ Pesos não calibrados (`calibrated: false`).")
+        except Exception as e:
+            lines.append(f"- Erro regime REITs: {e}")
+        lines.append("")
+        lines.append("## Modelo REITs — Seleção (Modelo 2)")
+        lines.append("")
+        lines.append(
+            "- SecurityScore v2: 30% tendência (close, não total return) + 35% yield anti-trap "
+            "+ 20% volume em dólar + 15% σ20 invertida. Sem RSI. "
+            "DGS10 é constante no dia — spread vs Treasury 10y fica no Regime (nareit_spread)."
+        )
+        lines.append("")
     _LEGACY_CLASS_REPORTS = {
         is_cash_aba,
         is_treasury_aba,
@@ -391,6 +418,7 @@ def build_report_markdown(
         is_us_equity_aba,
         is_intl_equity_aba,
         is_em_equity_aba,
+        is_reits_aba,
     }
     if is_class_model_aba(aba_result["aba_id"]) and not any(
         fn(aba_result["aba_id"]) for fn in _LEGACY_CLASS_REPORTS

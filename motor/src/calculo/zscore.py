@@ -43,7 +43,9 @@ def zscore_latest(series: pd.Series, window_years: float = 1.0) -> float | None:
     latest = float(tail.iloc[-1])
     mean = float(tail.mean())
     std = float(tail.std())
-    if std == 0 or not np.isfinite(std):
+    # Constant (or float-noise-constant) series: treat as z = None, not 1/ε.
+    eps = max(1e-12, abs(mean) * 1e-9)
+    if not np.isfinite(std) or std <= eps:
         return None
     return float((latest - mean) / std)
 

@@ -298,13 +298,36 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "There is no 20-day vol pillar: this sleeve is broad EM ETFs, so swing is a class property already in EMEquityRegimeScore (VIX + DXY stress). There is no FX pillar in this layer either: the names are USD vehicles, and dollar strength already sits in the regime score. China exposure is a structural bucket — two ETFs with the same FXI beta get the same fit.",
   },
   reits: {
-    headline: "In REITs the score weights income and trend, discounting swing.",
+    headline:
+      "In REITs the score is bond-plus-equity: price trend on the share price, income after a crash haircut, dollar liquidity, and a small penalty for names that swing more than peers. RSI is left out on purpose.",
     ingredients: [
-      { label: "Price trend", weight: 0.3, meaning: "price above the averages" },
-      { label: "Dividend yield", weight: 0.25, meaning: "income distributed vs peers" },
-      { label: "Traded volume", weight: 0.25, meaning: "more liquid is better" },
-      { label: "20-day volatility", weight: 0.2, meaning: "a discount for names that swing more" },
+      {
+        label: "Price trend",
+        weight: 0.3,
+        meaning:
+          "price vs the 50- and 200-day averages of the ETF close (price return, not total return) — higher is better. Dividends are not mixed into this pillar",
+      },
+      {
+        label: "Dividend yield (anti-trap)",
+        weight: 0.35,
+        meaning:
+          "income vs other REITs that day, after y / (1 + max(z, 0)) where z is the yield’s own 252-day z-score. A crash that inflates yield is not extra carry",
+      },
+      {
+        label: "Dollar volume",
+        weight: 0.2,
+        meaning:
+          "price × shares traded that day vs peers — higher is better. The sleeve mixes large and small REIT ETFs",
+      },
+      {
+        label: "20-day volatility (inverted)",
+        weight: 0.15,
+        meaning:
+          "how much the price swung in the last 20 sessions vs other REITs that day — lower is better",
+      },
     ],
+    note:
+      "Subtracting the 10-year Treasury yield (DGS10) does not change the rank inside the class: it is the same number for every name that day. REIT vs Treasury 10y lives in REITsRegimeScore (Nareit spread). There is no RSI: trend alone is the equity-like vote, so the formula does not double-count momentum.",
   },
   credito_alternativo: {
     headline: "In alternative credit the score looks at the discount to net asset value.",
@@ -371,5 +394,7 @@ const RECIPES: Record<string, ScoreRecipe> = {
 };
 
 export function scoreRecipeFor(classId: string): ScoreRecipe | null {
-  return RECIPES[classId] ?? null;
+  const aliases: Record<string, string> = { real_estate: "reits" };
+  const key = aliases[classId] ?? classId;
+  return RECIPES[key] ?? null;
 }

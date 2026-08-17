@@ -22,9 +22,9 @@
   },
   "security_weights": {
     "wa": 0.3,
-    "wb": 0.25,
-    "wc": 0.25,
-    "wd": 0.2
+    "wb": 0.35,
+    "wc": 0.2,
+    "wd": 0.15
   },
   "delta_spread_days": 20
 }

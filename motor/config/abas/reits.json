@@ -4,7 +4,7 @@
   "descricao": "REITsRegimeScore + yield/vol",
   "model": {
     "regime": "reits_regime_v1",
-    "security": "reits_security_v1",
+    "security": "reits_security_v2",
     "calibrated": false
   },
   "pesos_camada": {

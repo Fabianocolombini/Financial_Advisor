@@ -62,7 +62,7 @@ const CLASS_META: Record<
     title: "REITs model — two layers",
     scoreLabel: "REITsRegimeScore",
     securityNote:
-      "SecurityScore: trend + yield + volume − vol (no RSI).",
+      "SecurityScore: trend (30, price return) + trap-adjusted dividend yield (35) + dollar volume (20) + inverted 20-day vol (15). No RSI. DGS10 does not change the rank.",
   },
   commodities_precious: {
     title: "Precious Metals model — two layers",

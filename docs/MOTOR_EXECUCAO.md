@@ -106,6 +106,12 @@ Snapshot export: `allIndicators`, `scoreHistory`, `decisionMap` (após Motor Dai
 - Config: `motor/config/models/em_equity_regime.json`, `indicadores_tecnicos_em_equity.json`
 - Spec: `docs/spec-revisao-em-equity-security-score.md`
 
+**REITs (`reits` / UI `real_estate`) — modelos dedicados (v2):**
+- Modelo 1 `REITsRegimeScore` — Nareit spread vs 10y + yield real + valuation + Δ spread + refi — **sem mudança nesta revisão**
+- Modelo 2 `SecurityScore` v2 — tendência (close, não total return) + yield anti-trap + volume em dólar + σ20 invertida; pesos 30/35/20/15. Sem RSI. DGS10 não altera o ranking (constante no dia; spread vs Treasury fica no Regime)
+- Config: `motor/config/models/reits_regime.json`, `indicadores_tecnicos_reits.json`
+- Spec: `docs/spec-revisao-reits-security-score.md`
+
 **Backlog 1B:** click em cada indicador → mini-chart; sparklines no snapshot para external-only series.
 
 ## Etapa 1 — Gestão de fontes (base)

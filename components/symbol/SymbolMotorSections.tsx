@@ -173,6 +173,14 @@ export function TickerMotorSection({ motor }: { motor: SymbolMotorContext }) {
           pillar: swing is a class property in EMEquityRegimeScore. Ranks EM
           names on the same day — does not change the regime score.
         </p>
+      ) : motor.classId === "real_estate" || motor.classId === "reits" ? (
+        <p className="text-[10px] text-zinc-500">
+          SecurityScore: 30% trend on the ETF close (not total return) + 35%
+          dividend yield after a crash haircut + 20% dollar volume + 15% inverted
+          20-day vol. No RSI. Minus the 10-year Treasury does not change the
+          rank — that comparison is in REITsRegimeScore. Ranks REIT names on the
+          same day.
+        </p>
       ) : null}
       <SymbolScoreHistoryChart
         title="Ticker composite score (history)"
