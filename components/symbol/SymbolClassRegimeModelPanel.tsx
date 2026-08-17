@@ -80,7 +80,7 @@ const CLASS_META: Record<
     title: "MLP model — two layers",
     scoreLabel: "MLPRegimeScore",
     securityNote:
-      "SecurityScore: trend + yield + volume − vol penalty.",
+      "SecurityScore: trend (30, price return) + trap-adjusted distribution yield (30) + dollar volume (20) + inverted 20-day vol (20). No RSI. No oil beta in this midstream sleeve.",
   },
   healthcare_biotech: {
     title: "Biotech model — two layers",

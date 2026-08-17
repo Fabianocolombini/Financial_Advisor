@@ -124,6 +124,12 @@ Snapshot export: `allIndicators`, `scoreHistory`, `decisionMap` (após Motor Dai
 - Config: `motor/config/models/commodities_energy_regime.json`, `indicadores_tecnicos_commodities_energy.json`
 - Spec: `docs/spec-revisao-energy-security-score.md`
 
+**Energy MLP (`energy_mlp`) — modelos dedicados (v2):**
+- Modelo 1 `MLPRegimeScore` — spread AMLP−10y + rates + vol AMLP — **sem mudança nesta revisão** (driver circular AMLP fora de escopo)
+- Modelo 2 `SecurityScore` v2 — tendência (close, não total return) + yield anti-trap + volume em dólar + σ20 invertida; pesos 30/30/20/20. Sem RSI. Sem oil beta (sleeve midstream). Coverage DCF fica para 1B
+- Config: `motor/config/models/energy_mlp_regime.json`, `indicadores_tecnicos_energy_mlp.json`
+- Spec: `docs/spec-revisao-mlp-security-score.md`
+
 **Backlog 1B:** click em cada indicador → mini-chart; sparklines no snapshot para external-only series.
 
 ## Etapa 1 — Gestão de fontes (base)

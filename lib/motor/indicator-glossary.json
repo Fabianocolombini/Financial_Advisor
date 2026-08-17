@@ -112,12 +112,12 @@
     "read": "Higher percentile vs peers = more volume that day = easier to enter and exit. The motor does not invert this percentile. US Stocks use dollar volume instead."
   },
   "volume_dolar": {
-    "meaning": "Dollar volume on the snapshot day: last close × shares traded. Liquidity pillar of the US Stocks (20%), Emerging Markets (20%), REITs (20%), Precious Metals (25%), and Energy (20%) Security Scores.",
+    "meaning": "Dollar volume on the snapshot day: last close × shares traded. Liquidity pillar of the US Stocks (20%), Emerging Markets (20%), REITs (20%), Precious Metals (25%), Energy (20%), and MLP (20%) Security Scores.",
     "read": "Higher percentile vs peers = more dollars changed hands = easier to enter and exit. Share count would favor cheap names; this does not. The motor does not invert this percentile."
   },
   "vol_realizada": {
     "meaning": "Realized volatility over the last 20 sessions (standard deviation of daily returns).",
-    "read": "For Cash, High Yield, Preferred, US Stocks, International Stocks, and REITs, lower is better: the motor inverts the percentile so a calmer name ranks higher vs peers that day. A market-wide vol spike does not single out one name. On preferreds, extra swing is a credit-stress symptom on subordinated paper."
+    "read": "For Cash, High Yield, Preferred, US Stocks, International Stocks, REITs, and MLP, lower is better: the motor inverts the percentile so a calmer name ranks higher vs peers that day. A market-wide vol spike does not single out one name. On preferreds and MLPs, extra swing is a credit-stress symptom on income paper."
   },
   "preco_vs_mm50": {
     "meaning": "How far the last price sits from its 50-day moving average, as a percent.",
@@ -136,7 +136,7 @@
     "read": "Higher percentile = stronger trend versus the rest of the class on the same day. It is a ranking, not a promise that the trend continues."
   },
   "dividend_yield": {
-    "meaning": "Income the name is currently distributing, as a percent of price. In Preferred and REITs the Security Score haircuts a yield that spiked versus its own 1-year history (yield trap).",
+    "meaning": "Income the name is currently distributing, as a percent of price. In Preferred, REITs, and MLP the Security Score haircuts a yield that spiked versus its own 1-year history (yield trap).",
     "read": "A stable high coupon still ranks high. A yield that jumped only because price collapsed is shrunk before ranking, so distress is not paid as extra carry."
   },
   "duration_efetiva": {

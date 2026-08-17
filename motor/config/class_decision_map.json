@@ -286,15 +286,15 @@
         "forecast": ["distribution_yield_spread", "delta_dys"]
       },
       "tickerIndicators": {
-        "timing": ["trend", "volume_vs_media"],
+        "timing": ["trend", "volume_dolar"],
         "role": ["dividend_yield", "vol_realizada"],
         "projection": ["trend", "dividend_yield"],
-        "investability": ["volume_vs_media", "dividend_yield"],
+        "investability": ["volume_dolar", "dividend_yield"],
         "forecast": ["dividend_yield", "vol_realizada"]
       },
       "models": {
         "regime": "energy_mlp_regime_v1 — MLPRegimeScore",
-        "security": "energy_mlp_security_v1 — trend + yield + volume − vol"
+        "security": "energy_mlp_security_v2 — trend + trap-adjusted yield + dollar volume + inverted σ20 (no RSI)"
       }
     },
     "healthcare_biotech": {

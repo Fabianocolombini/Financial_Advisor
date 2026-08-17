@@ -1,10 +1,10 @@
 {
   "id": "energy_mlp",
   "nome": "Energy MLP",
-  "descricao": "MLPRegimeScore",
+  "descricao": "MLPRegimeScore + SecurityScore v2 (tendência + yield anti-trap + volume dólar + σ20 invertida)",
   "model": {
     "regime": "energy_mlp_regime_v1",
-    "security": "energy_mlp_security_v1",
+    "security": "energy_mlp_security_v2",
     "calibrated": false
   },
   "pesos_camada": {

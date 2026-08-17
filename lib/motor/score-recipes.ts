@@ -401,13 +401,36 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "Inventories, rigs, and WTI COT already sit in EnergyRegimeScore and are the same for every name that day. Trend and RSI stay at 35/20. Two names with the same USO beta get the same oil-adherence grade.",
   },
   energy_mlp: {
-    headline: "In energy MLPs the score weights income and trend, discounting swing.",
+    headline:
+      "In energy MLPs the score is income plus trend: the ETF close (not total return), distribution yield after a crash haircut, dollar liquidity, and a penalty for names that swing more than peers. There is no RSI on purpose.",
     ingredients: [
-      { label: "Price trend", weight: 0.3, meaning: "price above the averages" },
-      { label: "Dividend yield", weight: 0.3, meaning: "income distributed vs peers" },
-      { label: "Traded volume", weight: 0.2, meaning: "more liquid is better" },
-      { label: "20-day volatility", weight: 0.2, meaning: "a discount for names that swing more" },
+      {
+        label: "Price trend",
+        weight: 0.3,
+        meaning:
+          "price vs the 50- and 200-day averages of the ETF close (price return, not total return) — higher is better. Distributions are not mixed into this pillar",
+      },
+      {
+        label: "Distribution yield (anti-trap)",
+        weight: 0.3,
+        meaning:
+          "income vs other MLP funds that day, after y / (1 + max(z, 0)) where z is the yield’s own 252-day z-score. A crash that inflates yield is not extra carry",
+      },
+      {
+        label: "Dollar volume",
+        weight: 0.2,
+        meaning:
+          "price × shares traded that day vs peers — higher is better. The sleeve mixes AMLP-size funds with smaller midstream ETFs",
+      },
+      {
+        label: "20-day volatility (inverted)",
+        weight: 0.2,
+        meaning:
+          "how much the price swung in the last 20 sessions vs other MLP funds that day — lower is better",
+      },
     ],
+    note:
+      "There is no RSI: trend alone is the directional vote. No oil-beta pillar: the scored sleeve is midstream/fee-based (AMLP, MLPX, ENFR…), not upstream E&P — that question lives in Energy. AMLP yield vs the 10-year Treasury sits in MLPRegimeScore. Coverage ratio (DCF / distributions) is a later layer.",
   },
   healthcare_biotech: {
     headline: "In healthcare and biotech the score includes the density of regulatory catalysts.",

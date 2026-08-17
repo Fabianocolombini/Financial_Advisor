@@ -195,6 +195,13 @@ export function TickerMotorSection({ motor }: { motor: SymbolMotorContext }) {
           target is better). Inventories, rigs, and WTI COT stay in
           EnergyRegimeScore. Ranks energy names on the same day.
         </p>
+      ) : motor.classId === "energy_mlp" ? (
+        <p className="text-[10px] text-zinc-500">
+          SecurityScore: 30% trend on the ETF close (not total return) + 30%
+          distribution yield after a crash haircut + 20% dollar volume + 20%
+          inverted 20-day vol. No RSI. No oil-beta pillar — this sleeve is
+          midstream. Ranks MLP funds on the same day.
+        </p>
       ) : null}
       <SymbolScoreHistoryChart
         title="Ticker composite score (history)"

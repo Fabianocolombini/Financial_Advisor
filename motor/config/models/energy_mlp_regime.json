@@ -1,6 +1,6 @@
 {
   "calibrated": false,
-  "note": "Pesos definidos por julgamento — não calibrados (`calibrated: false`).",
+  "note": "Pesos w1–w5 (regime) e wa/wb/wc/wd (security) por julgamento — não calibrados. Security v2: 30/30/20/20 tendência/yield anti-trap/volume dólar/σ20 invertida. Sem RSI. Sem oil beta (sleeve midstream). Spread vs 10y fica no Regime. Regime Score não muda nesta revisão (driver circular AMLP fora de escopo).",
   "regime_weights": {
     "w1": 0.35,
     "w2": 0.2,

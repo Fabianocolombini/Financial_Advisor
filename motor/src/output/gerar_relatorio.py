@@ -12,6 +12,7 @@ from motor.src.config_loader import (
     is_commodities_energy_aba,
     is_commodities_precious_aba,
     is_em_equity_aba,
+    is_energy_mlp_aba,
     is_hy_aba,
     is_ig_aba,
     is_intl_equity_aba,
@@ -465,6 +466,32 @@ def build_report_markdown(
             "Estoques/COT/rigs ficam no Regime. Benchmark = USO (WTI), não Brent."
         )
         lines.append("")
+    if is_energy_mlp_aba(aba_result["aba_id"]):
+        lines.append("## Modelo Energy MLP — Regime (Modelo 1)")
+        lines.append("")
+        try:
+            from motor.src.calculo.models.energy_mlp_regime_model import compute_energy_mlp_regime
+
+            regime = compute_energy_mlp_regime()
+            lines.append(
+                f"- MLPRegimeScore: **{_fmt(regime.get('energy_mlp_regime_score'))}** "
+                f"→ ação **{regime.get('regime_action')}** (quanto MLP)"
+            )
+            for note in regime.get("explanation", []):
+                lines.append(f"- {note.replace('**', '')}")
+            if not regime.get("calibrated"):
+                lines.append("- ⚠ Pesos não calibrados (`calibrated: false`).")
+        except Exception as e:
+            lines.append(f"- Erro regime MLP: {e}")
+        lines.append("")
+        lines.append("## Modelo Energy MLP — Seleção (Modelo 2)")
+        lines.append("")
+        lines.append(
+            "- SecurityScore v2: 30% tendência (close, não total return) + 30% yield anti-trap "
+            "+ 20% volume em dólar + 20% σ20 invertida. Sem RSI. Sem oil beta (sleeve midstream). "
+            "Spread vs Treasury 10y fica no Regime (distribution_yield_spread)."
+        )
+        lines.append("")
     _LEGACY_CLASS_REPORTS = {
         is_cash_aba,
         is_treasury_aba,
@@ -478,6 +505,7 @@ def build_report_markdown(
         is_reits_aba,
         is_commodities_precious_aba,
         is_commodities_energy_aba,
+        is_energy_mlp_aba,
     }
     if is_class_model_aba(aba_result["aba_id"]) and not any(
         fn(aba_result["aba_id"]) for fn in _LEGACY_CLASS_REPORTS
