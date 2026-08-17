@@ -76,6 +76,12 @@ Snapshot export: `allIndicators`, `scoreHistory`, `decisionMap` (após Motor Dai
 - Config: `motor/config/models/hy_regime.json`, `indicadores_tecnicos_hy.json`
 - Spec: `docs/spec-revisao-hy-security-score.md`
 
+**TIPS (`fi_tips`) — modelos dedicados (v2):**
+- Modelo 1 `TIPSRegimeScore` — yield real + breakeven 5y5y + CPI gap + Fed; liquidity cap — **sem mudança nesta revisão**
+- Modelo 2 `SecurityScore` v2 — tendência e RSI / duration + volume bruto + real-yield fit (bucket vs DFII10); pesos 30/20/15/35. Preço = close do ETF (não dirty price de TIPS)
+- Config: `motor/config/models/tips_regime.json`, `indicadores_tecnicos_tips.json`, `tips_duration_map.json`
+- Spec: `docs/spec-revisao-tips-security-score.md`
+
 **Backlog 1B:** click em cada indicador → mini-chart; sparklines no snapshot para external-only series.
 
 ## Etapa 1 — Gestão de fontes (base)

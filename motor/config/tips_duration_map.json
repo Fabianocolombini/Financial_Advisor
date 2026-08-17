@@ -1,5 +1,5 @@
 {
-  "note": "Effective duration (years) — static approximations for TIPS ETFs.",
+  "note": "Effective duration (years) — static approximations for TIPS ETFs. Used as a duration-band fit vs DFII10 and to scale trend/RSI. Price input is ETF close, not a TIPS dirty/clean bond series.",
   "default": 6.5,
   "tickers": {
     "TIP": 7.2,

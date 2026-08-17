@@ -32,7 +32,7 @@ const CLASS_META: Record<
     title: "TIPS model — two layers",
     scoreLabel: "TIPSRegimeScore",
     securityNote:
-      "SecurityScore: trend + RSI + volume + duration fit vs real yield (RY_pct).",
+      "SecurityScore: duration-adjusted trend and RSI (30/20) + traded volume (15) + duration fit vs real yield (35). ETF close, not a TIPS dirty price.",
   },
   fi_preferred: {
     title: "Preferred model — two layers",

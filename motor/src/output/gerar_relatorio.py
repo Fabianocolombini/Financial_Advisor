@@ -246,7 +246,8 @@ def build_report_markdown(
         lines.append("## Modelo TIPS — Seleção (Modelo 2)")
         lines.append("")
         lines.append(
-            "- SecurityScore: tendência + RSI + volume + duration fit vs yield real (RY_pct)."
+            "- SecurityScore v2: 30% tendência/duration + 20% RSI(retorno/duration) + 15% volume bruto + 35% real-yield fit (bucket vs DFII10). "
+            "Preço = close do ETF (yfinance), não dirty price de TIPS individual."
         )
         lines.append("")
     if is_preferred_aba(aba_result["aba_id"]):

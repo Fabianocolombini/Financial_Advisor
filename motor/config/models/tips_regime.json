@@ -1,6 +1,6 @@
 {
   "calibrated": false,
-  "note": "Pesos w1–w4 e wa–wd definidos por julgamento — não calibrados (`calibrated: false`). LIQ proxy = σ20 TIP.",
+  "note": "Pesos w1–w4 e wa–wd definidos por julgamento — não calibrados (`calibrated: false`). LIQ proxy = σ20 TIP. Security v2: 30/20/15/35 com trend e RSI / duration. Real-yield fit é bucket vs DFII10. Preço = close do ETF.",
   "regime_weights": {
     "w1": 0.35,
     "w2": 0.30,

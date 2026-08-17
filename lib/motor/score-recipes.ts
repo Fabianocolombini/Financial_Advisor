@@ -145,13 +145,35 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "The scored sleeve (HYG, JNK, USHY, SJNK) is all broad HY, so FRED rating-bucket OAS (BB/B/CCC) is the same backdrop for every name and cannot rank them. Credit spread, quality mix, and distress stay in HYRegimeScore. 0.5 is the median name — vol is inverted so the four grades still average to a 0–1 score.",
   },
   fi_tips: {
-    headline: "In TIPS the score combines technicals with how duration fits real yields.",
+    headline:
+      "In TIPS the score ranks names on duration-adjusted momentum and liquidity, plus whether that name’s duration band fits today’s real yield. There is no credit ingredient — TIPS are Treasury-issued.",
     ingredients: [
-      { label: "Price trend", weight: 0.3, meaning: "price above the averages" },
-      { label: "Momentum (RSI)", weight: 0.2, meaning: "recent strength of the move" },
-      { label: "Traded volume", weight: 0.15, meaning: "more liquid is better" },
-      { label: "Real-yield fit", weight: 0.35, meaning: "duration suited to the current real yield" },
+      {
+        label: "Price trend / duration",
+        weight: 0.3,
+        meaning:
+          "ETF market close vs the 50- and 200-day averages, each divided by modified duration so a 15-year TIPS fund is not ranked higher just because it moves more for the same real-yield change. This is the fund share price (yfinance), not a TIPS dirty bond price",
+      },
+      {
+        label: "Momentum (RSI on return / duration)",
+        weight: 0.2,
+        meaning:
+          "14-day RSI of daily percent change divided by duration — strength per unit of real-rate risk",
+      },
+      {
+        label: "Traded volume",
+        weight: 0.15,
+        meaning: "raw shares traded that day vs peers — higher is better: you can enter and exit without moving the price",
+      },
+      {
+        label: "Real-yield fit vs DFII10",
+        weight: 0.35,
+        meaning:
+          "by design a duration-band factor, not a paper-specific signal: names in the same maturity bucket get the same fit that day. High real yield favors longer duration; low real yield favors shorter",
+      },
     ],
+    note:
+      "Real-yield fit is 1 − |duration percentile − real-yield percentile|. Inflation accretion lives inside ETF NAV; a common CPI drift lifts the whole sleeve, so the rank still compares who moved more. We do not CPI-deflate the price series.",
   },
   fi_preferred: {
     headline: "In preferreds the score weights income and trend, discounting swing.",

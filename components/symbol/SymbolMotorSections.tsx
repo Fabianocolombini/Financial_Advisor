@@ -137,6 +137,13 @@ export function TickerMotorSection({ motor }: { motor: SymbolMotorContext }) {
           HYRegimeScore. OAS (including BB/B/CCC) is a class/bucket index, so credit
           stays in the regime layer for this broad-HY sleeve.
         </p>
+      ) : motor.classId === "fi_tips" ? (
+        <p className="text-[10px] text-zinc-500">
+          SecurityScore: 30% trend/duration + 20% RSI(return/duration) + 15% traded
+          volume + 35% duration fit vs real yield (same duration band, same fit).
+          Uses ETF market close (yfinance), not a TIPS dirty bond price. Ranks TIPS
+          names on the same day — does not change TIPSRegimeScore.
+        </p>
       ) : null}
       <SymbolScoreHistoryChart
         title="Ticker composite score (history)"
