@@ -147,7 +147,7 @@
       },
       "models": {
         "regime": "preferred_regime_v1 — PreferredRegimeScore (quanto preferred)",
-        "security": "preferred_security_v1 — SecurityScore + yield − vol penalty"
+        "security": "preferred_security_v2 — trend + RSI + yield anti-trap + σ20 invertida"
       }
     },
     "us_equity": {

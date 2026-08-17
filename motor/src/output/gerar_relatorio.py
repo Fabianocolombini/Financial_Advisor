@@ -289,7 +289,8 @@ def build_report_markdown(
         lines.append("## Modelo Preferred — Seleção (Modelo 2)")
         lines.append("")
         lines.append(
-            "- SecurityScore: tendência + RSI + yield − vol penalty (σ20). Sem volume."
+            "- SecurityScore v2: 30% tendência + 20% RSI + 25% yield anti-trap (haircut se z_252>0) + 25% σ20 invertida. "
+            "Sem volume. Rating por emissor não entra — sleeve é ETF; crédito fica no Regime Score."
         )
         lines.append("")
     _LEGACY_CLASS_REPORTS = {

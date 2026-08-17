@@ -38,7 +38,7 @@ const CLASS_META: Record<
     title: "Preferred model — two layers",
     scoreLabel: "PreferredRegimeScore",
     securityNote:
-      "SecurityScore: trend + RSI + yield − vol penalty (σ20). No volume.",
+      "SecurityScore: trend and RSI (30/20) + trap-adjusted dividend yield (25) + inverted 20-day vol (25). No volume pillar.",
   },
   us_equity: {
     title: "US Equity model — two layers",

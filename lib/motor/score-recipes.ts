@@ -176,13 +176,35 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "Real-yield fit is 1 − |duration percentile − real-yield percentile|. Inflation accretion lives inside ETF NAV; a common CPI drift lifts the whole sleeve, so the rank still compares who moved more. We do not CPI-deflate the price series.",
   },
   fi_preferred: {
-    headline: "In preferreds the score weights income and trend, discounting swing.",
+    headline:
+      "In preferreds the score weights income and trend, and discounts names that swing more than peers. A yield that only jumped because price collapsed is haircut — that is the yield-trap, not extra carry.",
     ingredients: [
-      { label: "Price trend", weight: 0.3, meaning: "price above the averages" },
-      { label: "Momentum (RSI)", weight: 0.2, meaning: "recent strength of the move" },
-      { label: "Dividend yield", weight: 0.25, meaning: "income distributed vs peers" },
-      { label: "20-day volatility", weight: 0.25, meaning: "a discount for names that swing more" },
+      {
+        label: "Price trend",
+        weight: 0.3,
+        meaning:
+          "price vs the 50- and 200-day averages. Kept because preferreds trade like hybrids with an equity-like trend",
+      },
+      {
+        label: "Momentum (RSI)",
+        weight: 0.2,
+        meaning: "recent strength of the move. Unlike Cash, RSI is not an artifact here",
+      },
+      {
+        label: "Dividend yield (anti yield-trap)",
+        weight: 0.25,
+        meaning:
+          "income vs peers after shrinking a yield that spiked versus its own 1-year history. A structurally high coupon still ranks high; a crash-inflated yield does not",
+      },
+      {
+        label: "20-day volatility (inverted)",
+        weight: 0.25,
+        meaning:
+          "how much the price swung in the last 20 sessions vs other preferreds that day — lower is better. Swing is a credit-stress symptom on subordinated paper",
+      },
     ],
+    note:
+      "Yield used in the rank is y / (1 + max(z, 0)), where z is the yield’s own 252-day z-score. There is no issuer-rating ingredient: the scored sleeve is preferred ETFs, and EDGAR/FRED do not publish per-name preferred ratings. Bank stress and preferred spread stay in PreferredRegimeScore. Call-price ceiling is not in this score.",
   },
   us_equity: {
     headline: "In US stocks the score rewards trend and momentum, discounting volatility.",

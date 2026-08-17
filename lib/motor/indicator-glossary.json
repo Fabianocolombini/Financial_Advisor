@@ -113,7 +113,7 @@
   },
   "vol_realizada": {
     "meaning": "Realized volatility over the last 20 sessions (standard deviation of daily returns).",
-    "read": "For Cash and High Yield, lower is better: the motor inverts the percentile so a calmer name ranks higher vs peers that day. A market-wide vol spike does not single out one ETF. A name that jumps while peers stay quiet is the credit-stress symptom the HY score discounts."
+    "read": "For Cash, High Yield, and Preferred, lower is better: the motor inverts the percentile so a calmer name ranks higher vs peers that day. A market-wide vol spike does not single out one ETF. On preferreds, extra swing is a credit-stress symptom on subordinated paper."
   },
   "preco_vs_mm50": {
     "meaning": "How far the last price sits from its 50-day moving average, as a percent.",
@@ -132,8 +132,8 @@
     "read": "Higher percentile = stronger trend versus the rest of the class on the same day. It is a ranking, not a promise that the trend continues."
   },
   "dividend_yield": {
-    "meaning": "Income the name is currently distributing, as a percent of price (dividend or distribution yield).",
-    "read": "Higher yield can mean more income or a cheaper (fallen) price. The motor ranks it versus peers; a yield that jumps only because price collapsed is not a quality upgrade."
+    "meaning": "Income the name is currently distributing, as a percent of price. In Preferred the Security Score haircuts a yield that spiked versus its own 1-year history (yield trap).",
+    "read": "A stable high coupon still ranks high. A yield that jumped only because price collapsed is shrunk before ranking, so distress is not paid as extra carry."
   },
   "duration_efetiva": {
     "meaning": "Effective duration: how much the bond-like name’s price tends to move when yields move 1%. In IG this is a duration-band fit vs term premium; in TIPS, vs today’s 10-year real yield (DFII10) — not “higher is better”.",

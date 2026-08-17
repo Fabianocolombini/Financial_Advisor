@@ -144,6 +144,13 @@ export function TickerMotorSection({ motor }: { motor: SymbolMotorContext }) {
           Uses ETF market close (yfinance), not a TIPS dirty bond price. Ranks TIPS
           names on the same day — does not change TIPSRegimeScore.
         </p>
+      ) : motor.classId === "fi_preferred" ? (
+        <p className="text-[10px] text-zinc-500">
+          SecurityScore: 30% trend + 20% RSI + 25% dividend yield (haircut if the
+          yield spiked vs its own history) + 25% inverted 20-day vol. A crash that
+          inflates yield is not extra carry. Ranks preferred names on the same day —
+          does not change PreferredRegimeScore.
+        </p>
       ) : null}
       <SymbolScoreHistoryChart
         title="Ticker composite score (history)"

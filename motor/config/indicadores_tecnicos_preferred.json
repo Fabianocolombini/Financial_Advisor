@@ -1,0 +1,41 @@
+{
+  "indicadores": [
+    {
+      "id": "preco_vs_mm50",
+      "nome": "Tendência vs médias",
+      "peso": 0.3,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "role": "price trend — percentil alto = mais acima das médias MM50/MM200"
+    },
+    {
+      "id": "rsi_14",
+      "nome": "RSI 14d",
+      "peso": 0.2,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "role": "momentum — Preferred é equity-like; RSI não é artefato"
+    },
+    {
+      "id": "dividend_yield",
+      "nome": "Dividend yield (anti yield-trap)",
+      "peso": 0.25,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "yield_trap": "y / (1 + max(z_252, 0))",
+      "role": "renda vs pares após haircut se o yield disparou vs a própria história (colapso de preço)"
+    },
+    {
+      "id": "vol_realizada",
+      "nome": "Volatilidade realizada 20d",
+      "peso": 0.25,
+      "direcao": "negativa",
+      "inverte_percentil": true,
+      "vol_window": 20,
+      "role": "desconto de swing — percentil alto = menor σ20 vs pares no mesmo dia"
+    }
+  ],
+  "vol_window": 20,
+  "yield_z_window": 252,
+  "note": "Preferred Security Score v2 — pesos 30/20/25/25. Yield com haircut anti-trap. σ20 invertida. Sem volume. Rating por emissor não existe nas fontes grátis para este sleeve de ETFs; crédito fica no Regime Score."
+}

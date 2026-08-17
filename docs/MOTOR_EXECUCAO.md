@@ -82,6 +82,12 @@ Snapshot export: `allIndicators`, `scoreHistory`, `decisionMap` (após Motor Dai
 - Config: `motor/config/models/tips_regime.json`, `indicadores_tecnicos_tips.json`, `tips_duration_map.json`
 - Spec: `docs/spec-revisao-tips-security-score.md`
 
+**Preferred (`fi_preferred`) — modelos dedicados (v2):**
+- Modelo 1 `PreferredRegimeScore` — spread proxy + DGS10 + Fed + Δ spread + KRE/SPY + SLOOS; bank-stress cap — **sem mudança nesta revisão**
+- Modelo 2 `SecurityScore` v2 — tendência + RSI + yield anti-trap (`y/(1+max(z,0))`) + σ20 invertida; pesos 30/20/25/25. Sem volume. Rating por emissor não disponível nas fontes grátis (sleeve = ETFs)
+- Config: `motor/config/models/preferred_regime.json`, `indicadores_tecnicos_preferred.json`
+- Spec: `docs/spec-revisao-preferred-security-score.md`
+
 **Backlog 1B:** click em cada indicador → mini-chart; sparklines no snapshot para external-only series.
 
 ## Etapa 1 — Gestão de fontes (base)

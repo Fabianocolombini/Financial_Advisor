@@ -1,6 +1,6 @@
 {
   "calibrated": false,
-  "note": "Pesos w1–w6 e wa–wd definidos por julgamento — não calibrados (`calibrated: false`). SLOOS trimestral com forward-fill.",
+  "note": "Pesos w1–w6 e wa–wd definidos por julgamento — não calibrados (`calibrated: false`). SLOOS trimestral com forward-fill. Security v2: 30/20/25/25, yield anti-trap, σ20 invertida.",
   "regime_weights": {
     "w1": 0.25,
     "w2": 0.20,

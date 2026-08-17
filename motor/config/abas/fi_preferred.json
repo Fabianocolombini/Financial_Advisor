@@ -1,10 +1,10 @@
 {
   "id": "fi_preferred",
   "nome": "Preferred Securities",
-  "descricao": "PreferredRegimeScore + SecurityScore (yield − vol penalty)",
+  "descricao": "PreferredRegimeScore + SecurityScore v2 (tendência + RSI + yield anti-trap + σ20 invertida)",
   "model": {
     "regime": "preferred_regime_v1",
-    "security": "preferred_security_v1",
+    "security": "preferred_security_v2",
     "calibrated": false
   },
   "pesos_camada": {
