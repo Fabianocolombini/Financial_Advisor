@@ -19,9 +19,11 @@
     "pause": "Pausar"
   },
   "security_weights": {
-    "wa": 0.5,
-    "wb": 0.3,
-    "wc": 0.2
+    "wa": 0.2,
+    "wb": 0.2,
+    "wc": 0.15,
+    "wd": 0.3,
+    "we": 0.15
   },
   "output_type": "pace"
 }

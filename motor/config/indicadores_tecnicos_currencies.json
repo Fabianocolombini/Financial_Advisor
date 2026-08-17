@@ -1,0 +1,60 @@
+{
+  "indicadores": [
+    {
+      "id": "expense_ratio",
+      "nome": "Expense ratio",
+      "peso": 0.2,
+      "direcao": "negativa",
+      "inverte_percentil": true,
+      "role": "custo declarado — percentil alto = menor taxa. Quase-estático por fundo"
+    },
+    {
+      "id": "volume_dolar",
+      "nome": "Volume em dólar",
+      "peso": 0.2,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "role": "liquidez — percentil alto = maior close × ações"
+    },
+    {
+      "id": "dollar_fit",
+      "nome": "Dollar exposure (fit vs UUP)",
+      "peso": 0.15,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "tipo_metrica": "distancia_ao_alvo",
+      "fit": "1 - |P(|beta_UUP|) - alvo_percentil|",
+      "alvo_percentil": 0.25,
+      "benchmark": "UUP",
+      "role": "veículo — mesma |β| vs dólar, mesmo fit no dia. Alvo 0.25 herdado do v1. Não é direção cambial (isso é o Regime)"
+    },
+    {
+      "id": "fx_carry",
+      "nome": "Carry (diferencial de juros)",
+      "peso": 0.3,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "refresh": "hold_last",
+      "role": "monotônico — percentil alto = maior (taxa da moeda do ETF − DFF). Long USD = DFF − média do basket. Não é distância ao alvo"
+    },
+    {
+      "id": "tracking_error",
+      "nome": "Tracking error vs spot",
+      "peso": 0.15,
+      "direcao": "negativa",
+      "inverte_percentil": true,
+      "te_window": 63,
+      "role": "custo realizado — percentil alto = menor σ anualizada do ativo vs par FRED (63d)"
+    }
+  ],
+  "alvo_percentil": 0.25,
+  "te_window": 63,
+  "exclude_indicators": ["rsi_14", "preco_vs_mm50"],
+  "carry_map": {
+    "FXE": { "kind": "long_fx", "foreign": "ecb", "spot_fred": "DEXUSEU", "spot_invert": false },
+    "FXY": { "kind": "long_fx", "foreign": "IRSTCI01JPM156N", "spot_fred": "DEXJPUS", "spot_invert": true },
+    "CEW": { "kind": "long_fx", "foreign": "IRSTCI01BRM156N", "spot_fred": null, "spot_invert": false },
+    "UUP": { "kind": "usd_long", "foreign_rates": ["ecb", "IRSTCI01JPM156N"], "spot_fred": "DTWEXBGS", "spot_invert": false }
+  },
+  "note": "FX Security Score v2 Completo — pesos 20/20/15/30/15. Sem trend/RSI. Expense invertida aditiva. Liquidez em dólar. Dollar fit = distância ao alvo 0.25. Carry monotônico por ticker. TE 63d invertido. Carry de classe fica no Regime."
+}

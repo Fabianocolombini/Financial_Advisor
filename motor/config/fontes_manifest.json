@@ -292,6 +292,9 @@
         { "id": "eurusd", "nome": "USD/EUR", "fonte": "fred", "serie": "DEXUSEU" },
         { "id": "dxy", "nome": "Dollar broad index", "fonte": "fred", "serie": "DTWEXBGS" },
         { "id": "dff", "nome": "Fed Funds", "fonte": "fred", "serie": "DFF" },
+        { "id": "jpy_usd", "nome": "JPY per USD", "fonte": "fred", "serie": "DEXJPUS" },
+        { "id": "jpy_policy_rate", "nome": "Japan immediate rate", "fonte": "fred", "serie": "IRSTCI01JPM156N" },
+        { "id": "em_policy_rate", "nome": "Brazil immediate rate (CEW proxy)", "fonte": "fred", "serie": "IRSTCI01BRM156N", "is_proxy": true },
         { "id": "ecb_rate", "nome": "ECB main refinancing rate", "fonte": "ecb", "series_key": "FM.B.U2.EUR.4F.KR.MRR_NR.LE" },
         { "id": "rate_differential", "nome": "Fed Funds − ECB", "fonte": "calculado", "formula": "rate_differential" },
         {

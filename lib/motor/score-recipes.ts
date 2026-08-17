@@ -509,12 +509,42 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "There is no RSI and no volume pillar. Yield is not a raw cross-section (that would mix utilities with towers). Real yield and utilities momentum stay in InfraRegimeScore. Issuers without a 10-Q in EDGAR (some LPs, Canadian names, all ETFs) sit at 0.5 on the three fundamental pillars.",
   },
   currencies: {
-    headline: "In FX the score rewards low cost, liquidity, and the right dollar exposure.",
+    headline:
+      "In FX the score picks the vehicle, not the direction: cheaper access, liquidity in dollars, dollar-beta close to the class target, carry of the currency the fund actually holds, and how tightly it tracks the spot. There is no trend or RSI on purpose.",
     ingredients: [
-      { label: "Expense ratio", weight: 0.5, meaning: "cheaper is better" },
-      { label: "Liquidity", weight: 0.3, meaning: "more liquid is better" },
-      { label: "Dollar exposure", weight: 0.2, meaning: "dollar sensitivity close to the class target" },
+      {
+        label: "Expense ratio (inverted)",
+        weight: 0.2,
+        meaning:
+          "annual fund fee vs other FX vehicles that day — lower is better. The fee rarely changes; that stability is accepted",
+      },
+      {
+        label: "Dollar volume",
+        weight: 0.2,
+        meaning:
+          "price × shares traded that day vs peers — higher is better. Share count would favor cheap tickers",
+      },
+      {
+        label: "Dollar exposure (fit)",
+        weight: 0.15,
+        meaning:
+          "distance of |beta vs UUP| to the class target (25th percentile of the sleeve that day). Closer is better in both directions — a vehicle bucket, not a call on the dollar",
+      },
+      {
+        label: "Carry (rate differential)",
+        weight: 0.3,
+        meaning:
+          "policy rate of the currency the ETF holds minus Fed funds (long-dollar funds: Fed minus the basket). Higher is better. Monotonic — not a distance-to-target. Hold-last from FRED/ECB",
+      },
+      {
+        label: "Tracking error vs spot (inverted)",
+        weight: 0.15,
+        meaning:
+          "annualized 63-day standard deviation of ETF return minus the FRED spot pair — lower is better. Realized cost, not the prospectus fee. CEW has no single spot and sits at the median",
+      },
     ],
+    note:
+      "There is no price trend and no RSI: ConversionPaceScore already decides how fast to convert. Class-level Fed−ECB carry stays in the regime layer — it is the same number for every name that day and would not change the rank. Carry crash-risk has no vol offset in this version.",
   },
 };
 

@@ -349,15 +349,15 @@
         "forecast": ["reer_cheap", "crowding_penalty"]
       },
       "tickerIndicators": {
-        "timing": ["custo_efetivo_inv", "liquidez"],
-        "role": ["custo_efetivo_inv", "adequacao_fiscal"],
-        "projection": ["liquidez", "adequacao_fiscal"],
-        "investability": ["custo_efetivo_inv", "liquidez"],
-        "forecast": ["adequacao_fiscal", "custo_efetivo_inv"]
+        "timing": ["fx_carry", "tracking_error"],
+        "role": ["expense_ratio", "dollar_fit"],
+        "projection": ["fx_carry", "volume_dolar"],
+        "investability": ["volume_dolar", "expense_ratio"],
+        "forecast": ["fx_carry", "tracking_error"]
       },
       "models": {
         "regime": "fx_regime_v1 — ConversionPaceScore (pace, não allocation)",
-        "security": "fx_security_v1 — custo + liquidez + adequação fiscal"
+        "security": "fx_security_v2 — expense + $ volume + dollar fit + carry + tracking error"
       }
     },
     "alt_infrastructure": {

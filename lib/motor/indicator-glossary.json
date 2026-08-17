@@ -192,16 +192,28 @@
     "read": "Infrastructure can carry more debt than the broad market, but inside the sleeve the less leveraged name still ranks better. ETFs sit at the median."
   },
   "expense_ratio": {
-    "meaning": "Annual fund fee. In Precious Metals this is the 15% inverted Security Score pillar.",
-    "read": "Lower expense = more of the metal’s return stays with you. Among funds that hold the same ounce, cheaper ranks higher (IAU vs GLD). The motor inverts the percentile so 0.5 is still the median-cost name that day."
+    "meaning": "Annual fund fee. In Precious Metals and FX this is an inverted Security Score pillar (cheaper ranks higher).",
+    "read": "Lower expense = more of the exposure’s return stays with you. The motor inverts the percentile so 0.5 is still the median-cost name that day. In FX the prospectus fee is the declared cost; tracking error is the realized cost."
   },
   "custo_efetivo_inv": {
     "meaning": "Inverted expense / holding cost for FX vehicles — cheaper access ranks higher.",
     "read": "Higher score = you pay less to hold the currency exposure. It is not a view on whether the dollar will rise."
   },
   "adequacao_fiscal": {
-    "meaning": "Proxy for how well the vehicle tracks the intended USD / fiscal exposure (beta fit).",
-    "read": "Higher means the name behaves like the sleeve it is supposed to represent. A poor fit is a tool problem, not a macro call."
+    "meaning": "Distance of |beta vs UUP| to the FX class target (25th percentile of the sleeve that day). Fit = 1 − |P(|β|) − 0.25|.",
+    "read": "Closer to the target is better in both directions — not more dollar beta. Two funds with the same |beta| get the same fit: this is a vehicle bucket, not a call on the dollar. Direction lives in ConversionPaceScore."
+  },
+  "dollar_fit": {
+    "meaning": "Distance of |beta vs UUP| to the FX class target (25th percentile of the sleeve that day). Fit = 1 − |P(|β|) − 0.25|.",
+    "read": "Closer to the target is better in both directions — not more dollar beta. Two funds with the same |beta| get the same fit: this is a vehicle bucket, not a call on the dollar. Direction lives in ConversionPaceScore."
+  },
+  "fx_carry": {
+    "meaning": "Policy-rate differential of the currency the ETF holds versus Fed funds. Long-dollar funds use Fed minus the EUR/JPY basket. Hold-last. Monotonic: higher carry ranks higher.",
+    "read": "You are paid (on average) to hold a higher-yielding currency. This is the ticker’s carry — not the class Fed−ECB number in ConversionPaceScore, which is the same for every name that day. Carry can reverse sharply in risk-off; there is no vol offset in this version."
+  },
+  "tracking_error": {
+    "meaning": "Annualized 63-day standard deviation of ETF daily return minus the FRED spot pair (DEXUSEU, inverted DEXJPUS, or DTWEXBGS). Inverted: lower tracking error ranks higher.",
+    "read": "This is realized cost — roll and leakage the prospectus fee misses. CEW has no single spot pair and sits at the median."
   },
   "hedge_fit": {
     "meaning": "Distance of |beta vs UUP| to the International Stocks class target (35th percentile of the sleeve that day). Fit = 1 − |P(|β|) − 0.35|.",

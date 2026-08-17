@@ -142,6 +142,12 @@ Snapshot export: `allIndicators`, `scoreHistory`, `decisionMap` (após Motor Dai
 - Config: `motor/config/models/alt_infrastructure_regime.json`, `indicadores_tecnicos_alt_infrastructure.json`
 - Spec: `docs/spec-revisao-infra-security-score.md`
 
+**FX (`currencies`) — modelos dedicados (v2 Completo):**
+- Modelo 1 `ConversionPaceScore` — REER + carry de classe + crowding (pace, não alocação) — **sem mudança nesta revisão**
+- Modelo 2 `SecurityScore` v2 — expense invertida + volume em dólar + dollar fit vs UUP (alvo 0.25) + carry monotônico por ticker + TE 63d vs spot invertido; pesos 20/20/15/30/15. Sem trend/RSI. Carry de classe (Fed−ECB) fica no Regime. CEW sem par único → 0.5 no TE
+- Config: `motor/config/models/fx_regime.json`, `indicadores_tecnicos_currencies.json`
+- Spec: `docs/spec-revisao-fx-security-score.md`
+
 **Backlog 1B:** click em cada indicador → mini-chart; sparklines no snapshot para external-only series.
 
 ## Etapa 1 — Gestão de fontes (base)

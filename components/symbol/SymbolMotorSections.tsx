@@ -217,6 +217,14 @@ export function TickerMotorSection({ motor }: { motor: SymbolMotorContext }) {
           RSI. No volume. ETFs sit at the median on the three fundamental
           pillars. Ranks infrastructure names on the same day.
         </p>
+      ) : motor.classId === "currencies" ? (
+        <p className="text-[10px] text-zinc-500">
+          SecurityScore: 20% inverted expense + 20% dollar volume + 15% dollar-beta
+          fit vs UUP (closer to the 25th-percentile target is better) + 30% carry
+          of the currency the fund holds + 15% inverted 63-day tracking error vs
+          the FRED spot. No trend. No RSI. ConversionPaceScore decides how fast
+          to convert — this rank is the vehicle. Ranks FX names on the same day.
+        </p>
       ) : null}
       <SymbolScoreHistoryChart
         title="Ticker composite score (history)"

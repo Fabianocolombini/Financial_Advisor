@@ -104,7 +104,7 @@ const CLASS_META: Record<
     title: "FX model — conversion pace",
     scoreLabel: "ConversionPaceScore",
     securityNote:
-      "SecurityScore: effective cost + liquidity + tax fit (carry).",
+      "SecurityScore: inverted expense (20) + dollar volume (20) + dollar-beta fit vs UUP (15) + monotonic carry (30) + inverted 63-day tracking error vs spot (15). No trend. No RSI.",
   },
 };
 

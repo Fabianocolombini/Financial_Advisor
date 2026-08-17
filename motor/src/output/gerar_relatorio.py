@@ -13,6 +13,7 @@ from motor.src.config_loader import (
     is_class_model_aba,
     is_commodities_energy_aba,
     is_commodities_precious_aba,
+    is_currencies_aba,
     is_em_equity_aba,
     is_energy_mlp_aba,
     is_hy_aba,
@@ -551,6 +552,33 @@ def build_report_markdown(
             "Real yield / utilities z ficam no Regime."
         )
         lines.append("")
+    if is_currencies_aba(aba_result["aba_id"]):
+        lines.append("## Modelo FX — Regime (Modelo 1, pace)")
+        lines.append("")
+        try:
+            from motor.src.calculo.models.fx_regime_model import compute_fx_regime
+
+            regime = compute_fx_regime()
+            lines.append(
+                f"- ConversionPaceScore: **{_fmt(regime.get('fx_regime_score'))}** "
+                f"→ ação **{regime.get('regime_action')}** (ritmo de conversão)"
+            )
+            for note in regime.get("explanation", []):
+                lines.append(f"- {note.replace('**', '')}")
+            if not regime.get("calibrated"):
+                lines.append("- ⚠ Pesos não calibrados (`calibrated: false`).")
+        except Exception as e:
+            lines.append(f"- Erro regime FX: {e}")
+        lines.append("")
+        lines.append("## Modelo FX — Seleção (Modelo 2)")
+        lines.append("")
+        lines.append(
+            "- SecurityScore v2 Completo: 20% expense invertida + 20% volume em dólar "
+            "+ 15% dollar fit vs UUP (alvo 0.25) + 30% carry monotônico por ticker "
+            "+ 15% TE 63d vs spot invertido. Sem trend/RSI. Carry Fed−ECB de classe fica no Regime. "
+            "CEW sem par único → mediana no TE."
+        )
+        lines.append("")
     _LEGACY_CLASS_REPORTS = {
         is_cash_aba,
         is_treasury_aba,
@@ -567,6 +595,7 @@ def build_report_markdown(
         is_energy_mlp_aba,
         is_bdc_aba,
         is_alt_infrastructure_aba,
+        is_currencies_aba,
     }
     if is_class_model_aba(aba_result["aba_id"]) and not any(
         fn(aba_result["aba_id"]) for fn in _LEGACY_CLASS_REPORTS

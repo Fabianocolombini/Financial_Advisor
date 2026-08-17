@@ -1,10 +1,10 @@
 {
   "id": "currencies",
   "nome": "FX / moedas",
-  "descricao": "ConversionPaceScore (pace)",
+  "descricao": "ConversionPaceScore (pace) + carry / tracking do veículo",
   "model": {
     "regime": "fx_regime_v1",
-    "security": "fx_security_v1",
+    "security": "fx_security_v2",
     "calibrated": false
   },
   "pesos_camada": {
@@ -43,6 +43,38 @@
       "peso": 0.3,
       "zscore_window": 252,
       "direcao": "positiva"
+    },
+    {
+      "id": "jpy_policy_rate",
+      "nome": "Japan immediate rate (OECD)",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "IRSTCI01JPM156N",
+      "peso": 0.0,
+      "zscore_window": 252,
+      "direcao": "positiva"
+    },
+    {
+      "id": "em_policy_rate",
+      "nome": "Brazil immediate rate (OECD, proxy CEW)",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "IRSTCI01BRM156N",
+      "peso": 0.0,
+      "zscore_window": 252,
+      "direcao": "positiva",
+      "is_proxy": true,
+      "proxy_rationale": "CEW é cesta EM; Brasil OECD é o proxy gratuito de juro EM no FRED"
+    },
+    {
+      "id": "jpy_usd",
+      "nome": "JPY per USD",
+      "camada": "macro",
+      "fonte": "fred",
+      "serie": "DEXJPUS",
+      "peso": 0.0,
+      "zscore_window": 252,
+      "direcao": "negativa"
     }
   ],
   "universo": [
