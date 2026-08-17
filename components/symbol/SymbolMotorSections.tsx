@@ -151,6 +151,13 @@ export function TickerMotorSection({ motor }: { motor: SymbolMotorContext }) {
           inflates yield is not extra carry. Ranks preferred names on the same day —
           does not change PreferredRegimeScore.
         </p>
+      ) : motor.classId === "us_equity" ? (
+        <p className="text-[10px] text-zinc-500">
+          SecurityScore: 35% trend + 25% RSI + 20% dollar volume (price × shares)
+          + 20% inverted 20-day vol vs peers that day. Share count would favor
+          cheap names; this uses dollars. Ranks US names on the same day — does
+          not change USEquityRegimeScore. No P/E or ROE in this layer.
+        </p>
       ) : null}
       <SymbolScoreHistoryChart
         title="Ticker composite score (history)"

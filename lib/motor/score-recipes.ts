@@ -207,13 +207,34 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "Yield used in the rank is y / (1 + max(z, 0)), where z is the yield’s own 252-day z-score. There is no issuer-rating ingredient: the scored sleeve is preferred ETFs, and EDGAR/FRED do not publish per-name preferred ratings. Bank stress and preferred spread stay in PreferredRegimeScore. Call-price ceiling is not in this score.",
   },
   us_equity: {
-    headline: "In US stocks the score rewards trend and momentum, discounting volatility.",
+    headline:
+      "In US stocks the score rewards trend and momentum, then liquidity in dollars, and discounts names that swing more than peers that day.",
     ingredients: [
-      { label: "Price trend", weight: 0.35, meaning: "price above the 50- and 200-day averages" },
-      { label: "Momentum (RSI)", weight: 0.25, meaning: "recent strength of the move" },
-      { label: "Traded volume", weight: 0.2, meaning: "more liquid is better" },
-      { label: "20-day volatility", weight: 0.2, meaning: "a discount for names that swing more than peers" },
+      {
+        label: "Price trend",
+        weight: 0.35,
+        meaning: "price vs the 50- and 200-day averages — higher is better: the move is established",
+      },
+      {
+        label: "Momentum (RSI)",
+        weight: 0.25,
+        meaning: "14-day RSI — higher is better: recent strength of the move",
+      },
+      {
+        label: "Dollar volume",
+        weight: 0.2,
+        meaning:
+          "price × shares traded that day vs peers — higher is better. Share count would favor cheap names that are not more liquid in dollars",
+      },
+      {
+        label: "20-day volatility (inverted)",
+        weight: 0.2,
+        meaning:
+          "how much the price swung in the last 20 sessions vs other US names that day — lower is better",
+      },
     ],
+    note:
+      "There is no valuation or quality ingredient (P/E, ROE) in this score: it is the technical selection layer inside the class. Fundamentals stay in USEquityRegimeScore (CAPE, earnings revision) or in a later pass. Percentiles are whole-universe, not sector- or size-neutral — the scored sleeve today is broad ETFs (SPY, QQQ, IWM, VOO).",
   },
   intl_equity: {
     headline: "In international stocks the score includes how much the name depends on the dollar.",

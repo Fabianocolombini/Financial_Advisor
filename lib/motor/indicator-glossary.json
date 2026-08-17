@@ -109,11 +109,15 @@
   },
   "volume_negociado": {
     "meaning": "Raw traded volume on the snapshot day. Liquidity pillar of the Security Score in Cash (50%), Treasuries (20%), IG (15%), HY (15%), and TIPS (15%).",
-    "read": "Higher percentile vs peers = more volume that day = easier to enter and exit. The motor does not invert this percentile."
+    "read": "Higher percentile vs peers = more volume that day = easier to enter and exit. The motor does not invert this percentile. US Stocks use dollar volume instead."
+  },
+  "volume_dolar": {
+    "meaning": "Dollar volume on the snapshot day: last close × shares traded. Liquidity pillar of the US Stocks Security Score (20%).",
+    "read": "Higher percentile vs peers = more dollars changed hands = easier to enter and exit. Share count would favor cheap names; this does not. The motor does not invert this percentile."
   },
   "vol_realizada": {
     "meaning": "Realized volatility over the last 20 sessions (standard deviation of daily returns).",
-    "read": "For Cash, High Yield, and Preferred, lower is better: the motor inverts the percentile so a calmer name ranks higher vs peers that day. A market-wide vol spike does not single out one ETF. On preferreds, extra swing is a credit-stress symptom on subordinated paper."
+    "read": "For Cash, High Yield, Preferred, and US Stocks, lower is better: the motor inverts the percentile so a calmer name ranks higher vs peers that day. A market-wide vol spike does not single out one name. On preferreds, extra swing is a credit-stress symptom on subordinated paper."
   },
   "preco_vs_mm50": {
     "meaning": "How far the last price sits from its 50-day moving average, as a percent.",

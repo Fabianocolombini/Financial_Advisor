@@ -14,6 +14,7 @@ from motor.src.config_loader import (
     is_preferred_aba,
     is_tips_aba,
     is_treasury_aba,
+    is_us_equity_aba,
     load_aba_config,
 )
 from motor.src.decisao.estagio import compute_estagio_aba, diverge_categoria, estagio_ativo
@@ -293,6 +294,36 @@ def build_report_markdown(
             "Sem volume. Rating por emissor não entra — sleeve é ETF; crédito fica no Regime Score."
         )
         lines.append("")
+    if is_us_equity_aba(aba_result["aba_id"]):
+        lines.append("## Modelo US Equity — Regime (Modelo 1)")
+        lines.append("")
+        try:
+            from motor.src.calculo.models.us_equity_regime_model import compute_us_equity_regime
+
+            regime = compute_us_equity_regime()
+            lines.append(
+                f"- USEquityRegimeScore: **{_fmt(regime.get('us_equity_regime_score'))}** "
+                f"→ ação **{regime.get('regime_action')}** (quanto US equity)"
+            )
+            if regime.get("recession_warning_flag") or regime.get("stress_flag"):
+                lines.append(
+                    f"- Recession warning (ação calculada: "
+                    f"{regime.get('regime_action_calculated')})."
+                )
+            for note in regime.get("explanation", []):
+                lines.append(f"- {note.replace('**', '')}")
+            if not regime.get("calibrated"):
+                lines.append("- ⚠ Pesos não calibrados (`calibrated: false`).")
+        except Exception as e:
+            lines.append(f"- Erro regime US Equity: {e}")
+        lines.append("")
+        lines.append("## Modelo US Equity — Seleção (Modelo 2)")
+        lines.append("")
+        lines.append(
+            "- SecurityScore v2: 35% tendência + 25% RSI + 20% volume em dólar + 20% σ20 invertida (lookback 20d). "
+            "Sem P/E/ROE nesta etapa. Percentil no universo da aba (sem neutralização setorial/cap)."
+        )
+        lines.append("")
     _LEGACY_CLASS_REPORTS = {
         is_cash_aba,
         is_treasury_aba,
@@ -300,6 +331,7 @@ def build_report_markdown(
         is_hy_aba,
         is_tips_aba,
         is_preferred_aba,
+        is_us_equity_aba,
     }
     if is_class_model_aba(aba_result["aba_id"]) and not any(
         fn(aba_result["aba_id"]) for fn in _LEGACY_CLASS_REPORTS

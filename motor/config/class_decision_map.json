@@ -162,13 +162,13 @@
       "tickerIndicators": {
         "timing": ["trend", "rsi_14"],
         "role": ["vol_realizada", "trend"],
-        "projection": ["trend", "volume_vs_media"],
-        "investability": ["volume_vs_media", "vol_realizada"],
+        "projection": ["trend", "volume_dolar"],
+        "investability": ["volume_dolar", "vol_realizada"],
         "forecast": ["rsi_14", "vol_realizada"]
       },
       "models": {
         "regime": "us_equity_regime_v1 — USEquityRegimeScore (quanto US equity)",
-        "security": "us_equity_security_v1 — trend + RSI + volume − vol"
+        "security": "us_equity_security_v2 — trend + RSI + dollar volume + inverted σ20"
       }
     },
     "intl_equity": {

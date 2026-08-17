@@ -4,7 +4,7 @@
   "descricao": "USEquityRegimeScore + SecurityScore",
   "model": {
     "regime": "us_equity_regime_v1",
-    "security": "us_equity_security_v1",
+    "security": "us_equity_security_v2",
     "calibrated": false
   },
   "pesos_camada": {

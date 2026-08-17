@@ -44,7 +44,7 @@ const CLASS_META: Record<
     title: "US Equity model — two layers",
     scoreLabel: "USEquityRegimeScore",
     securityNote:
-      "SecurityScore: trend + RSI + volume − vol penalty (σ20).",
+      "SecurityScore: trend and RSI (35/25) + dollar volume (20) + inverted 20-day vol (20). No P/E or ROE in this layer.",
   },
   intl_equity: {
     title: "International model — two layers",

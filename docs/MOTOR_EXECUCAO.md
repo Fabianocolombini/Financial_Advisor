@@ -88,6 +88,12 @@ Snapshot export: `allIndicators`, `scoreHistory`, `decisionMap` (após Motor Dai
 - Config: `motor/config/models/preferred_regime.json`, `indicadores_tecnicos_preferred.json`
 - Spec: `docs/spec-revisao-preferred-security-score.md`
 
+**US Stocks (`us_equity`) — modelos dedicados (v2):**
+- Modelo 1 `USEquityRegimeScore` — CAPE + earnings revision + put/call + AAII + NAAIM − margin debt; recession-warning cap — **sem mudança nesta revisão**
+- Modelo 2 `SecurityScore` v2 — tendência + RSI + volume em dólar + σ20 invertida (20d); pesos 35/25/20/20. Sem P/E/ROE (fica 1B). Percentil no universo da aba, sem neutralização setorial/cap
+- Config: `motor/config/models/us_equity_regime.json`, `indicadores_tecnicos_us_equity.json`
+- Spec: `docs/spec-revisao-us-equity-security-score.md`
+
 **Backlog 1B:** click em cada indicador → mini-chart; sparklines no snapshot para external-only series.
 
 ## Etapa 1 — Gestão de fontes (base)
