@@ -98,7 +98,7 @@ const CLASS_META: Record<
     title: "Infrastructure model — two layers",
     scoreLabel: "InfraRegimeScore",
     securityNote:
-      "SecurityScore: trend + yield + inverse vol + volume.",
+      "SecurityScore: trend (20) + yield vs own 3y history (15) + FCF coverage (20) + EV/EBITDA vs own history inverted (20) + debt/EBITDA inverted (15) + inverted 20-day vol (10). No RSI. No volume.",
   },
   currencies: {
     title: "FX model — conversion pace",

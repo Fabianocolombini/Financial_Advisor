@@ -370,15 +370,15 @@
         "forecast": ["breakeven_lagged", "infra_gov_z"]
       },
       "tickerIndicators": {
-        "timing": ["trend", "volume_vs_media"],
-        "role": ["dividend_yield", "vol_penalty_inv"],
-        "projection": ["trend", "dividend_yield"],
-        "investability": ["volume_vs_media", "dividend_yield"],
-        "forecast": ["dividend_yield", "vol_penalty_inv"]
+        "timing": ["preco_vs_mm50", "fcf_coverage"],
+        "role": ["dividend_yield", "ev_ebitda"],
+        "projection": ["fcf_coverage", "debt_ebitda"],
+        "investability": ["vol_realizada", "fcf_coverage"],
+        "forecast": ["ev_ebitda", "debt_ebitda"]
       },
       "models": {
         "regime": "alt_infrastructure_regime_v1 — InfraRegimeScore",
-        "security": "alt_infrastructure_security_v1 — trend + yield + vol_inv + volume"
+        "security": "alt_infrastructure_security_v2 — trend + yield z + coverage + EV/EBITDA z + debt/EBITDA + vol"
       }
     }
   },

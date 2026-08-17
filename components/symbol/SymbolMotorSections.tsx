@@ -209,6 +209,14 @@ export function TickerMotorSection({ motor }: { motor: SymbolMotorContext }) {
           the close. No RSI. No raw yield — coverage is the anti-trap. Ranks
           listed BDCs on the same day. SOFR and HY OAS stay in BDCRegimeScore.
         </p>
+      ) : motor.classId === "alt_infrastructure" ? (
+        <p className="text-[10px] text-zinc-500">
+          SecurityScore: 20% trend on the close + 15% yield vs the name’s own
+          3-year history + 20% FCF / dividends coverage + 20% inverted EV/EBITDA
+          vs own history + 15% inverted debt/EBITDA + 10% inverted 20-day vol. No
+          RSI. No volume. ETFs sit at the median on the three fundamental
+          pillars. Ranks infrastructure names on the same day.
+        </p>
       ) : null}
       <SymbolScoreHistoryChart
         title="Ticker composite score (history)"

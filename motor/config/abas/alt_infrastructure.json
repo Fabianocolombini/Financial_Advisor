@@ -1,10 +1,10 @@
 {
   "id": "alt_infrastructure",
   "nome": "Infrastructure / Utilities",
-  "descricao": "InfraRegimeScore",
+  "descricao": "InfraRegimeScore + coverage / EV/EBITDA / dívida ranking",
   "model": {
     "regime": "alt_infrastructure_regime_v1",
-    "security": "alt_infrastructure_security_v1",
+    "security": "alt_infrastructure_security_v2",
     "calibrated": false
   },
   "pesos_camada": {
@@ -85,37 +85,37 @@
       "ticker": "NEE",
       "nome": "NextEra Energy Inc.",
       "benchmark": "IGF",
-      "edgar_metric": "non_accrual_rate"
+      "edgar_metric": "fcf_coverage"
     },
     {
       "ticker": "DUK",
       "nome": "Duke Energy Corporation",
       "benchmark": "IGF",
-      "edgar_metric": "non_accrual_rate"
+      "edgar_metric": "fcf_coverage"
     },
     {
       "ticker": "BIP",
       "nome": "Brookfield Infrastructure Partners L.P.",
       "benchmark": "IGF",
-      "edgar_metric": "non_accrual_rate"
+      "edgar_metric": "fcf_coverage"
     },
     {
       "ticker": "CCI",
       "nome": "Crown Castle Inc.",
       "benchmark": "IGF",
-      "edgar_metric": "non_accrual_rate"
+      "edgar_metric": "fcf_coverage"
     },
     {
       "ticker": "AMT",
       "nome": "American Tower Corporation",
       "benchmark": "IGF",
-      "edgar_metric": "non_accrual_rate"
+      "edgar_metric": "fcf_coverage"
     },
     {
       "ticker": "ENB",
       "nome": "Enbridge Inc.",
       "benchmark": "IGF",
-      "edgar_metric": "non_accrual_rate"
+      "edgar_metric": "fcf_coverage"
     }
   ],
   "estagio": {

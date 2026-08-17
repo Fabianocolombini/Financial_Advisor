@@ -179,6 +179,18 @@
     "meaning": "Net investment income divided by dividends paid. Whether the BDC’s operating income covers the distribution. Hold-last from the 10-Q; reported NII, not fee-adjusted.",
     "read": "Higher coverage ranks higher. This replaces raw dividend yield so a distressed name whose yield jumped because the price collapsed does not win. Incentive fees are not stripped out of NII."
   },
+  "fcf_coverage": {
+    "meaning": "Free cash flow divided by dividends paid (operating cash flow minus capex). Hold-last from SEC companyfacts for infrastructure issuers.",
+    "read": "Higher coverage ranks higher. This is the trap check next to yield-vs-own-history: a utility whose price fell still needs FCF to pay the coupon. ETFs have no 10-Q and sit at the median."
+  },
+  "ev_ebitda": {
+    "meaning": "Enterprise value / EBITDA versus the name’s own last 12 quarters (z-score). Inverted so a discount to the name’s typical multiple ranks higher.",
+    "read": "Cheaper than this issuer’s own history is better — not cheaper than a tower vs a utility. That is how the sleeve avoids mixing subsectors into one valuation rank."
+  },
+  "debt_ebitda": {
+    "meaning": "Total debt / EBITDA. Hold-last from SEC companyfacts. Inverted: lower leverage ranks higher versus other infrastructure names that day.",
+    "read": "Infrastructure can carry more debt than the broad market, but inside the sleeve the less leveraged name still ranks better. ETFs sit at the median."
+  },
   "expense_ratio": {
     "meaning": "Annual fund fee. In Precious Metals this is the 15% inverted Security Score pillar.",
     "read": "Lower expense = more of the metal’s return stays with you. Among funds that hold the same ounce, cheaper ranks higher (IAU vs GLD). The motor inverts the percentile so 0.5 is still the median-cost name that day."

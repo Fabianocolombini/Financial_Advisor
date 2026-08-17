@@ -1,0 +1,63 @@
+{
+  "indicadores": [
+    {
+      "id": "preco_vs_mm50",
+      "nome": "Tendência vs médias",
+      "peso": 0.2,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "role": "price trend — percentil alto = mais acima das médias MM50/MM200; close da cota (não total return)"
+    },
+    {
+      "id": "dividend_yield",
+      "nome": "Dividend yield (z vs história 3y)",
+      "peso": 0.15,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "zscore_window": 756,
+      "role": "renda vs a própria história (3 anos), depois percentil na classe — não yield absoluto vs torres/utilities. Coverage é a checagem do trap"
+    },
+    {
+      "id": "fcf_coverage",
+      "nome": "Distribution coverage (FCF / dividendos)",
+      "peso": 0.2,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "refresh": "hold_last",
+      "role": "sustentabilidade — percentil alto = maior FCF / dividendos. Hold-last companyfacts"
+    },
+    {
+      "id": "ev_ebitda",
+      "nome": "EV/EBITDA vs história (z 3y)",
+      "peso": 0.2,
+      "direcao": "negativa",
+      "inverte_percentil": true,
+      "refresh": "hold_last",
+      "zscore_obs": 12,
+      "role": "valuation vs o próprio múltiplo — percentil alto = maior desconto vs história (12 trimestres). Neutraliza subsetor"
+    },
+    {
+      "id": "debt_ebitda",
+      "nome": "Dívida/EBITDA",
+      "peso": 0.15,
+      "direcao": "negativa",
+      "inverte_percentil": true,
+      "refresh": "hold_last",
+      "role": "alavancagem — percentil alto = menor dívida/EBITDA vs pares no mesmo dia"
+    },
+    {
+      "id": "vol_realizada",
+      "nome": "Volatilidade realizada 20d",
+      "peso": 0.1,
+      "direcao": "negativa",
+      "inverte_percentil": true,
+      "vol_window": 20,
+      "role": "estabilidade — percentil alto = menor σ20 vs pares no mesmo dia"
+    }
+  ],
+  "vol_window": 20,
+  "yield_z_window": 756,
+  "fund_z_obs": 12,
+  "exclude_indicators": ["rsi_14"],
+  "note": "Infrastructure Security Score v2 Completo — pesos 20/15/20/20/15/10. Sem RSI, sem volume. Yield e EV/EBITDA vs história própria (3y). Coverage e dívida hold-last companyfacts. σ20 invertida aditiva."
+}

@@ -20,9 +20,11 @@
     "strong_reduce": "Strong Reduce"
   },
   "security_weights": {
-    "wa": 0.35,
-    "wb": 0.25,
+    "wa": 0.2,
+    "wb": 0.15,
     "wc": 0.2,
-    "wd": 0.2
+    "wd": 0.2,
+    "we": 0.15,
+    "wf": 0.1
   }
 }

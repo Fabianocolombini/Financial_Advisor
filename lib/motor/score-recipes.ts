@@ -465,13 +465,48 @@ const RECIPES: Record<string, ScoreRecipe> = {
     ],
   },
   alt_infrastructure: {
-    headline: "In infrastructure the score weights income, trend, and stability.",
+    headline:
+      "In infrastructure the score is income plus the books: trend on the close, yield versus the name’s own history, whether free cash flow covers the dividend, cheapness versus the name’s own EV/EBITDA, leverage, and a small stability vote. RSI and volume stay out.",
     ingredients: [
-      { label: "Price trend", weight: 0.35, meaning: "price above the averages" },
-      { label: "Dividend yield", weight: 0.25, meaning: "income distributed vs peers" },
-      { label: "Stability", weight: 0.2, meaning: "less swing is better" },
-      { label: "Traded volume", weight: 0.2, meaning: "more liquid is better" },
+      {
+        label: "Price trend",
+        weight: 0.2,
+        meaning:
+          "price vs the 50- and 200-day averages of the close (price return, not total return) — higher is better",
+      },
+      {
+        label: "Dividend yield (own-history z)",
+        weight: 0.15,
+        meaning:
+          "how far the yield sits above the name’s own 3-year history, then ranked vs peers. Towers are not punished for paying less than utilities. Coverage is the trap check",
+      },
+      {
+        label: "Distribution coverage (FCF / dividends)",
+        weight: 0.2,
+        meaning:
+          "free cash flow covering the dividend vs other issuers that day — higher is better. Hold-last from SEC companyfacts. ETFs sit at the median",
+      },
+      {
+        label: "EV/EBITDA vs own history (inverted)",
+        weight: 0.2,
+        meaning:
+          "z-score of EV/EBITDA vs the last 12 quarters — a discount to the name’s own multiple ranks higher. Neutralizes subsector (utilities vs towers)",
+      },
+      {
+        label: "Debt/EBITDA (inverted)",
+        weight: 0.15,
+        meaning:
+          "leverage vs other names that day — lower is better. Hold-last from companyfacts",
+      },
+      {
+        label: "20-day volatility (inverted)",
+        weight: 0.1,
+        meaning:
+          "how much the price swung in the last 20 sessions vs peers — lower is better",
+      },
     ],
+    note:
+      "There is no RSI and no volume pillar. Yield is not a raw cross-section (that would mix utilities with towers). Real yield and utilities momentum stay in InfraRegimeScore. Issuers without a 10-Q in EDGAR (some LPs, Canadian names, all ETFs) sit at 0.5 on the three fundamental pillars.",
   },
   currencies: {
     headline: "In FX the score rewards low cost, liquidity, and the right dollar exposure.",

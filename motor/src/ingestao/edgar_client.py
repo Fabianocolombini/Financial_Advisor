@@ -11,7 +11,7 @@ from typing import Any
 
 import httpx
 
-from motor.src.config_loader import load_aba_config
+from motor.src.config_loader import is_alt_infrastructure_aba, load_aba_config
 from motor.src.db.connection import get_connection, init_db
 
 EDGAR_TICKER_MAP = "https://www.sec.gov/files/company_tickers.json"
@@ -251,6 +251,10 @@ def fetch_bdc_metric(ticker: str, metric: str) -> tuple[str, float] | None:
 
 
 def ingest_aba_edgar(aba_id: str) -> dict[str, Any]:
+    if is_alt_infrastructure_aba(aba_id):
+        from motor.src.ingestao.edgar_infra import ingest_aba_infra_edgar
+
+        return ingest_aba_infra_edgar(aba_id)
     init_db()
     aba = load_aba_config(aba_id)
     results: dict[str, Any] = {}

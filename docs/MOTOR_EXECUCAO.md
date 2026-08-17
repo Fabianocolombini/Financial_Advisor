@@ -136,6 +136,12 @@ Snapshot export: `allIndicators`, `scoreHistory`, `decisionMap` (após Motor Dai
 - Config: `motor/config/models/bdc_regime.json`, `indicadores_tecnicos_bdc.json`
 - Spec: `docs/spec-revisao-bdc-security-score.md`
 
+**Infrastructure (`alt_infrastructure`) — modelos dedicados (v2 Completo):**
+- Modelo 1 `InfraRegimeScore` — real yield + breakeven + infra gov + utilities z — **sem mudança nesta revisão**
+- Modelo 2 `SecurityScore` v2 — tendência (close) + yield z vs história 3y + coverage FCF/dividendos + EV/EBITDA z vs 12 trimestres (invertido) + dívida/EBITDA invertida + σ20 invertida; pesos 20/15/20/20/15/10. Sem RSI, sem volume. Lookback 3y (não 5y — ZIRP). Companyfacts XBRL. ETFs → 0.5 nos fundamentais
+- Config: `motor/config/models/alt_infrastructure_regime.json`, `indicadores_tecnicos_alt_infrastructure.json`
+- Spec: `docs/spec-revisao-infra-security-score.md`
+
 **Backlog 1B:** click em cada indicador → mini-chart; sparklines no snapshot para external-only series.
 
 ## Etapa 1 — Gestão de fontes (base)
