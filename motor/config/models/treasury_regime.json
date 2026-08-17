@@ -1,6 +1,6 @@
 {
   "calibrated": false,
-  "note": "Pesos w1/w2/w3 e wa/wb/wc/wd definidos por julgamento — não calibrados (`calibrated: false`).",
+  "note": "Pesos w1/w2/w3 (regime) e wa/wb/wc/wd (security) por julgamento — não calibrados. Security v2 Proposta B: 35/25/20/20 com trend e RSI / duration. COT hold-last semanal, invertido. Regime Score não muda nesta revisão.",
   "regime_weights": {
     "w1": 0.45,
     "w2": 0.35,
@@ -23,7 +23,7 @@
   "delta_yield_days_60": 60,
   "delta_yield_days_90": 90,
   "delta_yield_note": "inflation_shock se ΔY20/60/90>0; flight_to_quality exige ΔY20<0 e ΔY60/90≤0 (prevalece em 2022)",
-  "term_premium_fred": "THREEFYTP10",
+  "cot_refresh": "hold_last",
   "term_premium_note": "FRED THREEFYTP10 (Kim-Wright). NY Fed ACM não disponível via API FRED — ingest xls futuro.",
   "action_labels": {
     "overweight": "Overweight",

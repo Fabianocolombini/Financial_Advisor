@@ -12,14 +12,18 @@ from motor.src.db.connection import get_connection, init_db
 from motor.src.ingestao.yfinance_client import get_price_series
 
 
-def _rsi(series: pd.Series, period: int = 14) -> pd.Series:
-    delta = series.diff()
+def rsi_from_changes(delta: pd.Series, period: int = 14) -> pd.Series:
+    """RSI from a change series (price diff or duration-scaled daily return)."""
     gain = delta.clip(lower=0)
     loss = (-delta).clip(lower=0)
     avg_gain = gain.ewm(alpha=1 / period, min_periods=period).mean()
     avg_loss = loss.ewm(alpha=1 / period, min_periods=period).mean()
     rs = avg_gain / avg_loss.replace(0, np.nan)
     return 100 - (100 / (1 + rs))
+
+
+def _rsi(series: pd.Series, period: int = 14) -> pd.Series:
+    return rsi_from_changes(series.diff(), period)
 
 
 def mm50_distance_zscore(prices: pd.Series, window: int = 50) -> pd.Series:

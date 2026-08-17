@@ -122,8 +122,8 @@ def build_report_markdown(
         lines.append("## Modelo Treasuries — Seleção (Modelo 2)")
         lines.append("")
         lines.append(
-            "- SecurityScore: tendência + RSI + volume − COT crowding. "
-            "RSI mantido — vol genuína em TLT/IEF/SHY."
+            "- SecurityScore v2: 35% tendência/duration + 25% RSI(retorno/duration) + 20% volume bruto + 20% COT invertido (hold-last). "
+            "RSI mantido — reversão de taxa genuína; duration evita viés da ponta longa."
         )
         lines.append("")
     if is_ig_aba(aba_result["aba_id"]):

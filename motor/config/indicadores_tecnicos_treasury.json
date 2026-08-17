@@ -1,0 +1,38 @@
+{
+  "indicadores": [
+    {
+      "id": "preco_vs_mm50_dur",
+      "nome": "Tendência vs médias / duration",
+      "peso": 0.35,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "role": "price trend dividido pela duration modificada — percentil alto = mais acima das médias por unidade de risco de taxa"
+    },
+    {
+      "id": "rsi_14_dur",
+      "nome": "RSI 14d (retorno / duration)",
+      "peso": 0.25,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "role": "RSI sobre retorno diário / duration — percentil alto = momentum mais forte por unidade de duration"
+    },
+    {
+      "id": "volume_negociado",
+      "nome": "Volume negociado",
+      "peso": 0.2,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "role": "liquidez — percentil alto = maior volume bruto"
+    },
+    {
+      "id": "cot_net_position",
+      "nome": "COT net Treasuries",
+      "peso": 0.2,
+      "direcao": "negativa",
+      "inverte_percentil": true,
+      "cot_refresh": "hold_last",
+      "role": "crowding — percentil alto = menor lotação; última leitura semanal vale até a próxima divulgação"
+    }
+  ],
+  "note": "Treasury Security Score v2 — Proposta B: pesos 35/25/20/20. Trend e RSI normalizados por duration. COT hold-last semanal. Volume bruto."
+}

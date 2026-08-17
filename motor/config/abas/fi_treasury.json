@@ -1,10 +1,10 @@
 {
   "id": "fi_treasury",
   "nome": "Renda Fixa Soberana",
-  "descricao": "Treasuries ≥1y — TreasuryRegimeScore + SecurityScore (curva + COT)",
+  "descricao": "Treasuries ≥1y — TreasuryRegimeScore + SecurityScore v2 (tendência/RSI / duration + volume + COT hold-last)",
   "model": {
     "regime": "treasury_regime_v1",
-    "security": "treasury_security_v1",
+    "security": "treasury_security_v2",
     "calibrated": false
   },
   "pesos_camada": {

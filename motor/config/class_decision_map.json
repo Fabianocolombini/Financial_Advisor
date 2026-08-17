@@ -55,15 +55,15 @@
         "forecast": ["fed_cut_probability", "term_premium", "bond_vol_proxy"]
       },
       "tickerIndicators": {
-        "timing": ["preco_vs_mm50", "rsi_14"],
+        "timing": ["preco_vs_mm50_dur", "rsi_14_dur"],
         "role": ["preco_vs_mm200", "cot_net_position"],
-        "projection": ["preco_vs_mm50", "rsi_14"],
-        "investability": ["volume_vs_media"],
-        "forecast": ["rsi_14", "cot_net_position"]
+        "projection": ["preco_vs_mm50_dur", "rsi_14_dur"],
+        "investability": ["volume_negociado"],
+        "forecast": ["rsi_14_dur", "cot_net_position"]
       },
       "models": {
         "regime": "treasury_regime_v1 — TreasuryRegimeScore (quanto duration)",
-        "security": "treasury_security_v1 — SecurityScore + COT crowding"
+        "security": "treasury_security_v2 — trend/RSI / duration + volume bruto + COT hold-last invertido"
       }
     },
     "fi_ig": {

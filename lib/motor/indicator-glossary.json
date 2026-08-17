@@ -108,7 +108,7 @@
     "read": "A spike versus its own average can mean unusual flow. It is not the Cash Security Score liquidity pillar."
   },
   "volume_negociado": {
-    "meaning": "Raw traded volume on the snapshot day. In Cash this is the liquidity pillar of the Security Score (50%).",
+    "meaning": "Raw traded volume on the snapshot day. Liquidity pillar of the Security Score in Cash (50%) and Treasuries (20%).",
     "read": "Higher percentile vs peers = more volume that day = easier to enter and exit. The motor does not invert this percentile."
   },
   "vol_realizada": {
@@ -140,8 +140,16 @@
     "read": "Higher duration = more sensitivity to rate moves. The motor scores whether that duration fits the current term-premium / real-yield regime — not “higher is better”."
   },
   "cot_net_position": {
-    "meaning": "CFTC Commitments of Traders: net speculative positioning in the related futures (crowding).",
-    "read": "A very crowded long is a caution (everyone is already in). A crowded short can be fuel for a squeeze. The Treasury security model treats extreme crowding as a penalty."
+    "meaning": "Weekly CFTC Commitments of Traders: net speculative positioning in Treasury futures (crowding).",
+    "read": "Held at the last weekly print until the next CFTC release — no interpolation. In the Treasuries score this is inverted: higher crowding lowers the class-level contribution. It does not rank one ETF against another."
+  },
+  "preco_vs_mm50_dur": {
+    "meaning": "Price vs its 50-day average, divided by the ETF’s modified duration so a long bond is not scored as stronger momentum just because it moves more for the same yield change.",
+    "read": "Compared across Treasuries on the same day. Higher percentile = stronger duration-adjusted uptrend (rate-risk-adjusted, not raw price gap)."
+  },
+  "rsi_14_dur": {
+    "meaning": "14-day RSI computed on daily percent change divided by modified duration — momentum in yield space, not raw price RSI.",
+    "read": "Higher percentile = stronger duration-adjusted momentum. Unlike Cash, Treasuries keep RSI because the curve has genuine rate-reversal cycles."
   },
   "nav_discount": {
     "meaning": "Price versus the fund’s net asset value (NAV). A discount means the market price is below the portfolio’s book.",

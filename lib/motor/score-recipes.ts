@@ -22,6 +22,8 @@ export type ScoreIngredient = {
 export type ScoreRecipe = {
   headline: string;
   ingredients: ScoreIngredient[];
+  /** Extra line after the generic percentile footnote (class-specific caveats). */
+  note?: string;
 };
 
 const RECIPES: Record<string, ScoreRecipe> = {
@@ -50,13 +52,35 @@ const RECIPES: Record<string, ScoreRecipe> = {
     ],
   },
   fi_treasury: {
-    headline: "In treasuries the score rewards the point on the curve with the best momentum and liquidity.",
+    headline:
+      "In Treasuries the score ranks the point on the curve with the best rate-risk-adjusted momentum and liquidity — not which maturity is “safer”. RSI is kept on purpose: the curve has genuine rate-reversal cycles, unlike Cash.",
     ingredients: [
-      { label: "Price trend", weight: 0.35, meaning: "price above the 50- and 200-day averages" },
-      { label: "Momentum (RSI)", weight: 0.25, meaning: "recent strength of the move" },
-      { label: "Traded volume", weight: 0.2, meaning: "more liquid is better" },
-      { label: "Positioning (COT)", weight: 0.2, meaning: "a discount when the market is crowded in the same trade" },
+      {
+        label: "Price trend / duration",
+        weight: 0.35,
+        meaning:
+          "price vs the 50- and 200-day averages, each divided by modified duration so a 30-year fund is not ranked higher just because it moves more for the same yield change",
+      },
+      {
+        label: "Momentum (RSI on return / duration)",
+        weight: 0.25,
+        meaning:
+          "14-day RSI of daily percent change divided by duration — strength per unit of rate risk, not raw price RSI",
+      },
+      {
+        label: "Traded volume",
+        weight: 0.2,
+        meaning: "raw shares traded that day vs peers — higher is better: you can enter and exit without moving the price",
+      },
+      {
+        label: "Positioning (COT, inverted)",
+        weight: 0.2,
+        meaning:
+          "the only counter-trend vote. Last weekly CFTC print is held until the next release (no interpolation). Crowded longs lower the contribution for the whole curve",
+      },
     ],
+    note:
+      "COT is inverted (1 − crowding) and applied at class level — it does not rank one ETF against another. The Regime Score (flight-to-quality vs inflation shock) is a separate model and is not mixed into this rank.",
   },
   fi_ig: {
     headline: "In investment-grade credit the score combines technicals with how duration fits the backdrop.",

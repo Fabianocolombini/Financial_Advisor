@@ -14,7 +14,7 @@ const CLASS_META: Record<
     title: "Treasuries model — two layers",
     scoreLabel: "TreasuryRegimeScore",
     securityNote:
-      "SecurityScore: trend + RSI + volume − COT crowding. Ranks the point on the curve.",
+      "SecurityScore: duration-adjusted trend and RSI (35/25) + traded volume (20) + inverted COT hold-last (20). Ranks the point on the curve.",
   },
   fi_ig: {
     title: "IG Bonds model — two layers",

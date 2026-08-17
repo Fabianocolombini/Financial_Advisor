@@ -1,0 +1,26 @@
+{
+  "note": "Modified duration (years) — static approximations for Treasury ETFs. Used to scale trend and RSI so long duration is not rewarded just for moving more.",
+  "default": 7.0,
+  "tickers": {
+    "SHY": 1.9,
+    "VGSH": 1.9,
+    "SPTS": 1.9,
+    "SCHO": 1.9,
+    "UTWO": 1.9,
+    "IEI": 4.5,
+    "SPTI": 4.6,
+    "SCHR": 5.2,
+    "VGIT": 5.1,
+    "IEF": 7.4,
+    "GOVT": 5.9,
+    "UTEN": 8.8,
+    "TLH": 12.8,
+    "TLT": 16.3,
+    "VGLT": 17.2,
+    "SPTL": 16.4,
+    "SCHQ": 16.5,
+    "UTHY": 19.5,
+    "EDV": 24.5,
+    "ZROZ": 26.0
+  }
+}

@@ -102,7 +102,14 @@ export function TickerMotorSection({ motor }: { motor: SymbolMotorContext }) {
           <span className="text-[10px] text-amber-400">Diverges from class</span>
         ) : null}
       </div>
-      <MotorIndicatorsTable indicators={motor.tickerIndicators} title="SecurityScore drivers (no RSI)" />
+      <MotorIndicatorsTable
+        indicators={motor.tickerIndicators}
+        title={
+          motor.classId === "cash_equivalents"
+            ? "SecurityScore drivers (no RSI)"
+            : "SecurityScore drivers"
+        }
+      />
       {motor.classId === "cash_equivalents" ? (
         <p className="text-[10px] text-zinc-500">
           SecurityScore: 50% traded volume + 35% 20-day vol (inverted) + 15% |MA50|
@@ -111,8 +118,10 @@ export function TickerMotorSection({ motor }: { motor: SymbolMotorContext }) {
         </p>
       ) : motor.classId === "fi_treasury" ? (
         <p className="text-[10px] text-zinc-500">
-          SecurityScore: trend (MA50/MA200) + RSI + volume − COT crowding. RSI kept —
-          genuine vol in duration ETFs.
+          SecurityScore: 35% trend/duration + 25% RSI(return/duration) + 20% traded
+          volume + 20% inverted COT (last weekly print held until the next release).
+          Ranks curve points on the same day — does not change TreasuryRegimeScore.
+          RSI is kept because Treasuries have genuine rate-reversal cycles.
         </p>
       ) : null}
       <SymbolScoreHistoryChart

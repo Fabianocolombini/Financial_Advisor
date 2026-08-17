@@ -48,6 +48,9 @@ export function ClassScoreLegend({
         another class do not say which of the two is the better place for your money —
         that is the job of the “The whole class” line.
       </p>
+      {recipe.note ? (
+        <p className="mt-2 text-[11px] text-zinc-500">{recipe.note}</p>
+      ) : null}
     </details>
   );
 }
