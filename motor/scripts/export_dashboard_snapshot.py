@@ -21,6 +21,15 @@ def stage_en(estagio: str | None) -> str:
     return mapping.get(estagio or "", "Hold")
 
 
+def _as_float(v: object) -> float | None:
+    if v is None:
+        return None
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+
 def _indicator_numeric_value(c: dict) -> float | None:
     for key in (
         "valor",
@@ -38,20 +47,30 @@ def _indicator_numeric_value(c: dict) -> float | None:
         "aaii_contra",
         "naaim_contra",
     ):
-        v = c.get(key)
-        if v is not None:
-            try:
-                return float(v)
-            except (TypeError, ValueError):
-                continue
+        parsed = _as_float(c.get(key))
+        if parsed is not None:
+            return parsed
     return None
 
 
 def _indicator_export(c: dict) -> dict:
+    raw = _as_float(c.get("valor"))
+    if raw is None:
+        raw = _as_float(c.get("value"))
+    percentile = None
+    for key in ("percentile_cs", "percentile_0_1", "signal_0_1"):
+        percentile = _as_float(c.get(key))
+        if percentile is not None:
+            break
+    weight = _as_float(c.get("peso") if c.get("peso") is not None else c.get("weight"))
+    inverted = c.get("inverte_percentil")
     row = {
         "id": c["id"],
         "name": c.get("nome", c.get("name", c["id"])),
-        "value": _indicator_numeric_value(c),
+        "value": raw if raw is not None else _indicator_numeric_value(c),
+        "percentile": percentile,
+        "weight": weight,
+        "inverted": bool(inverted) if inverted is not None else None,
         "zScore": c.get("z_ajustado") if c.get("z_ajustado") is not None else c.get("z_score"),
         "contribution": c.get("contribuicao"),
     }

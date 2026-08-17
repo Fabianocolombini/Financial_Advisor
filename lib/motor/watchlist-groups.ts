@@ -1,7 +1,6 @@
 import { ASSET_CLASS_TABS } from "@/lib/catalog/asset-classes";
 import type {
   MotorDashboardSnapshot,
-  MotorIndicatorSnapshot,
   WatchlistClassGroup,
   WatchlistRow,
 } from "./snapshot-types";
@@ -25,21 +24,6 @@ type WatchlistItem = {
 function labelForClass(classId: string, snapshot: MotorDashboardSnapshot | null): string {
   if (snapshot?.classes[classId]?.label) return snapshot.classes[classId].label;
   return CLASS_LABEL[classId] ?? classId;
-}
-
-function mergeIndicators(
-  tickerInds: MotorIndicatorSnapshot[],
-  classInds: MotorIndicatorSnapshot[],
-): MotorIndicatorSnapshot[] {
-  const seen = new Set<string>();
-  const merged: MotorIndicatorSnapshot[] = [];
-  for (const ind of [...tickerInds, ...classInds]) {
-    if (seen.has(ind.id)) continue;
-    seen.add(ind.id);
-    merged.push(ind);
-    if (merged.length >= 5) break;
-  }
-  return merged;
 }
 
 export function buildWatchlistGroups(
@@ -77,10 +61,9 @@ export function buildWatchlistGroups(
       const hasMotorData = hasTickerMotor || hasClassMotor;
       const yahooMarket = yahooMarketBySymbol?.get(sym);
 
-      const indicators = mergeIndicators(
-        tick?.indicators ?? [],
-        hasTickerMotor ? [] : (classSnap?.indicators ?? []),
-      );
+      const tickerInds = tick?.allIndicators ?? tick?.indicators ?? [];
+      const classInds = classSnap?.allIndicators ?? classSnap?.indicators ?? [];
+      const indicators = tickerInds.length > 0 ? tickerInds : classInds;
 
       const entryValidated = hasTickerMotor
         ? tick!.entryValidated ?? false

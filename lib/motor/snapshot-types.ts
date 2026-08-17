@@ -16,6 +16,12 @@ export type MotorIndicatorSnapshot = {
   id: string;
   name: string;
   value: number | null;
+  /** Directed 0–1 peer rank that actually enters the Security Score (0.5 = median). */
+  percentile?: number | null;
+  /** Recipe weight on the snapshot date. */
+  weight?: number | null;
+  /** True when a high raw value is ranked as worse (vol, expense, leverage). */
+  inverted?: boolean | null;
   zScore?: number | null;
   contribution?: number | null;
   isProxy?: boolean;

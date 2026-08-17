@@ -89,11 +89,19 @@
   "pivot_points": "Levels calculated from the previous period's high, low, and close. P is equilibrium, R1–R3 are resistances and S1–S3 supports. Because they stay fixed until the period closes, they work as targets set in advance.",
   "motor_col_value": {
     "meaning": "The raw reading of this indicator on the snapshot date — a yield, a spread, a percent, or a z-score, depending on the row.",
-    "read": "Compare it with the note and the i. A number alone is not a buy: the Action and Contribution columns say how the motor uses it."
+    "read": "This is the unscaled print. The Rank and Stance columns are what enter the Security Score; a raw 0.000 vol is not a 0.00 rank."
+  },
+  "motor_col_percentile": {
+    "meaning": "Directed 0-to-1 peer rank of this ingredient on the snapshot date. 0.5 is the median name in the class that day.",
+    "read": "This is the number that is multiplied by the recipe weight. Inverted pillars (vol, expense, leverage) are already flipped, so higher is always better for the score."
+  },
+  "motor_col_stance": {
+    "meaning": "Glanceable band of the peer rank: Helping (≥ 0.65), Neutral (around the median), or Dragging (< 0.35).",
+    "read": "Look here to see which pillar is failing. A high score with one Dragging chip tells you where the name is weak even if the average is fine."
   },
   "motor_col_action": {
     "meaning": "How this row is leaning inside the motor right now: Buy, Neutral, or Sell.",
-    "read": "It comes from the sign of the contribution, not from a broker rating. Several Neutrals plus one strong driver is normal."
+    "read": "It comes from the sign of the contribution, not from a broker rating. Several Neutrals plus one strong driver is normal. On two-layer Security Scores prefer Rank and Stance — contribution is always positive."
   },
   "motor_col_contribution": {
     "meaning": "This row’s weighted input to the Security Score or class score (weight × directed percentile or z).",

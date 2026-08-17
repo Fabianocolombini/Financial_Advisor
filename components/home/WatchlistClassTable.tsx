@@ -5,38 +5,100 @@ import { SymbolAvatar } from "@/components/catalog/SymbolAvatar";
 import { WatchlistStarButton } from "@/components/home/WatchlistStarButton";
 import { WalletBuyButton } from "@/components/wallet/WalletBuyButton";
 import { formatShareVolumeCompact, formatPerf, perfClass } from "@/lib/format-market";
-import { formatIndicatorValue, formatScore } from "@/lib/motor/format-scores";
+import { formatScore } from "@/lib/motor/format-scores";
+import { entrySetup } from "@/lib/motor/entry-setup";
 import {
-  plainNewMoney,
+  findRecipeIndicator,
+  indicatorStance,
+  scoringPercentile,
+  stanceBadgeClass,
+} from "@/lib/motor/indicator-stance";
+import {
   plainQuality,
   plainTrend,
   toneBadgeClass,
 } from "@/lib/motor/plain-language";
 import { VOLUME_SESSIONS } from "@/lib/motor/enrich-yahoo-perf";
+import {
+  scoreRecipeFor,
+  type ScoreIngredient,
+} from "@/lib/motor/score-recipes";
 import type { WatchlistClassGroup, WatchlistRow } from "@/lib/motor/snapshot-types";
 import { ClassScoreLegend } from "./ClassScoreLegend";
 
-function indicatorColumns(rows: WatchlistRow[]): { id: string; name: string }[] {
+function fallbackIndicatorColumns(rows: WatchlistRow[]): ScoreIngredient[] {
   const seen = new Map<string, string>();
   for (const row of rows) {
     for (const ind of row.indicators) {
       if (!seen.has(ind.id)) seen.set(ind.id, ind.name);
     }
   }
-  return [...seen.entries()].slice(0, 4).map(([id, name]) => ({ id, name }));
+  return [...seen.entries()].slice(0, 6).map(([id, name]) => ({
+    id,
+    shortLabel: name,
+    label: name,
+    weight: 0,
+    meaning: name,
+  }));
+}
+
+function recipeColumns(classId: string, rows: WatchlistRow[]): ScoreIngredient[] {
+  return scoreRecipeFor(classId)?.ingredients ?? fallbackIndicatorColumns(rows);
+}
+
+function IndicatorCell({
+  row,
+  ingredient,
+}: {
+  row: WatchlistRow;
+  ingredient: ScoreIngredient;
+}) {
+  const ind = findRecipeIndicator(row.indicators, ingredient);
+  const percentile = scoringPercentile(ind, ingredient.weight || ind?.weight);
+  const stance = indicatorStance(percentile);
+  const weightPct = ingredient.weight > 0 ? `${(ingredient.weight * 100).toFixed(0)}%` : "";
+  const title = [
+    ingredient.label,
+    weightPct ? `${weightPct} of the score` : null,
+    ingredient.meaning,
+    stance.hint,
+    ind?.value != null ? `Raw reading ${ind.value}` : null,
+  ]
+    .filter(Boolean)
+    .join(" — ");
+
+  return (
+    <td className="px-2 py-2" title={title}>
+      <div className="flex items-center gap-1.5">
+        <span className="tabular-nums text-xs text-white">
+          {percentile != null ? percentile.toFixed(2) : "—"}
+        </span>
+        <span
+          className={`inline-flex rounded px-1 py-px text-[9px] font-medium ring-1 ring-inset ${stanceBadgeClass(
+            stance.kind,
+          )}`}
+        >
+          {stance.label}
+        </span>
+      </div>
+    </td>
+  );
 }
 
 function SecurityRow({
   row,
   columns,
+  classStageLabel,
 }: {
   row: WatchlistRow;
-  columns: { id: string; name: string }[];
+  columns: ScoreIngredient[];
+  classStageLabel: string | null;
 }) {
   const router = useRouter();
-  const indMap = new Map(row.indicators.map((i) => [i.id, i]));
   const trend = plainTrend(row.stageLabel);
-  const newMoney = plainNewMoney({
+  const setup = entrySetup({
+    score: row.score,
+    classStageLabel,
     entryTiming: row.entryTiming,
     entryValidated: row.entryValidated,
     hasMotorData: row.hasMotorData,
@@ -118,40 +180,67 @@ function SecurityRow({
       <td className={`px-2 py-2 tabular-nums text-sm ${perfClass(row.perf15dPct)}`}>
         {formatPerf(row.perf15dPct)}
       </td>
-      <td className="px-2 py-2">
+      <td
+        className="px-2 py-2"
+        title={`${trend.hint} This is the name's own stage from its score, not the sleeve.`}
+      >
         <span
           className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset ${toneBadgeClass(
             trend.tone,
           )}`}
-          title={trend.hint}
         >
           {trend.label}
         </span>
       </td>
-      <td className="px-2 py-2">
+      <td className="px-2 py-2" title={setup.hint}>
+        <div className="flex gap-2 text-[10px] tabular-nums">
+          <span className="text-emerald-400/90">
+            Gain {setup.gain != null ? setup.gain : "—"}
+          </span>
+          <span className="text-red-400/90">
+            Risk {setup.risk != null ? setup.risk : "—"}
+          </span>
+        </div>
         <span
-          className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset ${toneBadgeClass(
-            newMoney.tone,
+          className={`mt-0.5 inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset ${toneBadgeClass(
+            setup.tone,
           )}`}
-          title={newMoney.hint}
         >
-          {newMoney.label}
+          {setup.label}
         </span>
       </td>
       <td className="max-w-[8rem] truncate px-2 py-2 text-[11px] text-zinc-400">
         {row.dominantIndicator?.name ?? "—"}
       </td>
-      {columns.map((col) => (
-        <td key={col.id} className="px-2 py-2 tabular-nums text-xs text-zinc-300">
-          {formatIndicatorValue(indMap.get(col.id)?.value)}
-        </td>
+      {columns.map((ingredient) => (
+        <IndicatorCell key={ingredient.id} row={row} ingredient={ingredient} />
       ))}
     </tr>
   );
 }
 
+function ScoreMixBar({ classId }: { classId: string }) {
+  const recipe = scoreRecipeFor(classId);
+  if (!recipe) return null;
+
+  return (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-1 text-[10px] text-zinc-500">
+      <span className="text-zinc-600">Score mix</span>
+      {recipe.ingredients.map((ing) => (
+        <span key={ing.id} className="tabular-nums" title={ing.meaning}>
+          <span className="text-zinc-400">{(ing.weight * 100).toFixed(0)}%</span>{" "}
+          <span className="text-zinc-300">{ing.shortLabel}</span>
+        </span>
+      ))}
+      <span className="text-zinc-600">
+        · Helping ≥0.65 · Neutral · Dragging &lt;0.35
+      </span>
+    </div>
+  );
+}
+
 export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
-  const columns = indicatorColumns(group.rows);
+  const columns = recipeColumns(group.classId, group.rows);
   const classTrend = plainTrend(group.classStageLabel);
 
   return (
@@ -170,6 +259,8 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
           <p className="text-[11px] text-zinc-600">Class not scored yet.</p>
         )}
       </div>
+
+      <ScoreMixBar classId={group.classId} />
 
       <div className="overflow-x-auto rounded-lg border border-zinc-800 bg-black">
         <table className="w-full min-w-[48rem] text-left text-sm">
@@ -193,13 +284,13 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
               <th className="px-2 py-2 font-medium">15D</th>
               <th
                 className="px-2 py-2 font-medium"
-                title="Where the class is heading: increase, hold, or reduce."
+                title="This name's own stage from its Security Score, not the sleeve. The sleeve is the line above the table."
               >
-                Trend
+                Name trend
               </th>
               <th
                 className="px-2 py-2 font-medium"
-                title="Whether the model allows new money in this name now."
+                title="Gain is the name vs peers (0–100). Risk mixes the sleeve climate with how weak the name is. The badge is the motor's entry call — a high Gain can still be Do not add when the class is reducing."
               >
                 New money
               </th>
@@ -212,16 +303,27 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
               {columns.map((col) => (
                 <th
                   key={col.id}
-                  className="max-w-[7rem] truncate px-2 py-2 font-medium"
+                  className="px-2 py-2 font-medium"
+                  title={`${col.label} (${(col.weight * 100).toFixed(0)}% of the score). ${col.meaning} Number is the 0–1 peer rank; Helping ≥0.65, Dragging <0.35.`}
                 >
-                  {col.name}
+                  <div className="truncate">{col.shortLabel}</div>
+                  {col.weight > 0 ? (
+                    <div className="text-[10px] font-normal tabular-nums text-zinc-600">
+                      {(col.weight * 100).toFixed(0)}%
+                    </div>
+                  ) : null}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
             {group.rows.map((row) => (
-              <SecurityRow key={row.id} row={row} columns={columns} />
+              <SecurityRow
+                key={row.id}
+                row={row}
+                columns={columns}
+                classStageLabel={group.classStageLabel}
+              />
             ))}
           </tbody>
         </table>

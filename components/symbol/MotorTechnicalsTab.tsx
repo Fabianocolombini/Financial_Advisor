@@ -7,11 +7,12 @@ import {
   countsToSignedGauge,
 } from "@/lib/market/technical-summary";
 import { computeIndicatorSeries } from "@/lib/market/technical-indicators";
+import { formatIndicatorValue } from "@/lib/motor/format-scores";
 import {
-  actionClass,
-  formatIndicatorValue,
-  indicatorActionFromContribution,
-} from "@/lib/motor/format-scores";
+  indicatorStance,
+  scoringPercentile,
+  stanceBadgeClass,
+} from "@/lib/motor/indicator-stance";
 import {
   buildConvergenceSummary,
   macroIndicators,
@@ -126,14 +127,20 @@ function MotorIndicatorsCompact({
               <th className="px-3 py-2">Indicator</th>
               <th className="px-3 py-2">
                 <span className="inline-flex items-center gap-1">
-                  Value
-                  <InfoTooltip term="motor_col_value" />
+                  Rank
+                  <InfoTooltip term="motor_col_percentile" />
                 </span>
               </th>
               <th className="px-3 py-2">
                 <span className="inline-flex items-center gap-1">
-                  Signal
-                  <InfoTooltip term="motor_col_action" />
+                  Stance
+                  <InfoTooltip term="motor_col_stance" />
+                </span>
+              </th>
+              <th className="px-3 py-2">
+                <span className="inline-flex items-center gap-1">
+                  Value
+                  <InfoTooltip term="motor_col_value" />
                 </span>
               </th>
               <th className="px-3 py-2">
@@ -146,7 +153,8 @@ function MotorIndicatorsCompact({
           </thead>
           <tbody>
             {indicators.map((ind) => {
-              const action = indicatorActionFromContribution(ind.contribution);
+              const percentile = scoringPercentile(ind, ind.weight);
+              const stance = indicatorStance(percentile);
               return (
                 <tr key={ind.id} className="border-b border-zinc-800/80">
                   <td className="px-3 py-2 text-white">
@@ -160,10 +168,22 @@ function MotorIndicatorsCompact({
                       }
                     />
                   </td>
+                  <td className="px-3 py-2 tabular-nums text-white">
+                    {percentile != null ? percentile.toFixed(2) : "—"}
+                  </td>
+                  <td className="px-3 py-2">
+                    <span
+                      className={`inline-flex rounded px-1.5 py-0.5 text-[10px] font-medium ring-1 ring-inset ${stanceBadgeClass(
+                        stance.kind,
+                      )}`}
+                      title={stance.hint}
+                    >
+                      {stance.label}
+                    </span>
+                  </td>
                   <td className="px-3 py-2 tabular-nums text-zinc-300">
                     {formatIndicatorValue(ind.value)}
                   </td>
-                  <td className={`px-3 py-2 ${actionClass(action)}`}>{action}</td>
                   <td className="px-3 py-2 tabular-nums text-zinc-400">
                     {ind.contribution != null ? ind.contribution.toFixed(3) : "—"}
                   </td>

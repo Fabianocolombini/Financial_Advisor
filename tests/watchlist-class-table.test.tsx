@@ -46,6 +46,39 @@ function row(overrides: Partial<WatchlistRow> = {}): WatchlistRow {
   };
 }
 
+function scoredCashRow(): WatchlistRow {
+  return row({
+    symbol: "CLOZ",
+    score: 0.563,
+    indicators: [
+      {
+        id: "volume_negociado",
+        name: "Volume negociado",
+        value: 5_700_000,
+        percentile: 0.8,
+        weight: 0.5,
+        contribution: 0.4,
+      },
+      {
+        id: "vol_realizada",
+        name: "Vol realizada 20d",
+        value: 0,
+        percentile: 0.2,
+        weight: 0.35,
+        contribution: 0.07,
+      },
+      {
+        id: "preco_vs_mm50_z_abs",
+        name: "|Preço vs MM50|",
+        value: 1.82,
+        percentile: 0.5,
+        weight: 0.15,
+        contribution: 0.075,
+      },
+    ],
+  });
+}
+
 function group(rows: WatchlistRow[]): WatchlistClassGroup {
   return {
     classId: "cash_equivalents",
@@ -71,7 +104,7 @@ describe("WatchlistClassTable", () => {
     expect(countTags(html, "th")).toBe(countTags(html, "td"));
   });
 
-  it("keeps headers and cells aligned as indicator columns come and go", () => {
+  it("keeps the Cash V2 recipe columns even when a row is missing pillars", () => {
     for (const indicators of [
       [],
       [{ id: "a", name: "A", value: 1 }],
@@ -85,6 +118,8 @@ describe("WatchlistClassTable", () => {
         <WatchlistClassTable group={group([row({ indicators })])} />,
       );
       expect(countTags(html, "th")).toBe(countTags(html, "td"));
+      expect(html).toContain("σ20");
+      expect(html).toContain("|Δ50z|");
     }
   });
 
@@ -105,5 +140,28 @@ describe("WatchlistClassTable", () => {
     expect(html).toContain("Do not add");
     expect(html).not.toContain("Not validated");
     expect(html).not.toContain(">Stage<");
+  });
+
+  it("prints the V2 weights and a stance chip next to each pillar rank", () => {
+    const html = renderToStaticMarkup(
+      <WatchlistClassTable group={group([scoredCashRow()])} />,
+    );
+    expect(html).toContain("Score mix");
+    expect(html).toContain("50%");
+    expect(html).toContain("Helping");
+    expect(html).toContain("Dragging");
+    expect(html).toContain("Neutral");
+    expect(html).toContain("0.80");
+    expect(html).not.toContain("1.820");
+  });
+
+  it("quantifies new money as Gain vs Risk without dropping the motor badge", () => {
+    const html = renderToStaticMarkup(
+      <WatchlistClassTable group={group([scoredCashRow()])} />,
+    );
+    expect(html).toContain("Gain 56");
+    expect(html).toContain("Risk");
+    expect(html).toContain("Do not add");
+    expect(html).toContain("Name trend");
   });
 });

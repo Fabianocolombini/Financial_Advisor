@@ -13,10 +13,16 @@
  */
 
 export type ScoreIngredient = {
+  /** Motor component id — matches `indicadores[].id` / snapshot `indicators[].id`. */
+  id: string;
+  /** Compact header for the Markets table. */
+  shortLabel: string;
   label: string;
   weight: number;
   /** Explains the direction: what counts as good for this ingredient. */
   meaning: string;
+  /** Older snapshot ids that still map to this pillar. */
+  aliases?: string[];
 };
 
 export type ScoreRecipe = {
@@ -32,18 +38,25 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "In cash the score measures which name holds money better — not which will yield more. RSI is left out on purpose: a slow upward drift from accrued yield is not momentum.",
     ingredients: [
       {
+        id: "volume_negociado",
+        shortLabel: "Volume",
         label: "Traded volume",
         weight: 0.5,
+        aliases: ["volume_vs_media"],
         meaning:
           "raw shares traded that day vs peers — higher is better: you can enter and exit without moving the price",
       },
       {
+        id: "vol_realizada",
+        shortLabel: "σ20",
         label: "20-day volatility",
         weight: 0.35,
         meaning:
           "how much the price swung in the last 20 sessions — lower is better: cash should not bounce around",
       },
       {
+        id: "preco_vs_mm50_z_abs",
+        shortLabel: "|Δ50z|",
         label: "Distance from the 50-day average (z-score)",
         weight: 0.15,
         meaning:
@@ -56,23 +69,31 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "In Treasuries the score ranks the point on the curve with the best rate-risk-adjusted momentum and liquidity — not which maturity is “safer”. RSI is kept on purpose: the curve has genuine rate-reversal cycles, unlike Cash.",
     ingredients: [
       {
+        id: "preco_vs_mm50_dur",
+        shortLabel: "Trend",
         label: "Price trend / duration",
         weight: 0.35,
         meaning:
           "price vs the 50- and 200-day averages, each divided by modified duration so a 30-year fund is not ranked higher just because it moves more for the same yield change",
       },
       {
+        id: "rsi_14_dur",
+        shortLabel: "RSI",
         label: "Momentum (RSI on return / duration)",
         weight: 0.25,
         meaning:
           "14-day RSI of daily percent change divided by duration — strength per unit of rate risk, not raw price RSI",
       },
       {
+        id: "volume_negociado",
+        shortLabel: "Volume",
         label: "Traded volume",
         weight: 0.2,
         meaning: "raw shares traded that day vs peers — higher is better: you can enter and exit without moving the price",
       },
       {
+        id: "cot_net_position",
+        shortLabel: "COT",
         label: "Positioning (COT, inverted)",
         weight: 0.2,
         meaning:
@@ -87,23 +108,31 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "In investment-grade credit the score ranks names on duration-adjusted momentum and liquidity, plus whether that name’s duration band fits today’s term premium. Credit spreads live in the class Regime Score — FRED OAS is an index, not a per-ETF reading.",
     ingredients: [
       {
+        id: "preco_vs_mm50_dur",
+        shortLabel: "Trend",
         label: "Price trend / duration",
         weight: 0.3,
         meaning:
           "price vs the 50- and 200-day averages, each divided by modified duration so a long corporate fund is not ranked higher just because it moves more for the same yield change",
       },
       {
+        id: "rsi_14_dur",
+        shortLabel: "RSI",
         label: "Momentum (RSI on return / duration)",
         weight: 0.2,
         meaning:
           "14-day RSI of daily percent change divided by duration — strength per unit of rate risk. Kept because IG has genuine rate-reversal, like Treasuries",
       },
       {
+        id: "volume_negociado",
+        shortLabel: "Volume",
         label: "Traded volume",
         weight: 0.15,
         meaning: "raw shares traded that day vs peers — higher is better: you can enter and exit without moving the price",
       },
       {
+        id: "duration_efetiva",
+        shortLabel: "Dur. fit",
         label: "Duration fit vs term premium",
         weight: 0.35,
         meaning:
@@ -118,23 +147,31 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "In high yield the score rewards genuine trend and discounts names that swing more than peers that day. Volatility is a symptom of credit stress, not the default itself — ICE BofA OAS (including BB/B/CCC) stays in the class Regime Score.",
     ingredients: [
       {
+        id: "preco_vs_mm50",
+        shortLabel: "Trend",
         label: "Price trend",
         weight: 0.35,
         meaning:
           "price vs the 50- and 200-day averages. Kept because HY behaves more like credit with an equity-like trend than like a pure rate instrument",
       },
       {
+        id: "rsi_14",
+        shortLabel: "RSI",
         label: "Momentum (RSI)",
         weight: 0.25,
         meaning:
           "recent strength of the move. Unlike Cash, RSI is not an artifact here — HY has real reversals",
       },
       {
+        id: "volume_negociado",
+        shortLabel: "Volume",
         label: "Traded volume",
         weight: 0.15,
         meaning: "raw shares traded that day vs peers — higher is better: you can enter and exit without moving the price",
       },
       {
+        id: "vol_realizada",
+        shortLabel: "σ20",
         label: "20-day volatility (inverted)",
         weight: 0.25,
         meaning:
@@ -149,23 +186,31 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "In TIPS the score ranks names on duration-adjusted momentum and liquidity, plus whether that name’s duration band fits today’s real yield. There is no credit ingredient — TIPS are Treasury-issued.",
     ingredients: [
       {
+        id: "preco_vs_mm50_dur",
+        shortLabel: "Trend",
         label: "Price trend / duration",
         weight: 0.3,
         meaning:
           "ETF market close vs the 50- and 200-day averages, each divided by modified duration so a 15-year TIPS fund is not ranked higher just because it moves more for the same real-yield change. This is the fund share price (yfinance), not a TIPS dirty bond price",
       },
       {
+        id: "rsi_14_dur",
+        shortLabel: "RSI",
         label: "Momentum (RSI on return / duration)",
         weight: 0.2,
         meaning:
           "14-day RSI of daily percent change divided by duration — strength per unit of real-rate risk",
       },
       {
+        id: "volume_negociado",
+        shortLabel: "Volume",
         label: "Traded volume",
         weight: 0.15,
         meaning: "raw shares traded that day vs peers — higher is better: you can enter and exit without moving the price",
       },
       {
+        id: "duration_efetiva",
+        shortLabel: "RY fit",
         label: "Real-yield fit vs DFII10",
         weight: 0.35,
         meaning:
@@ -180,23 +225,31 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "In preferreds the score weights income and trend, and discounts names that swing more than peers. A yield that only jumped because price collapsed is haircut — that is the yield-trap, not extra carry.",
     ingredients: [
       {
+        id: "preco_vs_mm50",
+        shortLabel: "Trend",
         label: "Price trend",
         weight: 0.3,
         meaning:
           "price vs the 50- and 200-day averages. Kept because preferreds trade like hybrids with an equity-like trend",
       },
       {
+        id: "rsi_14",
+        shortLabel: "RSI",
         label: "Momentum (RSI)",
         weight: 0.2,
         meaning: "recent strength of the move. Unlike Cash, RSI is not an artifact here",
       },
       {
+        id: "dividend_yield",
+        shortLabel: "Yield",
         label: "Dividend yield (anti yield-trap)",
         weight: 0.25,
         meaning:
           "income vs peers after shrinking a yield that spiked versus its own 1-year history. A structurally high coupon still ranks high; a crash-inflated yield does not",
       },
       {
+        id: "vol_realizada",
+        shortLabel: "σ20",
         label: "20-day volatility (inverted)",
         weight: 0.25,
         meaning:
@@ -211,22 +264,30 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "In US stocks the score rewards trend and momentum, then liquidity in dollars, and discounts names that swing more than peers that day.",
     ingredients: [
       {
+        id: "preco_vs_mm50",
+        shortLabel: "Trend",
         label: "Price trend",
         weight: 0.35,
         meaning: "price vs the 50- and 200-day averages — higher is better: the move is established",
       },
       {
+        id: "rsi_14",
+        shortLabel: "RSI",
         label: "Momentum (RSI)",
         weight: 0.25,
         meaning: "14-day RSI — higher is better: recent strength of the move",
       },
       {
+        id: "volume_dolar",
+        shortLabel: "$ vol",
         label: "Dollar volume",
         weight: 0.2,
         meaning:
           "price × shares traded that day vs peers — higher is better. Share count would favor cheap names that are not more liquid in dollars",
       },
       {
+        id: "vol_realizada",
+        shortLabel: "σ20",
         label: "20-day volatility (inverted)",
         weight: 0.2,
         meaning:
@@ -241,23 +302,31 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "In international stocks the score ranks names on USD-listed ETF prices, then asks how close their dollar sensitivity is to the class target.",
     ingredients: [
       {
+        id: "preco_vs_mm50",
+        shortLabel: "Trend",
         label: "Price trend",
         weight: 0.3,
         meaning:
           "price vs the 50- and 200-day averages of the USD ETF close — higher is better. There is no local-currency series for this sleeve (EFA, VEA, …)",
       },
       {
+        id: "rsi_14",
+        shortLabel: "RSI",
         label: "Momentum (RSI)",
         weight: 0.2,
         meaning: "14-day RSI of the same USD close — higher is better: recent strength of the move",
       },
       {
+        id: "vol_realizada",
+        shortLabel: "σ20",
         label: "Stability (inverted 20-day vol)",
         weight: 0.2,
         meaning:
           "how much the price swung in the last 20 sessions vs other international names that day — lower is better",
       },
       {
+        id: "hedge_fit",
+        shortLabel: "$ fit",
         label: "Currency exposure (distance to target)",
         weight: 0.3,
         meaning:
@@ -272,22 +341,30 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "In emerging markets the score ranks names on USD ETF prices and liquidity in dollars, then asks how close their China sensitivity is to the class target.",
     ingredients: [
       {
+        id: "preco_vs_mm50",
+        shortLabel: "Trend",
         label: "Price trend",
         weight: 0.3,
         meaning: "price vs the 50- and 200-day averages of the USD ETF close — higher is better",
       },
       {
+        id: "rsi_14",
+        shortLabel: "RSI",
         label: "Momentum (RSI)",
         weight: 0.2,
         meaning: "14-day RSI — higher is better: recent strength of the move",
       },
       {
+        id: "volume_dolar",
+        shortLabel: "$ vol",
         label: "Dollar volume",
         weight: 0.2,
         meaning:
           "price × shares traded that day vs peers — higher is better. Share count would favor cheap names; EM liquidity gaps make that bias worse than in US stocks",
       },
       {
+        id: "china_fit",
+        shortLabel: "CN fit",
         label: "China exposure (distance to target)",
         weight: 0.3,
         meaning:
@@ -302,24 +379,32 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "In REITs the score is bond-plus-equity: price trend on the share price, income after a crash haircut, dollar liquidity, and a small penalty for names that swing more than peers. RSI is left out on purpose.",
     ingredients: [
       {
+        id: "preco_vs_mm50",
+        shortLabel: "Trend",
         label: "Price trend",
         weight: 0.3,
         meaning:
           "price vs the 50- and 200-day averages of the ETF close (price return, not total return) — higher is better. Dividends are not mixed into this pillar",
       },
       {
+        id: "dividend_yield",
+        shortLabel: "Yield",
         label: "Dividend yield (anti-trap)",
         weight: 0.35,
         meaning:
           "income vs other REITs that day, after y / (1 + max(z, 0)) where z is the yield’s own 252-day z-score. A crash that inflates yield is not extra carry",
       },
       {
+        id: "volume_dolar",
+        shortLabel: "$ vol",
         label: "Dollar volume",
         weight: 0.2,
         meaning:
           "price × shares traded that day vs peers — higher is better. The sleeve mixes large and small REIT ETFs",
       },
       {
+        id: "vol_realizada",
+        shortLabel: "σ20",
         label: "20-day volatility (inverted)",
         weight: 0.15,
         meaning:
@@ -334,24 +419,32 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "In BDCs the score is credit first: discount to NAV, non-accrual in the loan book, whether net investment income covers the dividend, and only a small price-trend vote. RSI and raw yield stay out on purpose.",
     ingredients: [
       {
+        id: "nav_premium_discount",
+        shortLabel: "NAV",
         label: "NAV premium/discount (inverted)",
         weight: 0.3,
         meaning:
           "market price vs last reported NAV per share — a wider discount ranks higher. NAV is quarterly (hold-last); the ratio updates with the as-of close",
       },
       {
+        id: "non_accrual_rate",
+        shortLabel: "Non-acc.",
         label: "Non-accrual rate (inverted)",
         weight: 0.3,
         meaning:
           "share of the loan book that has stopped accruing interest vs other listed BDCs that day — lower is better. Hold-last from the 10-Q",
       },
       {
+        id: "nii_coverage",
+        shortLabel: "Coverage",
         label: "Distribution coverage (NII / dividends)",
         weight: 0.25,
         meaning:
           "whether reported net investment income covers the dividend vs peers. This is the anti yield-trap pillar — high yield alone does not rank higher. Hold-last from the 10-Q",
       },
       {
+        id: "preco_vs_mm50",
+        shortLabel: "Trend",
         label: "Price trend",
         weight: 0.15,
         meaning:
@@ -366,22 +459,30 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "In precious metals the funds compete for the same ounce, so the score ranks trend and momentum, liquidity in dollars, and a cheaper vehicle. Gold COT and ETF holdings stay in the class layer — they do not pick GLD over IAU.",
     ingredients: [
       {
+        id: "preco_vs_mm50",
+        shortLabel: "Trend",
         label: "Price trend",
         weight: 0.35,
         meaning: "price vs the 50- and 200-day averages — higher is better",
       },
       {
+        id: "rsi_14",
+        shortLabel: "RSI",
         label: "Momentum (RSI)",
         weight: 0.25,
         meaning: "recent strength of the move vs other metal funds that day",
       },
       {
+        id: "volume_dolar",
+        shortLabel: "$ vol",
         label: "Dollar volume",
         weight: 0.25,
         meaning:
           "price × shares traded that day vs peers — higher is better. Share count would favor cheap tickers like SGOL",
       },
       {
+        id: "expense_ratio",
+        shortLabel: "Fee",
         label: "Expense ratio (inverted)",
         weight: 0.15,
         meaning:
@@ -396,24 +497,32 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "In energy the score ranks names after stripping oil-beta from the technicals, then asks whether that oil sensitivity sits near the class target. USO is the WTI proxy — not Brent.",
     ingredients: [
       {
+        id: "preco_vs_mm50_oil",
+        shortLabel: "Trend",
         label: "Price trend / oil beta",
         weight: 0.35,
         meaning:
           "price vs the 50- and 200-day averages, divided by max(|beta vs USO|, 0.25) — higher is better per unit of oil sensitivity. Stops E&P from winning just because oil moved",
       },
       {
+        id: "rsi_14_oil",
+        shortLabel: "RSI",
         label: "Momentum (RSI) / oil beta",
         weight: 0.2,
         meaning:
           "RSI on daily return divided by the same oil-beta scale — higher is better per unit of sensitivity",
       },
       {
+        id: "volume_dolar",
+        shortLabel: "$ vol",
         label: "Dollar volume",
         weight: 0.2,
         meaning:
           "price × shares traded that day vs peers — higher is better. Share count would favor cheap tickers like UNG",
       },
       {
+        id: "beta_fit",
+        shortLabel: "Oil fit",
         label: "Oil adherence",
         weight: 0.25,
         meaning:
@@ -428,24 +537,32 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "In energy MLPs the score is income plus trend: the ETF close (not total return), distribution yield after a crash haircut, dollar liquidity, and a penalty for names that swing more than peers. There is no RSI on purpose.",
     ingredients: [
       {
+        id: "preco_vs_mm50",
+        shortLabel: "Trend",
         label: "Price trend",
         weight: 0.3,
         meaning:
           "price vs the 50- and 200-day averages of the ETF close (price return, not total return) — higher is better. Distributions are not mixed into this pillar",
       },
       {
+        id: "dividend_yield",
+        shortLabel: "Yield",
         label: "Distribution yield (anti-trap)",
         weight: 0.3,
         meaning:
           "income vs other MLP funds that day, after y / (1 + max(z, 0)) where z is the yield’s own 252-day z-score. A crash that inflates yield is not extra carry",
       },
       {
+        id: "volume_dolar",
+        shortLabel: "$ vol",
         label: "Dollar volume",
         weight: 0.2,
         meaning:
           "price × shares traded that day vs peers — higher is better. The sleeve mixes AMLP-size funds with smaller midstream ETFs",
       },
       {
+        id: "vol_realizada",
+        shortLabel: "σ20",
         label: "20-day volatility (inverted)",
         weight: 0.2,
         meaning:
@@ -458,10 +575,10 @@ const RECIPES: Record<string, ScoreRecipe> = {
   healthcare_biotech: {
     headline: "In healthcare and biotech the score includes the density of regulatory catalysts.",
     ingredients: [
-      { label: "Price trend", weight: 0.25, meaning: "price above the averages" },
-      { label: "Momentum (RSI)", weight: 0.2, meaning: "recent strength of the move" },
-      { label: "Traded volume", weight: 0.2, meaning: "more liquid is better" },
-      { label: "Catalysts (FDA)", weight: 0.35, meaning: "the class regulatory calendar" },
+      { id: "trend", shortLabel: "Trend", label: "Price trend", weight: 0.25, meaning: "price above the averages" },
+      { id: "rsi_14", shortLabel: "RSI", label: "Momentum (RSI)", weight: 0.2, meaning: "recent strength of the move" },
+      { id: "volume_vs_media", shortLabel: "Volume", label: "Traded volume", weight: 0.2, meaning: "more liquid is better" },
+      { id: "catalyst_density", shortLabel: "FDA", label: "Catalysts (FDA)", weight: 0.35, meaning: "the class regulatory calendar" },
     ],
   },
   alt_infrastructure: {
@@ -469,36 +586,48 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "In infrastructure the score is income plus the books: trend on the close, yield versus the name’s own history, whether free cash flow covers the dividend, cheapness versus the name’s own EV/EBITDA, leverage, and a small stability vote. RSI and volume stay out.",
     ingredients: [
       {
+        id: "preco_vs_mm50",
+        shortLabel: "Trend",
         label: "Price trend",
         weight: 0.2,
         meaning:
           "price vs the 50- and 200-day averages of the close (price return, not total return) — higher is better",
       },
       {
+        id: "dividend_yield",
+        shortLabel: "Yield",
         label: "Dividend yield (own-history z)",
         weight: 0.15,
         meaning:
           "how far the yield sits above the name’s own 3-year history, then ranked vs peers. Towers are not punished for paying less than utilities. Coverage is the trap check",
       },
       {
+        id: "fcf_coverage",
+        shortLabel: "FCF cov",
         label: "Distribution coverage (FCF / dividends)",
         weight: 0.2,
         meaning:
           "free cash flow covering the dividend vs other issuers that day — higher is better. Hold-last from SEC companyfacts. ETFs sit at the median",
       },
       {
+        id: "ev_ebitda",
+        shortLabel: "EV/EBITDA",
         label: "EV/EBITDA vs own history (inverted)",
         weight: 0.2,
         meaning:
           "z-score of EV/EBITDA vs the last 12 quarters — a discount to the name’s own multiple ranks higher. Neutralizes subsector (utilities vs towers)",
       },
       {
+        id: "debt_ebitda",
+        shortLabel: "Debt",
         label: "Debt/EBITDA (inverted)",
         weight: 0.15,
         meaning:
           "leverage vs other names that day — lower is better. Hold-last from companyfacts",
       },
       {
+        id: "vol_realizada",
+        shortLabel: "σ20",
         label: "20-day volatility (inverted)",
         weight: 0.1,
         meaning:
@@ -513,30 +642,40 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "In FX the score picks the vehicle, not the direction: cheaper access, liquidity in dollars, dollar-beta close to the class target, carry of the currency the fund actually holds, and how tightly it tracks the spot. There is no trend or RSI on purpose.",
     ingredients: [
       {
+        id: "expense_ratio",
+        shortLabel: "Fee",
         label: "Expense ratio (inverted)",
         weight: 0.2,
         meaning:
           "annual fund fee vs other FX vehicles that day — lower is better. The fee rarely changes; that stability is accepted",
       },
       {
+        id: "volume_dolar",
+        shortLabel: "$ vol",
         label: "Dollar volume",
         weight: 0.2,
         meaning:
           "price × shares traded that day vs peers — higher is better. Share count would favor cheap tickers",
       },
       {
+        id: "dollar_fit",
+        shortLabel: "$ fit",
         label: "Dollar exposure (fit)",
         weight: 0.15,
         meaning:
           "distance of |beta vs UUP| to the class target (25th percentile of the sleeve that day). Closer is better in both directions — a vehicle bucket, not a call on the dollar",
       },
       {
+        id: "fx_carry",
+        shortLabel: "Carry",
         label: "Carry (rate differential)",
         weight: 0.3,
         meaning:
           "policy rate of the currency the ETF holds minus Fed funds (long-dollar funds: Fed minus the basket). Higher is better. Monotonic — not a distance-to-target. Hold-last from FRED/ECB",
       },
       {
+        id: "tracking_error",
+        shortLabel: "TE",
         label: "Tracking error vs spot (inverted)",
         weight: 0.15,
         meaning:

@@ -29,7 +29,7 @@ export function ClassScoreLegend({
 
       <ul className="mt-2 space-y-1">
         {recipe.ingredients.map((ing) => (
-          <li key={ing.label} className="flex gap-2 text-[11px] text-zinc-500">
+          <li key={ing.id} className="flex gap-2 text-[11px] text-zinc-500">
             <span className="w-10 shrink-0 tabular-nums text-zinc-400">
               {(ing.weight * 100).toFixed(0)}%
             </span>

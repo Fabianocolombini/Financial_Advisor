@@ -19,12 +19,16 @@ const ENTRIES: { term: string; text: string }[] = [
     text: "How many shares, on average, traded per day over the last 15 sessions, and how much that is of the class volume. It is the mass actually traded: high volume means you can enter and exit without moving the price.",
   },
   {
-    term: "Trend",
-    text: "Where the class is heading. Increase = the wind is at your back, it makes sense to put more money here. Hold = no defined direction, keep what you already have without adding faster. Reduce = the trend turned against you — that does not mean it already lost money, it means the direction changed. Reduce hard = cut the exposure.",
+    term: "Name trend",
+    text: "This name's own stage from its Security Score, not the sleeve. The sleeve is the “The whole class” line above the table. Increase / Hold / Reduce here answers “is this vehicle holding up vs peers?”, not “should I add to the sleeve?”.",
   },
   {
     term: "New money",
-    text: "Whether it is worth putting new money into this name now. Can add = the class is favorable and the name ranks among the best in the group. Wait = it is eligible, but confirmation is missing. Do not add = the model advises against entering now (existing holders do not necessarily need to sell because of that). Indifferent = it is a cash reserve, where there is no good or bad entry moment.",
+    text: "Gain is the name vs its peers, 0–100 (the Security Score). Risk mixes the sleeve climate (70%) with how weak the name is (30%). The badge is the motor's entry call. A Gain of 56 can still read Do not add when the class is Reduce hard — new money would fight the sleeve. Can add / Wait / Do not add / Indifferent keep the same meaning as before; the two numbers explain why.",
+  },
+  {
+    term: "Score mix / pillars",
+    text: "Each class has a fixed recipe (weights under the class title and on each pillar header). The cell is the 0–1 peer rank that actually enters the score, not the raw reading. Helping ≥ 0.65, Neutral around the median, Dragging < 0.35 — glance at the chip to see where the name is failing.",
   },
   {
     term: "Main factor",
