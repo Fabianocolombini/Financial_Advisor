@@ -130,6 +130,12 @@ Snapshot export: `allIndicators`, `scoreHistory`, `decisionMap` (após Motor Dai
 - Config: `motor/config/models/energy_mlp_regime.json`, `indicadores_tecnicos_energy_mlp.json`
 - Spec: `docs/spec-revisao-mlp-security-score.md`
 
+**Alternative Credit / BDC (`credito_alternativo` / UI `alt_bdc`) — modelos dedicados (v2):**
+- Modelo 1 `BDCRegimeScore` — SOFR + HY OAS + NAV/non-accrual de classe (proxy ARCC) — **sem mudança nesta revisão**
+- Modelo 2 `SecurityScore` v2 — NAV discount invertido (preço_as_of / NAV hold-last) + non-accrual invertido + coverage NII/dividendos + tendência; pesos 30/30/25/15. Sem RSI, sem yield bruto, sem volume, sem σ. Hold-last trimestral em NA e coverage. NII = reportado (heurística 10-Q)
+- Config: `motor/config/models/bdc_regime.json`, `indicadores_tecnicos_bdc.json`
+- Spec: `docs/spec-revisao-bdc-security-score.md`
+
 **Backlog 1B:** click em cada indicador → mini-chart; sparklines no snapshot para external-only series.
 
 ## Etapa 1 — Gestão de fontes (base)

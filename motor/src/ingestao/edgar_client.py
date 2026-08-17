@@ -1,4 +1,4 @@
-"""SEC EDGAR metrics for BDCs (non-accrual rate, NAV proxy)."""
+"""SEC EDGAR metrics for BDCs (non-accrual, NAV per share, NII coverage)."""
 
 from __future__ import annotations
 
@@ -100,6 +100,71 @@ def _parse_nav_from_html(text: str) -> float | None:
     return None
 
 
+def _normalize_coverage_ratio(val: float) -> float | None:
+    """Map parsed coverage to a ratio (typically 0.3–3.0x). Percents like 114 → 1.14."""
+    if val <= 0:
+        return None
+    if val > 5:
+        if val > 300:
+            return None
+        val = val / 100.0
+    if val > 3.5:
+        return None
+    return val
+
+
+def _parse_nii_coverage_from_html(text: str) -> float | None:
+    """Heuristic NII / distributions from a 10-Q/10-K. Reported NII, not fee-adjusted."""
+    text_lower = text.lower()
+    coverage_patterns = [
+        r"dividend coverage(?: ratio)?[^0-9]{0,40}(\d+\.?\d*)\s*(?:x|times|%)",
+        r"nii coverage[^0-9]{0,40}(\d+\.?\d*)\s*(?:x|times|%)",
+        r"coverage ratio[^0-9]{0,40}(\d+\.?\d*)\s*(?:x|times)",
+        r"net investment income[^.]{0,180}cover(?:age|ed)[^0-9]{0,30}(\d+\.?\d*)\s*(?:x|times|%)",
+        r"cover(?:age|ed)[^0-9]{0,40}(\d+\.?\d*)\s*(?:x|times)\s*(?:by )?(?:net investment income|nii)",
+        r"distributions? were covered[^0-9]{0,40}(\d+\.?\d*)",
+    ]
+    for pat in coverage_patterns:
+        m = re.search(pat, text_lower, re.I)
+        if m:
+            try:
+                parsed = _normalize_coverage_ratio(float(m.group(1)))
+            except ValueError:
+                continue
+            if parsed is not None:
+                return parsed
+
+    nii_ps_patterns = [
+        r"net investment income per (?:common )?share[^$0-9]{0,40}\$?\s*(\d+\.\d+)",
+        r"nii per (?:common )?share[^$0-9]{0,40}\$?\s*(\d+\.\d+)",
+    ]
+    dps_patterns = [
+        r"(?:regular )?(?:dividend|distribution)s? (?:of |declared |paid )?[^$0-9]{0,40}\$?\s*(\d+\.\d+)\s*per (?:common )?share",
+        r"(?:dividends?|distributions?) (?:declared|paid) per (?:common )?share[^$0-9]{0,40}\$?\s*(\d+\.\d+)",
+    ]
+    nii_ps = None
+    for pat in nii_ps_patterns:
+        m = re.search(pat, text_lower, re.I)
+        if m:
+            try:
+                nii_ps = float(m.group(1))
+                break
+            except ValueError:
+                continue
+    dps = None
+    for pat in dps_patterns:
+        m = re.search(pat, text_lower, re.I)
+        if m:
+            try:
+                dps = float(m.group(1))
+                break
+            except ValueError:
+                continue
+    if nii_ps is not None and dps is not None and dps > 0:
+        return _normalize_coverage_ratio(nii_ps / dps)
+    return None
+
+
 def _latest_price(ticker: str) -> float | None:
     with get_connection() as conn:
         row = conn.execute(
@@ -114,8 +179,8 @@ def _latest_price(ticker: str) -> float | None:
     return None
 
 
-def fetch_nav_premium_discount(ticker: str) -> tuple[str, float] | None:
-    """Premium/discount % = (price/NAV - 1) * 100."""
+def _load_latest_10q_text(ticker: str) -> tuple[str, str] | None:
+    """Return (filing_date, html) for the latest 10-Q/10-K."""
     with httpx.Client() as client:
         cik = ticker_to_cik(client, ticker)
         if not cik:
@@ -129,91 +194,106 @@ def fetch_nav_premium_discount(ticker: str) -> tuple[str, float] | None:
             r = client.get(doc_url, headers=EDGAR_HEADERS, timeout=60.0)
             if r.status_code != 200:
                 return None
-            content = r.text
+            return filed_at, r.text
         except Exception:
             return None
-        nav = _parse_nav_from_html(content)
-        if nav is None or nav <= 0:
-            return None
+
+
+def fetch_bdc_filing_metrics(ticker: str) -> tuple[str, dict[str, float]] | None:
+    """Parse non-accrual, NAV/share, NAV premium, and NII coverage from one filing."""
+    loaded = _load_latest_10q_text(ticker)
+    if not loaded:
+        return None
+    filed_at, content = loaded
+    metrics: dict[str, float] = {}
+    na = _parse_non_accrual_from_html(content)
+    if na is not None:
+        metrics["non_accrual_rate"] = na
+    nav = _parse_nav_from_html(content)
+    if nav and nav > 0:
+        metrics["nav_per_share"] = nav
         price = _latest_price(ticker)
         if price is None:
             from motor.src.ingestao.yfinance_client import ingest_ticker
 
             ingest_ticker(ticker.upper(), "2019-01-01")
             price = _latest_price(ticker)
-        if price is None:
-            return None
-        pct = (price / nav - 1.0) * 100.0
-        return filed_at, pct
+        if price:
+            metrics["nav_premium_discount"] = (price / nav - 1.0) * 100.0
+    cov = _parse_nii_coverage_from_html(content)
+    if cov is not None:
+        metrics["nii_coverage"] = cov
+    if not metrics:
+        return None
+    return filed_at, metrics
+
+
+def fetch_nav_premium_discount(ticker: str) -> tuple[str, float] | None:
+    """Premium/discount % = (price/NAV - 1) * 100."""
+    parsed = fetch_bdc_filing_metrics(ticker)
+    if not parsed:
+        return None
+    filed_at, metrics = parsed
+    if "nav_premium_discount" not in metrics:
+        return None
+    return filed_at, metrics["nav_premium_discount"]
 
 
 def fetch_bdc_metric(ticker: str, metric: str) -> tuple[str, float] | None:
     """Return (filing_date, value) for metric."""
-    with httpx.Client() as client:
-        cik = ticker_to_cik(client, ticker)
-        if not cik:
-            return None
-        filing = _latest_10q_url(client, cik)
-        if not filing:
-            return None
-        filed_at, doc_url = filing
-        time.sleep(0.2)
-        try:
-            r = client.get(doc_url, headers=EDGAR_HEADERS, timeout=60.0)
-            if r.status_code != 200:
-                return None
-            content = r.text
-        except Exception:
-            return None
-        if metric == "non_accrual_rate":
-            val = _parse_non_accrual_from_html(content)
-            if val is not None:
-                return filed_at, val
-        if metric == "nav_premium_discount":
-            nav = _parse_nav_from_html(content)
-            if nav and nav > 0:
-                price = _latest_price(ticker)
-                if price:
-                    return filed_at, (price / nav - 1.0) * 100.0
-    return None
+    parsed = fetch_bdc_filing_metrics(ticker)
+    if not parsed:
+        return None
+    filed_at, metrics = parsed
+    if metric not in metrics:
+        return None
+    return filed_at, metrics[metric]
 
 
 def ingest_aba_edgar(aba_id: str) -> dict[str, Any]:
     init_db()
     aba = load_aba_config(aba_id)
     results: dict[str, Any] = {}
-    today = dt.date.today().isoformat()
     with get_connection() as conn:
         for item in aba.get("universo", []):
-            metric = item.get("edgar_metric")
-            if not metric:
+            if not item.get("edgar_metric"):
                 continue
             ticker = item["ticker"].upper()
-            fetched = fetch_bdc_metric(ticker, metric)
+            fetched = fetch_bdc_filing_metrics(ticker)
             if fetched:
-                filed_at, val = fetched
-                conn.execute(
-                    """
-                    INSERT OR REPLACE INTO edgar_metrics (ticker, data, metric, valor)
-                    VALUES (?, ?, ?, ?)
-                    """,
-                    (ticker, filed_at, metric, val),
-                )
-                results[ticker] = {"metric": metric, "date": filed_at, "value": val}
+                filed_at, metrics = fetched
+                for metric, val in metrics.items():
+                    conn.execute(
+                        """
+                        INSERT OR REPLACE INTO edgar_metrics (ticker, data, metric, valor)
+                        VALUES (?, ?, ?, ?)
+                        """,
+                        (ticker, filed_at, metric, val),
+                    )
+                results[ticker] = {"date": filed_at, "metrics": metrics}
             else:
-                results[ticker] = {"metric": metric, "error": "not_found"}
+                results[ticker] = {"error": "not_found"}
         conn.commit()
     return results
 
 
 def get_edgar_metric(ticker: str, metric: str) -> float | None:
+    return get_edgar_metric_at(ticker, metric, as_of=None)
+
+
+def get_edgar_metric_at(
+    ticker: str, metric: str, as_of: dt.date | None = None
+) -> float | None:
+    """Hold-last: latest print with filing date <= as_of (or latest if as_of is None)."""
+    sql = """
+        SELECT valor FROM edgar_metrics
+        WHERE ticker = ? AND metric = ?
+    """
+    params: list[Any] = [ticker.upper(), metric]
+    if as_of is not None:
+        sql += " AND data <= ?"
+        params.append(as_of.isoformat())
+    sql += " ORDER BY data DESC LIMIT 1"
     with get_connection() as conn:
-        row = conn.execute(
-            """
-            SELECT valor FROM edgar_metrics
-            WHERE ticker = ? AND metric = ?
-            ORDER BY data DESC LIMIT 1
-            """,
-            (ticker.upper(), metric),
-        ).fetchone()
+        row = conn.execute(sql, params).fetchone()
     return float(row["valor"]) if row else None

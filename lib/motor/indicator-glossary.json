@@ -168,8 +168,16 @@
     "read": "RSI is scale-invariant on a single name; the oil-beta bias is fixed mostly on the trend pillar. Kept for consistency with duration-adjusted RSI in Treasuries/IG/TIPS."
   },
   "nav_discount": {
-    "meaning": "Price versus the fund’s net asset value (NAV). A discount means the market price is below the portfolio’s book.",
-    "read": "A wider discount can be a cheaper entry if NAV is honest. A persistent discount can also mean the market does not trust the assets. The motor ranks a larger discount as more attractive, with a proxy flag."
+    "meaning": "Price versus last reported NAV per share. A discount means the market price is below the portfolio’s book. In BDCs the NAV level is quarterly (hold-last); the ratio uses the as-of close.",
+    "read": "A wider discount ranks higher (inverted premium). Cheap NAV with low non-accrual is a value candidate; cheap NAV with rising non-accrual is a likely trap — the market may not trust the reported book."
+  },
+  "non_accrual": {
+    "meaning": "Share of the BDC loan book that has stopped accruing interest (borrowers in distress). Parsed from the 10-Q/10-K; hold-last until the next filing.",
+    "read": "Lower is better. This is the credit-quality check on a cheap NAV. The print is lagged: a loan enters non-accrual after the problem is already visible."
+  },
+  "nii_coverage": {
+    "meaning": "Net investment income divided by dividends paid. Whether the BDC’s operating income covers the distribution. Hold-last from the 10-Q; reported NII, not fee-adjusted.",
+    "read": "Higher coverage ranks higher. This replaces raw dividend yield so a distressed name whose yield jumped because the price collapsed does not win. Incentive fees are not stripped out of NII."
   },
   "expense_ratio": {
     "meaning": "Annual fund fee. In Precious Metals this is the 15% inverted Security Score pillar.",

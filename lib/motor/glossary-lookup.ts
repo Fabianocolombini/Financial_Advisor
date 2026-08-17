@@ -23,6 +23,9 @@ const ALIASES: Record<string, string> = {
   preco_vs_mm50_abs: "preco_vs_mm50",
   liquidez: "volume_vs_media",
   vol_penalty_inv: "vol_realizada",
+  nav_premium_discount: "nav_discount",
+  nav_cheap: "nav_discount",
+  non_accrual_rate: "non_accrual",
 };
 
 function isGlossaryKey(id: string): id is keyof typeof glossary {

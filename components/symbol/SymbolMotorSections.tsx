@@ -202,6 +202,13 @@ export function TickerMotorSection({ motor }: { motor: SymbolMotorContext }) {
           inverted 20-day vol. No RSI. No oil-beta pillar — this sleeve is
           midstream. Ranks MLP funds on the same day.
         </p>
+      ) : motor.classId === "alt_bdc" || motor.classId === "credito_alternativo" ? (
+        <p className="text-[10px] text-zinc-500">
+          SecurityScore: 30% NAV discount (inverted; live price vs last NAV) +
+          30% inverted non-accrual + 25% NII / dividends coverage + 15% trend on
+          the close. No RSI. No raw yield — coverage is the anti-trap. Ranks
+          listed BDCs on the same day. SOFR and HY OAS stay in BDCRegimeScore.
+        </p>
       ) : null}
       <SymbolScoreHistoryChart
         title="Ticker composite score (history)"

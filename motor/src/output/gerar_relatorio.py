@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from motor.src.config_loader import (
+    is_bdc_aba,
     is_cash_aba,
     is_class_model_aba,
     is_commodities_energy_aba,
@@ -492,6 +493,33 @@ def build_report_markdown(
             "Spread vs Treasury 10y fica no Regime (distribution_yield_spread)."
         )
         lines.append("")
+    if is_bdc_aba(aba_result["aba_id"]):
+        lines.append("## Modelo Alternative Credit (BDC) — Regime (Modelo 1)")
+        lines.append("")
+        try:
+            from motor.src.calculo.models.bdc_regime_model import compute_bdc_regime
+
+            regime = compute_bdc_regime()
+            lines.append(
+                f"- BDCRegimeScore: **{_fmt(regime.get('bdc_regime_score'))}** "
+                f"→ ação **{regime.get('regime_action')}** (quanto BDC)"
+            )
+            for note in regime.get("explanation", []):
+                lines.append(f"- {note.replace('**', '')}")
+            if not regime.get("calibrated"):
+                lines.append("- ⚠ Pesos não calibrados (`calibrated: false`).")
+        except Exception as e:
+            lines.append(f"- Erro regime BDC: {e}")
+        lines.append("")
+        lines.append("## Modelo Alternative Credit (BDC) — Seleção (Modelo 2)")
+        lines.append("")
+        lines.append(
+            "- SecurityScore v2: 30% NAV discount invertido (preço_as_of / NAV hold-last) "
+            "+ 30% non-accrual invertido + 25% coverage NII/dividendos + 15% tendência (close). "
+            "Sem RSI, sem yield bruto, sem volume, sem σ. NII = reportado (heurística 10-Q). "
+            "SOFR e HY OAS ficam no Regime."
+        )
+        lines.append("")
     _LEGACY_CLASS_REPORTS = {
         is_cash_aba,
         is_treasury_aba,
@@ -506,6 +534,7 @@ def build_report_markdown(
         is_commodities_precious_aba,
         is_commodities_energy_aba,
         is_energy_mlp_aba,
+        is_bdc_aba,
     }
     if is_class_model_aba(aba_result["aba_id"]) and not any(
         fn(aba_result["aba_id"]) for fn in _LEGACY_CLASS_REPORTS

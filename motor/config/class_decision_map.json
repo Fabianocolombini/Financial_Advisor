@@ -328,15 +328,15 @@
         "forecast": ["non_accrual", "nav_cheap"]
       },
       "tickerIndicators": {
-        "timing": ["trend", "nav_discount"],
-        "role": ["nav_discount", "dividend_yield"],
-        "projection": ["trend", "nav_discount"],
-        "investability": ["dividend_yield", "vol_realizada"],
-        "forecast": ["nav_discount", "dividend_yield"]
+        "timing": ["nav_premium_discount", "non_accrual_rate"],
+        "role": ["nii_coverage", "nav_premium_discount"],
+        "projection": ["preco_vs_mm50", "nii_coverage"],
+        "investability": ["nav_premium_discount", "non_accrual_rate"],
+        "forecast": ["non_accrual_rate", "nii_coverage"]
       },
       "models": {
         "regime": "bdc_regime_v1 — BDCRegimeScore",
-        "security": "bdc_security_v1 — trend + NAV discount + yield − vol"
+        "security": "bdc_security_v2 — NAV discount + non-accrual + NII coverage + trend"
       }
     },
     "currencies": {

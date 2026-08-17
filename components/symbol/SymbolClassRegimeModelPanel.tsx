@@ -92,7 +92,7 @@ const CLASS_META: Record<
     title: "BDC model — two layers",
     scoreLabel: "BDCRegimeScore",
     securityNote:
-      "SecurityScore: trend + NAV discount + yield − vol penalty.",
+      "SecurityScore: NAV discount (30, inverted) + non-accrual (30, inverted) + NII coverage (25) + trend (15). No RSI. No raw yield. Listed BDCs only.",
   },
   alt_infrastructure: {
     title: "Infrastructure model — two layers",

@@ -1,0 +1,41 @@
+{
+  "indicadores": [
+    {
+      "id": "nav_premium_discount",
+      "nome": "NAV premium/discount",
+      "peso": 0.3,
+      "direcao": "negativa",
+      "inverte_percentil": true,
+      "refresh": "hold_last",
+      "role": "valuation — percentil alto = maior desconto sobre o NAV hold-last (preço_as_of / NAV_trimestral − 1). Checagem cruzada com non-accrual"
+    },
+    {
+      "id": "non_accrual_rate",
+      "nome": "Non-accrual rate",
+      "peso": 0.3,
+      "direcao": "negativa",
+      "inverte_percentil": true,
+      "refresh": "hold_last",
+      "role": "qualidade de crédito — percentil alto = menor % da carteira que parou de gerar juros. Hold-last do 10-Q"
+    },
+    {
+      "id": "nii_coverage",
+      "nome": "Distribution coverage (NII / dividendos)",
+      "peso": 0.25,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "refresh": "hold_last",
+      "role": "sustentabilidade do dividendo — percentil alto = maior cobertura. NII reportado (heurística 10-Q), não fee-adjusted"
+    },
+    {
+      "id": "preco_vs_mm50",
+      "nome": "Tendência vs médias",
+      "peso": 0.15,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "role": "price trend residual — percentil alto = mais acima das médias MM50/MM200; close da cota (não total return)"
+    }
+  ],
+  "exclude_indicators": ["rsi_14"],
+  "note": "BDC Security Score v2 — pesos 30/30/25/15. Sem RSI, sem yield bruto, sem volume, sem σ. NAV e non-accrual invertidos. Coverage = NII reportado / dividendos. Hold-last trimestral em NAV nível, NA e coverage."
+}

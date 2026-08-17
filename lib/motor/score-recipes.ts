@@ -330,13 +330,36 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "Subtracting the 10-year Treasury yield (DGS10) does not change the rank inside the class: it is the same number for every name that day. REIT vs Treasury 10y lives in REITsRegimeScore (Nareit spread). There is no RSI: trend alone is the equity-like vote, so the formula does not double-count momentum.",
   },
   credito_alternativo: {
-    headline: "In alternative credit the score looks at the discount to net asset value.",
+    headline:
+      "In BDCs the score is credit first: discount to NAV, non-accrual in the loan book, whether net investment income covers the dividend, and only a small price-trend vote. RSI and raw yield stay out on purpose.",
     ingredients: [
-      { label: "Price trend", weight: 0.25, meaning: "price above the averages" },
-      { label: "Discount to NAV", weight: 0.3, meaning: "buying below net asset value is better" },
-      { label: "Dividend yield", weight: 0.25, meaning: "income distributed vs peers" },
-      { label: "20-day volatility", weight: 0.2, meaning: "a discount for names that swing more" },
+      {
+        label: "NAV premium/discount (inverted)",
+        weight: 0.3,
+        meaning:
+          "market price vs last reported NAV per share — a wider discount ranks higher. NAV is quarterly (hold-last); the ratio updates with the as-of close",
+      },
+      {
+        label: "Non-accrual rate (inverted)",
+        weight: 0.3,
+        meaning:
+          "share of the loan book that has stopped accruing interest vs other listed BDCs that day — lower is better. Hold-last from the 10-Q",
+      },
+      {
+        label: "Distribution coverage (NII / dividends)",
+        weight: 0.25,
+        meaning:
+          "whether reported net investment income covers the dividend vs peers. This is the anti yield-trap pillar — high yield alone does not rank higher. Hold-last from the 10-Q",
+      },
+      {
+        label: "Price trend",
+        weight: 0.15,
+        meaning:
+          "price vs the 50- and 200-day averages of the close (price return, not total return) — higher is better. Residual technical vote",
+      },
     ],
+    note:
+      "There is no RSI and no raw dividend yield. Non-accrual checks a cheap NAV: a wide discount with rising non-accrual is a likely value trap. NII is the reported figure (incentive fees are not stripped). HYG in the sleeve has no EDGAR prints and sits at the median on the credit pillars. SOFR and HY OAS stay in BDCRegimeScore.",
   },
   commodities_precious: {
     headline:
@@ -461,7 +484,10 @@ const RECIPES: Record<string, ScoreRecipe> = {
 };
 
 export function scoreRecipeFor(classId: string): ScoreRecipe | null {
-  const aliases: Record<string, string> = { real_estate: "reits" };
+  const aliases: Record<string, string> = {
+    real_estate: "reits",
+    alt_bdc: "credito_alternativo",
+  };
   const key = aliases[classId] ?? classId;
   return RECIPES[key] ?? null;
 }

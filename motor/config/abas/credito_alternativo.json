@@ -1,10 +1,10 @@
 {
   "id": "credito_alternativo",
   "nome": "Crédito Alternativo / High Yield",
-  "descricao": "BDCRegimeScore + NAV discount",
+  "descricao": "BDCRegimeScore + NAV / non-accrual / NII coverage ranking",
   "model": {
     "regime": "bdc_regime_v1",
-    "security": "bdc_security_v1",
+    "security": "bdc_security_v2",
     "calibrated": false
   },
   "pesos_camada": {

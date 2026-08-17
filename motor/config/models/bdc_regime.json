@@ -21,10 +21,10 @@
     "strong_reduce": "Strong Reduce"
   },
   "security_weights": {
-    "wa": 0.25,
+    "wa": 0.3,
     "wb": 0.3,
     "wc": 0.25,
-    "wd": 0.2
+    "wd": 0.15
   },
   "na_percentile_threshold": 0.85,
   "nav_premium_threshold": 0.9
