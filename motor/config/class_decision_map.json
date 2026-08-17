@@ -203,14 +203,14 @@
       },
       "tickerIndicators": {
         "timing": ["trend", "rsi_14"],
-        "role": ["china_fit", "volume_vs_media"],
-        "projection": ["trend", "volume_vs_media"],
-        "investability": ["volume_vs_media", "china_fit"],
+        "role": ["china_fit", "volume_dolar"],
+        "projection": ["trend", "volume_dolar"],
+        "investability": ["volume_dolar", "china_fit"],
         "forecast": ["rsi_14", "china_fit"]
       },
       "models": {
         "regime": "em_equity_regime_v1 — EMEquityRegimeScore",
-        "security": "em_equity_security_v1 — trend + RSI + volume + china_fit"
+        "security": "em_equity_security_v2 — trend + RSI + dollar volume + FXI china fit"
       }
     },
     "real_estate": {

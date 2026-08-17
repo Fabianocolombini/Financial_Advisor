@@ -56,7 +56,7 @@ const CLASS_META: Record<
     title: "Emerging Markets model — two layers",
     scoreLabel: "EMEquityRegimeScore",
     securityNote:
-      "SecurityScore: trend + RSI + volume + china fit (FXI beta).",
+      "SecurityScore: trend and RSI (30/20) + dollar volume (20) + FXI China fit (30). No vol pillar in this ETF sleeve; FX stays in the regime layer.",
   },
   real_estate: {
     title: "REITs model — two layers",

@@ -112,7 +112,7 @@
     "read": "Higher percentile vs peers = more volume that day = easier to enter and exit. The motor does not invert this percentile. US Stocks use dollar volume instead."
   },
   "volume_dolar": {
-    "meaning": "Dollar volume on the snapshot day: last close × shares traded. Liquidity pillar of the US Stocks Security Score (20%).",
+    "meaning": "Dollar volume on the snapshot day: last close × shares traded. Liquidity pillar of the US Stocks Security Score (20%) and the Emerging Markets Security Score (20%).",
     "read": "Higher percentile vs peers = more dollars changed hands = easier to enter and exit. Share count would favor cheap names; this does not. The motor does not invert this percentile."
   },
   "vol_realizada": {
@@ -180,8 +180,8 @@
     "read": "High beta fit = you are actually buying the commodity factor. Low fit = the ticker is a noisy or diluted proxy."
   },
   "china_fit": {
-    "meaning": "How much the emerging-market name behaves like China-sensitive risk.",
-    "read": "Higher China fit means the name will swing with China news. That can be desired exposure or unwanted concentration — check the rest of the wallet."
+    "meaning": "Distance of beta vs FXI to the Emerging Markets class target (60th percentile of the sleeve that day). Fit = 1 − |P(β) − 0.60|. Beta is signed, not absolute.",
+    "read": "Closer to the target is better in both directions — not more China beta. Two ETFs with the same FXI beta get the same fit: this is a China-mix bucket (EEM vs EMXC), not an issuer signal. China-as-a-bloc stays in EMEquityRegimeScore."
   },
   "catalyst_density": {
     "meaning": "Proxy for nearby FDA / pipeline catalysts in biotech (calendar density).",

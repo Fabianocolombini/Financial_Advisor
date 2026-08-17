@@ -9,6 +9,7 @@ from typing import Any
 from motor.src.config_loader import (
     is_cash_aba,
     is_class_model_aba,
+    is_em_equity_aba,
     is_hy_aba,
     is_ig_aba,
     is_intl_equity_aba,
@@ -350,6 +351,36 @@ def build_report_markdown(
             "(distância ao alvo de |β|, bucket regional/cambial). Close USD do ETF — sem série em moeda local."
         )
         lines.append("")
+    if is_em_equity_aba(aba_result["aba_id"]):
+        lines.append("## Modelo Emerging Markets — Regime (Modelo 1)")
+        lines.append("")
+        try:
+            from motor.src.calculo.models.em_equity_regime_model import compute_em_equity_regime
+
+            regime = compute_em_equity_regime()
+            lines.append(
+                f"- EMEquityRegimeScore: **{_fmt(regime.get('em_equity_regime_score'))}** "
+                f"→ ação **{regime.get('regime_action')}** (quanto EM equity)"
+            )
+            if regime.get("em_stress_flag") or regime.get("stress_flag"):
+                lines.append(
+                    f"- EM stress (DXY+VIX) — ação calculada: "
+                    f"{regime.get('regime_action_calculated')}."
+                )
+            for note in regime.get("explanation", []):
+                lines.append(f"- {note.replace('**', '')}")
+            if not regime.get("calibrated"):
+                lines.append("- ⚠ Pesos não calibrados (`calibrated: false`).")
+        except Exception as e:
+            lines.append(f"- Erro regime Emerging Markets: {e}")
+        lines.append("")
+        lines.append("## Modelo Emerging Markets — Seleção (Modelo 2)")
+        lines.append("")
+        lines.append(
+            "- SecurityScore v2: 30% tendência + 20% RSI + 20% volume em dólar + 30% China fit vs FXI "
+            "(distância ao alvo de β, bucket estrutural). Sem σ20 neste sleeve. FX fica no Regime Score."
+        )
+        lines.append("")
     _LEGACY_CLASS_REPORTS = {
         is_cash_aba,
         is_treasury_aba,
@@ -359,6 +390,7 @@ def build_report_markdown(
         is_preferred_aba,
         is_us_equity_aba,
         is_intl_equity_aba,
+        is_em_equity_aba,
     }
     if is_class_model_aba(aba_result["aba_id"]) and not any(
         fn(aba_result["aba_id"]) for fn in _LEGACY_CLASS_REPORTS

@@ -100,6 +100,12 @@ Snapshot export: `allIndicators`, `scoreHistory`, `decisionMap` (após Motor Dai
 - Config: `motor/config/models/intl_equity_regime.json`, `indicadores_tecnicos_intl_equity.json`
 - Spec: `docs/spec-revisao-intl-equity-security-score.md`
 
+**Emerging Markets (`em_equity`) — modelos dedicados (v2):**
+- Modelo 1 `EMEquityRegimeScore` — USD fraco + EMBI + commodities + China equity; DXY+VIX stress cap — **sem mudança nesta revisão**
+- Modelo 2 `SecurityScore` v2 — tendência + RSI + volume em dólar + China fit vs FXI (distância ao alvo); pesos 30/20/20/30. Sem σ20 neste sleeve de ETFs amplos. Sem 5º ingrediente cambial (DXY já no Regime)
+- Config: `motor/config/models/em_equity_regime.json`, `indicadores_tecnicos_em_equity.json`
+- Spec: `docs/spec-revisao-em-equity-security-score.md`
+
 **Backlog 1B:** click em cada indicador → mini-chart; sparklines no snapshot para external-only series.
 
 ## Etapa 1 — Gestão de fontes (base)

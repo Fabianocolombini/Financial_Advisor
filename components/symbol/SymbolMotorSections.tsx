@@ -166,6 +166,13 @@ export function TickerMotorSection({ motor }: { motor: SymbolMotorContext }) {
           international names on the same day — does not change
           IntlEquityRegimeScore.
         </p>
+      ) : motor.classId === "em_equity" ? (
+        <p className="text-[10px] text-zinc-500">
+          SecurityScore: 30% trend + 20% RSI + 20% dollar volume + 30% China-beta
+          fit vs FXI (closer to the class target is better). No 20-day vol
+          pillar: swing is a class property in EMEquityRegimeScore. Ranks EM
+          names on the same day — does not change the regime score.
+        </p>
       ) : null}
       <SymbolScoreHistoryChart
         title="Ticker composite score (history)"

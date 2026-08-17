@@ -4,7 +4,7 @@
   "descricao": "EMEquityRegimeScore + china_fit",
   "model": {
     "regime": "em_equity_regime_v1",
-    "security": "em_equity_security_v1",
+    "security": "em_equity_security_v2",
     "calibrated": false
   },
   "pesos_camada": {

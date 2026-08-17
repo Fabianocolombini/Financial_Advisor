@@ -268,13 +268,34 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "Currency exposure is a regional/FX bucket, like duration fit in IG: two ETFs with the same dollar beta get the same fit. It does not pick issuers. USD prices do embed FX; converting a multi-country ETF by one FX rate would not isolate local performance, so that conversion is not used. No P/E or ROE in this layer.",
   },
   em_equity: {
-    headline: "In emerging markets the score includes how much the name depends on China.",
+    headline:
+      "In emerging markets the score ranks names on USD ETF prices and liquidity in dollars, then asks how close their China sensitivity is to the class target.",
     ingredients: [
-      { label: "Price trend", weight: 0.3, meaning: "price above the averages" },
-      { label: "Momentum (RSI)", weight: 0.2, meaning: "recent strength of the move" },
-      { label: "Traded volume", weight: 0.2, meaning: "more liquid is better" },
-      { label: "China exposure", weight: 0.3, meaning: "China sensitivity close to the class target" },
+      {
+        label: "Price trend",
+        weight: 0.3,
+        meaning: "price vs the 50- and 200-day averages of the USD ETF close — higher is better",
+      },
+      {
+        label: "Momentum (RSI)",
+        weight: 0.2,
+        meaning: "14-day RSI — higher is better: recent strength of the move",
+      },
+      {
+        label: "Dollar volume",
+        weight: 0.2,
+        meaning:
+          "price × shares traded that day vs peers — higher is better. Share count would favor cheap names; EM liquidity gaps make that bias worse than in US stocks",
+      },
+      {
+        label: "China exposure (distance to target)",
+        weight: 0.3,
+        meaning:
+          "how close beta vs FXI sits to the class target (60th percentile of the sleeve that day). Closer is better in both directions — not “more China beta is better”. Ex-China names (EMXC) sit at the low end on purpose",
+      },
     ],
+    note:
+      "There is no 20-day vol pillar: this sleeve is broad EM ETFs, so swing is a class property already in EMEquityRegimeScore (VIX + DXY stress). There is no FX pillar in this layer either: the names are USD vehicles, and dollar strength already sits in the regime score. China exposure is a structural bucket — two ETFs with the same FXI beta get the same fit.",
   },
   reits: {
     headline: "In REITs the score weights income and trend, discounting swing.",
