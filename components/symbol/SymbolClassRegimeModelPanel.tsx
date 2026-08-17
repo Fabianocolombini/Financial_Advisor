@@ -26,7 +26,7 @@ const CLASS_META: Record<
     title: "High Yield model — two layers",
     scoreLabel: "HYRegimeScore",
     securityNote:
-      "SecurityScore: trend + RSI + volume − vol penalty (σ20). No fed cut prob.",
+      "SecurityScore: trend and RSI (35/25) + traded volume (15) + inverted 20-day vol (25). Credit OAS stays in the regime layer.",
   },
   fi_tips: {
     title: "TIPS model — two layers",

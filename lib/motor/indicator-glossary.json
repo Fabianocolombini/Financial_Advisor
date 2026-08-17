@@ -108,12 +108,12 @@
     "read": "A spike versus its own average can mean unusual flow. It is not the Cash Security Score liquidity pillar."
   },
   "volume_negociado": {
-    "meaning": "Raw traded volume on the snapshot day. Liquidity pillar of the Security Score in Cash (50%), Treasuries (20%), and IG (15%).",
+    "meaning": "Raw traded volume on the snapshot day. Liquidity pillar of the Security Score in Cash (50%), Treasuries (20%), IG (15%), and HY (15%).",
     "read": "Higher percentile vs peers = more volume that day = easier to enter and exit. The motor does not invert this percentile."
   },
   "vol_realizada": {
     "meaning": "Realized volatility over the last 20 sessions (standard deviation of daily returns).",
-    "read": "For Cash and most income sleeves, lower is better: the motor inverts the percentile so a calmer name ranks higher. A sudden rise is a stability break."
+    "read": "For Cash and High Yield, lower is better: the motor inverts the percentile so a calmer name ranks higher vs peers that day. A market-wide vol spike does not single out one ETF. A name that jumps while peers stay quiet is the credit-stress symptom the HY score discounts."
   },
   "preco_vs_mm50": {
     "meaning": "How far the last price sits from its 50-day moving average, as a percent.",
@@ -257,7 +257,7 @@
   },
   "hy_oas": {
     "meaning": "High-yield option-adjusted spread — extra yield of junk bonds over Treasuries.",
-    "read": "Wide HY OAS = the market is paying you more to take credit risk (or is scared). Tight HY OAS = little cushion if defaults rise. The HY and BDC sleeves treat a sudden widening as stress."
+    "read": "Wide HY OAS = the market is paying you more to take credit risk (or is scared). Tight HY OAS = little cushion if defaults rise. This is a class index (ICE BofA via FRED), including BB/B/CCC slices — it feeds HYRegimeScore. The current scored sleeve is all broad HY, so it cannot rank one ETF against another."
   },
   "delta_hy_spread_20d": {
     "meaning": "20-day change in the high-yield spread.",

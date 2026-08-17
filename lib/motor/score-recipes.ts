@@ -114,13 +114,35 @@ const RECIPES: Record<string, ScoreRecipe> = {
       "Duration fit is 1 − |duration percentile − term-premium percentile|. OAS (BAMLC0A0CM) is the same number for every name, so it cannot rank LQD vs VCIT — that layer stays in IGRegimeScore.",
   },
   fi_hy: {
-    headline: "In high yield the score rewards trend and penalizes volatility, which is the real risk of the class.",
+    headline:
+      "In high yield the score rewards genuine trend and discounts names that swing more than peers that day. Volatility is a symptom of credit stress, not the default itself — ICE BofA OAS (including BB/B/CCC) stays in the class Regime Score.",
     ingredients: [
-      { label: "Price trend", weight: 0.35, meaning: "price above the averages" },
-      { label: "Momentum (RSI)", weight: 0.25, meaning: "recent strength of the move" },
-      { label: "Traded volume", weight: 0.15, meaning: "more liquid is better" },
-      { label: "20-day volatility", weight: 0.25, meaning: "a discount for names that swing more than peers" },
+      {
+        label: "Price trend",
+        weight: 0.35,
+        meaning:
+          "price vs the 50- and 200-day averages. Kept because HY behaves more like credit with an equity-like trend than like a pure rate instrument",
+      },
+      {
+        label: "Momentum (RSI)",
+        weight: 0.25,
+        meaning:
+          "recent strength of the move. Unlike Cash, RSI is not an artifact here — HY has real reversals",
+      },
+      {
+        label: "Traded volume",
+        weight: 0.15,
+        meaning: "raw shares traded that day vs peers — higher is better: you can enter and exit without moving the price",
+      },
+      {
+        label: "20-day volatility (inverted)",
+        weight: 0.25,
+        meaning:
+          "how much the price swung in the last 20 sessions vs other HY names that day — lower is better. A market-wide risk-off that lifts everyone’s vol does not single out one ETF",
+      },
     ],
+    note:
+      "The scored sleeve (HYG, JNK, USHY, SJNK) is all broad HY, so FRED rating-bucket OAS (BB/B/CCC) is the same backdrop for every name and cannot rank them. Credit spread, quality mix, and distress stay in HYRegimeScore. 0.5 is the median name — vol is inverted so the four grades still average to a 0–1 score.",
   },
   fi_tips: {
     headline: "In TIPS the score combines technicals with how duration fits real yields.",

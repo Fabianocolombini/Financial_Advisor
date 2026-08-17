@@ -100,12 +100,12 @@
         "timing": ["preco_vs_mm50", "rsi_14"],
         "role": ["vol_realizada", "preco_vs_mm200"],
         "projection": ["preco_vs_mm50", "vol_realizada"],
-        "investability": ["volume_vs_media"],
+        "investability": ["volume_negociado", "vol_realizada"],
         "forecast": ["rsi_14", "vol_realizada"]
       },
       "models": {
         "regime": "hy_regime_v1 — HYRegimeScore (quanto HY)",
-        "security": "hy_security_v1 — SecurityScore − vol penalty"
+        "security": "hy_security_v2 — trend + RSI + volume bruto + σ20 invertida (20d)"
       }
     },
     "fi_tips": {

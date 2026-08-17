@@ -70,6 +70,12 @@ Snapshot export: `allIndicators`, `scoreHistory`, `decisionMap` (após Motor Dai
 - Config: `motor/config/models/ig_regime.json`, `indicadores_tecnicos_ig.json`, `ig_duration_map.json`
 - Spec: `docs/spec-revisao-ig-security-score.md`
 
+**High Yield (`fi_hy`) — modelos dedicados (v2):**
+- Modelo 1 `HYRegimeScore` — OAS + Δ spread 20d + quality (CCC/HY) + distress proxy; stress cap — **sem mudança nesta revisão**
+- Modelo 2 `SecurityScore` v2 — tendência + RSI + volume bruto + σ20 invertida (20d); pesos 35/25/15/25. OAS por rating (BB/B/CCC) não ranqueia o sleeve atual (HY amplo)
+- Config: `motor/config/models/hy_regime.json`, `indicadores_tecnicos_hy.json`
+- Spec: `docs/spec-revisao-hy-security-score.md`
+
 **Backlog 1B:** click em cada indicador → mini-chart; sparklines no snapshot para external-only series.
 
 ## Etapa 1 — Gestão de fontes (base)

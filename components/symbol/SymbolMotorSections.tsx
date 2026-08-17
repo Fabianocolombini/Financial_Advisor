@@ -130,6 +130,13 @@ export function TickerMotorSection({ motor }: { motor: SymbolMotorContext }) {
           Ranks IG names on the same day — does not change IGRegimeScore. Credit OAS
           is a class index (FRED), so it stays in the regime layer.
         </p>
+      ) : motor.classId === "fi_hy" ? (
+        <p className="text-[10px] text-zinc-500">
+          SecurityScore: 35% trend + 25% RSI + 15% traded volume + 25% inverted 20-day
+          vol vs peers that day. Ranks HY names on the same day — does not change
+          HYRegimeScore. OAS (including BB/B/CCC) is a class/bucket index, so credit
+          stays in the regime layer for this broad-HY sleeve.
+        </p>
       ) : null}
       <SymbolScoreHistoryChart
         title="Ticker composite score (history)"

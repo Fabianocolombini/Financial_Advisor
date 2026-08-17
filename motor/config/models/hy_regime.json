@@ -1,6 +1,6 @@
 {
   "calibrated": false,
-  "note": "Pesos w1–w4 e wa–wd definidos por julgamento — não calibrados (`calibrated: false`). Sem fed_cut_probability.",
+  "note": "Pesos w1–w4 e wa–wd definidos por julgamento — não calibrados (`calibrated: false`). Sem fed_cut_probability. Security v2: 35/25/15/25 com σ20 invertida (média 0–1). OAS fica no Regime Score.",
   "regime_weights": {
     "w1": 0.35,
     "w2": 0.30,

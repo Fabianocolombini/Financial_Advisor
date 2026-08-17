@@ -1,0 +1,39 @@
+{
+  "indicadores": [
+    {
+      "id": "preco_vs_mm50",
+      "nome": "Tendência vs médias",
+      "peso": 0.35,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "role": "price trend — percentil alto = mais acima das médias MM50/MM200"
+    },
+    {
+      "id": "rsi_14",
+      "nome": "RSI 14d",
+      "peso": 0.25,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "role": "momentum — percentil alto = RSI mais forte; HY é equity-like, RSI não é artefato"
+    },
+    {
+      "id": "volume_negociado",
+      "nome": "Volume negociado",
+      "peso": 0.15,
+      "direcao": "positiva",
+      "inverte_percentil": false,
+      "role": "liquidez — percentil alto = maior volume bruto"
+    },
+    {
+      "id": "vol_realizada",
+      "nome": "Volatilidade realizada 20d",
+      "peso": 0.25,
+      "direcao": "negativa",
+      "inverte_percentil": true,
+      "vol_window": 20,
+      "role": "desconto de swing — percentil alto = menor σ20 vs pares no mesmo dia"
+    }
+  ],
+  "vol_window": 20,
+  "note": "HY Security Score v2 — pesos 35/25/15/25. Volume bruto. σ20 invertida (média ponderada 0–1; 0.5 = mediano). Lookback 20d. OAS BB/B/CCC fica no Regime Score: o universo pontuado (HYG/JNK/USHY/SJNK) é HY amplo, as séries FRED por rating não ranqueiam esses ETFs."
+}

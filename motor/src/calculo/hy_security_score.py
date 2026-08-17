@@ -1,4 +1,4 @@
-"""HY security selection — trend + RSI + volume − vol penalty (Model 2)."""
+"""HY security selection — trend + RSI + volume − inverted 20d vol (Model 2)."""
 
 from __future__ import annotations
 
@@ -6,15 +6,49 @@ import datetime as dt
 import json
 from typing import Any
 
-from motor.src.calculo.cash_security_score import _cross_sectional_percentile, _latest_at
+from motor.src.calculo.cash_security_score import _directed_percentile, _latest_at
 from motor.src.calculo.indicadores_tecnicos import get_tecnico_series
+from motor.src.calculo.treasury_security_score import _traded_volume
 from motor.src.dates import motor_as_of_date
 from motor.src.paths import CONFIG_DIR
 
 _CONFIG_PATH = CONFIG_DIR / "models" / "hy_regime.json"
+_TECNICOS_PATH = CONFIG_DIR / "indicadores_tecnicos_hy.json"
+
+_TREND_ID = "preco_vs_mm50"
+_RSI_ID = "rsi_14"
+_VOLUME_ID = "volume_negociado"
+_SIGMA_ID = "vol_realizada"
+
+
+def _load_security_ingredients() -> list[dict[str, Any]]:
+    if not _TECNICOS_PATH.is_file():
+        return [
+            {"id": _TREND_ID, "peso": 0.35, "inverte_percentil": False},
+            {"id": _RSI_ID, "peso": 0.25, "inverte_percentil": False},
+            {"id": _VOLUME_ID, "peso": 0.15, "inverte_percentil": False},
+            {"id": _SIGMA_ID, "peso": 0.25, "inverte_percentil": True},
+        ]
+    cfg = json.loads(_TECNICOS_PATH.read_text(encoding="utf-8"))
+    return list(cfg.get("indicadores") or [])
+
+
+def _ingredient(ind_id: str) -> dict[str, Any]:
+    for item in _load_security_ingredients():
+        if item.get("id") == ind_id:
+            return item
+    return {}
 
 
 def _load_security_weights() -> dict[str, float]:
+    by_id = {i["id"]: float(i.get("peso") or 0) for i in _load_security_ingredients()}
+    if all(by_id.get(k) for k in (_TREND_ID, _RSI_ID, _VOLUME_ID, _SIGMA_ID)):
+        return {
+            "wa": by_id[_TREND_ID],
+            "wb": by_id[_RSI_ID],
+            "wc": by_id[_VOLUME_ID],
+            "wd": by_id[_SIGMA_ID],
+        }
     if not _CONFIG_PATH.is_file():
         return {"wa": 0.35, "wb": 0.25, "wc": 0.15, "wd": 0.25}
     cfg = json.loads(_CONFIG_PATH.read_text(encoding="utf-8"))
@@ -43,6 +77,10 @@ def compute_hy_security_batch(
     as_of = as_of or motor_as_of_date()
     weights = _load_security_weights()
     wa, wb, wc, wd = weights["wa"], weights["wb"], weights["wc"], weights["wd"]
+    invert_trend = bool(_ingredient(_TREND_ID).get("inverte_percentil", False))
+    invert_rsi = bool(_ingredient(_RSI_ID).get("inverte_percentil", False))
+    invert_vol = bool(_ingredient(_VOLUME_ID).get("inverte_percentil", False))
+    invert_sigma = bool(_ingredient(_SIGMA_ID).get("inverte_percentil", True))
     cs_universe = list(dict.fromkeys((universe_tickers or tickers) + tickers))
 
     raw_mm50: dict[str, float] = {}
@@ -56,14 +94,14 @@ def compute_hy_security_batch(
         raw_mm50[t] = _latest_at(get_tecnico_series(t, "preco_vs_mm50"), as_of) or 0.0
         raw_mm200[t] = _latest_at(get_tecnico_series(t, "preco_vs_mm200"), as_of) or 0.0
         raw_rsi[t] = _latest_at(get_tecnico_series(t, "rsi_14"), as_of) or 50.0
-        raw_vol[t] = _latest_at(get_tecnico_series(t, "volume_vs_media"), as_of) or 0.0
-        raw_sigma[t] = _latest_at(get_tecnico_series(t, "vol_realizada"), as_of) or 0.0
+        raw_vol[t] = _traded_volume(t, as_of)
+        raw_sigma[t] = _latest_at(get_tecnico_series(t, _SIGMA_ID), as_of) or 0.0
 
-    p_mm50 = _cross_sectional_percentile(raw_mm50)
-    p_mm200 = _cross_sectional_percentile(raw_mm200)
-    p_rsi = _cross_sectional_percentile(raw_rsi)
-    p_vol = _cross_sectional_percentile(raw_vol)
-    p_sigma = _cross_sectional_percentile(raw_sigma)
+    p_mm50 = _directed_percentile(raw_mm50, invert_trend)
+    p_mm200 = _directed_percentile(raw_mm200, invert_trend)
+    p_rsi = _directed_percentile(raw_rsi, invert_rsi)
+    p_vol = _directed_percentile(raw_vol, invert_vol)
+    p_sigma = _directed_percentile(raw_sigma, invert_sigma)
 
     results: dict[str, dict[str, Any]] = {}
     for ticker in tickers:
@@ -77,58 +115,53 @@ def compute_hy_security_batch(
         c_rsi = wb * rsi_pct
         c_vol = wc * vol_pct
         c_sigma = wd * sigma_pct
-        security_score = c_trend + c_rsi + c_vol - c_sigma
+        security_score = c_trend + c_rsi + c_vol + c_sigma
 
         componentes = [
             {
-                "id": "preco_vs_mm50",
-                "nome": "Preço vs MM50",
+                "id": _TREND_ID,
+                "nome": "Tendência (MM50+MM200)",
                 "camada": "tecnico",
-                "valor": raw_mm50.get(t),
-                "percentile_cs": p_mm50.get(t),
-                "peso": wa / 2,
-                "contribuicao": wa * p_mm50.get(t, 0.5) / 2,
-                "role": "tendência cross-sectional",
+                "valor": (raw_mm50.get(t, 0.0) + raw_mm200.get(t, 0.0)) / 2.0,
+                "percentile_cs": trend_pct,
+                "peso": wa,
+                "inverte_percentil": invert_trend,
+                "contribuicao": c_trend,
+                "role": "tendência cross-sectional — HY é equity-like",
             },
             {
-                "id": "preco_vs_mm200",
-                "nome": "Preço vs MM200",
-                "camada": "tecnico",
-                "valor": raw_mm200.get(t),
-                "percentile_cs": p_mm200.get(t),
-                "peso": wa / 2,
-                "contribuicao": wa * p_mm200.get(t, 0.5) / 2,
-                "role": "tendência longa cross-sectional",
-            },
-            {
-                "id": "rsi_14",
+                "id": _RSI_ID,
                 "nome": "RSI 14d",
                 "camada": "tecnico",
                 "valor": raw_rsi.get(t),
                 "percentile_cs": rsi_pct,
                 "peso": wb,
+                "inverte_percentil": invert_rsi,
                 "contribuicao": c_rsi,
-                "role": "momentum cross-sectional",
+                "role": "momentum — RSI válido nesta classe",
             },
             {
-                "id": "volume_vs_media",
-                "nome": "Volume vs média",
+                "id": _VOLUME_ID,
+                "nome": "Volume negociado",
                 "camada": "tecnico",
                 "valor": raw_vol.get(t),
                 "percentile_cs": vol_pct,
                 "peso": wc,
+                "inverte_percentil": invert_vol,
                 "contribuicao": c_vol,
-                "role": "liquidez cross-sectional",
+                "role": "liquidez — volume bruto vs pares",
             },
             {
-                "id": "vol_realizada",
+                "id": _SIGMA_ID,
                 "nome": "Vol realizada 20d (σ20)",
                 "camada": "tecnico",
                 "valor": raw_sigma.get(t),
                 "percentile_cs": sigma_pct,
                 "peso": wd,
-                "contribuicao": -c_sigma,
-                "role": "penalidade de vol — menor vol vs pares HY",
+                "inverte_percentil": invert_sigma,
+                "contribuicao": c_sigma,
+                "vol_window": 20,
+                "role": "sintoma de crédito — menor vol vs pares no mesmo dia; risk-off amplo não pune um nome isolado",
             },
         ]
 
@@ -138,8 +171,8 @@ def compute_hy_security_batch(
             f"SecurityScore = {security_score:.3f} (ranking HY — não mistura com regime).",
             f"Tendência: avg(MM50,MM200) pct = {trend_pct:.0%} (contrib {c_trend:.3f}).",
             f"RSI pct = {rsi_pct:.0%} (contrib {c_rsi:.3f}).",
-            f"Volume pct = {vol_pct:.0%} (contrib {c_vol:.3f}).",
-            f"Vol penalty: σ20 pct = {sigma_pct:.0%} → −{c_sigma:.3f}.",
+            f"Volume bruto pct = {vol_pct:.0%} (contrib {c_vol:.3f}).",
+            f"σ20 invertida pct = {sigma_pct:.0%} (contrib {c_sigma:.3f}, lookback 20d).",
         ]
 
         results[t] = {
@@ -150,7 +183,7 @@ def compute_hy_security_batch(
             "componentes": componentes,
             "indicador_dominante": dominant,
             "estagio": _security_estagio(security_score),
-            "model": "hy_security_v1",
+            "model": "hy_security_v2",
             "cross_sectional_universe_size": len(cs_universe),
             "explanation": explanation,
         }

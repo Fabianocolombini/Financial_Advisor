@@ -207,7 +207,8 @@ def build_report_markdown(
         lines.append("## Modelo HY — Seleção (Modelo 2)")
         lines.append("")
         lines.append(
-            "- SecurityScore: tendência + RSI + volume − vol penalty (σ20). Sem fed cut prob."
+            "- SecurityScore v2: 35% tendência + 25% RSI + 15% volume bruto + 25% σ20 invertida (lookback 20d). "
+            "OAS de crédito fica no Regime Score — o sleeve pontuado é HY amplo (FRED BB/B/CCC não ranqueia)."
         )
         lines.append("")
     if is_tips_aba(aba_result["aba_id"]):
