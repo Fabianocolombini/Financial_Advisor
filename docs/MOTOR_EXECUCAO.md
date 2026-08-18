@@ -10,7 +10,7 @@
 Detalhe: [enriquecimento-indicadores.md](enriquecimento-indicadores.md).  
 Operações manuais (browser): [COMANDO_CLAUDE_WEB_FASE2.md](COMANDO_CLAUDE_WEB_FASE2.md).
 
-Snapshot passa a incluir `isProxy` / `proxyRationale` em indicadores e bloco `models` (regime + EWMA). Indicadores de ticker exportam `percentile` (rank 0–1 que entra no Security Score), `weight` e `inverted` — a tabela Markets mostra esses números com chip Helping / Neutral / Dragging, não o valor bruto.
+Snapshot passa a incluir `isProxy` / `proxyRationale` em indicadores e bloco `models` (regime + EWMA). Indicadores de ticker exportam `percentile` (rank 0–1 que entra no Security Score), `weight` e `inverted` — a tabela Markets mostra esses números com chip Adds / Neutral / Drags, não o valor bruto.
 
 ---
 

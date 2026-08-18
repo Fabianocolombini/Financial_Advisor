@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
+  newMoneyGlyph,
   plainNewMoney,
   plainQuality,
   plainTrend,
+  trendGlyph,
 } from "@/lib/motor/plain-language";
 
 describe("plainTrend", () => {
@@ -24,6 +26,13 @@ describe("plainTrend", () => {
 
   it("says Reduce is about direction, not past losses", () => {
     expect(plainTrend("Reduce").hint).toContain("not a realized loss");
+  });
+
+  it("uses a compact glyph in the table", () => {
+    expect(trendGlyph("Increase")).toBe("↑");
+    expect(trendGlyph("Hold")).toBe("●");
+    expect(trendGlyph("Reduce")).toBe("↓");
+    expect(trendGlyph("Reduce hard")).toBe("⇊");
   });
 });
 
@@ -76,6 +85,13 @@ describe("plainNewMoney", () => {
         /will (rise|yield)/i,
       );
     }
+  });
+
+  it("uses a compact glyph in the table", () => {
+    expect(newMoneyGlyph("Can add")).toBe("+");
+    expect(newMoneyGlyph("Do not add")).toBe("×");
+    expect(newMoneyGlyph("Wait")).toBe("…");
+    expect(newMoneyGlyph("Indifferent")).toBe("~");
   });
 });
 

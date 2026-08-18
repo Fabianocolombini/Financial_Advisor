@@ -72,15 +72,15 @@ export function indicatorStance(percentile: number | null | undefined): Indicato
   if (percentile >= STANCE_HELPING) {
     return {
       kind: "helping",
-      label: "Helping",
-      hint: `Above ${STANCE_HELPING.toFixed(2)} vs peers — this pillar is pulling the name's score up.`,
+      label: "Adds",
+      hint: `Above ${STANCE_HELPING.toFixed(2)} vs peers — this pillar is adding to the name's score.`,
       tone: "positive",
     };
   }
   if (percentile < STANCE_DRAGGING) {
     return {
       kind: "dragging",
-      label: "Dragging",
+      label: "Drags",
       hint: `Below ${STANCE_DRAGGING.toFixed(2)} vs peers — this is where the name is failing the rank.`,
       tone: "negative",
     };

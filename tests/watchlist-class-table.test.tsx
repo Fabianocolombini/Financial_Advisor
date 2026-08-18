@@ -128,8 +128,8 @@ describe("WatchlistClassTable", () => {
       <WatchlistClassTable group={group([row()])} />,
     );
     expect(html).toContain("20M");
-    expect(html).toContain("38% of class");
-    expect(html.indexOf("Score")).toBeLessThan(html.indexOf("Volume 15d"));
+    expect(html).toContain("38%");
+    expect(html.indexOf("Score")).toBeLessThan(html.indexOf("Vol 15d"));
   });
 
   it("labels decisions in plain language instead of model jargon", () => {
@@ -148,11 +148,20 @@ describe("WatchlistClassTable", () => {
     );
     expect(html).toContain("Score mix");
     expect(html).toContain("50%");
-    expect(html).toContain("Helping");
-    expect(html).toContain("Dragging");
+    expect(html).toContain("Adds");
+    expect(html).toContain("Drags");
     expect(html).toContain("Neutral");
     expect(html).toContain("0.80");
     expect(html).not.toContain("1.820");
+  });
+
+  it("uses a green dollar on the wallet button and stacks stance under the rank", () => {
+    const html = renderToStaticMarkup(
+      <WatchlistClassTable group={group([scoredCashRow()])} />,
+    );
+    expect(html).toContain("$");
+    expect(html).toContain("aria-label=\"Do not add\"");
+    expect(html).toContain("aria-label=\"Hold\"");
   });
 
   it("quantifies new money as Gain vs Risk without dropping the motor badge", () => {
@@ -162,6 +171,6 @@ describe("WatchlistClassTable", () => {
     expect(html).toContain("Gain 56");
     expect(html).toContain("Risk");
     expect(html).toContain("Do not add");
-    expect(html).toContain("Name trend");
+    expect(html).toContain("Trend");
   });
 });

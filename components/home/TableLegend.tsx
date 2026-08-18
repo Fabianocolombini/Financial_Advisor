@@ -19,19 +19,19 @@ const ENTRIES: { term: string; text: string }[] = [
     text: "How many shares, on average, traded per day over the last 15 sessions, and how much that is of the class volume. It is the mass actually traded: high volume means you can enter and exit without moving the price.",
   },
   {
-    term: "Name trend",
-    text: "This name's own stage from its Security Score, not the sleeve. The sleeve is the “The whole class” line above the table. Increase / Hold / Reduce here answers “is this vehicle holding up vs peers?”, not “should I add to the sleeve?”.",
+    term: "Trend",
+    text: "This name's own stage from its Security Score, not the sleeve. ↑ = increase, ● = hold, ↓ = reduce, ⇊ = reduce hard. Hover the symbol for the full sentence. The sleeve is the “The whole class” line above the table.",
   },
   {
-    term: "New money",
-    text: "Gain is the name vs its peers, 0–100 (the Security Score). Risk mixes the sleeve climate (70%) with how weak the name is (30%). The badge is the motor's entry call. A Gain of 56 can still read Do not add when the class is Reduce hard — new money would fight the sleeve. Can add / Wait / Do not add / Indifferent keep the same meaning as before; the two numbers explain why.",
+    term: "Money",
+    text: "+ can add, × do not add, … wait, ~ indifferent. Gain (green) is the name vs its peers, 0–100. Risk (red) mixes the sleeve climate (70%) with how weak the name is (30%). A Gain of 56 can still be × when the class is Reduce hard — new money would fight the sleeve.",
   },
   {
     term: "Score mix / pillars",
-    text: "Each class has a fixed recipe (weights under the class title and on each pillar header). The cell is the 0–1 peer rank that actually enters the score, not the raw reading. Helping ≥ 0.65, Neutral around the median, Dragging < 0.35 — glance at the chip to see where the name is failing.",
+    text: "Each class has a fixed recipe (weights under the class title and on each pillar header). The cell is the 0–1 peer rank that actually enters the score, stacked on Adds / Neutral / Drags. Adds ≥ 0.65 (this pillar lifts the score), Neutral is the median, Drags < 0.35 (this is where the name is failing).",
   },
   {
-    term: "Main factor",
+    term: "Factor",
     text: "The ingredient that weighed most on this name's score today — the number-one reason it sits where it does in the ranking.",
   },
 ];

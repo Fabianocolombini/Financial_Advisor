@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { SymbolAvatar } from "@/components/catalog/SymbolAvatar";
 import { WatchlistStarButton } from "@/components/home/WatchlistStarButton";
 import { WalletBuyButton } from "@/components/wallet/WalletBuyButton";
 import { formatShareVolumeCompact, formatPerf, perfClass } from "@/lib/format-market";
@@ -14,9 +13,11 @@ import {
   stanceBadgeClass,
 } from "@/lib/motor/indicator-stance";
 import {
+  newMoneyGlyph,
   plainQuality,
   plainTrend,
   toneBadgeClass,
+  trendGlyph,
 } from "@/lib/motor/plain-language";
 import { VOLUME_SESSIONS } from "@/lib/motor/enrich-yahoo-perf";
 import {
@@ -46,6 +47,40 @@ function recipeColumns(classId: string, rows: WatchlistRow[]): ScoreIngredient[]
   return scoreRecipeFor(classId)?.ingredients ?? fallbackIndicatorColumns(rows);
 }
 
+function shortFactorName(
+  classId: string,
+  dominant: { id: string; name: string } | null,
+): string {
+  if (!dominant) return "—";
+  const recipe = scoreRecipeFor(classId);
+  const match = recipe?.ingredients.find(
+    (ing) => ing.id === dominant.id || ing.aliases?.includes(dominant.id),
+  );
+  const label = match?.shortLabel ?? dominant.name;
+  return label.length > 12 ? `${label.slice(0, 11)}…` : label;
+}
+
+function Glyph({
+  glyph,
+  label,
+  tone,
+}: {
+  glyph: string;
+  label: string;
+  tone: ReturnType<typeof plainTrend>["tone"];
+}) {
+  return (
+    <span
+      aria-label={label}
+      className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-sm font-semibold ring-1 ring-inset ${toneBadgeClass(
+        tone,
+      )}`}
+    >
+      {glyph}
+    </span>
+  );
+}
+
 function IndicatorCell({
   row,
   ingredient,
@@ -68,13 +103,13 @@ function IndicatorCell({
     .join(" — ");
 
   return (
-    <td className="px-2 py-2" title={title}>
-      <div className="flex items-center gap-1.5">
+    <td className="w-[3.5rem] px-1.5 py-1.5" title={title}>
+      <div className="flex flex-col items-start leading-tight">
         <span className="tabular-nums text-xs text-white">
           {percentile != null ? percentile.toFixed(2) : "—"}
         </span>
         <span
-          className={`inline-flex rounded px-1 py-px text-[9px] font-medium ring-1 ring-inset ${stanceBadgeClass(
+          className={`mt-0.5 inline-flex rounded px-1 py-px text-[9px] font-medium ring-1 ring-inset ${stanceBadgeClass(
             stance.kind,
           )}`}
         >
@@ -114,8 +149,8 @@ function SecurityRow({
       className="border-b border-zinc-800/80 cursor-pointer hover:bg-zinc-950/50"
       onClick={() => router.push(`/markets/${row.symbol}`)}
     >
-      <td className="py-2 pl-2 pr-2" onClick={(e) => e.stopPropagation()}>
-        <div className="flex min-w-[13rem] items-center gap-2">
+      <td className="py-1.5 pl-1 pr-1.5" onClick={(e) => e.stopPropagation()}>
+        <div className="flex min-w-0 max-w-[11.5rem] items-start gap-1">
           <WatchlistStarButton symbol={row.symbol} />
           <WalletBuyButton
             symbol={row.symbol}
@@ -126,40 +161,34 @@ function SecurityRow({
           />
           <button
             type="button"
-            className="flex min-w-0 flex-1 items-center gap-2 text-left"
+            className="min-w-0 flex-1 text-left"
             onClick={() => router.push(`/markets/${row.symbol}`)}
           >
-            <SymbolAvatar
-              symbol={row.symbol}
-              exchange={row.exchange ?? "NYSE"}
-              classId={row.classId}
-              size="sm"
-            />
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-xs text-white">
-                  {row.symbol}
+            <div className="flex items-center gap-1">
+              <span className="rounded bg-zinc-800 px-1 py-px font-mono text-[11px] text-white">
+                {row.symbol}
+              </span>
+              {row.divergesFromClass ? (
+                <span
+                  className="text-[9px] text-amber-400"
+                  title="This name is moving in the opposite direction of the class."
+                >
+                  vs class
                 </span>
-                {row.divergesFromClass ? (
-                  <span
-                    className="text-[10px] text-amber-400"
-                    title="This name is moving in the opposite direction of the class."
-                  >
-                    against the class
-                  </span>
-                ) : null}
-              </div>
-              <p className="truncate text-xs text-zinc-500">{row.name}</p>
+              ) : null}
             </div>
+            <p className="mt-0.5 line-clamp-2 text-[10px] leading-tight text-zinc-500">
+              {row.name}
+            </p>
           </button>
         </div>
       </td>
-      <td className="px-2 py-2 text-sm text-white" title={quality.hint}>
+      <td className="px-1.5 py-1.5 text-sm text-white" title={quality.hint}>
         <div className="tabular-nums">{formatScore(row.score)}</div>
         <div className="text-[10px] text-zinc-500">{quality.label}</div>
       </td>
       <td
-        className="px-2 py-2 text-sm text-zinc-300"
+        className="px-1.5 py-1.5 text-sm text-zinc-300"
         title={`Average shares traded per day over the last ${VOLUME_SESSIONS} sessions, and how much that is of the class volume.`}
       >
         <div className="tabular-nums">
@@ -167,50 +196,47 @@ function SecurityRow({
         </div>
         <div className="text-[10px] text-zinc-500">
           {row.volumeSharePct != null
-            ? `${row.volumeSharePct.toFixed(0)}% of class`
+            ? `${row.volumeSharePct.toFixed(0)}%`
             : "—"}
         </div>
       </td>
-      <td className={`px-2 py-2 tabular-nums text-sm ${perfClass(row.perf1dPct)}`}>
+      <td className={`px-1.5 py-1.5 tabular-nums text-sm ${perfClass(row.perf1dPct)}`}>
         {formatPerf(row.perf1dPct)}
       </td>
-      <td className={`px-2 py-2 tabular-nums text-sm ${perfClass(row.perf7dPct)}`}>
+      <td className={`px-1.5 py-1.5 tabular-nums text-sm ${perfClass(row.perf7dPct)}`}>
         {formatPerf(row.perf7dPct)}
       </td>
-      <td className={`px-2 py-2 tabular-nums text-sm ${perfClass(row.perf15dPct)}`}>
+      <td className={`px-1.5 py-1.5 tabular-nums text-sm ${perfClass(row.perf15dPct)}`}>
         {formatPerf(row.perf15dPct)}
       </td>
       <td
-        className="px-2 py-2"
+        className="px-1.5 py-1.5"
         title={`${trend.hint} This is the name's own stage from its score, not the sleeve.`}
       >
-        <span
-          className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset ${toneBadgeClass(
-            trend.tone,
-          )}`}
-        >
-          {trend.label}
-        </span>
+        <Glyph glyph={trendGlyph(trend.label)} label={trend.label} tone={trend.tone} />
       </td>
-      <td className="px-2 py-2" title={setup.hint}>
-        <div className="flex gap-2 text-[10px] tabular-nums">
-          <span className="text-emerald-400/90">
-            Gain {setup.gain != null ? setup.gain : "—"}
-          </span>
-          <span className="text-red-400/90">
-            Risk {setup.risk != null ? setup.risk : "—"}
-          </span>
+      <td className="px-1.5 py-1.5" title={setup.hint}>
+        <div className="flex flex-col items-start gap-0.5">
+          <Glyph
+            glyph={newMoneyGlyph(setup.label)}
+            label={setup.label}
+            tone={setup.tone}
+          />
+          <div className="flex flex-col text-[9px] leading-tight tabular-nums">
+            <span className="text-emerald-400/90">
+              Gain {setup.gain != null ? setup.gain : "—"}
+            </span>
+            <span className="text-red-400/90">
+              Risk {setup.risk != null ? setup.risk : "—"}
+            </span>
+          </div>
         </div>
-        <span
-          className={`mt-0.5 inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset ${toneBadgeClass(
-            setup.tone,
-          )}`}
-        >
-          {setup.label}
-        </span>
       </td>
-      <td className="max-w-[8rem] truncate px-2 py-2 text-[11px] text-zinc-400">
-        {row.dominantIndicator?.name ?? "—"}
+      <td
+        className="max-w-[4.5rem] truncate px-1.5 py-1.5 text-[10px] text-zinc-400"
+        title={row.dominantIndicator?.name ?? undefined}
+      >
+        {shortFactorName(row.classId, row.dominantIndicator)}
       </td>
       {columns.map((ingredient) => (
         <IndicatorCell key={ingredient.id} row={row} ingredient={ingredient} />
@@ -233,7 +259,7 @@ function ScoreMixBar({ classId }: { classId: string }) {
         </span>
       ))}
       <span className="text-zinc-600">
-        · Helping ≥0.65 · Neutral · Dragging &lt;0.35
+        · Adds ≥0.65 · Neutral · Drags &lt;0.35
       </span>
     </div>
   );
@@ -263,48 +289,48 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
       <ScoreMixBar classId={group.classId} />
 
       <div className="overflow-x-auto rounded-lg border border-zinc-800 bg-black">
-        <table className="w-full min-w-[48rem] text-left text-sm">
+        <table className="w-full min-w-[42rem] text-left text-sm">
           <thead className="border-b border-zinc-800 bg-zinc-950/90 text-[11px] text-zinc-500">
             <tr>
-              <th className="px-3 py-2 font-medium">Name</th>
+              <th className="py-2 pl-1 pr-1.5 font-medium">Name</th>
               <th
-                className="px-2 py-2 font-medium"
+                className="px-1.5 py-2 font-medium"
                 title="Where the name sits in its own class ranking, from 0 to 1. It does not compare different classes."
               >
                 Score
               </th>
               <th
-                className="px-2 py-2 font-medium"
+                className="px-1.5 py-2 font-medium"
                 title={`Average shares traded per day over the last ${VOLUME_SESSIONS} sessions — K thousand, M million, B billion.`}
               >
-                Volume {VOLUME_SESSIONS}d
+                Vol {VOLUME_SESSIONS}d
               </th>
-              <th className="px-2 py-2 font-medium">1D</th>
-              <th className="px-2 py-2 font-medium">7D</th>
-              <th className="px-2 py-2 font-medium">15D</th>
+              <th className="px-1.5 py-2 font-medium">1D</th>
+              <th className="px-1.5 py-2 font-medium">7D</th>
+              <th className="px-1.5 py-2 font-medium">15D</th>
               <th
-                className="px-2 py-2 font-medium"
-                title="This name's own stage from its Security Score, not the sleeve. The sleeve is the line above the table."
+                className="px-1.5 py-2 font-medium"
+                title="This name's own stage from its Security Score, not the sleeve. ↑ add, ● hold, ↓ reduce. The sleeve is the line above the table."
               >
-                Name trend
+                Trend
               </th>
               <th
-                className="px-2 py-2 font-medium"
-                title="Gain is the name vs peers (0–100). Risk mixes the sleeve climate with how weak the name is. The badge is the motor's entry call — a high Gain can still be Do not add when the class is reducing."
+                className="px-1.5 py-2 font-medium"
+                title="Symbol is the entry call (+ add, × don't, … wait). Gain is the name vs peers (0–100). Risk mixes the sleeve climate with how weak the name is."
               >
-                New money
+                Money
               </th>
               <th
-                className="px-2 py-2 font-medium"
+                className="px-1.5 py-2 font-medium"
                 title="The ingredient that weighed most on this name's score today."
               >
-                Main factor
+                Factor
               </th>
               {columns.map((col) => (
                 <th
                   key={col.id}
-                  className="px-2 py-2 font-medium"
-                  title={`${col.label} (${(col.weight * 100).toFixed(0)}% of the score). ${col.meaning} Number is the 0–1 peer rank; Helping ≥0.65, Dragging <0.35.`}
+                  className="px-1.5 py-2 font-medium"
+                  title={`${col.label} (${(col.weight * 100).toFixed(0)}% of the score). ${col.meaning} Number is the 0–1 peer rank; Adds ≥0.65, Drags <0.35.`}
                 >
                   <div className="truncate">{col.shortLabel}</div>
                   {col.weight > 0 ? (

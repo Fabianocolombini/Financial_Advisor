@@ -27,6 +27,38 @@ export function toneBadgeClass(tone: PlainLabel["tone"]): string {
   return TONE_CLASS[tone];
 }
 
+/** Compact glyph for the name-trend column. Full sentence stays on hover. */
+export function trendGlyph(label: string): string {
+  switch (label) {
+    case "Increase":
+      return "↑";
+    case "Hold":
+      return "●";
+    case "Reduce":
+      return "↓";
+    case "Reduce hard":
+      return "⇊";
+    default:
+      return "–";
+  }
+}
+
+/** Compact glyph for the new-money column. Full sentence stays on hover. */
+export function newMoneyGlyph(label: string): string {
+  switch (label) {
+    case "Can add":
+      return "+";
+    case "Wait":
+      return "…";
+    case "Do not add":
+      return "×";
+    case "Indifferent":
+      return "~";
+    default:
+      return "–";
+  }
+}
+
 /**
  * Allocation direction for the sleeve — "where is this asset class heading".
  *
