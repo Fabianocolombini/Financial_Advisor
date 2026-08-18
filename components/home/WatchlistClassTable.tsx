@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { SymbolAvatar } from "@/components/catalog/SymbolAvatar";
 import { WatchlistStarButton } from "@/components/home/WatchlistStarButton";
 import { WalletBuyButton } from "@/components/wallet/WalletBuyButton";
 import { formatShareVolumeCompact, formatPerf, perfClass } from "@/lib/format-market";
@@ -150,7 +151,7 @@ function SecurityRow({
       onClick={() => router.push(`/markets/${row.symbol}`)}
     >
       <td className="py-1.5 pl-1 pr-1.5" onClick={(e) => e.stopPropagation()}>
-        <div className="flex min-w-0 max-w-[11.5rem] items-start gap-1">
+        <div className="flex min-w-[13.5rem] items-center gap-1.5">
           <WatchlistStarButton symbol={row.symbol} />
           <WalletBuyButton
             symbol={row.symbol}
@@ -161,25 +162,33 @@ function SecurityRow({
           />
           <button
             type="button"
-            className="min-w-0 flex-1 text-left"
+            className="flex min-w-0 flex-1 items-center gap-2 text-left"
             onClick={() => router.push(`/markets/${row.symbol}`)}
           >
-            <div className="flex items-center gap-1">
-              <span className="rounded bg-zinc-800 px-1 py-px font-mono text-[11px] text-white">
-                {row.symbol}
-              </span>
-              {row.divergesFromClass ? (
-                <span
-                  className="text-[9px] text-amber-400"
-                  title="This name is moving in the opposite direction of the class."
-                >
-                  vs class
+            <SymbolAvatar
+              symbol={row.symbol}
+              exchange={row.exchange ?? "NYSE"}
+              classId={row.classId}
+              size="sm"
+            />
+            <div className="min-w-0">
+              <div className="flex items-center gap-1">
+                <span className="rounded bg-zinc-800 px-1 py-px font-mono text-[11px] text-white">
+                  {row.symbol}
                 </span>
-              ) : null}
+                {row.divergesFromClass ? (
+                  <span
+                    className="text-[9px] text-amber-400"
+                    title="This name is moving in the opposite direction of the class."
+                  >
+                    vs class
+                  </span>
+                ) : null}
+              </div>
+              <p className="mt-0.5 line-clamp-2 text-[10px] leading-tight text-zinc-500">
+                {row.name}
+              </p>
             </div>
-            <p className="mt-0.5 line-clamp-2 text-[10px] leading-tight text-zinc-500">
-              {row.name}
-            </p>
           </button>
         </div>
       </td>
