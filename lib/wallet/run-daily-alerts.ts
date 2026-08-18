@@ -1,12 +1,20 @@
 import { prisma } from "@/lib/prisma";
+import { composeWalletDigest, walletAppUrl } from "@/lib/wallet/daily-digest";
 import { loadWalletView } from "@/lib/wallet/load-wallet-view";
-import { actionNeedsAlert } from "@/lib/wallet/position-status";
-import { sendWalletAlertEmail } from "@/lib/wallet/send-alert-email";
+import {
+  sendWalletAlertEmail,
+  walletEmailConfigured,
+} from "@/lib/wallet/send-alert-email";
+
+const RECENT_MS = 20 * 60 * 60 * 1000;
 
 export async function runWalletDailyAlerts(): Promise<{
   users: number;
   alerts: number;
   emailed: number;
+  skippedRecent: number;
+  skippedNoEmail: number;
+  emailConfigured: boolean;
 }> {
   const userIds = await prisma.walletHolding.findMany({
     distinct: ["userId"],
@@ -15,41 +23,48 @@ export async function runWalletDailyAlerts(): Promise<{
 
   let alerts = 0;
   let emailed = 0;
+  let skippedRecent = 0;
+  let skippedNoEmail = 0;
+  const since = new Date(Date.now() - RECENT_MS);
+  const walletUrl = walletAppUrl();
+  const emailConfigured = walletEmailConfigured();
 
   for (const { userId } of userIds) {
-    const view = await loadWalletView(userId);
-    const items = view.holdings
-      .filter((h) => actionNeedsAlert(h.status.action.action))
-      .map((h) => ({
-        symbol: h.symbol,
-        action: h.status.action.action,
-        label: h.status.action.label,
-        hint: h.status.action.hint,
-        pnlPct: h.status.pnlPct,
-      }));
+    const already = await prisma.walletAlert.findFirst({
+      where: { userId, emailedAt: { gte: since } },
+    });
+    if (already) {
+      skippedRecent += 1;
+      continue;
+    }
 
-    if (items.length === 0) continue;
+    const view = await loadWalletView(userId);
+    if (view.holdings.length === 0) continue;
+
+    const digest = composeWalletDigest({
+      holdings: view.holdings,
+      walletUrl,
+    });
 
     const row = await prisma.walletAlert.create({
-      data: { userId, payload: { items } },
+      data: { userId, payload: { items: digest.decisionItems } },
     });
-    alerts += 1;
+    if (digest.decisionItems.length > 0) alerts += 1;
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { email: true },
     });
-    if (!user?.email) continue;
+    if (!user?.email) {
+      skippedNoEmail += 1;
+      continue;
+    }
 
-    const lines = items.map((item) => {
-      const pnl =
-        item.pnlPct != null ? ` (${item.pnlPct >= 0 ? "+" : ""}${item.pnlPct.toFixed(1)}%)` : "";
-      return `• ${item.symbol}: ${item.label}${pnl}\n  ${item.hint}`;
-    });
     const sent = await sendWalletAlertEmail({
       to: user.email,
-      subject: `My Wallet — ${items.length} decision${items.length === 1 ? "" : "s"} today`,
-      text: `Names in your wallet that need a decision:\n\n${lines.join("\n\n")}\n\nOpen My Wallet in Atlas for the detail vs purchase price and the bands.`,
+      subject: digest.subject,
+      text: digest.text,
+      html: digest.html,
     });
     if (sent.sent) {
       await prisma.walletAlert.update({
@@ -60,5 +75,12 @@ export async function runWalletDailyAlerts(): Promise<{
     }
   }
 
-  return { users: userIds.length, alerts, emailed };
+  return {
+    users: userIds.length,
+    alerts,
+    emailed,
+    skippedRecent,
+    skippedNoEmail,
+    emailConfigured,
+  };
 }

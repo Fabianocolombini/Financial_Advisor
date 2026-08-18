@@ -83,6 +83,7 @@ Crons definidos em [`vercel.json`](../vercel.json):
 |------|---------------|--------|
 | `/api/cron/ingest-market` | 11:00 | FRED + Yahoo → tabelas legacy |
 | `/api/cron/qi-macro` | 11:15 | FRED → QI macro |
+| `/api/cron/wallet-alerts` | 21:30 (seg–sex) | Briefing da carteira: Hold / Buy more / Exit no e-mail de cadastro |
 
 Todos exigem header `Authorization: Bearer $CRON_SECRET` (a Vercel envia automaticamente nos crons agendados).
 
@@ -180,6 +181,8 @@ curl -s -H "Authorization: Bearer SEU_CRON_SECRET" \
 | `AUTH_SECRET` | Sim | `openssl rand -base64 32` |
 | `FRED_API_KEY` | Sim | Crons + motor (via GH) |
 | `CRON_SECRET` | Sim | Protege `/api/cron/*` |
+| `RESEND_API_KEY` | Para e-mail da carteira | [Resend](https://resend.com) — briefing diário no e-mail de cadastro |
+| `WALLET_ALERT_FROM` | Com Resend | Ex.: `Atlas <alerts@dominio-verificado.com>` |
 | `AUTH_ENABLED` | Para login | `true` só com Google configurado |
 | `AUTH_URL` | Com auth | URL pública da app |
 | `AUTH_GOOGLE_ID` | Com auth | Google Console |

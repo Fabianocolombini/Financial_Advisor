@@ -209,6 +209,12 @@ export function WalletPanel({
             Educational 15% — not a tax filing.
             {totals.incomplete ? " Some names still have no live quote." : ""}
           </p>
+          {compact ? null : (
+            <p className="mt-1 text-[10px] leading-snug text-zinc-600">
+              Weekdays after the US close, Atlas emails Hold, Buy more, or Exit
+              to the address you registered with. Educational, not advice.
+            </p>
+          )}
         </dl>
       ) : null}
 

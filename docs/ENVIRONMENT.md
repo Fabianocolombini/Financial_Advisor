@@ -40,6 +40,8 @@ Assim, **FRED**, **Polygon**, **DATABASE_URL**, etc. ficam no **mesmo sítio**.
 | `POLYGON_API_KEY` | [Polygon.io](https://polygon.io/) | Preços diários → `qi_market_price_daily` (Python) |
 | `FMP_API_KEY` | Financial Modeling Prep (opcional) | Fundamentais |
 | `CRON_SECRET` | — | Protecção `Bearer` dos `/api/cron/*` |
+| `RESEND_API_KEY` | [Resend](https://resend.com) | E-mail diário da carteira (Hold / Buy more / Exit) |
+| `WALLET_ALERT_FROM` | Remetente verificado no Resend | Opcional se usar o domínio da conta |
 | `AUTH_SECRET`, `AUTH_GOOGLE_*` | Auth.js | Só se `AUTH_ENABLED=true` |
 
 Variáveis `QI_*` (gate FRED, fases de ingest, etc.) estão comentadas em [`.env.example`](../.env.example).

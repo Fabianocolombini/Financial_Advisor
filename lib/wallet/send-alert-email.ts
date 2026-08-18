@@ -1,16 +1,23 @@
 /**
- * Optional daily email. Uses Resend when RESEND_API_KEY is set; otherwise the
+ * Daily wallet briefing. Uses Resend when RESEND_API_KEY is set; otherwise the
  * cron still writes the in-app alert and the dock shows it as a badge.
  */
+
+export function walletEmailConfigured(): boolean {
+  return Boolean(process.env.RESEND_API_KEY?.trim());
+}
 
 export async function sendWalletAlertEmail(input: {
   to: string;
   subject: string;
   text: string;
+  html?: string;
 }): Promise<{ sent: boolean; error?: string }> {
   const key = process.env.RESEND_API_KEY?.trim();
-  const from = process.env.WALLET_ALERT_FROM?.trim() || "My Wallet <noreply@financial-advisor.local>";
-  if (!key) return { sent: false };
+  const from =
+    process.env.WALLET_ALERT_FROM?.trim() ||
+    "Atlas <noreply@financial-advisor.local>";
+  if (!key) return { sent: false, error: "RESEND_API_KEY is not set" };
 
   try {
     const res = await fetch("https://api.resend.com/emails", {
@@ -24,6 +31,7 @@ export async function sendWalletAlertEmail(input: {
         to: [input.to],
         subject: input.subject,
         text: input.text,
+        html: input.html,
       }),
     });
     if (!res.ok) {
