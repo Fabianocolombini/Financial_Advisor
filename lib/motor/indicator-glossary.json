@@ -51,6 +51,10 @@
   "instrument_quality": "How this name compares with peers in the same class on the same day. It is a relative ranking, not a price direction.",
   "entry_timing": "Whether price confirms an entry now. Independent of the allocation recommendation: the class can be favored without this being a good moment to buy.",
   "forecast_range": "Likely price range projected from recent volatility, not a point forecast. Historical coverage shows how often the range was right in the past.",
+  "monte_carlo": {
+    "meaning": "A second projection model: it redraws this name's own daily returns 2,000 times and walks them forward. The median is the typical ending price; the 68% and 95% bands are percentiles of those paths.",
+    "read": "It does not use the motor ranking. If Monte Carlo and the envelope disagree, the envelope is the model's view of direction and Monte Carlo is what this name's own history would have produced."
+  },
   "forecast_coverage": "Share of times realized price stayed inside the projected range in walk-forward tests. Near the nominal level (68% or 95%) indicates a well-calibrated range.",
   "fibonacci": "Retracement and extension levels calculated on a confirmed swing. They are reference zones, not guaranteed targets.",
   "support_resistance": "Prices where the name reversed in the recent past, detected by swing pivots confirmed on both sides.",
@@ -86,7 +90,7 @@
     "meaning": "Hull moving average: a faster average that cuts the usual lag of SMA/EMA, at the cost of more noise.",
     "read": "Price crossing above is a quicker strength signal; crossing below is quicker weakness. Use it with a slower average so one whip does not decide the trade."
   },
-  "pivot_points": "Levels calculated from the previous period's high, low, and close. P is equilibrium, R1–R3 are resistances and S1–S3 supports. Because they stay fixed until the period closes, they work as targets set in advance.",
+  "pivot_points": "Levels calculated from the previous period's high, low, and close. P is equilibrium, R1–R3 are resistances and S1–S3 supports. Daily / weekly / 1 month use the last completed calendar period. 15 days, 3 months, and 6 months use a rolling session window. Because they stay fixed until the window rolls, they work as targets set in advance.",
   "motor_col_value": {
     "meaning": "The raw reading of this indicator on the snapshot date — a yield, a spread, a percent, or a z-score, depending on the row.",
     "read": "This is the unscaled print. The Rank and Stance columns are what enter the Security Score; a raw 0.000 vol is not a 0.00 rank."

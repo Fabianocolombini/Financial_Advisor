@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { YahooQuoteSummary } from "@/lib/market/yahoo-quote";
 import { formatPrice } from "@/lib/format-market";
 import type {
   ForecastScenario,
   PriceForecast,
 } from "@/lib/market/forecast-model";
+import type { MonteCarloScenario } from "@/lib/market/monte-carlo";
 import type { ChartBar } from "@/lib/market/chart-overlays";
 import {
   buildPivotTable,
@@ -38,10 +39,12 @@ function ScenarioCard({
   scenario,
   current,
   stability,
+  centerLabel = "central scenario",
 }: {
   scenario: ForecastScenario;
   current: number | null;
   stability: boolean;
+  centerLabel?: string;
 }) {
   return (
     <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-4">
@@ -50,7 +53,7 @@ function ScenarioCard({
         {formatPrice(scenario.central)}
       </p>
       <p className="text-xs text-zinc-400">
-        central scenario · {pct(scenario.centralChangePct)} vs current
+        {centerLabel} · {pct(scenario.centralChangePct)} vs current
       </p>
 
       <dl className="mt-3 space-y-1.5 border-t border-zinc-800 pt-3 text-xs">
@@ -79,6 +82,56 @@ function ScenarioCard({
       <p className="mt-3 border-t border-zinc-800 pt-2 text-[11px] text-zinc-600">
         68% coverage: {coverageLabel(scenario.coverage68, 0.68)}
         {scenario.coverageSamples > 0 ? ` (${scenario.coverageSamples} windows)` : ""}
+      </p>
+      {current != null && scenario.low68 <= current && current <= scenario.high68 ? (
+        <p className="mt-1 text-[11px] text-zinc-600">
+          Current price is inside the projected range.
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function MonteCarloCard({
+  scenario,
+  current,
+}: {
+  scenario: MonteCarloScenario;
+  current: number | null;
+}) {
+  return (
+    <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-4">
+      <p className="text-xs uppercase tracking-wide text-zinc-500">{scenario.label}</p>
+      <p className="mt-2 text-xl font-medium tabular-nums text-white">
+        {formatPrice(scenario.median)}
+      </p>
+      <p className="text-xs text-zinc-400">
+        median path · {pct(scenario.expectedReturnPct)} vs current
+      </p>
+
+      <dl className="mt-3 space-y-1.5 border-t border-zinc-800 pt-3 text-xs">
+        <div className="flex justify-between gap-2">
+          <dt className="text-zinc-500">Likely range (68%)</dt>
+          <dd className="tabular-nums text-zinc-200">
+            {formatPrice(scenario.low68)} – {formatPrice(scenario.high68)}
+          </dd>
+        </div>
+        <div className="flex justify-between gap-2">
+          <dt className="text-zinc-500">Wide range (95%)</dt>
+          <dd className="tabular-nums text-zinc-400">
+            {formatPrice(scenario.low95)} – {formatPrice(scenario.high95)}
+          </dd>
+        </div>
+        <div className="flex justify-between gap-2">
+          <dt className="text-zinc-500">Prob. of upside</dt>
+          <dd className="tabular-nums text-zinc-300">
+            {(scenario.probabilityUp * 100).toFixed(0)}%
+          </dd>
+        </div>
+      </dl>
+
+      <p className="mt-3 border-t border-zinc-800 pt-2 text-[11px] text-zinc-600">
+        {scenario.paths.toLocaleString("en-US")} resampled paths
       </p>
       {current != null && scenario.low68 <= current && current <= scenario.high68 ? (
         <p className="mt-1 text-[11px] text-zinc-600">
@@ -315,12 +368,23 @@ export function PriceForecastPanel({
   forecast: PriceForecast;
   bars: ChartBar[];
 }) {
+  const [model, setModel] = useState<"montecarlo" | "envelope">("montecarlo");
+  const oneMonth =
+    model === "montecarlo"
+      ? forecast.monteCarlo?.scenarios.find((s) => s.horizon === "21d")
+      : forecast.scenarios.find((s) => s.horizon === "21d");
+
   const priceLines = useMemo<ChartPriceLine[]>(() => {
     const lines: ChartPriceLine[] = [];
-    const twentyDay = forecast.scenarios.find((s) => s.horizon === "20d");
-    if (twentyDay) {
-      lines.push({ price: twentyDay.high68, title: "68% high (20d)", color: "#4ade80" });
-      lines.push({ price: twentyDay.low68, title: "68% floor (20d)", color: "#f87171" });
+    if (oneMonth) {
+      const high = "high68" in oneMonth ? oneMonth.high68 : null;
+      const low = "low68" in oneMonth ? oneMonth.low68 : null;
+      if (high != null) {
+        lines.push({ price: high, title: "68% high (1m)", color: "#4ade80" });
+      }
+      if (low != null) {
+        lines.push({ price: low, title: "68% floor (1m)", color: "#f87171" });
+      }
     }
     if (forecast.levels.nearestResistance != null) {
       lines.push({
@@ -337,7 +401,7 @@ export function PriceForecastPanel({
       });
     }
     return lines;
-  }, [forecast]);
+  }, [forecast, oneMonth]);
 
   if (forecast.scenarios.length === 0) {
     return (
@@ -362,31 +426,70 @@ export function PriceForecastPanel({
               <h3 className="text-sm font-medium text-white">
                 {stability ? "NAV stability range" : "Price projection"}
               </h3>
-              <InfoTooltip term="forecast_range" />
+              <InfoTooltip term={model === "montecarlo" ? "monte_carlo" : "forecast_range"} />
             </div>
             <p className="mt-1 text-xs text-zinc-500">
               Current price {formatPrice(forecast.current)} · data through {forecast.asOf ?? "—"}
+              {" · "}horizons in trading sessions (21 ≈ 1 month)
             </p>
           </div>
-          {forecast.confidence != null ? (
-            <div className="rounded border border-zinc-800 px-3 py-1.5 text-right">
-              <p className="text-[11px] text-zinc-600">Projection confidence</p>
-              <p className="text-lg font-medium tabular-nums text-zinc-200">
-                {forecast.confidence.toFixed(1)}/10
-              </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex gap-1 rounded-md border border-zinc-800 bg-black p-0.5">
+              <button
+                type="button"
+                onClick={() => setModel("montecarlo")}
+                className={`rounded px-2.5 py-1 text-[11px] transition-colors ${
+                  model === "montecarlo"
+                    ? "bg-zinc-800 text-white"
+                    : "text-zinc-500 hover:text-zinc-300"
+                }`}
+              >
+                Monte Carlo
+              </button>
+              <button
+                type="button"
+                onClick={() => setModel("envelope")}
+                className={`rounded px-2.5 py-1 text-[11px] transition-colors ${
+                  model === "envelope"
+                    ? "bg-zinc-800 text-white"
+                    : "text-zinc-500 hover:text-zinc-300"
+                }`}
+              >
+                Envelope
+              </button>
             </div>
-          ) : null}
+            {forecast.confidence != null && model === "envelope" ? (
+              <div className="rounded border border-zinc-800 px-3 py-1.5 text-right">
+                <p className="text-[11px] text-zinc-600">Projection confidence</p>
+                <p className="text-lg font-medium tabular-nums text-zinc-200">
+                  {forecast.confidence.toFixed(1)}/10
+                </p>
+              </div>
+            ) : null}
+          </div>
         </div>
 
-        <div className="mt-4 grid gap-3 lg:grid-cols-3">
-          {forecast.scenarios.map((s) => (
-            <ScenarioCard
-              key={s.horizon}
-              scenario={s}
-              current={forecast.current}
-              stability={stability}
-            />
-          ))}
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          {model === "montecarlo" ? (
+            forecast.monteCarlo?.scenarios.length ? (
+              forecast.monteCarlo.scenarios.map((s) => (
+                <MonteCarloCard key={s.horizon} scenario={s} current={forecast.current} />
+              ))
+            ) : (
+              <p className="text-sm text-zinc-500 sm:col-span-2 xl:col-span-5">
+                Not enough return history to run Monte Carlo.
+              </p>
+            )
+          ) : (
+            forecast.scenarios.map((s) => (
+              <ScenarioCard
+                key={s.horizon}
+                scenario={s}
+                current={forecast.current}
+                stability={stability}
+              />
+            ))
+          )}
         </div>
       </section>
 
@@ -402,8 +505,8 @@ export function PriceForecastPanel({
             priceLines={priceLines}
           />
           <p className="text-[10px] text-zinc-600">
-            <span className="text-emerald-400">━</span> 68% high (20d) ·{" "}
-            <span className="text-red-400">━</span> 68% floor (20d) ·{" "}
+            <span className="text-emerald-400">━</span> 68% high (1m) ·{" "}
+            <span className="text-red-400">━</span> 68% floor (1m) ·{" "}
             <span className="text-violet-400">━</span> support / resistance
           </p>
         </section>

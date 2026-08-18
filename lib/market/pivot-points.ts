@@ -54,12 +54,23 @@ export type PivotSet = {
   levels: Record<PivotLevelId, number | null>;
 };
 
-export type PivotPeriodId = "daily" | "weekly" | "monthly";
+export type PivotPeriodId = "daily" | "15d" | "weekly" | "monthly" | "3m" | "6m";
 
-export const PIVOT_PERIODS: Array<{ id: PivotPeriodId; label: string; caption: string }> = [
-  { id: "daily", label: "Daily", caption: "previous session" },
-  { id: "weekly", label: "Weekly", caption: "previous week" },
-  { id: "monthly", label: "Monthly", caption: "previous month" },
+export const PIVOT_PERIODS: Array<{
+  id: PivotPeriodId;
+  label: string;
+  caption: string;
+  /** Rolling session lookback; null means a completed calendar period. */
+  lookbackSessions: number | null;
+  /** Trading sessions the Monte Carlo walks when this period is selected. */
+  mcDays: number;
+}> = [
+  { id: "daily", label: "Daily", caption: "previous session", lookbackSessions: null, mcDays: 1 },
+  { id: "15d", label: "15 days", caption: "previous 15 sessions", lookbackSessions: 15, mcDays: 15 },
+  { id: "weekly", label: "Weekly", caption: "previous week", lookbackSessions: null, mcDays: 5 },
+  { id: "monthly", label: "1 month", caption: "previous month", lookbackSessions: null, mcDays: 21 },
+  { id: "3m", label: "3 months", caption: "previous 63 sessions", lookbackSessions: 63, mcDays: 63 },
+  { id: "6m", label: "6 months", caption: "previous 126 sessions", lookbackSessions: 126, mcDays: 126 },
 ];
 
 export type PivotSourceBar = {
@@ -87,7 +98,7 @@ function barLow(bar: PivotSourceBar): number {
   return bar.low != null && Number.isFinite(bar.low) ? bar.low : bar.value;
 }
 
-function periodKey(date: string, period: PivotPeriodId): string {
+function periodKey(date: string, period: "daily" | "weekly" | "monthly"): string {
   if (period === "monthly") return date.slice(0, 7);
   if (period === "daily") return date;
   // ISO week key: Thursday of the same week identifies the ISO year and week.
@@ -102,9 +113,32 @@ function periodKey(date: string, period: PivotPeriodId): string {
   return `${d.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
 }
 
+function lookbackOhlc(bars: PivotSourceBar[], sessions: number): PivotPeriodSummary | null {
+  if (bars.length < sessions + 1) return null;
+  const window = bars.slice(-(sessions + 1), -1);
+  if (window.length < sessions) return null;
+  let high = -Infinity;
+  let low = Infinity;
+  for (const bar of window) {
+    high = Math.max(high, barHigh(bar));
+    low = Math.min(low, barLow(bar));
+  }
+  const first = window[0]!;
+  const last = window[window.length - 1]!;
+  return {
+    open: first.open ?? first.value,
+    high,
+    low,
+    close: last.value,
+    from: first.date,
+    to: last.date,
+  };
+}
+
 /**
  * OHLC of the last *completed* period. The period currently in progress is
- * excluded, so the levels stay fixed until it closes.
+ * excluded, so the levels stay fixed until it closes. Rolling windows (15d /
+ * 3m / 6m) use the last N sessions before the latest bar.
  */
 export function previousPeriodOhlc(
   bars: PivotSourceBar[],
@@ -112,9 +146,16 @@ export function previousPeriodOhlc(
 ): PivotPeriodSummary | null {
   if (bars.length < 2) return null;
 
+  const meta = PIVOT_PERIODS.find((p) => p.id === period);
+  if (meta?.lookbackSessions) {
+    return lookbackOhlc(bars, meta.lookbackSessions);
+  }
+
+  const calendar: "daily" | "weekly" | "monthly" =
+    period === "weekly" ? "weekly" : period === "monthly" ? "monthly" : "daily";
   const groups: Array<{ key: string; bars: PivotSourceBar[] }> = [];
   for (const bar of bars) {
-    const key = periodKey(bar.date, period);
+    const key = periodKey(bar.date, calendar);
     const last = groups[groups.length - 1];
     if (last && last.key === key) last.bars.push(bar);
     else groups.push({ key, bars: [bar] });

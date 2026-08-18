@@ -54,7 +54,7 @@ describe("buildPriceForecast", () => {
     expect(forecast.explanations.join(" ")).toContain("Not enough history");
   });
 
-  it("produces three horizons with nested 68% and 95% bands", () => {
+  it("produces five horizons with nested 68% and 95% bands", () => {
     const forecast = buildPriceForecast({
       symbol: "TEST",
       classId: "us_equity",
@@ -62,13 +62,20 @@ describe("buildPriceForecast", () => {
       motorScore: 0.6,
       reliabilityScore: 8,
     });
-    expect(forecast.scenarios.map((s) => s.horizon)).toEqual(["5d", "20d", "60d"]);
+    expect(forecast.scenarios.map((s) => s.horizon)).toEqual([
+      "5d",
+      "15d",
+      "21d",
+      "63d",
+      "126d",
+    ]);
     for (const s of forecast.scenarios) {
       expect(s.low95).toBeLessThan(s.low68);
       expect(s.high95).toBeGreaterThan(s.high68);
       expect(s.low68).toBeLessThan(s.central);
       expect(s.central).toBeLessThan(s.high68);
     }
+    expect(forecast.monteCarlo?.scenarios).toHaveLength(5);
   });
 
   it("widens the band with the square root of the horizon", () => {
@@ -78,10 +85,10 @@ describe("buildPriceForecast", () => {
       bars: makeBars(randomWalk(500)),
       motorScore: 0,
     });
-    const [d5, d20, d60] = forecast.scenarios;
+    const [d5, , , , d126] = forecast.scenarios;
     const width = (s: (typeof forecast.scenarios)[number]) => s.high68 - s.low68;
-    expect(width(d20!)).toBeGreaterThan(width(d5!));
-    expect(width(d60!)).toBeGreaterThan(width(d20!));
+    expect(width(forecast.scenarios[1]!)).toBeGreaterThan(width(d5!));
+    expect(width(d126!)).toBeGreaterThan(width(forecast.scenarios[2]!));
   });
 
   it("caps the directional drift at a quarter sigma per day", () => {
@@ -133,7 +140,7 @@ describe("buildPriceForecast", () => {
       bars: makeBars(randomWalk(120)),
       motorScore: 0,
     });
-    const long = forecast.scenarios.find((s) => s.horizon === "60d")!;
+    const long = forecast.scenarios.find((s) => s.horizon === "126d")!;
     expect(long.coverage68).toBeNull();
     const ratio = (long.high95 - long.low95) / (long.high68 - long.low68);
     expect(ratio).toBeCloseTo(1.96, 2);

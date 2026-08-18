@@ -24,8 +24,12 @@ import {
 } from "./price-structure";
 import { classScoreProfile } from "@/lib/motor/score-domain";
 import type { MotorIndicatorSnapshot } from "@/lib/motor/snapshot-types";
+import {
+  runMonteCarlo,
+  type MonteCarloRun,
+} from "./monte-carlo";
 
-export type ForecastHorizonId = "5d" | "20d" | "60d";
+export type ForecastHorizonId = "5d" | "15d" | "21d" | "63d" | "126d";
 
 export const FORECAST_HORIZONS: Array<{
   id: ForecastHorizonId;
@@ -33,8 +37,10 @@ export const FORECAST_HORIZONS: Array<{
   label: string;
 }> = [
   { id: "5d", days: 5, label: "5 days" },
-  { id: "20d", days: 20, label: "20 days (~1 month)" },
-  { id: "60d", days: 60, label: "60 days (~3 months)" },
+  { id: "15d", days: 15, label: "15 days" },
+  { id: "21d", days: 21, label: "1 month" },
+  { id: "63d", days: 63, label: "3 months" },
+  { id: "126d", days: 126, label: "6 months" },
 ];
 
 export type ForecastScenario = {
@@ -94,6 +100,7 @@ export type PriceForecast = {
   driftSource: string;
   usedAdjustedSeries: boolean;
   scenarios: ForecastScenario[];
+  monteCarlo: MonteCarloRun | null;
   levels: ForecastLevels;
   drivers: ForecastDriver[];
   confidence: number | null;
@@ -346,6 +353,7 @@ export function buildPriceForecast(input: {
     driftSource: "no data",
     usedAdjustedSeries: false,
     scenarios: [],
+    monteCarlo: null,
     levels: emptyLevels,
     drivers: [],
     confidence: null,
@@ -544,6 +552,9 @@ export function buildPriceForecast(input: {
       "Range width is calibrated in a walk-forward test: on each historical date the projection is rebuilt using only data available up to then. The adjustment is estimated on the oldest 70% and the displayed coverage is measured on the following 30%, out of the calibration sample.",
     );
   }
+  explanations.push(
+    "Monte Carlo is a second model: it resamples this name's own daily returns 2,000 times and reads the median and 68%/95% percentiles. It does not use the motor ranking, so a disagreement with the envelope is useful, not a bug.",
+  );
   if (stability) {
     explanations.push(
       "Fibonacci and extension projection are not applied to cash: there is no relevant swing to anchor levels.",
@@ -557,6 +568,13 @@ export function buildPriceForecast(input: {
     bandWidth,
   });
 
+  const monteCarlo = runMonteCarlo({
+    closes: values,
+    asOf: bars[bars.length - 1]!.date,
+    symbol,
+    horizons: FORECAST_HORIZONS,
+  });
+
   return {
     ...base,
     dailyVol,
@@ -565,6 +583,7 @@ export function buildPriceForecast(input: {
     driftSource,
     usedAdjustedSeries: usedAdjusted,
     scenarios,
+    monteCarlo,
     levels,
     drivers,
     confidence,

@@ -46,7 +46,7 @@ import { TechnicalIndicatorsTable } from "./TechnicalIndicatorsTable";
 import { TechnicalRatingGauge } from "./TechnicalRatingGauge";
 import { formatScore } from "@/lib/motor/format-scores";
 
-type ExpandId = "motor" | "macro" | "pivots" | "charts" | null;
+type LayerId = "motor" | "macro" | null;
 
 function MotorQuantDetail({
   detail,
@@ -243,9 +243,9 @@ function AccordionPanel({
   expanded,
   children,
 }: {
-  id: ExpandId;
+  id: LayerId;
   title: string;
-  expanded: ExpandId;
+  expanded: LayerId;
   children: ReactNode;
 }) {
   if (expanded !== id) return null;
@@ -258,7 +258,9 @@ function AccordionPanel({
 }
 
 export function MotorTechnicalsTab({ detail }: { detail: SymbolDetailView }) {
-  const [expanded, setExpanded] = useState<ExpandId>(null);
+  const [expanded, setExpanded] = useState<LayerId>(null);
+  const [openPivots, setOpenPivots] = useState(true);
+  const [openCharts, setOpenCharts] = useState(true);
   const { motor, technicalRows, reliability, quote, classId, classLabel } = detail;
 
   // Recomputed from the bars already shipped to the client, so the charts and the
@@ -302,7 +304,7 @@ export function MotorTechnicalsTab({ detail }: { detail: SymbolDetailView }) {
     motor.entryValidated,
   );
 
-  const toggle = (id: ExpandId) => setExpanded((cur) => (cur === id ? null : id));
+  const toggle = (id: LayerId) => setExpanded((cur) => (cur === id ? null : id));
 
   const hasMotor = motor.motorScope !== "none";
   const confidence = reliability.score;
@@ -401,19 +403,17 @@ export function MotorTechnicalsTab({ detail }: { detail: SymbolDetailView }) {
       <section className="rounded-lg border border-zinc-800 bg-black p-4">
         <button
           type="button"
-          onClick={() => toggle("pivots")}
-          aria-expanded={expanded === "pivots"}
+          onClick={() => setOpenPivots((v) => !v)}
+          aria-expanded={openPivots}
           className="flex w-full items-center justify-between gap-2 text-left"
         >
           <span className="inline-flex items-center gap-1.5 text-sm font-medium text-white">
             Pivots and targets
             <InfoTooltip term="pivot_points" />
           </span>
-          <span className="text-xs text-zinc-500">
-            {expanded === "pivots" ? "Hide" : "Show"}
-          </span>
+          <span className="text-xs text-zinc-500">{openPivots ? "Hide" : "Show"}</span>
         </button>
-        {expanded === "pivots" ? (
+        {openPivots ? (
           <div className="mt-3">
             {pivots.applicable ? (
               <PivotPointsTable bars={detail.bars} price={quote.price ?? null} />
@@ -427,18 +427,16 @@ export function MotorTechnicalsTab({ detail }: { detail: SymbolDetailView }) {
       <section className="rounded-lg border border-zinc-800 bg-black p-4">
         <button
           type="button"
-          onClick={() => toggle("charts")}
-          aria-expanded={expanded === "charts"}
+          onClick={() => setOpenCharts((v) => !v)}
+          aria-expanded={openCharts}
           className="flex w-full items-center justify-between gap-2 text-left"
         >
           <span className="text-sm font-medium text-white">
             Charts by indicator
           </span>
-          <span className="text-xs text-zinc-500">
-            {expanded === "charts" ? "Hide" : "Show"}
-          </span>
+          <span className="text-xs text-zinc-500">{openCharts ? "Hide" : "Show"}</span>
         </button>
-        {expanded === "charts" ? (
+        {openCharts ? (
           <div className="mt-3">
             <IndicatorExplorer
               series={series}

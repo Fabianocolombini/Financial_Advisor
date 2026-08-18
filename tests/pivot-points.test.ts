@@ -129,9 +129,24 @@ describe("period selection", () => {
     expect(ohlc.high).toBe(18);
   });
 
-  it("returns nothing when there is only one period of history", () => {
-    expect(previousPeriodOhlc([bar("2024-01-01", 1, 2, 1, 2)], "daily")).toBeNull();
-    expect(buildPivotTable([bar("2024-01-01", 1, 2, 1, 2)], "daily")).toBeNull();
+  it("builds a 15-session lookback that excludes the latest bar", () => {
+    const bars: PivotSourceBar[] = [];
+    for (let i = 1; i <= 20; i++) {
+      const d = `2024-02-${String(i).padStart(2, "0")}`;
+      bars.push(bar(d, 10 + i, 20 + i, 5 + i, 12 + i));
+    }
+    const ohlc = previousPeriodOhlc(bars, "15d")!;
+    expect(ohlc.from).toBe("2024-02-05");
+    expect(ohlc.to).toBe("2024-02-19");
+    expect(ohlc.close).toBe(12 + 19);
+    expect(ohlc.high).toBe(20 + 19);
+  });
+
+  it("needs more than the window to build a 3-month lookback", () => {
+    const short = Array.from({ length: 40 }, (_, i) =>
+      bar(`2024-03-${String((i % 28) + 1).padStart(2, "0")}`, 1, 2, 1, 2),
+    );
+    expect(previousPeriodOhlc(short, "3m")).toBeNull();
   });
 
   it("falls back to the close when a feed omits the intraday range", () => {
