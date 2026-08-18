@@ -16,7 +16,7 @@ export async function sendWalletAlertEmail(input: {
   const key = process.env.RESEND_API_KEY?.trim();
   const from =
     process.env.WALLET_ALERT_FROM?.trim() ||
-    "Atlas <noreply@financial-advisor.local>";
+    "Atlas <beth.t@example.com>";
   if (!key) return { sent: false, error: "RESEND_API_KEY is not set" };
 
   try {

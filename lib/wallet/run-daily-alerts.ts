@@ -15,6 +15,7 @@ export async function runWalletDailyAlerts(): Promise<{
   skippedRecent: number;
   skippedNoEmail: number;
   emailConfigured: boolean;
+  emailErrors: string[];
 }> {
   const userIds = await prisma.walletHolding.findMany({
     distinct: ["userId"],
@@ -25,6 +26,7 @@ export async function runWalletDailyAlerts(): Promise<{
   let emailed = 0;
   let skippedRecent = 0;
   let skippedNoEmail = 0;
+  const emailErrors: string[] = [];
   const since = new Date(Date.now() - RECENT_MS);
   const walletUrl = walletAppUrl();
   const emailConfigured = walletEmailConfigured();
@@ -72,6 +74,8 @@ export async function runWalletDailyAlerts(): Promise<{
         data: { emailedAt: new Date() },
       });
       emailed += 1;
+    } else if (sent.error && emailErrors.length < 5) {
+      emailErrors.push(sent.error);
     }
   }
 
@@ -82,5 +86,6 @@ export async function runWalletDailyAlerts(): Promise<{
     skippedRecent,
     skippedNoEmail,
     emailConfigured,
+    emailErrors,
   };
 }
