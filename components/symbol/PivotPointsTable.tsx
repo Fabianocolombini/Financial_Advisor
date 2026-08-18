@@ -237,8 +237,8 @@ export function PivotPointsTable({
             </li>
           ))}
           <li>
-            <span className="text-zinc-300">Monte Carlo:</span> resamples this
-            name's own daily returns 2,000 times. It is a range of ending prices,
+            <span className="text-zinc-300">Monte Carlo:</span> resamples the
+            daily returns of this name 2,000 times. It is a range of ending prices,
             not a pivot table — use it next to Classic/Fibonacci, not instead of
             them as a day-trade map.
           </li>
