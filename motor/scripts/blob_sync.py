@@ -72,39 +72,72 @@ def download_db() -> bool:
     return True
 
 
-def upload_db() -> str:
-    """Envia historico.db para o Blob. Retorna URL do blob."""
-    if not DB_PATH.is_file():
-        raise FileNotFoundError(f"SQLite não encontrado: {DB_PATH}")
-    url = f"{BLOB_API}/{DB_BLOB_PATH}"
-    data = DB_PATH.read_bytes()
-    headers = _headers(content_type="application/x-sqlite3")
+def _put_bytes(pathname: str, data: bytes, content_type: str) -> str:
+    url = f"{BLOB_API}/{pathname}"
+    headers = _headers(content_type=content_type)
     headers["x-add-random-suffix"] = "false"
     headers["x-allow-overwrite"] = "true"
     with httpx.Client(timeout=120.0) as client:
         resp = client.put(url, headers=headers, content=data)
         resp.raise_for_status()
         payload = resp.json()
-    blob_url = payload.get("url", url)
-    print(f"[blob_sync] Upload OK → {blob_url} ({len(data)} bytes)")
+    return payload.get("url", url)
+
+
+def _download_blob_bytes(pathname: str) -> bytes | None:
+    blob = _find_blob(pathname)
+    if not blob:
+        return None
+    url = blob.get("downloadUrl") or blob.get("url")
+    if not url:
+        return None
+    with httpx.Client(timeout=120.0, follow_redirects=True) as client:
+        resp = client.get(url)
+        if resp.status_code == 404:
+            return None
+        resp.raise_for_status()
+        return resp.content
+
+
+def upload_db() -> str:
+    """Envia historico.db para o Blob. Retorna URL do blob."""
+    if not DB_PATH.is_file():
+        raise FileNotFoundError(f"SQLite não encontrado: {DB_PATH}")
+    blob_url = _put_bytes(DB_BLOB_PATH, DB_PATH.read_bytes(), "application/x-sqlite3")
+    print(f"[blob_sync] Upload OK → {blob_url} ({DB_PATH.stat().st_size} bytes)")
     return blob_url
 
 
+PREV_SNAPSHOT_BLOB_PATH = "motor/dashboard-snapshot.prev.json"
+
+
 def upload_snapshot() -> str | None:
-    """Envia dashboard-snapshot.json para o Blob."""
+    """Envia o snapshot atual e guarda o anterior para o Homing (day-over-day)."""
     if not SNAPSHOT_PATH.is_file():
         print("[blob_sync] Sem dashboard-snapshot.json — rode export_dashboard_snapshot")
         return None
-    url = f"{BLOB_API}/{SNAPSHOT_BLOB_PATH}"
-    data = SNAPSHOT_PATH.read_bytes()
-    headers = _headers(content_type="application/json")
-    headers["x-add-random-suffix"] = "false"
-    headers["x-allow-overwrite"] = "true"
-    with httpx.Client(timeout=60.0) as client:
-        resp = client.put(url, headers=headers, content=data)
-        resp.raise_for_status()
-        payload = resp.json()
-    blob_url = payload.get("url", url)
+    new_data = SNAPSHOT_PATH.read_bytes()
+    try:
+        new_as_of = json.loads(new_data).get("asOf")
+    except json.JSONDecodeError:
+        new_as_of = None
+
+    old_bytes = _download_blob_bytes(SNAPSHOT_BLOB_PATH)
+    if old_bytes:
+        try:
+            old_as_of = json.loads(old_bytes).get("asOf")
+        except json.JSONDecodeError:
+            old_as_of = None
+        if old_as_of and old_as_of != new_as_of:
+            prev_url = _put_bytes(PREV_SNAPSHOT_BLOB_PATH, old_bytes, "application/json")
+            dated = _put_bytes(f"motor/snapshots/{old_as_of}.json", old_bytes, "application/json")
+            print(f"[blob_sync] Previous snapshot {old_as_of} → {prev_url}")
+            print(f"[blob_sync] Archive → {dated}")
+
+    blob_url = _put_bytes(SNAPSHOT_BLOB_PATH, new_data, "application/json")
+    if new_as_of:
+        dated_new = _put_bytes(f"motor/snapshots/{new_as_of}.json", new_data, "application/json")
+        print(f"[blob_sync] Archive today {new_as_of} → {dated_new}")
     print(f"[blob_sync] Snapshot → {blob_url}")
     return blob_url
 
@@ -117,15 +150,7 @@ def upload_reports() -> list[str]:
     urls: list[str] = []
     for path in sorted(OUTPUT_DIR.glob("relatorio_*.md")):
         blob_path = f"motor/reports/{path.name}"
-        url = f"{BLOB_API}/{blob_path}"
-        headers = _headers(content_type="text/markdown")
-        headers["x-add-random-suffix"] = "false"
-        headers["x-allow-overwrite"] = "true"
-        with httpx.Client(timeout=60.0) as client:
-            resp = client.put(url, headers=headers, content=path.read_bytes())
-            resp.raise_for_status()
-            payload = resp.json()
-        blob_url = payload.get("url", url)
+        blob_url = _put_bytes(blob_path, path.read_bytes(), "text/markdown")
         urls.append(blob_url)
         print(f"[blob_sync] Relatório → {blob_url}")
     return urls

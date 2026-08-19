@@ -7,6 +7,7 @@ import { APP_NAME } from "@/lib/brand";
 import { SignOutButton } from "./SignOutButton";
 
 const nav = [
+  { href: "/homing", label: "Homing" },
   { href: "/markets", label: "Markets" },
   { href: "/wallet", label: "My Wallet" },
   { href: "/budget", label: "Budget" },
@@ -35,7 +36,7 @@ export function AppShell({
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-3 sm:px-6">
             <div className="flex flex-wrap items-center gap-3">
             <Link
-              href="/markets"
+              href="/homing"
               className="font-title flex shrink-0 items-center gap-1.5 text-sm tracking-tight text-white"
             >
               <Image

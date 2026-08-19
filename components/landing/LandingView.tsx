@@ -121,7 +121,7 @@ export function LandingView({
 }) {
   const [loginOpen, setLoginOpen] = useState(false);
   const [topHorizon, setTopHorizon] = useState<"1d" | "5d">("1d");
-  const appHref = "/markets";
+  const appHref = "/homing";
   const top10 = rankMovers(data.tape, topHorizon);
 
   const openLogin = () => {

@@ -5,7 +5,7 @@ import { EmailPasswordForm } from "@/components/auth/EmailPasswordForm";
 
 export function LoginPanel({
   googleConfigured,
-  callbackUrl = "/markets",
+  callbackUrl = "/homing",
 }: {
   googleConfigured: boolean;
   callbackUrl?: string;
