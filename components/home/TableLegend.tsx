@@ -22,9 +22,13 @@ const ENTRIES: { term: string; text: string }[] = [
     term: "Trend",
     text: "This name's own stage from its Security Score, not the sleeve. ↑ = increase, ● = hold, ↓ = reduce, ⇊ = reduce hard. Hover the symbol for the full sentence. The sleeve is the “The whole class” line above the table.",
   },
-  {
+    {
     term: "Money",
     text: "+ can add, × do not add, … wait, ~ indifferent. Money answers “may I add new cash?”, not “will the price go up?”. … plus a green 7D is still Wait — do not treat it as a buy. Gain (green) is the name vs its peers, 0–100. Risk (red) mixes the sleeve climate (70%) with how weak the name is (30%). A Gain of 56 can still be × when the class is Reduce hard — new money would fight the sleeve.",
+  },
+  {
+    term: "To buy",
+    text: "How far this name is from a motor Buy. It is the larger gap of two: class Overweight (regime score 0.65) and name Preferred (security score 0.65). 0.00 is already Buy. Class means the sleeve is the bottleneck; Name means the paper still has to rank Preferred. Blocked (Reduce or Weak) is a veto — not “0.10 from a buy”. Watch is Reduce plus a positive divergence: still Wait, never Buy. Cash only needs the class gap.",
   },
   {
     term: "Score mix / pillars",

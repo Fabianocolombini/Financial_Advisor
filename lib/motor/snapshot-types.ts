@@ -197,6 +197,9 @@ export type WatchlistClassGroup = {
   label: string;
   classScore: number | null;
   classStageLabel: string | null;
+  /** Live regime score used for allocation (falls back to classScore). */
+  classAllocationScore: number | null;
+  classAllocationAction: string | null;
   classEntryValidated: boolean | null;
   classDominantIndicator: MotorDominantIndicator | null;
   classIndicators: MotorIndicatorSnapshot[];

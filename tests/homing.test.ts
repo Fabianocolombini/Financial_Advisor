@@ -14,6 +14,7 @@ const names = {
     if (classId === "cash_equivalents") return "Cash";
     if (classId === "credit") return "Credit";
     if (classId === "precious_metals") return "Precious metals";
+    if (classId === "commodities_energy") return "Energy";
     return classId;
   },
 };
@@ -78,6 +79,20 @@ function snapshot(tickers: MotorDashboardSnapshot["tickers"]): MotorDashboardSna
         label: "Credit",
         data: "2026-08-18",
         score: 0.55,
+        stage: "Maduro",
+        stageLabel: "Hold",
+        entryTiming: "Wait",
+        entryValidated: false,
+        indicators: [],
+      },
+      commodities_energy: {
+        abaId: "commodities_energy",
+        classId: "commodities_energy",
+        label: "Energy",
+        data: "2026-08-18",
+        score: 0.5,
+        allocationScore: 0.5,
+        allocationAction: "Hold",
         stage: "Maduro",
         stageLabel: "Hold",
         entryTiming: "Wait",
@@ -242,6 +257,83 @@ describe("buildHomingView", () => {
     expect(view.approaching.narrative).toMatch(/Wait/i);
     expect(view.approaching.narrative).toMatch(/NEM/);
     expect(view.approaching.narrative).toMatch(/price, not an entry/i);
+  });
+
+  it("orders Approaching a buy by To buy distance, not Score Δ", () => {
+    const view = buildHomingView({
+      names,
+      holdings: [],
+      current: snapshot({
+        MPC: {
+          symbol: "MPC",
+          abaId: "commodities_energy",
+          classId: "commodities_energy",
+          data: "2026-08-18",
+          score: 0.862,
+          instrumentQuality: "Preferred",
+          stage: "Ascendente",
+          stageLabel: "Accumulate",
+          entryTiming: "Wait",
+          entryValidated: false,
+          perf1dPct: 0.4,
+          perf7dPct: 1.1,
+          indicators: [],
+        },
+        PSX: {
+          symbol: "PSX",
+          abaId: "commodities_energy",
+          classId: "commodities_energy",
+          data: "2026-08-18",
+          score: 0.84,
+          instrumentQuality: "Preferred",
+          stage: "Ascendente",
+          stageLabel: "Accumulate",
+          entryTiming: "Wait",
+          entryValidated: false,
+          perf1dPct: 0.2,
+          perf7dPct: 0.8,
+          indicators: [],
+        },
+        OXY: {
+          symbol: "OXY",
+          abaId: "commodities_energy",
+          classId: "commodities_energy",
+          data: "2026-08-18",
+          score: 0.4,
+          instrumentQuality: "Competitive",
+          stage: "Maduro",
+          stageLabel: "Hold",
+          entryTiming: "Wait",
+          entryValidated: false,
+          perf1dPct: 3.1,
+          perf7dPct: 5.0,
+          indicators: [],
+        },
+      }),
+      previous: snapshot({
+        MPC: {
+          symbol: "MPC",
+          abaId: "commodities_energy",
+          classId: "commodities_energy",
+          data: "2026-08-17",
+          score: 0.7,
+          instrumentQuality: "Preferred",
+          stage: "Ascendente",
+          stageLabel: "Accumulate",
+          entryTiming: "Wait",
+          entryValidated: false,
+          indicators: [],
+        },
+      }),
+    });
+    const wait = view.approaching.rows.filter((row) => row.kind === "wait");
+    expect(wait[0]?.symbol).toBe("MPC");
+    expect(wait[0]?.proximity.value).toBe("0.15");
+    expect(wait[0]?.proximity.axis).toBe("Class");
+    expect(wait.map((row) => row.symbol).slice(0, 3)).toEqual(["MPC", "PSX", "OXY"]);
+    expect(wait.find((row) => row.symbol === "OXY")?.proximity.distance).toBeCloseTo(
+      0.25,
+    );
   });
 
   it("does not treat missing quotes as a loss vs cost", () => {

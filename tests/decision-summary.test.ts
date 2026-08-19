@@ -185,6 +185,9 @@ describe("buildDecisionSummary", () => {
     expect(decision.allocation.stance).toBe("Hold");
     expect(decision.instrument.quality).toBe("Competitive");
     expect(decision.entry.timing).toBe("Neutral");
+    expect(decision.proximity.state).toBe("open");
+    expect(decision.proximity.blockedBy).toBe("regime");
+    expect(decision.proximity.distance).toBeCloseTo(0.13);
     expect(decision.gauge.subject).toBe("instrument_quality");
     expect(decision.gauge.value).toBe(0.4);
   });
@@ -223,6 +226,8 @@ describe("buildDecisionSummary", () => {
     });
     expect(decision.allocation.stance).toBe("Reduce");
     expect(decision.entry.timing).toBe("Avoid");
+    expect(decision.proximity.state).toBe("blocked");
+    expect(decision.proximity.axis).toBe("Reduce");
     expect(decision.position.newMoney).toContain("Do not add");
     expect(decision.position.existing).toContain("reduce");
   });
@@ -237,6 +242,8 @@ describe("buildDecisionSummary", () => {
     });
     expect(decision.instrument.quality).toBe("Weak");
     expect(decision.entry.timing).toBe("Wait");
+    expect(decision.proximity.state).toBe("blocked");
+    expect(decision.proximity.axis).toBe("Weak");
     expect(decision.entry.explanation).toContain("more liquid");
   });
 

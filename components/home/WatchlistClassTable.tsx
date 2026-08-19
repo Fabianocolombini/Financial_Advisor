@@ -7,6 +7,7 @@ import { WalletBuyButton } from "@/components/wallet/WalletBuyButton";
 import { formatShareVolumeCompact, formatPerf, perfClass } from "@/lib/format-market";
 import { formatScore } from "@/lib/motor/format-scores";
 import { entrySetup } from "@/lib/motor/entry-setup";
+import { buyProximity } from "@/lib/motor/buy-proximity";
 import {
   findRecipeIndicator,
   indicatorStance,
@@ -125,10 +126,14 @@ function SecurityRow({
   row,
   columns,
   classStageLabel,
+  classAllocationScore,
+  classAllocationAction,
 }: {
   row: WatchlistRow;
   columns: ScoreIngredient[];
   classStageLabel: string | null;
+  classAllocationScore: number | null;
+  classAllocationAction: string | null;
 }) {
   const router = useRouter();
   const trend = plainTrend(row.stageLabel);
@@ -144,6 +149,22 @@ function SecurityRow({
     instrumentQuality: row.instrumentQuality,
     score: row.score,
   });
+  const proximity = buyProximity({
+    classId: row.classId,
+    regimeScore: classAllocationScore,
+    securityScore: row.score,
+    allocationAction: classAllocationAction ?? classStageLabel,
+    instrumentQuality: row.instrumentQuality,
+    divergesFromClass: row.divergesFromClass,
+  });
+  const toBuyTone =
+    proximity.state === "ready"
+      ? "text-emerald-400"
+      : proximity.state === "blocked"
+        ? "text-orange-400"
+        : proximity.state === "watch" || proximity.state === "open"
+          ? "text-amber-200"
+          : "text-zinc-500";
 
   return (
     <tr
@@ -241,6 +262,12 @@ function SecurityRow({
           </div>
         </div>
       </td>
+      <td className="px-1.5 py-1.5" title={proximity.hint}>
+        <div className={`tabular-nums text-sm ${toBuyTone}`}>{proximity.value}</div>
+        {proximity.axis ? (
+          <div className="text-[10px] text-zinc-500">{proximity.axis}</div>
+        ) : null}
+      </td>
       <td
         className="max-w-[4.5rem] truncate px-1.5 py-1.5 text-[10px] text-zinc-400"
         title={row.dominantIndicator?.name ?? undefined}
@@ -331,6 +358,12 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
               </th>
               <th
                 className="px-1.5 py-2 font-medium"
+                title="How far this name is from a motor Buy. Smaller is closer. Class = sleeve still needs Overweight. Name = paper still needs Preferred. Blocked is a veto, not a small gap."
+              >
+                To buy
+              </th>
+              <th
+                className="px-1.5 py-2 font-medium"
                 title="The ingredient that weighed most on this name's score today."
               >
                 Factor
@@ -358,6 +391,12 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
                 row={row}
                 columns={columns}
                 classStageLabel={group.classStageLabel}
+                classAllocationScore={
+                  group.classAllocationScore ?? group.classScore
+                }
+                classAllocationAction={
+                  group.classAllocationAction ?? group.classStageLabel
+                }
               />
             ))}
           </tbody>

@@ -13,6 +13,7 @@
 
 import type { SymbolMotorContext } from "./snapshot-types";
 import type { TechnicalIndicatorRow } from "@/lib/market/technical-summary";
+import { buyProximity, type BuyProximity } from "./buy-proximity";
 import {
   classScoreProfile,
   type ScoreDomain,
@@ -62,6 +63,7 @@ export type DecisionSummary = {
     reasons: string[];
     explanation: string;
   };
+  proximity: BuyProximity;
   position: {
     newMoney: string;
     existing: string;
@@ -434,6 +436,14 @@ export function buildDecisionSummary(input: {
     allocation,
     instrument,
     entry,
+    proximity: buyProximity({
+      classId,
+      regimeScore: allocation.score,
+      securityScore: instrument.score,
+      allocationAction: allocation.stance,
+      instrumentQuality: instrument.quality,
+      divergesFromClass: motor.divergesFromClass,
+    }),
     position,
     headline: buildHeadline(allocation.stance, entry.timing, profile.stabilityFocused),
     gauge: {

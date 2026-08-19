@@ -127,8 +127,25 @@ export function DecisionSummaryCards({
           tone={entryTone(entry.timing)}
           detail={entry.explanation}
         >
+          <p className="mt-3 border-t border-zinc-800/80 pt-2" title={decision.proximity.hint}>
+            <span className="inline-flex items-center gap-1 text-[11px] uppercase tracking-wide text-zinc-600">
+              To buy
+              <InfoTooltip term="buy_proximity" />
+            </span>
+            <span className="ml-2 tabular-nums text-sm text-zinc-200">
+              {decision.proximity.value}
+            </span>
+            {decision.proximity.axis ? (
+              <span className="ml-1 text-[11px] text-zinc-500">
+                {decision.proximity.axis}
+              </span>
+            ) : null}
+          </p>
+          <p className="mt-1 text-[11px] leading-relaxed text-zinc-500">
+            {decision.proximity.hint}
+          </p>
           {entry.reasons.length > 0 ? (
-            <ul className="mt-2 space-y-1 border-t border-zinc-800/80 pt-2 text-[11px] text-zinc-500">
+            <ul className="mt-2 space-y-1 text-[11px] text-zinc-500">
               {entry.reasons.map((reason) => (
                 <li key={reason}>· {reason}</li>
               ))}

@@ -85,6 +85,8 @@ function group(rows: WatchlistRow[]): WatchlistClassGroup {
     label: "Cash",
     classScore: 0.12,
     classStageLabel: "Strong Reduce",
+    classAllocationScore: 0.12,
+    classAllocationAction: "Strong Reduce",
     classEntryValidated: false,
     classDominantIndicator: null,
     classIndicators: [],
@@ -172,5 +174,14 @@ describe("WatchlistClassTable", () => {
     expect(html).toContain("Risk");
     expect(html).toContain("Do not add");
     expect(html).toContain("Trend");
+  });
+
+  it("prints To buy as Blocked when the class is reducing", () => {
+    const html = renderToStaticMarkup(
+      <WatchlistClassTable group={group([scoredCashRow()])} />,
+    );
+    expect(html).toContain("To buy");
+    expect(html).toContain("Blocked");
+    expect(html).toContain("Reduce hard");
   });
 });

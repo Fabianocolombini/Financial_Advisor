@@ -236,9 +236,11 @@ export function HomingView({
         <section className="space-y-3">
           <h2 className="font-title text-lg text-white">Approaching a buy</h2>
           <p className="text-sm text-zinc-500">
-            Names you do not own. Money + is the only buy. … is Wait — do not
-            add cash yet, even if 7D is green. × is Do not add. A 1D print
-            like +7% is the market price, not an entry.
+            Names you do not own, closest first. To buy is how far from a motor
+            Buy — Class means the sleeve still needs Overweight, Name means the
+            paper still needs Preferred. Money + is the only buy. … is Wait.
+            × is Do not add. A 1D print like +7% is the market price, not an
+            entry.
           </p>
           <div className="flex flex-wrap gap-6">
             <div>
@@ -273,6 +275,7 @@ export function HomingView({
                 <tr>
                   <th className="py-1.5 font-medium">Name</th>
                   <th className="py-1.5 font-medium">Money</th>
+                  <th className="py-1.5 font-medium">To buy</th>
                   <th className="py-1.5 font-medium">1D</th>
                   <th className="py-1.5 font-medium">7D</th>
                   <th className="py-1.5 font-medium">Score Δ</th>
@@ -298,6 +301,16 @@ export function HomingView({
                     >
                       <span className="font-semibold">{row.moneyGlyph}</span>{" "}
                       <span className="text-[11px]">{row.moneyLabel}</span>
+                    </td>
+                    <td className="py-2" title={row.proximity.hint}>
+                      <span className="tabular-nums text-zinc-200">
+                        {row.proximity.value}
+                      </span>
+                      {row.proximity.axis ? (
+                        <span className="ml-1 text-[10px] text-zinc-500">
+                          {row.proximity.axis}
+                        </span>
+                      ) : null}
                     </td>
                     <td className={`py-2 tabular-nums ${perfClass(row.perf1dPct)}`}>
                       {formatPerf(row.perf1dPct)}

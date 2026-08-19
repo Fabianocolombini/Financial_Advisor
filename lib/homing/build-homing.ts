@@ -1,5 +1,10 @@
 import { entrySetup } from "@/lib/motor/entry-setup";
 import {
+  buyProximity,
+  compareBuyProximity,
+  type BuyProximity,
+} from "@/lib/motor/buy-proximity";
+import {
   newMoneyGlyph,
   type PlainLabel,
 } from "@/lib/motor/plain-language";
@@ -52,6 +57,7 @@ export type HomingBuyRow = {
   moneyGlyph: string;
   moneyHint: string;
   kind: HomingBuyKind;
+  proximity: BuyProximity;
 };
 
 export type HomingViewModel = {
@@ -293,10 +299,16 @@ function buyKind(label: string): HomingBuyKind {
 }
 
 function byCloserThenPrice(a: HomingBuyRow, b: HomingBuyRow): number {
+  const proximity = compareBuyProximity(
+    a.proximity,
+    b.proximity,
+    a.score,
+    b.score,
+  );
+  if (proximity !== 0) return proximity;
   const da = a.scoreDelta ?? -999;
   const db = b.scoreDelta ?? -999;
   if (db !== da) return db - da;
-  if (b.score !== a.score) return b.score - a.score;
   return (b.perf1dPct ?? -999) - (a.perf1dPct ?? -999);
 }
 
@@ -470,6 +482,21 @@ export function buildHomingView(input: {
       moneyGlyph: newMoneyGlyph(money.label),
       moneyHint: money.hint,
       kind: buyKind(money.label),
+      proximity: buyProximity({
+        classId: tick.classId,
+        regimeScore:
+          classSnap?.allocationScore ??
+          classSnap?.regimeModel?.score ??
+          classSnap?.score ??
+          null,
+        securityScore: tick.score,
+        allocationAction:
+          classSnap?.allocationAction ??
+          classSnap?.regimeModel?.action ??
+          classStage,
+        instrumentQuality: tick.instrumentQuality ?? null,
+        divergesFromClass: tick.divergesFromClass ?? false,
+      }),
     });
   }
 

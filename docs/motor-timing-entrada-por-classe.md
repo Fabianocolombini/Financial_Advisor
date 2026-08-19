@@ -224,6 +224,15 @@ A página do símbolo (`lib/motor/decision-summary.ts` `resolveEntry`) **recalcu
 
 Markets, Daily Digest e o snapshot usam **só** a árvore desta página. Podem discordar da página do ticker.
 
+### 9.1 Buy Proximity (`To buy`) — app, não motor
+
+Número derivado só de regime score + security score. Não grava no snapshot. Não muda `entryTiming`.
+
+- Classes não-caixa: `max(0.65 − regime, 0.65 − security)` — o gargalo, não a média. `0.00` = Buy.
+- Caixa: só o gap de regime. Quality não entra na distância.
+- Reduce / Weak: estado **Blocked** (sem número). Reduce + diverge + Preferred: **Watch**.
+- UI: coluna **To buy** em Markets e Daily Digest, ordenando Approaching a buy por essa distância.
+
 ---
 
 ## 10. O que não está nesta regra

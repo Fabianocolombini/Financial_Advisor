@@ -50,6 +50,10 @@
   "allocation_stance": "How much of the asset class to hold in aggregate, according to the regime model (macro, carry, curve). It does not say whether this specific name is a buy.",
   "instrument_quality": "How this name compares with peers in the same class on the same day. It is a relative ranking, not a price direction.",
   "entry_timing": "Whether price confirms an entry now. Independent of the allocation recommendation: the class can be favored without this being a good moment to buy.",
+  "buy_proximity": {
+    "meaning": "How far this name is from a motor Buy. It is the larger of two gaps: class Overweight (regime score 0.65) and name Preferred (security score 0.65). Smaller is closer; 0.00 is already Buy.",
+    "read": "Class means the sleeve is the bottleneck. Name means the paper still has to rank Preferred. Blocked (Reduce or Weak) is a veto, not a small gap. Watch is Reduce plus a positive divergence — still Wait, never Buy."
+  },
   "forecast_range": "Likely price range projected from recent volatility, not a point forecast. Historical coverage shows how often the range was right in the past.",
   "monte_carlo": {
     "meaning": "A second projection model: it redraws this name's own daily returns 2,000 times and walks them forward. The median is the typical ending price; the 68% and 95% bands are percentiles of those paths.",
