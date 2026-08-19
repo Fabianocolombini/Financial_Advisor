@@ -142,7 +142,7 @@ export function buildWatchlistGroups(
         classSnap?.regimeModel?.action ??
         classSnap?.stageLabel ??
         null,
-      classEntryValidated: classSnap?.entryValidated ?? null;
+      classEntryValidated: classSnap?.entryValidated ?? null,
       classDominantIndicator: classSnap?.dominantIndicator ?? null,
       classIndicators: classSnap?.indicators ?? [],
       rows,
