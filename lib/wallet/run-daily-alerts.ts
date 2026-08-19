@@ -2,11 +2,13 @@ import { prisma } from "@/lib/prisma";
 import { composeHomingEmail } from "@/lib/homing/homing-email";
 import { homingAppUrl, loadHomingView } from "@/lib/homing/load-homing";
 import {
+  hasDeliverableEmail,
+  shouldSkipDigestSend,
+} from "@/lib/homing/digest-mail";
+import {
   sendWalletAlertEmail,
   walletEmailConfigured,
 } from "@/lib/wallet/send-alert-email";
-
-const RECENT_MS = 20 * 60 * 60 * 1000;
 
 export async function runWalletDailyAlerts(): Promise<{
   users: number;
@@ -17,47 +19,42 @@ export async function runWalletDailyAlerts(): Promise<{
   emailConfigured: boolean;
   emailErrors: string[];
 }> {
-  const [walletUsers, watchUsers] = await Promise.all([
-    prisma.walletHolding.findMany({ distinct: ["userId"], select: { userId: true } }),
-    prisma.userWatchlistItem.findMany({
-      distinct: ["userId"],
-      select: { userId: true },
-    }),
-  ]);
-  const userIds = [
-    ...new Set([...walletUsers, ...watchUsers].map((row) => row.userId)),
-  ];
+  const recipients = await prisma.user.findMany({
+    where: { dailyDigestEmail: true },
+    select: {
+      id: true,
+      email: true,
+      walletAlerts: {
+        where: { emailedAt: { not: null } },
+        orderBy: { emailedAt: "desc" },
+        take: 1,
+        select: { emailedAt: true },
+      },
+    },
+  });
 
   let alerts = 0;
   let emailed = 0;
   let skippedRecent = 0;
   let skippedNoEmail = 0;
   const emailErrors: string[] = [];
-  const since = new Date(Date.now() - RECENT_MS);
   const homingUrl = homingAppUrl();
   const emailConfigured = walletEmailConfigured();
 
-  for (const userId of userIds) {
-    const already = await prisma.walletAlert.findFirst({
-      where: { userId, emailedAt: { gte: since } },
-    });
-    if (already) {
+  for (const user of recipients) {
+    if (shouldSkipDigestSend(user.walletAlerts[0]?.emailedAt ?? null)) {
       skippedRecent += 1;
       continue;
     }
 
-    const { view } = await loadHomingView(userId);
+    const { view } = await loadHomingView(user.id);
 
     const row = await prisma.walletAlert.create({
-      data: { userId, payload: { items: view.decisionItems } },
+      data: { userId: user.id, payload: { items: view.decisionItems } },
     });
     if (view.decisionItems.length > 0) alerts += 1;
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { email: true },
-    });
-    if (!user?.email) {
+    if (!hasDeliverableEmail(user.email)) {
       skippedNoEmail += 1;
       continue;
     }
@@ -67,7 +64,7 @@ export async function runWalletDailyAlerts(): Promise<{
       walletUrl: homingUrl,
     });
     const sent = await sendWalletAlertEmail({
-      to: user.email,
+      to: user.email!,
       subject: mail.subject,
       text: mail.text,
       html: mail.html,
@@ -84,7 +81,7 @@ export async function runWalletDailyAlerts(): Promise<{
   }
 
   return {
-    users: userIds.length,
+    users: recipients.length,
     alerts,
     emailed,
     skippedRecent,

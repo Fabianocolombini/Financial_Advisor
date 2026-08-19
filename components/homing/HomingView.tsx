@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { MotorDataFreshness } from "@/components/home/MotorDataFreshness";
 import { BookLotsTable } from "@/components/homing/BookLotsTable";
+import {
+  DigestMailCard,
+  type DigestMailState,
+} from "@/components/homing/DigestMailCard";
 import { formatPerf, perfClass } from "@/lib/format-market";
 import { formatScore } from "@/lib/motor/format-scores";
 import type { HomingChartPoint, HomingViewModel } from "@/lib/homing/build-homing";
@@ -136,9 +140,11 @@ function Stat({
 export function HomingView({
   view,
   snapshot,
+  mail,
 }: {
   view: HomingViewModel;
   snapshot: MotorDashboardSnapshot | null;
+  mail: DigestMailState;
 }) {
   return (
     <div className="space-y-6">
@@ -152,6 +158,8 @@ export function HomingView({
         </p>
         <MotorDataFreshness snapshot={snapshot} prominent />
       </div>
+
+      <DigestMailCard initial={mail} />
 
       {view.book.chart.length >= 2 ? (
         <section className="rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3">

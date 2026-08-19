@@ -43,6 +43,9 @@ model User {
   emailVerified    DateTime?
   image            String?
   passwordHash     String?          @map("password_hash")
+  /** User allowed weekday Daily Digest mail to this address. */
+  dailyDigestEmail   Boolean    @default(false) @map("daily_digest_email")
+  dailyDigestEmailAt DateTime?  @map("daily_digest_email_at")
   accounts         Account[]
   sessions         Session[]
   goals            Goal[]
