@@ -27,7 +27,8 @@ Output: relatórios `.md` com racional matemático explícito.
 | [docs/COMANDO_CLAUDE_WEB_FASE2.md](docs/COMANDO_CLAUDE_WEB_FASE2.md) | **Claude Web: Motor Daily + External Weekly (browser)** |
 | [docs/COMANDO_CLAUDE_WEB_RESEND.md](docs/COMANDO_CLAUDE_WEB_RESEND.md) | **Claude Web: Resend + Daily Digest email (browser)** |
 | [docs/ETAPA_1A_TESTE.md](docs/ETAPA_1A_TESTE.md) | Checklist teste 1A em produção |
-| [docs/guia-decisao-entrada-por-sleeve.md](docs/guia-decisao-entrada-por-sleeve.md) | Racional de entrada |
+| [docs/guia-decisao-entrada-por-sleeve.md](docs/guia-decisao-entrada-por-sleeve.md) | Racional qualitativo de entrada (insumos de regime) |
+| [docs/motor-timing-entrada-por-classe.md](docs/motor-timing-entrada-por-classe.md) | **Regra do motor `entryTiming` / Money, por classe** |
 
 ## Comandos motor
 

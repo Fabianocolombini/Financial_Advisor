@@ -1,6 +1,7 @@
 # Guia de Decisão de Entrada por Sleeve (classe de ativo)
 
-Racional de **quando** considerar entrada/aumento vs redução, por classe. Alinhado à tabela de indicadores.
+Racional **qualitativo** de quando o *regime* da classe fica favorável (VIX, spreads, curva…).  
+A **árvore que o motor grava** em `entryTiming` (Money `+` `…` `×`) está em [motor-timing-entrada-por-classe.md](motor-timing-entrada-por-classe.md). Este guia alimenta o Regime Score; não é o if/else da coluna Money.
 
 ## Princípio geral
 
