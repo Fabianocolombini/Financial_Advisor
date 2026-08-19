@@ -98,10 +98,10 @@ def _ingest_series_with_conn(
             obs = fetch_fred_observations(api_key, sid, start)
             counts[sid] = upsert_raw_series(conn, sid, obs)
         except httpx.HTTPStatusError as e:
-            log.warning("FRED skip %s: %s", sid, e)
+            log.warning("FRED skip %s: HTTP %s", sid, e.response.status_code)
             counts[sid] = 0
         except Exception as e:
-            log.warning("FRED skip %s: %s", sid, e)
+            log.warning("FRED skip %s: %s", sid, type(e).__name__)
             counts[sid] = 0
     if commit:
         conn.commit()

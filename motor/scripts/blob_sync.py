@@ -42,15 +42,30 @@ def _headers(*, content_type: str | None = None) -> dict[str, str]:
     return headers
 
 
+def _find_blob(pathname: str) -> dict | None:
+    """Resolve a blob by pathname. Direct GET on blob.vercel-storage.com/{path} 404s."""
+    with httpx.Client(timeout=60.0) as client:
+        resp = client.get(BLOB_API, headers=_headers(), params={"prefix": pathname})
+        resp.raise_for_status()
+        for blob in resp.json().get("blobs") or []:
+            if blob.get("pathname") == pathname:
+                return blob
+    return None
+
+
 def download_db() -> bool:
     """Baixa historico.db do Blob. Retorna False se o blob ainda não existir."""
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-    url = f"{BLOB_API}/{DB_BLOB_PATH}"
-    with httpx.Client(timeout=120.0) as client:
-        resp = client.get(url, headers=_headers())
-        if resp.status_code == 404:
-            print(f"[blob_sync] Blob ausente ({DB_BLOB_PATH}) — iniciando DB vazio")
-            return False
+    blob = _find_blob(DB_BLOB_PATH)
+    if not blob:
+        print(f"[blob_sync] Blob ausente ({DB_BLOB_PATH}) — iniciando DB vazio")
+        return False
+    url = blob.get("downloadUrl") or blob.get("url")
+    if not url:
+        print(f"[blob_sync] Blob {DB_BLOB_PATH} sem URL — iniciando DB vazio")
+        return False
+    with httpx.Client(timeout=180.0, follow_redirects=True) as client:
+        resp = client.get(url)
         resp.raise_for_status()
         DB_PATH.write_bytes(resp.content)
     print(f"[blob_sync] Download OK → {DB_PATH} ({DB_PATH.stat().st_size} bytes)")

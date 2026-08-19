@@ -21,26 +21,29 @@ def _yf_ticker(symbol: str) -> yf.Ticker:
 
 
 def fetch_field(ticker: str, field: str) -> float | None:
-    t = _yf_ticker(ticker)
-    info = t.info or {}
-    if field == "close":
-        hist = t.history(period="5d")
-        if hist.empty:
+    try:
+        t = _yf_ticker(ticker)
+        info = t.info or {}
+        if field == "close":
+            hist = t.history(period="5d")
+            if hist.empty:
+                return None
+            return float(hist["Close"].iloc[-1])
+        if field == "pe_ratio":
+            v = info.get("trailingPE") or info.get("forwardPE")
+            return float(v) if v else None
+        if field == "dividend_yield":
+            v = info.get("dividendYield") or info.get("yield")
+            if v is not None:
+                return float(v)
             return None
-        return float(hist["Close"].iloc[-1])
-    if field == "pe_ratio":
-        v = info.get("trailingPE") or info.get("forwardPE")
-        return float(v) if v else None
-    if field == "dividend_yield":
-        v = info.get("dividendYield") or info.get("yield")
-        if v is not None:
-            return float(v)
+        if field == "revenue_growth":
+            v = info.get("revenueGrowth")
+            return float(v) if v else None
+        v = info.get(field)
+        return float(v) if v is not None else None
+    except Exception:
         return None
-    if field == "revenue_growth":
-        v = info.get("revenueGrowth")
-        return float(v) if v else None
-    v = info.get(field)
-    return float(v) if v is not None else None
 
 
 def persist_snapshot(conn, ticker: str, field: str, value: float) -> None:
