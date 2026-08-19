@@ -24,7 +24,7 @@ const ENTRIES: { term: string; text: string }[] = [
   },
   {
     term: "Money",
-    text: "+ can add, × do not add, … wait, ~ indifferent. Gain (green) is the name vs its peers, 0–100. Risk (red) mixes the sleeve climate (70%) with how weak the name is (30%). A Gain of 56 can still be × when the class is Reduce hard — new money would fight the sleeve.",
+    text: "+ can add, × do not add, … wait, ~ indifferent. Money answers “may I add new cash?”, not “will the price go up?”. … plus a green 7D is still Wait — do not treat it as a buy. Gain (green) is the name vs its peers, 0–100. Risk (red) mixes the sleeve climate (70%) with how weak the name is (30%). A Gain of 56 can still be × when the class is Reduce hard — new money would fight the sleeve.",
   },
   {
     term: "Score mix / pillars",

@@ -135,13 +135,13 @@ export function plainNewMoney(input: {
     case "Wait":
       return {
         label: "Wait",
-        hint: "Eligible, but no rush: the class still needs confirmation, or this name is not among the best in the group.",
+        hint: "Do not add new cash yet: the class still needs confirmation, or this name is not among the best in the group. Wait is not a forecast that the name is finished — 1D and 7D can still print green while Money stays …",
         tone: "caution",
       };
     case "Avoid":
       return {
         label: "Do not add",
-        hint: "The model advises against new money here now. Existing holders do not necessarily need to sell — see the name's page.",
+        hint: "The model advises against new money here now. A strong 1D or 7D is the market price, not an entry. Existing holders do not necessarily need to sell — see the name's page.",
         tone: "negative",
       };
     case "Neutral":

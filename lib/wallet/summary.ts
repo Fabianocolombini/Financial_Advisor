@@ -14,7 +14,11 @@ export type WalletLotForSummary = {
 };
 
 export type WalletSummary = {
+  /** What you paid for every lot, including names still without a live quote. */
   invested: number;
+  /** What you paid for lots that have a live quote. */
+  quotedCost: number;
+  /** Market value of quoted lots only. */
   gross: number | null;
   profit: number | null;
   tax: number | null;
@@ -34,6 +38,7 @@ export function summarizeWallet(
   if (quoted.length === 0) {
     return {
       invested,
+      quotedCost: 0,
       gross: null,
       profit: null,
       tax: null,
@@ -53,6 +58,7 @@ export function summarizeWallet(
 
   return {
     invested,
+    quotedCost,
     gross,
     profit,
     tax,

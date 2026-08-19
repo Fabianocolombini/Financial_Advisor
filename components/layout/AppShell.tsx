@@ -7,7 +7,7 @@ import { APP_NAME } from "@/lib/brand";
 import { SignOutButton } from "./SignOutButton";
 
 const nav = [
-  { href: "/homing", label: "Homing" },
+  { href: "/homing", label: "Daily Digest" },
   { href: "/markets", label: "Markets" },
   { href: "/wallet", label: "My Wallet" },
   { href: "/budget", label: "Budget" },

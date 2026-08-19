@@ -79,6 +79,12 @@ describe("plainNewMoney", () => {
     ).toBe("No data");
   });
 
+  it("says Wait is not a buy even when price prints green", () => {
+    const wait = plainNewMoney({ ...base, entryTiming: "Wait" });
+    expect(wait.hint).toMatch(/do not add new cash/i);
+    expect(wait.hint).toMatch(/green/i);
+  });
+
   it("never promises a return", () => {
     for (const timing of ["Buy", "Wait", "Avoid", "Neutral"]) {
       expect(plainNewMoney({ ...base, entryTiming: timing }).hint).not.toMatch(

@@ -12,6 +12,14 @@ function money(value: number | null | undefined): string {
   return USD.format(value);
 }
 
+function signedMoney(value: number | null | undefined): string {
+  if (value == null || !Number.isFinite(value)) return "—";
+  const formatted = USD.format(Math.abs(value));
+  if (value > 0) return `+${formatted}`;
+  if (value < 0) return `-${formatted}`;
+  return formatted;
+}
+
 function escapeHtml(value: string): string {
   return value
     .replaceAll("&", "&amp;")
@@ -39,36 +47,46 @@ export function composeHomingEmail(input: {
     view.book.dayPnl != null
       ? `${view.book.dayPnl >= 0 ? "+" : ""}${money(view.book.dayPnl)}`
       : "—";
-  const subject = `Atlas Homing — book ${bookPnl} · ${view.approaching.canAddCount} closer to a buy`;
+  const subject = `Atlas Daily Digest — book ${bookPnl} · ${view.approaching.canAddCount} Can add`;
 
   const lotLines = view.book.lots
     .map((row) => {
       const day = row.dayPct != null ? formatPerf(row.dayPct) : "—";
-      return `• ${row.symbol}  ${row.action}  ${day}\n  ${row.hint}`;
+      const vsCost = row.vsCostPct != null ? formatPerf(row.vsCostPct) : "—";
+      return `• ${row.symbol}  ${row.action}  day ${day}  vs cost ${vsCost}\n  ${row.hint}`;
     })
     .join("\n");
   const buyLines = view.approaching.rows
     .map((row) => {
       const day = row.perf1dPct != null ? formatPerf(row.perf1dPct) : "—";
-      return `• ${row.symbol}  score ${formatScore(row.score)}  Δ ${deltaScore(row.scoreDelta)}  1D ${day}`;
+      const week = row.perf7dPct != null ? formatPerf(row.perf7dPct) : "—";
+      return `• ${row.symbol}  ${row.moneyGlyph} ${row.moneyLabel}  1D ${day}  7D ${week}  score ${formatScore(row.score)}  Δ ${deltaScore(row.scoreDelta)}`;
     })
     .join("\n");
 
   const asOf = view.asOf ? `Close ${view.asOf}` : "Today";
+  const vsCostLine =
+    view.book.vsCostAbs != null
+      ? `Vs cost ${signedMoney(view.book.vsCostAbs)} / ${formatPerf(view.book.vsCostPct)}.`
+      : "";
+  const incomplete = view.book.incomplete
+    ? ` Worth now covers ${view.book.quotedLots} of ${view.book.totalLots} lots with a live price.`
+    : "";
   const text = [
-    `Atlas Homing — ${asOf}`,
+    `Atlas Daily Digest — ${asOf}`,
     "",
     "MY BOOK",
     view.book.narrative,
-    `Invested ${money(view.book.invested)} → now ${money(view.book.gross)} (day ${bookPnl} / ${formatPerf(view.book.dayPct)})`,
+    `You paid ${money(view.book.invested)}. Worth now ${money(view.book.gross)}. ${vsCostLine} Vs yesterday ${bookPnl} / ${formatPerf(view.book.dayPct)}.${incomplete}`,
     lotLines || "No lots yet.",
     "",
     "APPROACHING A BUY",
+    "Money + is the only buy. … is Wait — do not add cash yet, even if 7D is green. × is Do not add. 1D/7D is the price, not an entry.",
     view.approaching.narrative,
-    buyLines || "No Can add names today.",
+    buyLines || "No scored names today.",
     "",
     "This is an educational briefing from Atlas, not regulated investment advice.",
-    `Open Homing: ${input.walletUrl}`,
+    `Open Daily Digest: ${input.walletUrl}`,
   ].join("\n");
 
   const lotHtml = view.book.lots
@@ -77,16 +95,18 @@ export function composeHomingEmail(input: {
   <td style="padding:8px 0;border-bottom:1px solid #e4e4e7;font-family:ui-monospace,Menlo,monospace;font-size:13px">${escapeHtml(row.symbol)}</td>
   <td style="padding:8px 0;border-bottom:1px solid #e4e4e7;font-size:13px">${escapeHtml(row.action)}</td>
   <td style="padding:8px 0;border-bottom:1px solid #e4e4e7;font-size:13px;text-align:right">${escapeHtml(row.dayPct != null ? formatPerf(row.dayPct) : "—")}</td>
+  <td style="padding:8px 0;border-bottom:1px solid #e4e4e7;font-size:13px;text-align:right">${escapeHtml(row.vsCostPct != null ? formatPerf(row.vsCostPct) : "—")}</td>
 </tr>
-<tr><td colspan="3" style="padding:0 0 12px;font-size:12px;color:#71717a">${escapeHtml(row.hint)}</td></tr>`,
+<tr><td colspan="4" style="padding:0 0 12px;font-size:12px;color:#71717a">${escapeHtml(row.hint)}</td></tr>`,
     )
     .join("");
   const buyHtml = view.approaching.rows
     .map(
       (row) => `<tr>
   <td style="padding:8px 0;border-bottom:1px solid #e4e4e7;font-family:ui-monospace,Menlo,monospace;font-size:13px">${escapeHtml(row.symbol)}</td>
-  <td style="padding:8px 0;border-bottom:1px solid #e4e4e7;font-size:13px;text-align:right">${escapeHtml(deltaScore(row.scoreDelta))}</td>
+  <td style="padding:8px 0;border-bottom:1px solid #e4e4e7;font-size:13px">${escapeHtml(`${row.moneyGlyph} ${row.moneyLabel}`)}</td>
   <td style="padding:8px 0;border-bottom:1px solid #e4e4e7;font-size:13px;text-align:right">${escapeHtml(row.perf1dPct != null ? formatPerf(row.perf1dPct) : "—")}</td>
+  <td style="padding:8px 0;border-bottom:1px solid #e4e4e7;font-size:13px;text-align:right">${escapeHtml(row.perf7dPct != null ? formatPerf(row.perf7dPct) : "—")}</td>
 </tr>`,
     )
     .join("");
@@ -96,17 +116,18 @@ export function composeHomingEmail(input: {
 <body style="margin:0;padding:24px;background:#fafafa;color:#111;font-family:ui-sans-serif,system-ui,-apple-system,sans-serif">
   <div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #e4e4e7;border-radius:12px;padding:24px">
     <p style="margin:0 0 4px;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:#a16207">Atlas</p>
-    <h1 style="margin:0 0 8px;font-size:20px">Homing</h1>
+    <h1 style="margin:0 0 8px;font-size:20px">Daily Digest</h1>
     <p style="margin:0 0 16px;font-size:13px;color:#71717a">${escapeHtml(asOf)}</p>
     <h2 style="margin:24px 0 8px;font-size:14px;letter-spacing:0.04em;text-transform:uppercase;color:#3f3f46">My book</h2>
     <p style="margin:0 0 8px;font-size:14px;line-height:1.5">${escapeHtml(view.book.narrative)}</p>
-    <p style="margin:0 0 12px;font-size:13px;color:#71717a">Day ${escapeHtml(bookPnl)} · now ${escapeHtml(money(view.book.gross))}</p>
+    <p style="margin:0 0 12px;font-size:13px;color:#71717a">You paid ${escapeHtml(money(view.book.invested))} · worth now ${escapeHtml(money(view.book.gross))} · vs yesterday ${escapeHtml(bookPnl)}</p>
     <table width="100%" cellpadding="0" cellspacing="0">${lotHtml}</table>
     <h2 style="margin:24px 0 8px;font-size:14px;letter-spacing:0.04em;text-transform:uppercase;color:#3f3f46">Approaching a buy</h2>
+    <p style="margin:0 0 8px;font-size:12px;color:#71717a">Money + is the only buy. … Wait is not a buy, even if 7D is green. × Do not add. 1D/7D is price.</p>
     <p style="margin:0 0 12px;font-size:14px;line-height:1.5">${escapeHtml(view.approaching.narrative)}</p>
     <table width="100%" cellpadding="0" cellspacing="0">${buyHtml}</table>
     <p style="margin:24px 0 0;font-size:12px;color:#71717a;line-height:1.5">This is an educational briefing from Atlas, not regulated investment advice.</p>
-    <p style="margin:12px 0 0"><a href="${escapeHtml(input.walletUrl)}" style="color:#a16207">Open Homing</a></p>
+    <p style="margin:12px 0 0"><a href="${escapeHtml(input.walletUrl)}" style="color:#a16207">Open Daily Digest</a></p>
   </div>
 </body>
 </html>`;

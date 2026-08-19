@@ -9,6 +9,7 @@ describe("summarizeWallet", () => {
   it("sums invested cost and applies 15% tax only on profit", () => {
     const summary = summarizeWallet([lot(1000, 1100), lot(500, 480)]);
     expect(summary.invested).toBe(1500);
+    expect(summary.quotedCost).toBe(1500);
     expect(summary.gross).toBe(1580);
     expect(summary.profit).toBe(80);
     expect(summary.tax).toBeCloseTo(80 * WALLET_GAIN_TAX_RATE);
@@ -26,6 +27,7 @@ describe("summarizeWallet", () => {
   it("keeps invested when quotes are missing", () => {
     const summary = summarizeWallet([lot(200, null)]);
     expect(summary.invested).toBe(200);
+    expect(summary.quotedCost).toBe(0);
     expect(summary.gross).toBeNull();
     expect(summary.net).toBeNull();
     expect(summary.incomplete).toBe(true);
