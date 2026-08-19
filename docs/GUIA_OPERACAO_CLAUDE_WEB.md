@@ -207,6 +207,7 @@ Não commitar secrets. Não expor valores de tokens em resposta.
 | [CLOUD_SETUP.md](CLOUD_SETUP.md) | Setup inicial nuvem |
 | [CLOUD_VERIFICATION_CHECKLIST.md](CLOUD_VERIFICATION_CHECKLIST.md) | Checklist completo + queries Neon |
 | [COMANDO_CLAUDE_WEB_MOTOR_DAILY.md](COMANDO_CLAUDE_WEB_MOTOR_DAILY.md) | Prompt para disparar Motor Daily sem o usuário |
+| [COMANDO_CLAUDE_WEB_RESEND.md](COMANDO_CLAUDE_WEB_RESEND.md) | Prompt para verificar Resend e alinhar Daily Digest email |
 | [COMANDO_CLAUDE_WEB_FASE2.md](COMANDO_CLAUDE_WEB_FASE2.md) | Fase 2: Daily + External Weekly + validação snapshot (browser) |
 | `.github/workflows/motor-external-weekly.yml` | Scrapers semanais/mensais |
 | `.cursor/rules/auto-commit-deploy.mdc` | Regra: commit+push após entregas |
