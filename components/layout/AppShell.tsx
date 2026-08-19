@@ -67,12 +67,13 @@ export function AppShell({
                     />
                   </svg>
                 </Link>
-                <span
-                  className="hidden max-w-[12rem] truncate text-xs text-zinc-500 lg:inline"
-                  title={user.email ?? undefined}
+                <Link
+                  href="/settings"
+                  className="max-w-[12rem] truncate text-xs text-zinc-400 hover:text-white"
+                  title="Profile"
                 >
                   {label}
-                </span>
+                </Link>
                 {showSignOut ? <SignOutButton /> : null}
               </div>
             </div>

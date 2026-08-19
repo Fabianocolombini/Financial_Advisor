@@ -2,7 +2,7 @@
 
 Use quando o assistente tem **apenas browser** (Resend + Vercel) — sem terminal, `git`, `gh` ou `vercel` CLI.
 
-Objetivo: o **Daily Digest** sair de verdade no e-mail de quem clicou **Allow Daily Digest by email** em `/homing`.
+Objetivo: o **Daily Digest** sair de verdade no e-mail de quem clicou **Allow Daily Digest by email** em **Profile** (`/settings`).
 
 ---
 
@@ -19,7 +19,7 @@ Contexto: Daily Digest (página /homing) já está em produção. O e-mail weekd
 (/api/cron/wallet-alerts às 21:30 UTC, seg–sex) usa Resend. A chave
 RESEND_API_KEY já existe em Production. O envio falha porque o From não
 casa com um domínio Verified no Resend. Quem recebe: só User.dailyDigestEmail=true
-(botão Allow em /homing), para o e-mail do login Google.
+(botão Allow em Profile /settings), para o e-mail do login Google.
 
 FERRAMENTAS: browser Resend + Vercel (+ opcional DNS do domínio).
 SEM terminal, git, gh, vercel CLI. SEM expor API keys, CRON_SECRET, tokens.
@@ -71,7 +71,7 @@ Se alterou qualquer env → Deployments → Production mais recente → ⋮ → 
 O cron só envia para quem clicou Allow. Sem opt-in, emailed=0 mesmo com Resend OK.
 
 Dizer ao usuário (obrigatório no relatório):
-  1. Entrar em https://atlascapital.markets/homing
+  1. Entrar em https://atlascapital.markets/settings
   2. Clicar Allow Daily Digest by email
   3. Clicar Send a test now
   4. Se o teste falhar, copiar a mensagem vermelha (é o JSON do Resend, sem a API key)
@@ -85,40 +85,48 @@ emailErrors com "domain is not verified" = passo A/B ainda errado.
 - Resend domain Status = Verified
 - WALLET_ALERT_FROM usa esse host exato
 - Production redeployed se o From mudou
-- Teste no /homing: “Test sent” (não 502)
+- Teste no /settings: “Test sent” (não 502)
 - Inbox do Google do usuário recebe Atlas Daily Digest
 
 Reportar: domínio Verified (hostname só), se WALLET_ALERT_FROM estava alinhado
 (sim/não, sem colar o valor se tiver a API key misturada), se houve Redeploy,
-o que o usuário ainda precisa clicar no /homing.
+o que o usuário ainda precisa clicar em Profile (/settings).
 NÃO expor RESEND_API_KEY, CRON_SECRET, DATABASE_URL, AUTH_*.
 ```
 
 ---
 
+
+
 ## O que já está no ar (não recriar)
 
-| Peça | Estado |
-|------|--------|
-| Página Daily Digest | `/homing` em produção |
-| Opt-in | botão **Allow Daily Digest by email** |
-| Teste | **Send a test now** → `POST /api/digest-email` |
-| Cron | `30 21 * * 1-5` UTC → `/api/cron/wallet-alerts` |
-| `RESEND_API_KEY` | já em Vercel Production |
+
+| Peça                | Estado                                              |
+| ------------------- | --------------------------------------------------- |
+| Página Daily Digest | `/homing` em produção                               |
+| Opt-in              | botão **Allow Daily Digest by email** em `/settings` |
+| Teste               | **Send a test now** → `POST /api/digest-email`      |
+| Cron                | `30 21 * * 1-5` UTC → `/api/cron/wallet-alerts`     |
+| `RESEND_API_KEY`    | já em Vercel Production                             |
 | `WALLET_ALERT_FROM` | já em Production — conferir se o host está Verified |
+
 
 Código: `lib/wallet/send-alert-email.ts` (From = `WALLET_ALERT_FROM`, senão `Atlas <beth.t@example.com>` — esse fallback só entrega na conta Resend).
 
 ---
 
+
+
 ## Erros típicos
 
-| Sintoma | Causa | Correção |
-|---------|--------|----------|
-| Teste 502 / `domain is not verified` | Domínio Pending ou From no host errado | Passos A e B |
-| Cron `emailed: 0`, `users: 0` | Ninguém clicou Allow | Usuário em `/homing` |
-| Cron `users: 1`, `emailed: 0`, `emailErrors` | Resend recusou | From ≠ domínio Verified |
-| E-mail só chega na conta Resend | From = `onboarding@resend.dev` | Trocar `WALLET_ALERT_FROM` |
+
+| Sintoma                                      | Causa                                  | Correção                   |
+| -------------------------------------------- | -------------------------------------- | -------------------------- |
+| Teste 502 / `domain is not verified`         | Domínio Pending ou From no host errado | Passos A e B               |
+| Cron `emailed: 0`, `users: 0`                | Ninguém clicou Allow                   | Usuário em `/settings`     |
+| Cron `users: 1`, `emailed: 0`, `emailErrors` | Resend recusou                         | From ≠ domínio Verified    |
+| E-mail só chega na conta Resend              | From = `onboarding@resend.dev`         | Trocar `WALLET_ALERT_FROM` |
+
 
 ---
 

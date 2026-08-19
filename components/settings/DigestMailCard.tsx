@@ -47,7 +47,7 @@ export function DigestMailCard({ initial }: { initial: DigestMailState }) {
       }
       if (action === "enable") {
         setEnabled(true);
-        setMessage("Allowed. Weekdays after the US close, this digest goes to your email.");
+        setMessage("Allowed. Weekdays after the US close, Daily Digest goes to your email.");
       } else if (action === "disable") {
         setEnabled(false);
         setMessage("Stopped. You will not get Daily Digest by email.");
@@ -77,8 +77,8 @@ export function DigestMailCard({ initial }: { initial: DigestMailState }) {
         )}
       </p>
       <p className="mt-1 text-[12px] text-zinc-500">
-        Weekdays after the US close — the same two chapters as this page. Not
-        on Saturday or Sunday.
+        Weekdays after the US close — the same two chapters as Daily Digest.
+        Not on Saturday or Sunday.
       </p>
       <div className="mt-3 flex flex-wrap gap-2">
         {enabled ? (

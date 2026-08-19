@@ -7,7 +7,7 @@ export const maxDuration = 60;
 
 /**
  * After the US close on weekdays: email Daily Digest to users who
- * allowed it on /homing (Google/login email).
+ * allowed it in Profile /settings (Google/login email).
  * Local: curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron/wallet-alerts
  */
 export async function GET(request: Request) {
