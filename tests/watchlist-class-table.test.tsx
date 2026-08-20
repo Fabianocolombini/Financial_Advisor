@@ -166,12 +166,12 @@ describe("WatchlistClassTable", () => {
     expect(html).toContain("aria-label=\"Hold\"");
   });
 
-  it("quantifies new money as Gain vs Risk without dropping the motor badge", () => {
+  it("shows Risk under Money without repeating Score as Gain", () => {
     const html = renderToStaticMarkup(
       <WatchlistClassTable group={group([scoredCashRow()])} />,
     );
-    expect(html).toContain("Gain 56");
     expect(html).toContain("Risk");
+    expect(html).not.toContain("Gain 56");
     expect(html).toContain("Do not add");
     expect(html).toContain("Trend");
   });

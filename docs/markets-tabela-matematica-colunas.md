@@ -1,10 +1,12 @@
 # Matemática da tabela Markets — linha a linha
 
-Documento da **conta que cada coluna faz**. A linha de exemplo é **VGSH** (Vanguard Short-Term Treasury ETF), classe Treasuries (`fi_treasury`), no snapshot que mostrou:
+Leitura em linguagem simples (sem fórmula): [como-ler-tabela-markets.md](como-ler-tabela-markets.md).
+
+Este documento é a **conta** por trás de cada coluna. A linha de exemplo é **VGSH** (Vanguard Short-Term Treasury ETF), classe Treasuries (`fi_treasury`), no snapshot que mostrou:
 
 | Score | Vol 15d | 1D | 7D | 15D | Trend | Money | To buy | Factor | Trend 35% | RSI 25% | Volume 20% | COT 20% |
 |-------|---------|----|----|-----|-------|-------|--------|--------|-----------|---------|------------|---------|
-| 0.836 Among the best | 2.9M · 4% | +0.01% | +0.23% | +0.37% | ↑ Increase | … Wait · Gain 84 · Risk 34 | 0.10 Class | Trend | 1.00 Adds | 1.00 Adds | 0.68 Adds | 0.50 Neutral |
+| 0.836 Among the best | 2.9M · 4% | +0.01% | +0.23% | +0.37% | ↑ Increase | … Wait · Risk 34 | 0.10 Class | Trend | 1.00 Adds | 1.00 Adds | 0.68 Adds | 0.50 Neutral |
 
 Duas camadas, duas perguntas:
 

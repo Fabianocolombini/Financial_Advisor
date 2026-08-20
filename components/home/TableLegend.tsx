@@ -1,67 +1,88 @@
 "use client";
 
 /**
- * Reading guide for the market table.
- *
- * Every column here answers a different question, and two of them used to be
- * named after the model's internals ("Stage", "Entry / Validated") rather than
- * after the question. This panel states the question each column answers, so the
- * table can be read without knowing how the motor works.
+ * Reading guide for the Markets table.
+ * Two independent questions: is the name good (Score), and is it time to buy
+ * (Trend, Money, To buy). A high score with Wait is not a contradiction.
  */
+
+export function TableLegend() {
+  return (
+    <div className="space-y-2 rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2.5">
+      <p className="text-xs leading-relaxed text-zinc-400">
+        Two questions, kept apart on purpose.{" "}
+        <span className="text-zinc-200">Score</span> = is this name good vs its
+        peers?{" "}
+        <span className="text-zinc-200">Trend, Money, To buy</span> = is it time
+        to add cash? A top Score with Wait means the name is ready and the class
+        is not — that is the system working, not a bug.
+      </p>
+      <ol className="list-decimal space-y-0.5 pl-4 text-[11px] leading-relaxed text-zinc-500">
+        <li>
+          <span className="text-zinc-300">Score</span> — is the name good?
+        </li>
+        <li>
+          <span className="text-zinc-300">Trend</span> — which phase is it in?
+          (the Score as a traffic light)
+        </li>
+        <li>
+          <span className="text-zinc-300">Money</span> — does the system allow a
+          buy now?
+        </li>
+        <li>
+          <span className="text-zinc-300">To buy</span> — if not, how far, and
+          is the name or the class the bottleneck?
+        </li>
+      </ol>
+
+      <details className="pt-1">
+        <summary className="cursor-pointer text-xs text-zinc-500 hover:text-zinc-300">
+          What each column means
+        </summary>
+        <dl className="mt-2.5 space-y-2.5">
+          {ENTRIES.map((e) => (
+            <div key={e.term}>
+              <dt className="text-xs font-medium text-zinc-200">{e.term}</dt>
+              <dd className="text-[11px] leading-relaxed text-zinc-500">{e.text}</dd>
+            </div>
+          ))}
+        </dl>
+        <p className="mt-3 text-[11px] leading-relaxed text-zinc-600">
+          Names in each class are ordered from highest to lowest Score. A green
+          1D or 7D is the market price, not an entry.
+        </p>
+      </details>
+    </div>
+  );
+}
 
 const ENTRIES: { term: string; text: string }[] = [
   {
     term: "Score",
-    text: "Where this name sits in its own class ranking, from 0 to 1. 0.5 is the median name in the group; the higher it is, the better it compares with direct peers. It does not compare different classes — a high cash score does not make it better than a stock with a similar score. Open “How the score is calculated” under each table to see that class's ingredients.",
-  },
-  {
-    term: "Volume 15d",
-    text: "How many shares, on average, traded per day over the last 15 sessions, and how much that is of the class volume. It is the mass actually traded: high volume means you can enter and exit without moving the price.",
+    text: "A 0–1 grade vs the other names in this same class only (Treasuries vs Treasuries, never vs Cash or stocks). 0.65+ Among the best · 0.25–0.65 In the middle · below 0.25 Among the weakest. It is the rank in the class, not a buy signal.",
   },
   {
     term: "Trend",
-    text: "This name's own stage from its Security Score, not the sleeve. ↑ = increase, ● = hold, ↓ = reduce, ⇊ = reduce hard. Hover the symbol for the full sentence. The sleeve is the “The whole class” line above the table.",
+    text: "The Score as a traffic light, not a second indicator. ↑ Increase = Score ≥ 0.65 · ● Hold = 0.25–0.65 · ↓ Reduce = below 0.25. This is this name’s phase. The line above the table (“The whole class”) is the sleeve, which can be Hold while this name is Increase.",
   },
-    {
+  {
     term: "Money",
-    text: "+ can add, × do not add, … wait, ~ indifferent. Money answers “may I add new cash?”, not “will the price go up?”. … plus a green 7D is still Wait — do not treat it as a buy. Gain (green) is the name vs its peers, 0–100. Risk (red) mixes the sleeve climate (70%) with how weak the name is (30%). A Gain of 56 can still be × when the class is Reduce hard — new money would fight the sleeve.",
+    text: "+ Can add — name and class are aligned. … Wait — the name is ready, the class has not given the signal yet. × Do not add — the class is unfavorable; existing holders do not have to sell just because of this. ~ Indifferent — Cash only; there is no price-timing for a cash reserve. Risk (0–100) is how tense the moment is, mostly the class climate. Low = calm, high = the sleeve is in a poor phase.",
   },
   {
     term: "To buy",
-    text: "How far this name is from a motor Buy. It is the larger gap of two: class Overweight (regime score 0.65) and name Preferred (security score 0.65). 0.00 is already Buy. Class means the sleeve is the bottleneck; Name means the paper still has to rank Preferred. Blocked (Reduce or Weak) is a veto — not “0.10 from a buy”. Watch is Reduce plus a positive divergence: still Wait, never Buy. Cash only needs the class gap.",
+    text: "How far from a buy, and who is late. Smaller number = closer. 0.00 Can add = already a buy. Class = the name is ready, the asset class still has to improve. Name = the class is already favorable, this paper still has to rank better vs its peers. Blocked = the path is closed (class reducing, or the name is too weak) — not “almost there”. Watch = rare case: excellent name while the class is poor; not a buy, but worth watching.",
   },
   {
-    term: "Score mix / pillars",
-    text: "Each class has a fixed recipe (weights under the class title and on each pillar header). The cell is the 0–1 peer rank that actually enters the score, stacked on Adds / Neutral / Drags. Adds ≥ 0.65 (this pillar lifts the score), Neutral is the median, Drags < 0.35 (this is where the name is failing).",
+    term: "1D / 7D / 15D",
+    text: "Price over the last 1, 7 and 15 sessions. Green is not a buy. A strong print with Money … or × is still Wait or Do not add.",
+  },
+  {
+    term: "Vol 15d",
+    text: "Average shares traded per day over 15 sessions, and this name’s share of the class volume on screen. Higher volume means you can enter and exit without moving the price.",
   },
   {
     term: "Factor",
-    text: "The ingredient that weighed most on this name's score today — the number-one reason it sits where it does in the ranking.",
+    text: "Which ingredient weighed most on today’s Score — the number-one reason the name sits where it does.",
   },
 ];
-
-export function TableLegend() {
-  return (
-    <details className="rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2">
-      <summary className="cursor-pointer text-xs text-zinc-400 hover:text-zinc-200">
-        How to read this table
-      </summary>
-
-      <dl className="mt-3 space-y-2.5">
-        {ENTRIES.map((e) => (
-          <div key={e.term}>
-            <dt className="text-xs font-medium text-zinc-200">{e.term}</dt>
-            <dd className="text-[11px] leading-relaxed text-zinc-500">{e.text}</dd>
-          </div>
-        ))}
-      </dl>
-
-      <p className="mt-3 text-[11px] leading-relaxed text-zinc-600">
-        Inside each class, names are ordered from highest to lowest score.
-        Scores are recalculated every day for the most liquid names (~90% of
-        class volume); a symbol newly marked with ★ is scored on demand and
-        appears after 1–2 minutes.
-      </p>
-    </details>
-  );
-}

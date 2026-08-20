@@ -81,7 +81,7 @@ export function composeHomingEmail(input: {
     lotLines || "No lots yet.",
     "",
     "APPROACHING A BUY",
-    "Money + is the only buy. To buy is how far from a motor Buy (Class = sleeve, Name = paper). … is Wait — do not add cash yet, even if 7D is green. × is Do not add. 1D/7D is the price, not an entry.",
+    "Money + is the only buy. To buy is how far, and whether Class or Name is late. … Wait is not a buy, even if 7D is green. × Do not add. 1D/7D is the price, not an entry.",
     view.approaching.narrative,
     buyLines || "No scored names today.",
     "",
@@ -124,7 +124,7 @@ export function composeHomingEmail(input: {
     <p style="margin:0 0 12px;font-size:13px;color:#71717a">You paid ${escapeHtml(money(view.book.invested))} · worth now ${escapeHtml(money(view.book.gross))} · vs yesterday ${escapeHtml(bookPnl)}</p>
     <table width="100%" cellpadding="0" cellspacing="0">${lotHtml}</table>
     <h2 style="margin:24px 0 8px;font-size:14px;letter-spacing:0.04em;text-transform:uppercase;color:#3f3f46">Approaching a buy</h2>
-    <p style="margin:0 0 8px;font-size:12px;color:#71717a">Money + is the only buy. To buy is distance to Buy (Class = sleeve, Name = paper). … Wait is not a buy, even if 7D is green. × Do not add. 1D/7D is price.</p>
+    <p style="margin:0 0 8px;font-size:12px;color:#71717a">Money + is the only buy. To buy is how far, and whether Class or Name is late. … Wait is not a buy, even if 7D is green. × Do not add. 1D/7D is price.</p>
     <p style="margin:0 0 12px;font-size:14px;line-height:1.5">${escapeHtml(view.approaching.narrative)}</p>
     <table width="100%" cellpadding="0" cellspacing="0">${buyHtml}</table>
     <p style="margin:24px 0 0;font-size:12px;color:#71717a;line-height:1.5">This is an educational briefing from Atlas, not regulated investment advice.</p>

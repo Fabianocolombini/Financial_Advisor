@@ -236,11 +236,10 @@ export function HomingView({
         <section className="space-y-3">
           <h2 className="font-title text-lg text-white">Approaching a buy</h2>
           <p className="text-sm text-zinc-500">
-            Names you do not own, closest first. To buy is how far from a motor
-            Buy — Class means the sleeve still needs Overweight, Name means the
-            paper still needs Preferred. Money + is the only buy. … is Wait.
-            × is Do not add. A 1D print like +7% is the market price, not an
-            entry.
+            Names you do not own, closest first. Money + is the only buy. …
+            means Wait — the name can already be good while the class has not
+            given the signal. To buy says how far, and whether Class or Name is
+            late. A green 1D is the price, not an entry.
           </p>
           <div className="flex flex-wrap gap-6">
             <div>

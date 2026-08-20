@@ -24,7 +24,7 @@ describe("buyProximity", () => {
     expect(p.blockedBy).toBe("regime");
     expect(p.value).toBe("0.15");
     expect(p.axis).toBe("Class");
-    expect(p.hint).toMatch(/class still has to reach Overweight/i);
+    expect(p.hint).toMatch(/name is already ready/i);
   });
 
   it("points at the name when the class is already Overweight", () => {

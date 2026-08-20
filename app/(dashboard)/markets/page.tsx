@@ -13,7 +13,7 @@ export default async function MarketsPage() {
   return (
     <WatchlistDashboard
       title="Markets"
-      description="Performance and motor scores for the symbols you follow — grouped by asset class, ranked by attractiveness. Data date shown at top."
+      description="Score asks whether the name is good. Trend, Money and To buy ask whether it is time to add cash. Those are separate on purpose — a top name can still be Wait."
       snapshot={snapshot}
       groups={groups}
       emptyHint="Add symbols from search (Cash, Treasuries, US Equity…) with ★ — they will appear here with daily performance and scores."

@@ -62,6 +62,25 @@ function shortFactorName(
   return label.length > 12 ? `${label.slice(0, 11)}…` : label;
 }
 
+function moneyTitle(label: string, risk: number | null): string {
+  const riskBit =
+    risk != null
+      ? ` Risk ${risk} is how tense the moment is — mostly the class climate.`
+      : "";
+  switch (label) {
+    case "Can add":
+      return `Can add — name and class are aligned.${riskBit}`;
+    case "Wait":
+      return `Wait — the name is ready, the class has not given the signal yet.${riskBit}`;
+    case "Do not add":
+      return `Do not add — the class is unfavorable. Existing holders do not have to sell just because of this.${riskBit}`;
+    case "Indifferent":
+      return `Indifferent — Cash has no price timing. Add when you need the reserve.${riskBit}`;
+    default:
+      return riskBit.trim() || "No motor reading yet.";
+  }
+}
+
 function Glyph({
   glyph,
   label,
@@ -241,25 +260,25 @@ function SecurityRow({
       </td>
       <td
         className="px-1.5 py-1.5"
-        title={`${trend.hint} This is the name's own stage from its score, not the sleeve.`}
+        title={`${trend.hint} Trend is this name’s Score as a traffic light, not the class. The class is the line above the table.`}
       >
         <Glyph glyph={trendGlyph(trend.label)} label={trend.label} tone={trend.tone} />
       </td>
-      <td className="px-1.5 py-1.5" title={setup.hint}>
+      <td
+        className="px-1.5 py-1.5"
+        title={moneyTitle(setup.label, setup.risk)}
+      >
         <div className="flex flex-col items-start gap-0.5">
           <Glyph
             glyph={newMoneyGlyph(setup.label)}
             label={setup.label}
             tone={setup.tone}
           />
-          <div className="flex flex-col text-[9px] leading-tight tabular-nums">
-            <span className="text-emerald-400/90">
-              Gain {setup.gain != null ? setup.gain : "—"}
+          {setup.risk != null ? (
+            <span className="text-[9px] leading-tight tabular-nums text-red-400/90">
+              Risk {setup.risk}
             </span>
-            <span className="text-red-400/90">
-              Risk {setup.risk != null ? setup.risk : "—"}
-            </span>
-          </div>
+          ) : null}
         </div>
       </td>
       <td className="px-1.5 py-1.5" title={proximity.hint}>
@@ -331,7 +350,7 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
               <th className="py-2 pl-1 pr-1.5 font-medium">Name</th>
               <th
                 className="px-1.5 py-2 font-medium"
-                title="Where the name sits in its own class ranking, from 0 to 1. It does not compare different classes."
+                title="Is this name good vs the others in this class only? 0.65+ Among the best. Not a buy signal."
               >
                 Score
               </th>
@@ -346,19 +365,19 @@ export function WatchlistClassTable({ group }: { group: WatchlistClassGroup }) {
               <th className="px-1.5 py-2 font-medium">15D</th>
               <th
                 className="px-1.5 py-2 font-medium"
-                title="This name's own stage from its Security Score, not the sleeve. ↑ add, ● hold, ↓ reduce. The sleeve is the line above the table."
+                title="This name’s Score as a traffic light. ↑ Increase ≥ 0.65 · ● Hold · ↓ Reduce. Not the class — that is the line above the table."
               >
                 Trend
               </th>
               <th
                 className="px-1.5 py-2 font-medium"
-                title="Symbol is the entry call (+ add, × don't, … wait). Gain is the name vs peers (0–100). Risk mixes the sleeve climate with how weak the name is."
+                title="+ Can add. … Wait — name ready, class not. × Do not add. ~ Cash only. Risk is how tense the moment is (mostly the class)."
               >
                 Money
               </th>
               <th
                 className="px-1.5 py-2 font-medium"
-                title="How far this name is from a motor Buy. Smaller is closer. Class = sleeve still needs Overweight. Name = paper still needs Preferred. Blocked is a veto, not a small gap."
+                title="How far from a buy, and who is late. Smaller is closer. Class = name ready, class not. Name = class ready, this paper not. Blocked = path closed. Watch = rare, keep an eye."
               >
                 To buy
               </th>

@@ -125,7 +125,7 @@ export function buyProximity(input: BuyProximityInput): BuyProximity {
         qualityGap: cash ? 0 : gapToThreshold(securityScore, profile.security.strong, true),
         value: "Watch",
         axis: "Diverges",
-        hint: "The class is reducing, but this name diverges and ranks Preferred. The motor keeps it as Wait — not Buy.",
+        hint: "The class is reducing, but this name diverges and ranks among the best. Not a buy — Watch: it can turn earlier than the rest of the group.",
       });
     }
     return make({
@@ -136,7 +136,7 @@ export function buyProximity(input: BuyProximityInput): BuyProximity {
       qualityGap: cash ? 0 : gapToThreshold(securityScore, profile.security.strong, quality === "Preferred"),
       value: "Blocked",
       axis: allocation === "Strong Reduce" ? "Reduce hard" : "Reduce",
-      hint: "The class is reducing. Distance to Buy is not a number — new money is blocked.",
+      hint: "Blocked. The class is reducing. This is not “almost a buy” — new money is closed.",
     });
   }
 
@@ -149,7 +149,7 @@ export function buyProximity(input: BuyProximityInput): BuyProximity {
       qualityGap: gapToThreshold(securityScore, profile.security.strong, false),
       value: "Blocked",
       axis: "Weak",
-      hint: "This name ranks Weak in its class. Distance to Buy is not a number.",
+      hint: "Blocked. This name ranks among the weakest in its class. Distance to a buy is not a number.",
     });
   }
 
@@ -191,7 +191,7 @@ export function buyProximity(input: BuyProximityInput): BuyProximity {
       axis: "Can add",
       hint: cash
         ? "The cash sleeve is already Overweight. Money + is the buy."
-        : "Class is Overweight and the name is Preferred. Money + is the buy.",
+        : "Nothing left: the class and the name are both ready. Money + is the buy.",
     });
   }
 
@@ -203,11 +203,11 @@ export function buyProximity(input: BuyProximityInput): BuyProximity {
     ? "The cash sleeve still has to reach Overweight. Name rank does not gate a cash buy."
     : blockedBy === "regime"
       ? otherStillOpen
-        ? `The class is further from Overweight (${displayGap(regimeGap)}) than the name is from Preferred (${displayGap(qualityGap)}).`
-        : "The class still has to reach Overweight. The name is already Preferred."
+        ? `The class is further from ready (${displayGap(regimeGap)}) than the name is (${displayGap(qualityGap)}).`
+        : "The name is already ready. The class still has to give the entry signal."
       : otherStillOpen
-        ? `The name is further from Preferred (${displayGap(qualityGap)}) than the class is from Overweight (${displayGap(regimeGap)}).`
-        : "The class is already Overweight. The name still has to reach Preferred.";
+        ? `The name is further from ready (${displayGap(qualityGap)}) than the class is (${displayGap(regimeGap)}).`
+        : "The class is already favorable. This name still has to rank better vs its peers.";
 
   return make({
     state: "open",
